@@ -13,6 +13,9 @@ gradle-app.setting
 /server/build/
 /shared/build/
 
+## Expo:
+/saves/*
+
 ## Java:
 *.class
 *.war

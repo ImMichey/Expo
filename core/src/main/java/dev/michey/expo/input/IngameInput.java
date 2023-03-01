@@ -3,8 +3,6 @@ package dev.michey.expo.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import dev.michey.expo.console.GameConsole;
-import dev.michey.expo.logic.entity.ClientPlayer;
-import dev.michey.expo.logic.inventory.PlayerInventory;
 
 public class IngameInput {
 
