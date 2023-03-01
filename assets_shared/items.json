@@ -1,0 +1,142 @@
+{
+    "database": [
+        {
+            "identifier": "item_stick",
+            "id": 0,
+            "displayName": "Stick",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "universal": {
+                    "texture": "item_stick",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                }
+            },
+            "logic": {
+                "stackSize": 64,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_blueberry",
+            "id": 1,
+            "displayName": "Blueberry",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "universal": {
+                    "texture": "item_blueberry",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                }
+            },
+            "logic": {
+                "stackSize": 64,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_flint_pickaxe",
+            "id": 2,
+            "displayName": "Flint Pickaxe",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "universal": {
+                    "texture": "item_flint_pickaxe",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 100,
+                "toolType": "PICKAXE"
+            }
+        },
+        {
+            "identifier": "item_flint_axe",
+            "id": 3,
+            "displayName": "Flint Axe",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "universal": {
+                    "texture": "item_flint_axe",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 100,
+                "toolType": "AXE"
+            }
+        },
+        {
+            "identifier": "item_iron_pickaxe",
+            "id": 4,
+            "displayName": "Iron Pickaxe",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "universal": {
+                    "texture": "item_iron_pickaxe",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 100,
+                "toolType": "PICKAXE"
+            }
+        },
+        {
+            "identifier": "item_iron_axe",
+            "id": 5,
+            "displayName": "Iron Axe",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "universal": {
+                    "texture": "item_iron_axe",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 100,
+                "toolType": "AXE"
+            }
+        },
+        {
+            "identifier": "item_leaf_helmet",
+            "id": 6,
+            "displayName": "Leaf Headwear",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_leaf_helmet",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                },
+                "held": {
+                    "texture": "item_leaf_helmet",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0
+                },
+                "armor": {
+                    "texture": "item_leaf_helmet",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "offsetX": 0,
+                    "offsetY": 0
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 100,
+                "toolType": "HELMET"
+            }
+        }
+    ]
+}

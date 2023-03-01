@@ -1,0 +1,9 @@
+=== IMPLEMENT ===
+- Client/Server inventory system
+- Proper command separation client/server
+
+=== TO-DO PRIORITY ===
+
+
+=== IMPORTANT ===
+- There might be occurrences of ConcurrentModificationException on a local server environment as the packets aren't queued
