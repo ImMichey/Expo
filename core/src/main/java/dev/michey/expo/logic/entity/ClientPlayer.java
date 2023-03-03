@@ -518,6 +518,71 @@ public class ClientPlayer extends ClientEntity {
                 }
             }
 
+            { // Item shadow
+                if(holdingItemId != -1) {
+                    // position
+                    ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
+                    int dirCheck = punchAnimation ? punchDirection : playerDirection;
+                    Vector2 v = punchAnimation ? GenerationUtils.circular(currentPunchAngle, 1) : NULL_ROTATION_VECTOR;
+
+                    float xshift = dirCheck == 0 ? 1 : 9;
+                    float armHeight = 9;
+                    float ox = map.heldRender.offsetX * map.heldRender.scaleX;
+                    float oy = map.heldRender.offsetY * map.heldRender.scaleY;
+                    float inverse = dirCheck == 0 ? -1 : 1;
+
+                    // rotation fix
+                    float w = map.heldRender.textureRegion.getRegionWidth();
+                    float h = map.heldRender.textureRegion.getRegionHeight();
+                    float rfx = w * 0.5f;
+                    float rfy = h * 0.5f;
+
+                    float shadowFixX = w * 0.5f * (1f - map.heldRender.scaleX);
+                    float shadowFixY = h * 0.5f * (1f - map.heldRender.scaleY);
+
+                    Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(
+                            clientPosX,
+                            clientPosY,
+                            shadowFixX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
+                            shadowFixY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse),
+                            holdingItemSprite.getOriginX() - shadowFixX,
+                            holdingItemSprite.getOriginY() - shadowFixY,
+                            holdingItemSprite.getRotation()
+                    );
+
+                    float t = 0f + n * 9;
+                    float b; //1f - n * offsetY; // calc
+                    float norm;
+
+                    if(punchEndAngle > 0) { // 180.0
+                        norm = Math.abs(currentPunchAngle - 180) / punchEndAngle;
+                    } else { // 0.0
+                        norm = (currentPunchAngle + 180) / 180;
+                    }
+
+                    if(norm < 0.5f) {
+                        norm *= 2;
+                        b = 0 + norm * n * 9;
+                        t = 0;
+                    } else {
+                        norm -= 0.5f;
+                        norm *= 2;
+                        b = 1f - n * offsetY + n * 9 * (1f - norm);
+                    }
+
+                    float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
+                    float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
+
+                    rc.arraySpriteBatch.drawGradientCustomColor(
+                            holdingItemSprite,
+                            holdingItemSprite.getRegionWidth() * holdingItemSprite.getScaleX(),
+                            holdingItemSprite.getRegionHeight() * holdingItemSprite.getScaleY(),
+                            shadow,
+                            topColor,
+                            bottomColor);
+                }
+            }
+
             { // Left arm
                 float t = 0f + n * 9;
                 float b = 1f - n * offsetY;

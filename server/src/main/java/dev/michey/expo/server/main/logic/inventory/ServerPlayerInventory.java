@@ -45,6 +45,14 @@ public class ServerPlayerInventory extends ServerInventory {
         for(ServerInventorySlot slot : slots) {
             slot.item = new ServerInventoryItem();
 
+            if(slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_HEAD ||
+                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_CHEST ||
+                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES ||
+                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_LEGS ||
+                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_FEET) {
+                continue;
+            }
+
             if(MathUtils.randomBoolean()) {
                 ItemMapping mapping = mapper.randomMapping();
 

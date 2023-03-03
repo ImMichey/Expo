@@ -48,6 +48,8 @@ public class ItemRender {
         }
         if(object.has("requiresFlip")) {
             requiresFlip = object.getBoolean("requiresFlip");
+        } else {
+            requiresFlip = true;
         }
     }
 
