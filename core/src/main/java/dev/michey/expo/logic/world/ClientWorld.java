@@ -21,6 +21,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
 
@@ -304,6 +305,18 @@ public class ClientWorld {
                     r.chunkRenderer.circle(all.drawRootX, all.drawRootY, 0.33f, 8);
                     r.chunkRenderer.setColor(Color.YELLOW);
                     r.chunkRenderer.circle(all.toVisualCenterX(), all.toVisualCenterY(), 0.33f, 8);
+
+                    if(all instanceof ClientPlayer player) {
+                        if(player.holdingItemId != -1) {
+                            r.chunkRenderer.setColor(Color.WHITE);
+                            r.chunkRenderer.circle(player.holdingItemSprite.getX(), player.holdingItemSprite.getY(), 0.33f, 8);
+                            r.chunkRenderer.setColor(Color.SKY);
+                            r.chunkRenderer.circle(
+                                    player.holdingItemSprite.getX() + player.holdingItemSprite.getOriginX(),
+                                    player.holdingItemSprite.getY() + player.holdingItemSprite.getOriginY(),
+                                    0.5f, 8);
+                        }
+                    }
                 }
             }
 

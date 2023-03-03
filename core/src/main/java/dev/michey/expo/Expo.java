@@ -244,7 +244,7 @@ public class Expo implements ApplicationListener {
 			map.color = Color.valueOf(map.displayNameColor);
 			map.uiRender.setTextureRegion(ExpoAssets.get().textureRegion(map.uiRender.texture));
 			map.heldRender.setTextureRegion(ExpoAssets.get().textureRegion(map.heldRender.texture));
-			map.armorRender.setTextureRegion(ExpoAssets.get().textureRegion(map.armorRender.texture));
+			if(map.armorRender != null) map.armorRender.setTextureRegion(ExpoAssets.get().textureRegion(map.armorRender.texture));
 		}
 	}
 

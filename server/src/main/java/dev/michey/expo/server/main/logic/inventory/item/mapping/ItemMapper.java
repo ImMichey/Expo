@@ -20,11 +20,11 @@ public class ItemMapper {
     private final HashMap<String, ItemMapping> itemMappings;
     private final HashMap<Integer, ItemMapping> itemMappingsId;
 
-    public ItemMapper(boolean client) {
+    public ItemMapper(boolean client, boolean reload) {
         itemMappings = new HashMap<>();
         itemMappingsId = new HashMap<>();
 
-        FileHandle fh = Gdx.files.internal("items.json");
+        FileHandle fh = reload ? Gdx.files.absolute("C:\\IDEAProjects\\Expo\\assets_shared\\items.json") : Gdx.files.internal("items.json");
         JSONArray db = new JSONObject(fh.readString()).getJSONArray("database");
 
         for(int i = 0; i < db.length(); i++) {
@@ -48,13 +48,18 @@ public class ItemMapper {
                 armorRender = null;
             } else {
                 if(entry.getJSONObject("render").has("universal")) {
-                    uiRender = new ItemRender(entry.getJSONObject("render").getJSONObject("universal"));
-                    heldRender = new ItemRender(entry.getJSONObject("render").getJSONObject("universal"));
-                    armorRender = new ItemRender(entry.getJSONObject("render").getJSONObject("universal"));
+                    JSONObject universal = entry.getJSONObject("render").getJSONObject("universal");
+                    uiRender = new ItemRender(universal);
+                    heldRender = new ItemRender(universal);
+                    armorRender = new ItemRender(universal);
                 } else {
                     uiRender = new ItemRender(entry.getJSONObject("render").getJSONObject("ui"));
                     heldRender = new ItemRender(entry.getJSONObject("render").getJSONObject("held"));
-                    armorRender = new ItemRender(entry.getJSONObject("render").getJSONObject("armor"));
+                    if(entry.getJSONObject("render").has("armor")) {
+                        armorRender = new ItemRender(entry.getJSONObject("render").getJSONObject("armor"));
+                    } else {
+                        armorRender = null;
+                    }
                 }
             }
 

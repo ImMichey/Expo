@@ -1,5 +1,6 @@
 package dev.michey.expo.client;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
@@ -13,6 +14,7 @@ import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
@@ -150,6 +152,10 @@ public class ExpoClientPacketReader {
         player.holdingArmorGlovesId = ids[3];
         player.holdingArmorLegsId = ids[4];
         player.holdingArmorFeetId = ids[5];
+
+        if(player.holdingItemId != -1) {
+            player.updateHoldingItemSprite();
+        }
 
         if(player.holdingArmorHeadId != -1) {
             player.holdingArmorHeadTexture = new TextureRegion(ItemMapper.get().getMapping(player.holdingArmorHeadId).armorRender.textureRegion);

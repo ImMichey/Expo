@@ -1,1 +1,2 @@
 /world xd
+/fps 240

@@ -6,10 +6,16 @@
             "displayName": "Stick",
             "displayNameColor": "#ffffff",
             "render": {
-                "universal": {
+                "ui": {
+                    "texture": "item_stick"
+                },
+                "held": {
                     "texture": "item_stick",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0
+                    "scaleX": 0.8,
+                    "scaleY": 0.8,
+                    "offsetX": -2,
+                    "offsetY": -2,
+                    "rotation": -45
                 }
             },
             "logic": {
@@ -24,10 +30,17 @@
             "displayName": "Blueberry",
             "displayNameColor": "#ffffff",
             "render": {
-                "universal": {
+                "ui": {
+                    "texture": "item_blueberry"
+                },
+                "held": {
                     "texture": "item_blueberry",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0
+                    "scaleX": 0.5,
+                    "scaleY": 0.5,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotations": [67.5, -22.5],
+                    "requiresFlip": true
                 }
             },
             "logic": {
@@ -42,10 +55,16 @@
             "displayName": "Flint Pickaxe",
             "displayNameColor": "#ffffff",
             "render": {
-                "universal": {
+                "ui": {
+                    "texture": "item_flint_pickaxe"
+                },
+                "held": {
                     "texture": "item_flint_pickaxe",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0
+                    "scaleX": 0.8,
+                    "scaleY": 0.8,
+                    "offsetX": -2,
+                    "offsetY": -2,
+                    "rotation": -45
                 }
             },
             "logic": {
@@ -60,10 +79,17 @@
             "displayName": "Flint Axe",
             "displayNameColor": "#ffffff",
             "render": {
-                "universal": {
+                "ui": {
+                    "texture": "item_flint_axe"
+                },
+                "held": {
                     "texture": "item_flint_axe",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0
+                    "scaleX": 0.8,
+                    "scaleY": 0.8,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45.0],
+                    "requiresFlip": true
                 }
             },
             "logic": {
@@ -78,10 +104,16 @@
             "displayName": "Iron Pickaxe",
             "displayNameColor": "#ffffff",
             "render": {
-                "universal": {
-                    "texture": "item_iron_pickaxe",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0
+                "ui": {
+                    "texture": "item_iron_pickaxe"
+                },
+                "held": {
+                    "texture": "item_32",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2,
+                    "offsetY": 30,
+                    "rotation": -45
                 }
             },
             "logic": {
@@ -96,10 +128,16 @@
             "displayName": "Iron Axe",
             "displayNameColor": "#ffffff",
             "render": {
-                "universal": {
-                    "texture": "item_iron_axe",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0
+                "ui": {
+                    "texture": "item_iron_axe"
+                },
+                "held": {
+                    "texture": "diamond_sword",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
                 }
             },
             "logic": {
@@ -115,14 +153,16 @@
             "displayNameColor": "#ffffff",
             "render": {
                 "ui": {
-                    "texture": "item_leaf_helmet",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0
+                    "texture": "item_leaf_helmet"
                 },
                 "held": {
                     "texture": "item_leaf_helmet",
                     "scaleX": 1.0,
-                    "scaleY": 1.0
+                    "scaleY": 1.0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotations": [-90.0, 0.0],
+                    "requiresFlip": true
                 },
                 "armor": {
                     "texture": "item_leaf_helmet",

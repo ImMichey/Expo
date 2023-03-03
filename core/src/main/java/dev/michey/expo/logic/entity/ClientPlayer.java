@@ -3,13 +3,16 @@ package dev.michey.expo.logic.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.ExpoClientPacketReader;
+import dev.michey.expo.input.GameInput;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -24,10 +27,12 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.PacketUtils;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.CAMERA_ANIMATION_MIN_ZOOM;
 import static dev.michey.expo.util.ClientStatic.DEFAULT_CAMERA_ZOOM;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
@@ -93,7 +98,7 @@ public class ClientPlayer extends ClientEntity {
 
     private float offsetXL;
     private float offsetXR;
-    private float offsetY;
+    public float offsetY;
 
     /** Player punch */
     public float punchStartAngle;
@@ -109,6 +114,7 @@ public class ClientPlayer extends ClientEntity {
 
     /** Player item */
     public int holdingItemId = -1;
+    public Sprite holdingItemSprite = null;
 
     public int holdingArmorHeadId = -1;
     public TextureRegion holdingArmorHeadTexture;
@@ -120,6 +126,8 @@ public class ClientPlayer extends ClientEntity {
     public TextureRegion holdingArmorLegsTexture;
     public int holdingArmorFeetId = -1;
     public TextureRegion holdingArmorFeetTexture;
+
+    private static final Vector2 NULL_ROTATION_VECTOR = GenerationUtils.circular(0, 1);
 
     /** World enter animation */
     private boolean finishedWorldEnterAnimation;
@@ -270,6 +278,12 @@ public class ClientPlayer extends ClientEntity {
             clientViewport[1] = chunkX + PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // x end
             clientViewport[2] = chunkY - PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // y start
             clientViewport[3] = chunkY + PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // y end
+
+            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+                new ItemMapper(true, true);
+                Expo.get().loadItemMapperTextures();
+                if(ClientPlayer.getLocalPlayer() != null) ClientPlayer.getLocalPlayer().updateHoldingItemSprite();
+            }
         }
 
         punchAnimation = (punchEnd - now) > 0;
@@ -436,6 +450,8 @@ public class ClientPlayer extends ClientEntity {
 
             rc.useBatchAndShader(rc.batch, rc.DEFAULT_GLES3_SHADER);
 
+            drawHeldItem(rc, false);
+
             // Draw punch (debug for now)
             if(punchAnimation) {
                 float x = clientPosX + (punchDirection == 1 ? 8 : 0);
@@ -459,18 +475,16 @@ public class ClientPlayer extends ClientEntity {
 
                 if(holdingArmorHeadId != -1) {
                     ItemMapping map = ItemMapper.get().getMapping(holdingArmorHeadId);
-                    rc.currentBatch.draw(holdingArmorHeadTexture, clientPosX + (playerDirection == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
+                    int dir = punchAnimation ? punchDirection : playerDirection;
+                    rc.currentBatch.draw(holdingArmorHeadTexture, clientPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
                 }
 
-                if(holdingItemId != -1) {
-                    ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
-                    rc.currentBatch.draw(map.heldRender.textureRegion, clientPosX + 20, clientPosY + 20);
-                }
+                drawHeldItem(rc, true);
             }
 
             { // Draw player blink
                 if(playerBlinkDelta < 0) {
-                    rc.currentBatch.draw(tex_blink, clientPosX + 5 - (playerDirection == 0 ? 4 : 0), clientPosY + offsetY + 13);
+                    rc.currentBatch.draw(tex_blink, clientPosX + 5 - (direction() == 0 ? 4 : 0), clientPosY + offsetY + 13);
                 }
             }
         }
@@ -498,7 +512,8 @@ public class ClientPlayer extends ClientEntity {
                     float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
                     float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
 
-                    Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX, clientPosY, playerDirection == 1 ? 0 : -1, 13 + offsetY);
+                    int dir = punchAnimation ? punchDirection : playerDirection;
+                    Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX, clientPosY, dir == 1 ? 0 : -1, 13 + offsetY);
                     rc.arraySpriteBatch.drawGradientCustomColor(holdingArmorHeadTexture, holdingArmorHeadTexture.getRegionWidth(), holdingArmorHeadTexture.getRegionHeight(), shadowBase, topColor, bottomColor);
                 }
             }
@@ -557,6 +572,87 @@ public class ClientPlayer extends ClientEntity {
         }
     }
 
+    private void drawHeldItem(RenderContext rc, boolean postArm) {
+        if(holdingItemId != -1) {
+            ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
+
+            if((map.heldRender.renderPriority && postArm) || (!map.heldRender.renderPriority && !postArm)) {
+                // rotation
+                if(punchAnimation) {
+                    if(punchDirection == 0) { // left
+                        holdingItemSprite.setRotation(currentPunchAngle + 90f - map.heldRender.rotations[0]);
+                    } else { // right
+                        holdingItemSprite.setRotation(currentPunchAngle + map.heldRender.rotations[1]);
+                    }
+
+                    if(map.heldRender.requiresFlip) {
+                        if(punchDirection == 0) {
+                            if(!holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        } else {
+                            if(holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        }
+                    }
+                } else {
+                    float desiredAngle = (playerDirection == 0 ? (90f - map.heldRender.rotations[0]) : (map.heldRender.rotations[1]));
+
+                    if(holdingItemSprite.getRotation() != desiredAngle) {
+                        holdingItemSprite.setRotation(desiredAngle);
+                    }
+
+                    if(map.heldRender.requiresFlip) {
+                        if(playerDirection == 0) {
+                            if(!holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        } else {
+                            if(holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        }
+                    }
+                }
+
+                // position
+                int dirCheck = punchAnimation ? punchDirection : playerDirection;
+                Vector2 v = punchAnimation ? GenerationUtils.circular(currentPunchAngle, 1) : NULL_ROTATION_VECTOR;
+
+                float xshift = dirCheck == 0 ? 1 : 9;
+                float armHeight = 9;
+                float ox = map.heldRender.offsetX * map.heldRender.scaleX;
+                float oy = map.heldRender.offsetY * map.heldRender.scaleY;
+                float inverse = dirCheck == 0 ? -1 : 1;
+
+                // rotation fix
+                float w = map.heldRender.textureRegion.getRegionWidth();
+                float h = map.heldRender.textureRegion.getRegionHeight();
+                float rfx = w * 0.5f;
+                float rfy = h * 0.5f;
+
+                holdingItemSprite.setPosition(
+                        clientPosX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
+                        clientPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
+                );
+
+                holdingItemSprite.draw(rc.currentBatch);
+            }
+        }
+    }
+
+    public void updateHoldingItemSprite() {
+        ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
+        holdingItemSprite = new Sprite(mapping.heldRender.textureRegion);
+        holdingItemSprite.setPosition(clientPosX, clientPosY);
+        holdingItemSprite.setScale(mapping.heldRender.scaleX, mapping.heldRender.scaleY);
+        holdingItemSprite.setOrigin(
+                holdingItemSprite.getWidth() * 0.5f,
+                holdingItemSprite.getHeight() * 0.5f
+        );
+    }
+
     private TextureRegion[] shadowSheet(TextureRegion base, int x, int y, int frames, int cellWidth, int width, int maxHeight, int[] heightArray) {
         TextureRegion[] array = new TextureRegion[frames];
 
@@ -566,6 +662,10 @@ public class ClientPlayer extends ClientEntity {
         }
 
         return array;
+    }
+
+    private int direction() {
+        return punchAnimation ? punchDirection : playerDirection;
     }
 
     @Override

@@ -101,6 +101,7 @@ public class GameConsole {
         resolver.addCommand(new CommandCol());
         resolver.addCommand(new Client_Volume());
         resolver.addCommand(new CommandItems());
+        resolver.addCommand(new CommandReload());
 
         messageHistory = new LinkedList<>();
         shapeRenderer = new ShapeRenderer();

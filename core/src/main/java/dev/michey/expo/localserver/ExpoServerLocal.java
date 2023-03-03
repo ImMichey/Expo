@@ -19,7 +19,7 @@ public class ExpoServerLocal extends ExpoServerBase {
     public ExpoServerLocal(String worldName) {
         super(true, worldName);
         if(ItemMapper.get() == null) {
-            new ItemMapper(true);
+            new ItemMapper(true, false);
             Expo.get().loadItemMapperTextures();
         }
 

@@ -34,7 +34,7 @@ public class ServerLauncher {
 		new HeadlessApplication(server, gdxConfig);
 
 		// Item Mapper
-		new ItemMapper(false);
+		new ItemMapper(false, false);
 	}
 
 }

@@ -12,6 +12,13 @@ public class GenerationUtils {
         );
     }
 
+    public static Vector2 circular(float angle, float radiusX, float radiusY) {
+        return new Vector2(
+                MathUtils.cosDeg(angle) * radiusX,
+                MathUtils.sinDeg(angle) * radiusY
+        );
+    }
+
     public static Vector2[] positions(int amount, float radius) {
         float anglePer = 360.0f / amount;
         Vector2[] positions = new Vector2[amount];

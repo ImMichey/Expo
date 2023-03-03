@@ -55,7 +55,7 @@ public class CommandConnect extends AbstractConsoleCommand {
             // Connect to server.
             message("Attempting to connect to remote server [CYAN]" + ip + ":" + port + "[WHITE]...");
             if(ItemMapper.get() == null) {
-                new ItemMapper(true);
+                new ItemMapper(true, false);
                 Expo.get().loadItemMapperTextures();
             }
 
