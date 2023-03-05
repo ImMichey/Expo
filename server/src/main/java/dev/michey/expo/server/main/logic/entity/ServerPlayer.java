@@ -50,6 +50,7 @@ public class ServerPlayer extends ServerEntity {
     public float hungerCooldown = 180.0f;       // -> saturation that each hunger item gives
     public float nextHungerTickDown = 4.0f;     // seconds between each hunger down tick
     public float nextHungerDamageTick = 4.0f;   // seconds between each damage via hunger tick
+    public float nextHealthRegenTickDown = 1.0f;// seconds between each health regen tick
 
     public HashSet<String> hasSeenChunks = new HashSet<>();
 
@@ -132,7 +133,6 @@ public class ServerPlayer extends ServerEntity {
                 if(nextHungerTickDown <= 0) {
                     nextHungerTickDown += 4.0f;
                     removeHunger(1);
-                    if(hunger < 0) hunger = 0;
                     ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
                 }
             } else {
@@ -146,21 +146,37 @@ public class ServerPlayer extends ServerEntity {
                 }
             }
         }
+
+        if(health < 100 && hunger > 90) {
+            nextHealthRegenTickDown -= delta;
+
+            if(nextHealthRegenTickDown <= 0) {
+                nextHealthRegenTickDown += 1.0f;
+                health += 1f;
+                if(health > 100f) health = 100f;
+                ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
+            }
+        }
     }
 
     public void consumeFood(float hungerRestore, float hungerCooldown) {
+        nextHungerTickDown = 4.0f;
+        nextHungerDamageTick = 4.0f;
         if(hungerCooldown > this.hungerCooldown) {
             this.hungerCooldown = hungerCooldown;
         }
         hunger += hungerRestore;
+        if(hunger > 100.0f) hunger = 100.0f;
     }
 
     public void damagePlayer(float damage) {
         health -= damage;
+        if(health < 0) health = 0;
     }
 
-    public void removeHunger(float hunger) {
-        this.hunger -= hunger;
+    public void removeHunger(float remove) {
+        hunger -= remove;
+        if(hunger < 0) hunger = 0;
     }
 
     public void parsePunchPacket(P16_PlayerPunch p) {
@@ -242,6 +258,7 @@ public class ServerPlayer extends ServerEntity {
         playerSaveFile.getHandler().update("health", health);
         playerSaveFile.getHandler().update("nextHungerTickDown", nextHungerTickDown);
         playerSaveFile.getHandler().update("nextHungerDamageTick", nextHungerDamageTick);
+        playerSaveFile.getHandler().update("nextHealthRegenTickDown", nextHealthRegenTickDown);
         if(!localServerPlayer) {
             playerSaveFile.getHandler().update("username", username);
         }

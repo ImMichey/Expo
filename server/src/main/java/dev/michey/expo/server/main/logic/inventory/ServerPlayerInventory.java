@@ -96,6 +96,33 @@ public class ServerPlayerInventory extends ServerInventory {
                 // Something on cursor, throw out.
                 result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null); // Set cursor as null on client
                 playerCursorItem = null;
+            } else {
+                // Cursor is null and right-clicked, check if you can interact with item
+                if(oldIds[0] != -1) {
+                    ItemMapping mapping = ItemMapper.get().getMapping(oldIds[0]);
+
+                    if(mapping.logic.foodData != null) {
+                        // Is food item
+                        float hr = mapping.logic.foodData.hungerRestore;
+                        float hcr = mapping.logic.foodData.hungerCooldownRestore;
+                        ServerPlayer p = getOwner();
+
+                        if(p.hunger < 100f) {
+                            p.consumeFood(hr, hcr);
+                            ServerPackets.p23PlayerLifeUpdate(p.health, p.hunger, PacketReceiver.player(p));
+
+                            int existingAmount = slots[p.selectedInventorySlot].item.itemAmount;
+
+                            if(existingAmount > 1) {
+                                slots[p.selectedInventorySlot].item.itemAmount -= 1;
+                            } else {
+                                slots[p.selectedInventorySlot].item = new ServerInventoryItem();
+                            }
+
+                            result.addChange(p.selectedInventorySlot, slots[p.selectedInventorySlot].item);
+                        }
+                    }
+                }
             }
         } else if(slotId == ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR) {
             // Clicked cursor, no use yet.

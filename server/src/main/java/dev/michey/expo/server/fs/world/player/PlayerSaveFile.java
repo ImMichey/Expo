@@ -25,6 +25,7 @@ public class PlayerSaveFile {
         p.put("hungerCooldown", 180f);
         p.put("nextHungerTickDown", 4f);
         p.put("nextHungerDamageTick", 4f);
+        p.put("nextHealthRegenTickDown", 1f);
 
         DEFAULT_PROPERTIES = p;
     }
