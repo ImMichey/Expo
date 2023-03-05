@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -44,6 +45,11 @@ public class ServerPlayer extends ServerEntity {
     public float serverArmRotation;
 
     public int selectedInventorySlot = 0;
+
+    public float hunger = 100f;                 // actual hunger value, cannot exceed 100
+    public float hungerCooldown = 180.0f;       // -> saturation that each hunger item gives
+    public float nextHungerTickDown = 4.0f;     // seconds between each hunger down tick
+    public float nextHungerDamageTick = 4.0f;   // seconds between each damage via hunger tick
 
     public HashSet<String> hasSeenChunks = new HashSet<>();
 
@@ -115,6 +121,46 @@ public class ServerPlayer extends ServerEntity {
                 punching = false;
             }
         }
+
+        if(hungerCooldown > 0) {
+            hungerCooldown -= delta;
+            if(hungerCooldown < 0) hungerCooldown = 0;
+        } else {
+            if(hunger > 0) {
+                nextHungerTickDown -= delta;
+
+                if(nextHungerTickDown <= 0) {
+                    nextHungerTickDown += 4.0f;
+                    removeHunger(1);
+                    if(hunger < 0) hunger = 0;
+                    ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
+                }
+            } else {
+                // hunger == 0, do damage
+                nextHungerDamageTick -= delta;
+
+                if(nextHungerDamageTick <= 0) {
+                    nextHungerDamageTick += 4.0f;
+                    damagePlayer(1);
+                    ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
+                }
+            }
+        }
+    }
+
+    public void consumeFood(float hungerRestore, float hungerCooldown) {
+        if(hungerCooldown > this.hungerCooldown) {
+            this.hungerCooldown = hungerCooldown;
+        }
+        hunger += hungerRestore;
+    }
+
+    public void damagePlayer(float damage) {
+        health -= damage;
+    }
+
+    public void removeHunger(float hunger) {
+        this.hunger -= hunger;
     }
 
     public void parsePunchPacket(P16_PlayerPunch p) {
@@ -191,6 +237,11 @@ public class ServerPlayer extends ServerEntity {
         playerSaveFile.getHandler().update("posY", posY);
         playerSaveFile.getHandler().update("dimensionName", entityDimension);
         playerSaveFile.getHandler().update("entityId", entityId);
+        playerSaveFile.getHandler().update("hunger", hunger);
+        playerSaveFile.getHandler().update("hungerCooldown", hungerCooldown);
+        playerSaveFile.getHandler().update("health", health);
+        playerSaveFile.getHandler().update("nextHungerTickDown", nextHungerTickDown);
+        playerSaveFile.getHandler().update("nextHungerDamageTick", nextHungerDamageTick);
         if(!localServerPlayer) {
             playerSaveFile.getHandler().update("username", username);
         }

@@ -2,6 +2,7 @@ package dev.michey.expo.client;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.esotericsoftware.kryonet.Client;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.container.ExpoClientContainer;
@@ -149,6 +150,13 @@ public class ExpoClientPacketReader {
 
             if(entity != null) {
                 ((ClientPlayer) entity).applyServerArmData(p.rotation);
+            }
+        } else if(o instanceof P23_PlayerLifeUpdate p) {
+            ClientPlayer player = ClientPlayer.getLocalPlayer();
+
+            if(player != null) {
+                player.playerHealth = p.health;
+                player.playerHunger = p.hunger;
             }
         }
     }

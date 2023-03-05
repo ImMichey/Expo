@@ -45,7 +45,11 @@
             "logic": {
                 "stackSize": 64,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "foodData": {
+                    "hungerRestore": 10.0,
+                    "hungerCooldownRestore": 30.0
+                }
             }
         },
         {

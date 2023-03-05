@@ -30,7 +30,6 @@ public class PlayerInventory extends ClientInventory {
         selectedSlot = slot;
         ui.hotbarSlots[selectedSlot].selected = true;
 
-        log("SENDING PACKET");
         ClientPackets.p20PlayerInventorySwitch(selectedSlot);
     }
 

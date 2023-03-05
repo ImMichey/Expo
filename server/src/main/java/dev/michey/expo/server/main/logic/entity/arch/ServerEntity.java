@@ -27,6 +27,7 @@ public abstract class ServerEntity {
     public boolean tileEntity = false;
     public int tileX;
     public int tileY;
+    public float health;
 
     /** ServerEntity base methods */
     public abstract void tick(float delta);

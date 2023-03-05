@@ -49,7 +49,8 @@ public class ExpoServerRegistry {
                 P19_PlayerInventoryUpdate.class,
                 P20_PlayerInventorySwitch.class,
                 P21_PlayerGearUpdate.class,
-                P22_PlayerArmDirection.class
+                P22_PlayerArmDirection.class,
+                P23_PlayerLifeUpdate.class
         );
     }
 

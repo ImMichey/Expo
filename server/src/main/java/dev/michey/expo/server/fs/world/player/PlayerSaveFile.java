@@ -20,6 +20,11 @@ public class PlayerSaveFile {
         p.put("posX", 0.0f);
         p.put("posY", 0.0f);
         p.put("inventory", "[]");
+        p.put("hunger", 100f);
+        p.put("health", 100f);
+        p.put("hungerCooldown", 180f);
+        p.put("nextHungerTickDown", 4f);
+        p.put("nextHungerDamageTick", 4f);
 
         DEFAULT_PROPERTIES = p;
     }

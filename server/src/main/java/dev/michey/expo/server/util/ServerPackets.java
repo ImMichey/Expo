@@ -206,6 +206,14 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P23_PlayerLifeUpdate packet via UDP protocol. */
+    public static void p23PlayerLifeUpdate(float health, float hunger, PacketReceiver receiver) {
+        P23_PlayerLifeUpdate p = new P23_PlayerLifeUpdate();
+        p.health = health;
+        p.hunger = hunger;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

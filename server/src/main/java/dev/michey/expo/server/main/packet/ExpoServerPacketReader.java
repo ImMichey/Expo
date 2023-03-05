@@ -183,6 +183,12 @@ public class ExpoServerPacketReader {
         sp.posX = psf.getFloat("posX");
         sp.posY = psf.getFloat("posY");
 
+        sp.health = psf.getFloat("health");
+        sp.hunger = psf.getFloat("hunger");
+        sp.hungerCooldown = psf.getFloat("hungerCooldown");
+        sp.nextHungerTickDown = psf.getFloat("nextHungerTickDown");
+        sp.nextHungerDamageTick = psf.getFloat("nextHungerDamageTick");
+
         if(psf.getHandler().fileJustCreated) {
             playerEntityId = ServerWorld.get().registerServerEntity(psf.getString("dimensionName"), sp);
         } else {

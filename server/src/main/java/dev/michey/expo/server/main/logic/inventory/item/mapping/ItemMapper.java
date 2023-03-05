@@ -2,7 +2,6 @@ package dev.michey.expo.server.main.logic.inventory.item.mapping;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import org.json.JSONArray;
 import org.json.JSONObject;
