@@ -146,7 +146,17 @@ public class ExpoServerPacketReader {
             doInventoryInteraction(connectionToPlayer(connection), p, PacketReceiver.connection(connection));
         } else if(o instanceof P20_PlayerInventorySwitch p) {
             ServerPlayer player = connectionToPlayer(connection);
-            player.switchToSlot(p.slot);
+
+            if(player != null) {
+                player.switchToSlot(p.slot);
+            }
+        } else if(o instanceof P22_PlayerArmDirection p) {
+            ServerPlayer player = connectionToPlayer(connection);
+
+            if(player != null) {
+                log("APPLY ARM DIRECTION SERVER " + p.rotation);
+                player.applyArmDirection(p.rotation);
+            }
         }
     }
 

@@ -52,6 +52,13 @@ public class ClientPackets {
         udp(p);
     }
 
+    /** Sends the P22_PlayerArmDirection packet via UDP protocol. */
+    public static void p22PlayerArmDirection(float rotation) {
+        P22_PlayerArmDirection p = new P22_PlayerArmDirection();
+        p.rotation = rotation;
+        udp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

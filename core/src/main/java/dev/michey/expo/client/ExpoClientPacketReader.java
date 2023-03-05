@@ -84,6 +84,9 @@ public class ExpoClientPacketReader {
             player.player = p.player;
             player.playerDirection = p.direction;
             applyHeldItemIds(player, p.equippedItemIds);
+            player.serverPunchAngle = p.armRotation;
+            player.lerpedServerPunchAngle = p.armRotation;
+            player.lastLerpedServerPunchAngle = p.armRotation;
 
             ClientEntityManager.get().addEntity(player);
 
@@ -140,6 +143,12 @@ public class ExpoClientPacketReader {
                 applyHeldItemIds(c, p.heldItemIds);
             } else if(player != null && player.entityId == p.entityId) { // xD
                 applyHeldItemIds(player, p.heldItemIds);
+            }
+        } else if(o instanceof P22_PlayerArmDirection p) {
+            ClientEntity entity = entityFromId(p.entityId);
+
+            if(entity != null) {
+                ((ClientPlayer) entity).applyServerArmData(p.rotation);
             }
         }
     }

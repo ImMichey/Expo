@@ -16,5 +16,6 @@ public class P9_PlayerCreate extends Packet {
     public boolean player;
 
     public int[] equippedItemIds;
+    public float armRotation;
 
 }

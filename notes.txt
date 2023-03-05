@@ -1,7 +1,6 @@
 === IMPLEMENT ===
 - Player multiplayer chat
 - Chest/Glove/Legs/Boot armor + visuals
-- Proper item hand visuals
 - Hunger/Health system
 - Weather (storm/rain/(snow))
 - bounding box system

@@ -41,6 +41,8 @@ public class ServerPlayer extends ServerEntity {
     public float punchDelta;
     public float punchDeltaFinish;
 
+    public float serverArmRotation;
+
     public int selectedInventorySlot = 0;
 
     public HashSet<String> hasSeenChunks = new HashSet<>();
@@ -48,6 +50,10 @@ public class ServerPlayer extends ServerEntity {
     public EntityVisibilityController entityVisibilityController = new EntityVisibilityController(this);
 
     public ServerPlayerInventory playerInventory = new ServerPlayerInventory(this);
+
+    public int getCurrentItem() {
+        return playerInventory.slots[selectedInventorySlot].item.itemId;
+    }
 
     public int[] getEquippedItemIds() {
         // [0] = hand
@@ -69,6 +75,13 @@ public class ServerPlayer extends ServerEntity {
 
     public void heldItemPacket(PacketReceiver receiver) {
         ServerPackets.p21PlayerGearUpdate(entityId, getEquippedItemIds(), receiver);
+    }
+
+    public void applyArmDirection(float rotation) {
+        if(getCurrentItem() != -1) {
+            serverArmRotation = rotation;
+            ServerPackets.p22PlayerArmDirection(entityId, serverArmRotation, PacketReceiver.whoCanSee(this));
+        }
     }
 
     @Override

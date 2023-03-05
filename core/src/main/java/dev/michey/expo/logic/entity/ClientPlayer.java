@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.ExpoClient;
@@ -30,6 +31,7 @@ import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.PacketUtils;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -111,6 +113,14 @@ public class ClientPlayer extends ClientEntity {
     private int punchDirection;
     private boolean punchSound = true;
     private float lastPunchValue;
+
+    public float serverPunchAngle;
+    public float lerpedServerPunchAngle;
+    public float lastLerpedServerPunchAngle;
+    private float lastPunchAngleTimestamp;
+    private float lastPunchAngleOnSend;
+    private float serverPunchAngleStart;
+    private float serverPunchAngleEnd;
 
     /** Player item */
     public int holdingItemId = -1;
@@ -206,6 +216,13 @@ public class ClientPlayer extends ClientEntity {
         punchDirection = punchEndAngle > 0 ? 1 : 0;
     }
 
+    public void applyServerArmData(float rotation) {
+        lastLerpedServerPunchAngle = lerpedServerPunchAngle;
+        serverPunchAngle = rotation;
+        serverPunchAngleStart = RenderContext.get().deltaTotal;
+        serverPunchAngleEnd = serverPunchAngleStart + 0.125f;
+    }
+
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
@@ -283,6 +300,28 @@ public class ClientPlayer extends ClientEntity {
                 new ItemMapper(true, true);
                 Expo.get().loadItemMapperTextures();
                 if(ClientPlayer.getLocalPlayer() != null) ClientPlayer.getLocalPlayer().updateHoldingItemSprite();
+            }
+
+            // Sending arm rotation packet if needed
+            float currentRotation = RenderContext.get().mouseRotation;
+            float timeSinceLastSend = RenderContext.get().deltaTotal - lastPunchAngleTimestamp;
+            final float PUNCH_ANGLE_SEND_RATE = 16f / 128f;
+
+            if(holdingItemId != -1 && timeSinceLastSend >= PUNCH_ANGLE_SEND_RATE && (currentRotation != lastPunchAngleOnSend)) {
+                lastPunchAngleTimestamp = RenderContext.get().deltaTotal;
+                lastPunchAngleOnSend = currentRotation;
+                ClientPackets.p22PlayerArmDirection(currentRotation);
+            }
+        } else {
+            // Sync arm rotation if needed
+            float n = RenderContext.get().deltaTotal;
+
+            if(n >= serverPunchAngleEnd) {
+                lerpedServerPunchAngle = serverPunchAngle;
+            } else {
+                float norm = (n - serverPunchAngleStart) * 8;
+
+                lerpedServerPunchAngle = lastLerpedServerPunchAngle + (serverPunchAngle - lastLerpedServerPunchAngle) * norm;
             }
         }
 
@@ -451,10 +490,12 @@ public class ClientPlayer extends ClientEntity {
             rc.useBatchAndShader(rc.batch, rc.DEFAULT_GLES3_SHADER);
 
             drawHeldItem(rc, false);
+            boolean drawLooseArm = holdingItemId != -1;
 
             // Draw punch (debug for now)
-            if(punchAnimation) {
-                float x = clientPosX + (punchDirection == 1 ? 8 : 0);
+            if(punchAnimation || drawLooseArm) {
+                int px = punchAnimation ? (punchDirection == 1 ? 8 : 0) : (playerDirection == 1 ? 8 : 0);
+                float x = clientPosX + px;
                 float y = clientPosY + offsetY;
                 float originX = tex_punch_arm.getRegionWidth() * 0.5f;
                 float originY = tex_punch_arm.getRegionHeight() - 1;
@@ -462,7 +503,7 @@ public class ClientPlayer extends ClientEntity {
                 float height = tex_punch_arm.getRegionHeight();
                 float scaleX = 1.0f;
                 float scaleY = 1.0f;
-                float rotation = currentPunchAngle;
+                float rotation = getFinalArmRotation();
 
                 rc.currentBatch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
             } else {
@@ -522,8 +563,8 @@ public class ClientPlayer extends ClientEntity {
                 if(holdingItemId != -1) {
                     // position
                     ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
-                    int dirCheck = punchAnimation ? punchDirection : playerDirection;
-                    Vector2 v = punchAnimation ? GenerationUtils.circular(currentPunchAngle, 1) : NULL_ROTATION_VECTOR;
+                    int dirCheck = direction();
+                    Vector2 v = (punchAnimation || (holdingItemId != -1)) ? GenerationUtils.circular(getFinalArmRotation(), 1) : NULL_ROTATION_VECTOR;
 
                     float xshift = dirCheck == 0 ? 1 : 9;
                     float armHeight = 9;
@@ -553,21 +594,24 @@ public class ClientPlayer extends ClientEntity {
                     float t = 0f + n * 9;
                     float b; //1f - n * offsetY; // calc
                     float norm;
+                    int dir = direction();
 
-                    if(punchEndAngle > 0) { // 180.0
-                        norm = Math.abs(currentPunchAngle - 180) / punchEndAngle;
-                    } else { // 0.0
-                        norm = (currentPunchAngle + 180) / 180;
+                    if(dir == 1) {
+                        // Right side.
+                        norm = Math.abs(getFinalArmRotation() - 180) / 180;
+                    } else {
+                        norm = (getFinalArmRotation() + 180) / 180;
                     }
 
                     if(norm < 0.5f) {
+                        // Upper half.
                         norm *= 2;
                         b = 0 + norm * n * 9;
-                        t = 0;
+                        t = 0 + norm * n * 9;
                     } else {
                         norm -= 0.5f;
                         norm *= 2;
-                        b = 1f - n * offsetY + n * 9 * (1f - norm);
+                        b = (1f - n * offsetY) - n * 9 * (1f - norm);
                     }
 
                     float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
@@ -595,24 +639,27 @@ public class ClientPlayer extends ClientEntity {
             }
 
             { // Right arm
-                if(punchAnimation) {
+                if(punchAnimation || (holdingItemId != -1)) {
                     float t = 0f + n * 9;
                     float b; //1f - n * offsetY; // calc
                     float norm;
+                    int dir = direction();
 
-                    if(punchEndAngle > 0) { // 180.0
-                        norm = Math.abs(currentPunchAngle - 180) / punchEndAngle;
-                    } else { // 0.0
-                        norm = (currentPunchAngle + 180) / 180;
+                    if(dir == 1) {
+                        // Right side.
+                        norm = Math.abs(getFinalArmRotation() - 180) / 180;
+                    } else {
+                        norm = (getFinalArmRotation() + 180) / 180;
                     }
 
                     if(norm < 0.5f) {
+                        // Upper half.
                         norm *= 2;
                         b = 0 + norm * n * 9;
                     } else {
                         norm -= 0.5f;
                         norm *= 2;
-                        b = 1f - n * offsetY + n * 9 * (1f - norm);
+                        b = (1f - n * offsetY) - n * 9 * (1f - norm);
                     }
 
                     float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
@@ -621,7 +668,7 @@ public class ClientPlayer extends ClientEntity {
                     float originX = tex_punch_arm.getRegionWidth() * 0.5f;
                     float originY = tex_punch_arm.getRegionHeight() - 1;
 
-                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(clientPosX, clientPosY, punchDirection == 1 ? 8 : 0, offsetY, originX, originY, currentPunchAngle);
+                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(clientPosX, clientPosY, direction() == 1 ? 8 : 0, offsetY, originX, originY, getFinalArmRotation());
                     rc.arraySpriteBatch.drawGradientCustomColor(tex_shadow_punch_arm, tex_shadow_punch_arm.getRegionWidth(), tex_shadow_punch_arm.getRegionHeight(), shadowRightArm, topColor, bottomColor);
                 } else {
                     float t = 0f + n * 10;
@@ -662,7 +709,10 @@ public class ClientPlayer extends ClientEntity {
                         }
                     }
                 } else {
-                    float desiredAngle = (playerDirection == 0 ? (90f - map.heldRender.rotations[0]) : (map.heldRender.rotations[1]));
+                    float desiredAngle = 0;
+                    if(holdingItemId != -1) desiredAngle += getFinalArmRotation();
+
+                    desiredAngle += (playerDirection == 0 ? (90f - map.heldRender.rotations[0]) : (map.heldRender.rotations[1]));
 
                     if(holdingItemSprite.getRotation() != desiredAngle) {
                         holdingItemSprite.setRotation(desiredAngle);
@@ -682,8 +732,14 @@ public class ClientPlayer extends ClientEntity {
                 }
 
                 // position
-                int dirCheck = punchAnimation ? punchDirection : playerDirection;
-                Vector2 v = punchAnimation ? GenerationUtils.circular(currentPunchAngle, 1) : NULL_ROTATION_VECTOR;
+                int dirCheck = direction();
+                Vector2 v;
+
+                if(punchAnimation || (holdingItemId != -1)) {
+                    v = GenerationUtils.circular(getFinalArmRotation(), 1);
+                } else {
+                    v = NULL_ROTATION_VECTOR;
+                }
 
                 float xshift = dirCheck == 0 ? 1 : 9;
                 float armHeight = 9;
@@ -716,6 +772,11 @@ public class ClientPlayer extends ClientEntity {
                 holdingItemSprite.getWidth() * 0.5f,
                 holdingItemSprite.getHeight() * 0.5f
         );
+    }
+
+    private float getFinalArmRotation() {
+        if(punchAnimation) return currentPunchAngle;
+        return player ? RenderContext.get().mouseRotation : lerpedServerPunchAngle;
     }
 
     private TextureRegion[] shadowSheet(TextureRegion base, int x, int y, int frames, int cellWidth, int width, int maxHeight, int[] heightArray) {

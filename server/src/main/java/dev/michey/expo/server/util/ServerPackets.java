@@ -79,7 +79,7 @@ public class ServerPackets {
     }
 
     /** Sends the P9_PlayerCreate packet via TCP protocol. */
-    public static void p9PlayerCreate(int entityId, String dimensionName, float serverPosX, float serverPosY, int direction, String username, boolean player, int[] equippedItemIds, PacketReceiver receiver) {
+    public static void p9PlayerCreate(int entityId, String dimensionName, float serverPosX, float serverPosY, int direction, String username, boolean player, int[] equippedItemIds, float armRotation, PacketReceiver receiver) {
         P9_PlayerCreate p = new P9_PlayerCreate();
         p.entityType = ServerEntityType.PLAYER;
         p.entityId = entityId;
@@ -90,11 +90,12 @@ public class ServerPackets {
         p.player = player;
         p.direction = direction;
         p.equippedItemIds = equippedItemIds;
+        p.armRotation = armRotation;
         tcp(p, receiver);
     }
 
     public static void p9PlayerCreate(ServerPlayer entity, boolean player, PacketReceiver receiver) {
-        p9PlayerCreate(entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.playerDirection, entity.username, player, entity.getEquippedItemIds(), receiver);
+        p9PlayerCreate(entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.playerDirection, entity.username, player, entity.getEquippedItemIds(), entity.serverArmRotation, receiver);
     }
 
     /** Sends the P10_PlayerQuit packet via TCP protocol. */
@@ -194,6 +195,14 @@ public class ServerPackets {
         P21_PlayerGearUpdate p = new P21_PlayerGearUpdate();
         p.entityId = entityId;
         p.heldItemIds = heldItemIds;
+        udp(p, receiver);
+    }
+
+    /** Sends the P22_PlayerArmDirection packet via UDP protocol. */
+    public static void p22PlayerArmDirection(int entityId, float rotation, PacketReceiver receiver) {
+        P22_PlayerArmDirection p = new P22_PlayerArmDirection();
+        p.entityId = entityId;
+        p.rotation = rotation;
         udp(p, receiver);
     }
 

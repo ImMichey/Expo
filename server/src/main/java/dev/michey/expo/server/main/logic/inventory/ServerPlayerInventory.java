@@ -77,7 +77,6 @@ public class ServerPlayerInventory extends ServerInventory {
     }
 
     private boolean isArmorItem(ServerInventoryItem item) {
-        log("isARmorItem " + item.itemId + " " + item.itemMetadata + " " + (item.itemMetadata != null ? item.itemMetadata.toolType.name() : ""));
         return item.hasMetadata() && (
                 item.itemMetadata.toolType == ToolType.HELMET
                         || item.itemMetadata.toolType == ToolType.CHESTPLATE
