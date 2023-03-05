@@ -79,7 +79,7 @@ public class ServerPackets {
     }
 
     /** Sends the P9_PlayerCreate packet via TCP protocol. */
-    public static void p9PlayerCreate(int entityId, String dimensionName, float serverPosX, float serverPosY, int direction, String username, boolean player, int[] equippedItemIds, float armRotation, PacketReceiver receiver) {
+    public static void p9PlayerCreate(int entityId, String dimensionName, float serverPosX, float serverPosY, int direction, String username, boolean player, int[] equippedItemIds, float armRotation, float health, float hunger, PacketReceiver receiver) {
         P9_PlayerCreate p = new P9_PlayerCreate();
         p.entityType = ServerEntityType.PLAYER;
         p.entityId = entityId;
@@ -91,11 +91,13 @@ public class ServerPackets {
         p.direction = direction;
         p.equippedItemIds = equippedItemIds;
         p.armRotation = armRotation;
+        p.health = health;
+        p.hunger = hunger;
         tcp(p, receiver);
     }
 
     public static void p9PlayerCreate(ServerPlayer entity, boolean player, PacketReceiver receiver) {
-        p9PlayerCreate(entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.playerDirection, entity.username, player, entity.getEquippedItemIds(), entity.serverArmRotation, receiver);
+        p9PlayerCreate(entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.playerDirection, entity.username, player, entity.getEquippedItemIds(), entity.serverArmRotation, entity.health, entity.hunger, receiver);
     }
 
     /** Sends the P10_PlayerQuit packet via TCP protocol. */

@@ -18,4 +18,7 @@ public class P9_PlayerCreate extends Packet {
     public int[] equippedItemIds;
     public float armRotation;
 
+    public float health;
+    public float hunger;
+
 }

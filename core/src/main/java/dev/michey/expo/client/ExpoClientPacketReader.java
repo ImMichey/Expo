@@ -88,6 +88,8 @@ public class ExpoClientPacketReader {
             player.serverPunchAngle = p.armRotation;
             player.lerpedServerPunchAngle = p.armRotation;
             player.lastLerpedServerPunchAngle = p.armRotation;
+            player.playerHealth = p.health;
+            player.playerHunger = p.hunger;
 
             ClientEntityManager.get().addEntity(player);
 
