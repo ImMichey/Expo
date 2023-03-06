@@ -11,10 +11,10 @@
                 },
                 "held": {
                     "texture": "item_stick",
-                    "scaleX": 0.8,
-                    "scaleY": 0.8,
-                    "offsetX": -2,
-                    "offsetY": -2,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
                     "rotation": -45
                 }
             },
@@ -63,9 +63,9 @@
                 },
                 "held": {
                     "texture": "item_flint_pickaxe",
-                    "scaleX": 0.8,
-                    "scaleY": 0.8,
-                    "offsetX": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
                     "offsetY": 9,
                     "rotations": [45, -45]
                 }
@@ -87,9 +87,9 @@
                 },
                 "held": {
                     "texture": "item_flint_axe",
-                    "scaleX": 0.8,
-                    "scaleY": 0.8,
-                    "offsetX": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
                     "offsetY": 9,
                     "rotations": [45, -45]
                 }
@@ -110,11 +110,11 @@
                     "texture": "item_iron_pickaxe"
                 },
                 "held": {
-                    "texture": "item_32",
-                    "scaleX": 1.5,
-                    "scaleY": 1.5,
-                    "offsetX": 0,
-                    "offsetY": 0,
+                    "texture": "item_iron_pickaxe",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
                     "rotations": [45.0, -45.0]
                 }
             },
@@ -134,7 +134,7 @@
                     "texture": "item_iron_axe"
                 },
                 "held": {
-                    "texture": "diamond_sword",
+                    "texture": "item_iron_axe",
                     "scaleX": 1,
                     "scaleY": 1,
                     "offsetX": -0.5,

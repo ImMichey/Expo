@@ -12,12 +12,14 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
+import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.ExpoTime;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -52,6 +54,10 @@ public class PlayerUI {
     private float invX, invY;
     public InteractableItemSlot[] inventorySlots;
     public InteractableItemSlot[] inventoryArmorSlots;
+
+    /** Minimap */
+    private float minimapW, minimapH;
+    private float minimapArrowW, minimapArrowH;
 
     /** Textures */
     public final TextureRegion invSlot;             // Regular Item Slot
@@ -95,8 +101,10 @@ public class PlayerUI {
     private final TextureRegion tooltipBorder1x7;
     private final TextureRegion tooltipFiller;
 
+    private final TextureRegion minimap;
+    private final TextureRegion minimapArrow;
+
     private boolean inventoryOpenState;
-    private boolean previousInventoryOpenState;
 
     public PlayerUI() {
         invSlot = tr("inv_slot");
@@ -136,6 +144,9 @@ public class PlayerUI {
 
         whiteSquare = tr("square16x16");
         darkenSquarePattern = tr("bg_squares128x128");
+
+        minimap = tr("ui_minimap");
+        minimapArrow = tr("ui_minimap_arrow");
 
         glyphLayout = new GlyphLayout();
 
@@ -288,7 +299,7 @@ public class PlayerUI {
     public void update() {
             RenderContext r = RenderContext.get();
 
-        previousInventoryOpenState = inventoryOpenState;
+        boolean previousInventoryOpenState = inventoryOpenState;
         inventoryOpenState = playerPresent() && ClientPlayer.getLocalPlayer().inventoryOpen;
 
         if(previousInventoryOpenState != inventoryOpenState) {
@@ -350,6 +361,7 @@ public class PlayerUI {
             m5x7_shadow_use.draw(r.hudBatch, "Inventory", invX + 31 * uiScale + ((invW - 31 * uiScale) - glyphLayout.width) * 0.5f, invY + invH + glyphLayout.height);
         } else {
             drawHotbar(r);
+            drawMinimap(r);
         }
 
         if(hoveredSlot != null && PlayerInventory.LOCAL_INVENTORY.cursorItem == null) {
@@ -523,6 +535,32 @@ public class PlayerUI {
         }
     }
 
+    private void drawMinimap(RenderContext r) {
+        float startX = Gdx.graphics.getWidth() - 2 - minimapW;
+        float startY = 2;
+
+        // Background
+        r.hudBatch.draw(minimap, startX, startY, minimapW, minimapH);
+
+        // Timer
+        float worldTime = ExpoClientContainer.get().getClientWorld().worldTime;
+
+        String worldTimeAsString = ExpoTime.worldTimeString(worldTime);
+        glyphLayout.setText(m5x7_shadow_use, worldTimeAsString);
+        m5x7_shadow_use.draw(r.hudBatch, worldTimeAsString, startX + 7 * uiScale, startY + glyphLayout.height + 109 * uiScale);
+
+        // Arrow
+        float arrowX;
+
+        if(worldTime < 120) {
+            arrowX = (ExpoTime.worldDurationHours(22) + worldTime) / ExpoTime.WORLD_CYCLE_DURATION * 69;
+        } else {
+            arrowX = (worldTime - ExpoTime.worldDurationHours(2)) / ExpoTime.WORLD_CYCLE_DURATION * 69;
+        }
+
+        r.hudBatch.draw(minimapArrow, startX + 35 * uiScale + arrowX * uiScale, startY + 105 * uiScale, minimapArrowW, minimapArrowH);
+    }
+
     private void drawHotbar(RenderContext r) {
         float startX = center(hotbarW);
         float startY = 2;
@@ -641,6 +679,11 @@ public class PlayerUI {
 
         hungerW = hotbarHunger.getRegionWidth() * uiScale;
         hungerH = hotbarHunger.getRegionHeight() * uiScale;
+
+        minimapW = minimap.getRegionWidth() * uiScale;
+        minimapH = minimap.getRegionHeight() * uiScale;
+        minimapArrowW = minimapArrow.getRegionWidth() * uiScale;
+        minimapArrowH = minimapArrow.getRegionHeight() * uiScale;
 
         m5x7_use = RenderContext.get().m5x7_all[(int) uiScale - 1];
         m6x11_use = RenderContext.get().m6x11_all[(int) uiScale - 1];

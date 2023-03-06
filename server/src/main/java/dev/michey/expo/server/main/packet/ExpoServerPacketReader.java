@@ -154,7 +154,6 @@ public class ExpoServerPacketReader {
             ServerPlayer player = connectionToPlayer(connection);
 
             if(player != null) {
-                log("APPLY ARM DIRECTION SERVER " + p.rotation);
                 player.applyArmDirection(p.rotation);
             }
         }
