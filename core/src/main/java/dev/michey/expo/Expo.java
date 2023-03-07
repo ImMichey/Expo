@@ -77,7 +77,7 @@ public class Expo implements ApplicationListener {
 			imGuiGl3.init("#version 330");
 		}
 
-		new AudioEngine();
+		AudioEngine.get();
 		ExpoAssets.get().loadAssets();
 		setCursor();
 		new RenderContext();

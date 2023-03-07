@@ -5,8 +5,6 @@
 - bounding box system
 - punching entities/damage
 - crafting system
-- minimap ui
-- clock ui
 
 === FIX ===
 - fix rotation packet thingy
