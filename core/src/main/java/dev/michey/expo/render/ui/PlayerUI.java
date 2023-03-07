@@ -56,8 +56,7 @@ public class PlayerUI {
     public InteractableItemSlot[] inventoryArmorSlots;
 
     /** Minimap */
-    private float minimapW, minimapH;
-    private float minimapArrowW, minimapArrowH;
+    private final PlayerMinimap playerMinimap;
 
     /** Textures */
     public final TextureRegion invSlot;             // Regular Item Slot
@@ -101,9 +100,6 @@ public class PlayerUI {
     private final TextureRegion tooltipBorder1x7;
     private final TextureRegion tooltipFiller;
 
-    private final TextureRegion minimap;
-    private final TextureRegion minimapArrow;
-
     private boolean inventoryOpenState;
 
     public PlayerUI() {
@@ -145,8 +141,7 @@ public class PlayerUI {
         whiteSquare = tr("square16x16");
         darkenSquarePattern = tr("bg_squares128x128");
 
-        minimap = tr("ui_minimap");
-        minimapArrow = tr("ui_minimap_arrow");
+        playerMinimap = new PlayerMinimap(this, tr("ui_minimap"), tr("ui_minimap_arrow"), tr("ui_minimap_player"));
 
         glyphLayout = new GlyphLayout();
 
@@ -173,12 +168,12 @@ public class PlayerUI {
         // tooltip begin
         TextureRegion tooltip = tr("ui_tooltip");
 
-        tooltipTopLeft = new TextureRegion(tooltip, 0, 0+16, 6, 6);
-        tooltipTopRight = new TextureRegion(tooltip, 8, 0+16, 6, 6);
+        tooltipTopLeft = new TextureRegion(tooltip, 0, 16, 6, 6);
+        tooltipTopRight = new TextureRegion(tooltip, 8, 16, 6, 6);
         tooltipBottomLeft = new TextureRegion(tooltip, 0, 8+16, 6, 6);
         tooltipBottomRight = new TextureRegion(tooltip, 8, 8+16, 6, 6);
-        tooltipBorder1x7 = new TextureRegion(tooltip, 16, 0+16, 1, 4);
-        tooltipBorder7x1 = new TextureRegion(tooltip, 18, 0+16, 4, 1);
+        tooltipBorder1x7 = new TextureRegion(tooltip, 16, 16, 1, 4);
+        tooltipBorder7x1 = new TextureRegion(tooltip, 18, 16, 4, 1);
         tooltipFiller = new TextureRegion(tooltip, 18, 2+16, 1, 1);
         // tooltip end
 
@@ -297,7 +292,7 @@ public class PlayerUI {
     }
 
     public void update() {
-            RenderContext r = RenderContext.get();
+        RenderContext r = RenderContext.get();
 
         boolean previousInventoryOpenState = inventoryOpenState;
         inventoryOpenState = playerPresent() && ClientPlayer.getLocalPlayer().inventoryOpen;
@@ -321,6 +316,8 @@ public class PlayerUI {
                 hoverCheck(slot);
             }
         }
+
+        playerMinimap.updateMinimap();
     }
 
     private boolean uiElementInBounds(InteractableItemSlot slot) {
@@ -361,7 +358,7 @@ public class PlayerUI {
             m5x7_shadow_use.draw(r.hudBatch, "Inventory", invX + 31 * uiScale + ((invW - 31 * uiScale) - glyphLayout.width) * 0.5f, invY + invH + glyphLayout.height);
         } else {
             drawHotbar(r);
-            drawMinimap(r);
+            playerMinimap.draw(r);
         }
 
         if(hoveredSlot != null && PlayerInventory.LOCAL_INVENTORY.cursorItem == null) {
@@ -535,32 +532,6 @@ public class PlayerUI {
         }
     }
 
-    private void drawMinimap(RenderContext r) {
-        float startX = Gdx.graphics.getWidth() - 2 - minimapW;
-        float startY = 2;
-
-        // Background
-        r.hudBatch.draw(minimap, startX, startY, minimapW, minimapH);
-
-        // Timer
-        float worldTime = ExpoClientContainer.get().getClientWorld().worldTime;
-
-        String worldTimeAsString = ExpoTime.worldTimeString(worldTime);
-        glyphLayout.setText(m5x7_shadow_use, worldTimeAsString);
-        m5x7_shadow_use.draw(r.hudBatch, worldTimeAsString, startX + 7 * uiScale, startY + glyphLayout.height + 109 * uiScale);
-
-        // Arrow
-        float arrowX;
-
-        if(worldTime < 120) {
-            arrowX = (ExpoTime.worldDurationHours(22) + worldTime) / ExpoTime.WORLD_CYCLE_DURATION * 69;
-        } else {
-            arrowX = (worldTime - ExpoTime.worldDurationHours(2)) / ExpoTime.WORLD_CYCLE_DURATION * 69;
-        }
-
-        r.hudBatch.draw(minimapArrow, startX + 35 * uiScale + arrowX * uiScale, startY + 105 * uiScale, minimapArrowW, minimapArrowH);
-    }
-
     private void drawHotbar(RenderContext r) {
         float startX = center(hotbarW);
         float startY = 2;
@@ -680,10 +651,7 @@ public class PlayerUI {
         hungerW = hotbarHunger.getRegionWidth() * uiScale;
         hungerH = hotbarHunger.getRegionHeight() * uiScale;
 
-        minimapW = minimap.getRegionWidth() * uiScale;
-        minimapH = minimap.getRegionHeight() * uiScale;
-        minimapArrowW = minimapArrow.getRegionWidth() * uiScale;
-        minimapArrowH = minimapArrow.getRegionHeight() * uiScale;
+        playerMinimap.updateWH(uiScale);
 
         m5x7_use = RenderContext.get().m5x7_all[(int) uiScale - 1];
         m6x11_use = RenderContext.get().m6x11_all[(int) uiScale - 1];

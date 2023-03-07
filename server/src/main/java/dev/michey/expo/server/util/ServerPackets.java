@@ -18,11 +18,12 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public class ServerPackets {
 
     /** Sends the P1_Auth_Rsp packet via TCP protocol. */
-    public static void p1AuthResponse(boolean authorized, String message, int serverTps, PacketReceiver receiver) {
+    public static void p1AuthResponse(boolean authorized, String message, int serverTps, int worldSeed, PacketReceiver receiver) {
         P1_Auth_Rsp p = new P1_Auth_Rsp();
         p.authorized = authorized;
         p.message = message;
         p.serverTps = serverTps;
+        p.worldSeed = worldSeed;
         tcp(p, receiver);
     }
 

@@ -21,6 +21,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
@@ -71,6 +72,11 @@ public class ClientWorld {
 
         // Calculate world time
         calculateWorldTime(delta);
+    }
+
+    public void setNoiseSeed(int seed) {
+        clientChunkGrid.noise.setSeed(seed);
+        clientChunkGrid.riverNoise.setSeed(seed);
     }
 
     private void calculateWorldTime(float delta) {

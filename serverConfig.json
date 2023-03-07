@@ -1,6 +1,7 @@
 {
     "maxPlayers": 10,
     "enableWhitelist": false,
+    "saveChunksAfter": 180000,
     "worldName": "myworld",
     "serverName": "default-server",
     "writeBufferSize": 16384,

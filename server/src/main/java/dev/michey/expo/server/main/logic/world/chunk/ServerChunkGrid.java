@@ -60,6 +60,10 @@ public class ServerChunkGrid {
     /** Returns the BiomeType at tile position X & Y. */
     public BiomeType getBiome(int x, int y) {
         String key = x + "," + y;
+        return getBiome(x, y, key);
+    }
+
+    public BiomeType getBiome(int x, int y, String key) {
         BiomeType type = noiseCacheMap.get(key);
 
         if(type == null) {

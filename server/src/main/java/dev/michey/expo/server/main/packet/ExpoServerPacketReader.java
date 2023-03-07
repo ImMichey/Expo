@@ -34,7 +34,7 @@ public class ExpoServerPacketReader {
             ServerPlayer sp = ServerWorld.get().createPlayerEntity(null, req.username);
             registerPlayer(psf, sp);
 
-            ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_SERVER_TICK_RATE, PacketReceiver.local());
+            ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_SERVER_TICK_RATE, sp.getDimension().getChunkHandler().getNoise().getSeed(), PacketReceiver.local());
             ServerPackets.p3PlayerJoin(req.username, PacketReceiver.local());
             ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.local());
             ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, PacketReceiver.local());
@@ -92,7 +92,7 @@ public class ExpoServerPacketReader {
                 }
             }
 
-            ServerPackets.p1AuthResponse(authorized, authorizationMessage, ExpoServerConfiguration.get().getServerTps(), PacketReceiver.connection(connection));
+            ServerPackets.p1AuthResponse(authorized, authorizationMessage, ExpoServerConfiguration.get().getServerTps(), ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(), PacketReceiver.connection(connection));
 
             if(authorized) {
                 CompletableFuture.runAsync(() -> {

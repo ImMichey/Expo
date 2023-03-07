@@ -50,6 +50,7 @@ public class ExpoClientPacketReader {
                 Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             } else {
+                ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
                 ExpoClientContainer.get().setServerTickRate(p.serverTps);
             }
         } else if(o instanceof P3_PlayerJoin p) {
