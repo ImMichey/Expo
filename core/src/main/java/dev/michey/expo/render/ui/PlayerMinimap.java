@@ -16,6 +16,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
+import dev.michey.expo.util.Pair;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,9 +34,10 @@ public class PlayerMinimap {
     private float minimapArrowW, minimapArrowH;
     private float minimapPlayerW, minimapPlayerH;
 
-    private Pixmap pixmap;
-    private Texture pixmapTexture;
-    private HashMap<BiomeType, List<int[]>> biomeMinimap;
+    private final Pixmap pixmap;
+    private final Texture pixmapTexture;
+    private final HashMap<BiomeType, List<int[]>> biomeMinimap;
+    private final HashMap<ClientPlayer, Pair<Float, Float>> drawUsers;
 
     private int centerTileX, centerTileY;
 
@@ -49,6 +51,7 @@ public class PlayerMinimap {
         pixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
         pixmapTexture = new Texture(pixmap);
         pixmap.setBlending(Pixmap.Blending.None);
+        drawUsers = new HashMap<>();
     }
 
     public void updateMinimap() {
@@ -141,6 +144,7 @@ public class PlayerMinimap {
 
         // Player heads + names on minimap
         List<ClientEntity> players = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PLAYER);
+        drawUsers.clear();
 
         for(ClientEntity player : players) {
             ClientPlayer p = (ClientPlayer) player;
@@ -160,9 +164,17 @@ public class PlayerMinimap {
 
                 r.hudBatch.draw(minimapPlayer, phx - ((int) (minimapPlayerW * 0.5f)), phy - ((int) (minimapPlayerH * 0.5f)), minimapPlayerW, minimapPlayerH);
 
-                ui.glyphLayout.setText(ui.m5x7_shadow_use, p.username);
-                ui.m5x7_shadow_use.draw(r.hudBatch, p.username, phx - ui.glyphLayout.width * 0.5f, phy + ui.glyphLayout.height + minimapPlayerH);
+                ui.glyphLayout.setText(ui.m5x7_border_use, p.username);
+                float drawAtX = phx - ui.glyphLayout.width * 0.5f;
+                float drawAtY = phy + ui.glyphLayout.height + minimapPlayerH;
+
+                drawUsers.put(p, new Pair<>(drawAtX, drawAtY));
             }
+        }
+
+        for(ClientPlayer player : drawUsers.keySet()) {
+            Pair<Float, Float> pos = drawUsers.get(player);
+            ui.m5x7_border_use.draw(r.hudBatch, player.username, pos.key, pos.value);
         }
     }
 

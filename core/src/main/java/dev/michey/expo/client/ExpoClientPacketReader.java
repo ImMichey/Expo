@@ -129,11 +129,11 @@ public class ExpoClientPacketReader {
             }
         } else if(o instanceof P19_PlayerInventoryUpdate p) {
             PlayerInventory inv = PlayerInventory.LOCAL_INVENTORY;
-            log("updatedSlots.length " + p.updatedSlots.length);
-            log("updatedSlots -> " + Arrays.toString(p.updatedSlots));
+            //log("updatedSlots.length " + p.updatedSlots.length);
+            //log("updatedSlots -> " + Arrays.toString(p.updatedSlots));
 
             if(inv == null) {
-                log("Inventory is null, queueing...");
+                //log("Inventory is null, queueing...");
                 ClientPlayer.QUEUED_INVENTORY_PACKET = p;
             } else {
                 PacketUtils.readInventoryUpdatePacket(p, inv);

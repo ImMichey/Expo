@@ -151,6 +151,9 @@ public class ClientPlayer extends ClientEntity {
     public float playerHealth = 100f;
     public float playerHunger = 100f;
 
+    /** Player reach */
+    public float playerReachCenterX, playerReachCenterY;
+
     /** Player night proximity light */
     public ExpoLight proximityLight;
 
@@ -466,6 +469,8 @@ public class ClientPlayer extends ClientEntity {
             }
 
             updateTexture(0, 0, draw_tex_base.getRegionWidth(), draw_tex_base.getRegionHeight());
+            playerReachCenterX = drawCenterX;
+            playerReachCenterY = clientPosY + drawOffsetY + 13;
 
             draw_tex_arm_left = tex_arm_left;
             draw_tex_arm_right = punchAnimation ? tex_punch_arm : tex_arm_right;
