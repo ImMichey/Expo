@@ -112,9 +112,14 @@ public class ExpoClientPacketReader {
             ClientEntity entity = entityFromId(p.entityId);
             if(entity != null) entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir);
         } else if(o instanceof P14_WorldUpdate p) {
-            log("Received WORLD UPDATE " + p.worldTime + " " + p.worldWeather);
-            ExpoClientContainer.get().getClientWorld().worldTime = p.worldTime;
-            ExpoClientContainer.get().getClientWorld().worldWeather = p.worldWeather;
+            log("Received WORLD UPDATE " + p.worldTime + " " + p.worldWeather + " " + p.weatherStrength);
+
+            ClientWorld w = ExpoClientContainer.get().getClientWorld();
+
+            w.worldTime = p.worldTime;
+            w.worldWeather = p.worldWeather;
+            w.weatherStrength = p.weatherStrength;
+
         } else if(o instanceof P15_PingList p) {
             var map = ExpoClientContainer.get().getPlayerOnlineList();
 

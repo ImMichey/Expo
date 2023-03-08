@@ -222,6 +222,7 @@ public class ImGuiExpo {
 
                             ImGui.bulletText("Weather: " + dimension.dimensionWeather);
                             ImGui.bulletText("WeatherDuration: " + dimension.dimensionWeatherDuration);
+                            ImGui.bulletText("WeatherStrength: " + dimension.dimensionWeatherStrength);
 
                             ImGui.treePop();
                         } else {

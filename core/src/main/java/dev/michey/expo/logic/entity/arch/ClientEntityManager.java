@@ -16,17 +16,17 @@ public class ClientEntityManager {
     private static ClientEntityManager INSTANCE;
 
     /** Storage maps */
-    private LinkedList<ClientEntity> depthEntityList;
-    private HashMap<Integer, ClientEntity> idEntityMap;
-    private HashMap<ClientEntityType, LinkedList<ClientEntity>> typeEntityListMap;
-    private ConcurrentLinkedQueue<Integer> removalQueue;
-    private ConcurrentLinkedQueue<ClientEntity> additionQueue;
+    private final LinkedList<ClientEntity> depthEntityList;
+    private final HashMap<Integer, ClientEntity> idEntityMap;
+    private final HashMap<ClientEntityType, LinkedList<ClientEntity>> typeEntityListMap;
+    private final ConcurrentLinkedQueue<Integer> removalQueue;
+    private final ConcurrentLinkedQueue<ClientEntity> additionQueue;
 
     /** Client side only entities */
     private int clientEntityId = -1;
 
     /** Method helper */
-    private List<List<ClientEntity>> listOfEntities;
+    private final List<List<ClientEntity>> listOfEntities;
 
     public ClientEntityManager() {
         depthEntityList = new LinkedList<>();

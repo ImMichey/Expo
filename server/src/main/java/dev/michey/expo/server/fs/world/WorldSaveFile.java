@@ -165,6 +165,7 @@ public class WorldSaveFile {
             dimension.dimensionTime = dimensionObject.getFloat("time");
             dimension.dimensionWeather = Weather.idToWeather(dimensionObject.getInt("weather"));
             dimension.dimensionWeatherDuration = dimensionObject.getFloat("weatherDuration");
+            dimension.dimensionWeatherStrength = dimensionObject.getFloat("weatherStrength");
         }
     }
 
@@ -185,6 +186,7 @@ public class WorldSaveFile {
             dimensionObject.put("time", dimension.dimensionTime);
             dimensionObject.put("weather", dimension.dimensionWeather.WEATHER_ID);
             dimensionObject.put("weatherDuration", dimension.dimensionWeatherDuration);
+            dimensionObject.put("weatherStrength", dimension.dimensionWeatherStrength);
             dimensions.put(dimensionObject);
         }
         full.put("dimensions", dimensions);

@@ -13,7 +13,9 @@ public enum ClientEntityType {
     GRASS(2, "Grass", ServerEntityType.GRASS),
 
     /** Client only */
-    SELECTOR(-1, "Selector", null)
+    SELECTOR(-1, "Selector", null),
+    RAINDROP(-2, "Raindrop", null),
+
     ;
 
     public final int ENTITY_ID;

@@ -43,6 +43,7 @@ public class ClientWorld {
     /** Time */
     public float worldTime;
     public int worldWeather;
+    public float weatherStrength;
     public final float MAX_SHADOW_X = 2.2f;
     public final float MAX_SHADOW_Y = 1.7f;
     public float worldSunShadowX = MAX_SHADOW_X;

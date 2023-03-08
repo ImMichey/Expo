@@ -40,7 +40,7 @@ public class ServerCommandTime extends AbstractCommand {
         dim.dimensionTime = time;
 
         // Update.
-        ServerPackets.p14WorldUpdate(time, dim.dimensionWeather.WEATHER_ID, PacketReceiver.dimension(dim));
+        ServerPackets.p14WorldUpdate(time, dim.dimensionWeather.WEATHER_ID, dim.dimensionWeatherStrength, PacketReceiver.dimension(dim));
 
         log("Set main dimension time to " + time);
     }

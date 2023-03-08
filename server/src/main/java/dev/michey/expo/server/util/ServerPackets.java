@@ -139,10 +139,11 @@ public class ServerPackets {
     }
 
     /** Sends the P14_WorldUpdate packet via TCP protocol. */
-    public static void p14WorldUpdate(float worldTime, int worldWeather, PacketReceiver receiver) {
+    public static void p14WorldUpdate(float worldTime, int worldWeather, float weatherStrength, PacketReceiver receiver) {
         P14_WorldUpdate p = new P14_WorldUpdate();
         p.worldTime = worldTime;
         p.worldWeather = worldWeather;
+        p.weatherStrength = weatherStrength;
         tcp(p, receiver);
     }
 

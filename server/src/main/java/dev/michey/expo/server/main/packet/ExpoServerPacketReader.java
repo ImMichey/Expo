@@ -37,7 +37,7 @@ public class ExpoServerPacketReader {
             ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_SERVER_TICK_RATE, sp.getDimension().getChunkHandler().getNoise().getSeed(), PacketReceiver.local());
             ServerPackets.p3PlayerJoin(req.username, PacketReceiver.local());
             ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.local());
-            ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, PacketReceiver.local());
+            ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.local());
             ServerPackets.p19PlayerInventoryUpdate(sp, PacketReceiver.local());
             //sp.switchToSlot(0);
         } else if(packet instanceof P5_PlayerVelocity vel) {
@@ -117,7 +117,7 @@ public class ExpoServerPacketReader {
 
                     // Player creation packet for joined player
                     ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.connection(connection));
-                    ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, PacketReceiver.connection(connection));
+                    ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.connection(connection));
                     ServerPackets.p19PlayerInventoryUpdate(sp, PacketReceiver.player(sp));
                     //sp.switchToSlot(0);
                 });
