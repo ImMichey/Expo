@@ -17,6 +17,7 @@ public class DevHUD {
 
     public void draw() {
         if(!RenderContext.get().drawDebugHUD) return;
+        if(!RenderContext.get().drawHUD) return;
 
         RenderContext.get().hudBatch.begin();
 

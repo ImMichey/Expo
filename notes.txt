@@ -1,7 +1,6 @@
 === IMPLEMENT ===
 - Player multiplayer chat
 - Chest/Glove/Legs/Boot armor + visuals
-- Weather (storm/rain/(snow))
 - bounding box system
 - punching entities/damage
 - crafting system

@@ -116,6 +116,7 @@ public class RenderContext {
     public boolean drawDebugHUD = true;
     public boolean drawImGui = true;
     public boolean drawShapes = false;
+    public boolean drawHUD = true;
 
     /** Game camera */
     public ExpoCamera expoCamera;

@@ -131,6 +131,7 @@ public class InputController {
                 case Input.Keys.F3 -> RenderContext.get().drawDebugHUD = !RenderContext.get().drawDebugHUD;
                 case Input.Keys.F4 -> RenderContext.get().drawImGui = !RenderContext.get().drawImGui;
                 case Input.Keys.F5 -> RenderContext.get().drawShapes = !RenderContext.get().drawShapes;
+                case Input.Keys.F6 -> RenderContext.get().drawHUD = !RenderContext.get().drawHUD;
                 case Input.Keys.TAB -> ExpoClientContainer.get().getPlayerUI().toggleTablist();
             }
         }

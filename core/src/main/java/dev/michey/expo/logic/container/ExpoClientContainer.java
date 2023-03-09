@@ -85,7 +85,9 @@ public class ExpoClientContainer {
         clientWorld.tickWorld(d, serverDelta);
         clientWorld.renderWorld();
         playerUI.update();
-        playerUI.render();
+        if(RenderContext.get().drawHUD) {
+            playerUI.render();
+        }
 
         if(client != null) {
             client.getPacketListener().evaluatePackets();

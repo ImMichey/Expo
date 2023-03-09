@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -30,14 +29,7 @@ public class ClientRaindrop extends ClientEntity {
         raindropSprite.setPosition(clientPosX, clientPosY);
         raindropSprite.setScale(scale);
         raindropSprite.setRotation(rotation);
-
-        Array<TextureRegion> tex = new Array<>(4);
-        tex.add(ExpoAssets.get().textureRegion("rainsplash_1"));
-        tex.add(ExpoAssets.get().textureRegion("rainsplash_2"));
-        tex.add(ExpoAssets.get().textureRegion("rainsplash_3"));
-        tex.add(ExpoAssets.get().textureRegion("rainsplash_4"));
-
-        splashAnimation = new Animation<>(0.15f, tex);
+        splashAnimation = new Animation<>(0.15f, ta("rainsplash", 4));
     }
 
     @Override
@@ -48,9 +40,12 @@ public class ClientRaindrop extends ClientEntity {
     @Override
     public void tick(float delta) {
         if(!splash) {
-            raindropSprite.translate(velocityX * delta, velocityY * delta);
-            clientPosX += velocityX * delta;
-            clientPosY += velocityY * delta;
+            float x = velocityX * delta;
+            float y = velocityY * delta;
+
+            raindropSprite.translate(x, y);
+            clientPosX += x;
+            clientPosY += y;
 
             if(clientPosY <= groundY) {
                 splash = true;

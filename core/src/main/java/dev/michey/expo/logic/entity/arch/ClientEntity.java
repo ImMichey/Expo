@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
@@ -146,6 +147,14 @@ public abstract class ClientEntity {
 
     public float toVisualCenterY() {
         return clientPosY + drawOffsetY + drawHeight * 0.5f;
+    }
+
+    public Array<TextureRegion> ta(String name, int frames) {
+        Array<TextureRegion> array = new Array<>(frames);
+        for(int i = 0; i < frames; i++) {
+            array.items[i] = tr(name + "_" + (i + 1));
+        }
+        return array;
     }
 
     public Texture t(String name) {
