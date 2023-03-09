@@ -66,6 +66,7 @@ public class ClientWorld {
     public int worldWeather;
     public float weatherStrength;
     private float spawnRainDelta = 0.1f;
+    private float rainAmbienceVolume = 0f;
 
     public ClientWorld() {
         clientEntityManager = new ClientEntityManager();
@@ -93,6 +94,20 @@ public class ClientWorld {
                 spawnRain();
             }
         }
+
+        if(worldWeather == Weather.RAIN.WEATHER_ID) {
+            if(rainAmbienceVolume < 1f) {
+                rainAmbienceVolume += delta / 3;
+                if(rainAmbienceVolume > 1) rainAmbienceVolume = 1;
+            }
+        } else {
+            if(rainAmbienceVolume > 0f) {
+                rainAmbienceVolume -= delta / 3;
+                if(rainAmbienceVolume < 0) rainAmbienceVolume = 0;
+            }
+        }
+
+        AudioEngine.get().ambientVolume("ambience_rain", rainAmbienceVolume);
     }
 
     private void spawnRain() {

@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,6 +22,7 @@ public class ClientRaindrop extends ClientEntity {
 
     private Sprite raindropSprite;
     private Animation<TextureRegion> splashAnimation;
+    private float animationAlpha = 1.0f;
 
     @Override
     public void onCreation() {
@@ -72,7 +74,19 @@ public class ClientRaindrop extends ClientEntity {
                     TextureRegion anim = splashAnimation.getKeyFrame(animationDelta, false);
 
                     rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
-                    rc.currentBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+
+                    if(animationAlpha < 1.0f) {
+                        rc.currentBatch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
+                        rc.currentBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                        rc.currentBatch.setColor(Color.WHITE);
+                    } else {
+                        rc.currentBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                    }
+                }
+
+                // 0.6 = fin
+                if(animationDelta >= 0.3f) {
+                    animationAlpha = 1f - ((animationDelta - 0.3f) / 0.3f * 0.5f);
                 }
             }
         } else {
