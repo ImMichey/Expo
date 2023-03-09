@@ -60,6 +60,8 @@ public class RenderContext {
     public int mouseTileArray;          // Mouse tile array position. [0 - 63]
     public int mouseDirection;          // Mouse direction in game window. [0 = Left, 1 = Right]
     public boolean mouseMoved;          // If the mouse moved between frames.
+    public int cameraX;
+    public int cameraY;
 
     /** Water data */
     public Texture waterNoiseTexture;
@@ -232,7 +234,13 @@ public class RenderContext {
         mouseX = Gdx.input.getX();
         mouseY = Math.abs(Gdx.input.getY() - Gdx.graphics.getHeight());
 
-        mouseMoved = (oldMouseX != mouseX) || (oldMouseY != mouseY);
+        float oldCameraX = cameraX;
+        float oldCameraY = cameraY;
+
+        cameraX = (int) expoCamera.camera.position.x;
+        cameraY = (int) expoCamera.camera.position.y;
+
+        mouseMoved = (oldMouseX != mouseX) || (oldMouseY != mouseY) || (oldCameraX != cameraX) || (oldCameraY != cameraY);
 
         if(mouseMoved) {
             mouseWorldX = InputUtils.getMouseWorldX();

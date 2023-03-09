@@ -125,7 +125,7 @@ public class ClientWorld {
 
         for(int i = 0; i < amount; i++) {
             ClientRaindrop raindrop = new ClientRaindrop();
-            float groundYBonus = diffY * com.badlogic.gdx.math.MathUtils.random();
+            float groundYBonus = diffY * MathUtils.random();
 
             float x = basePos.x + MathUtils.random(diffX);
             float y = basePos.y + diffY * 0.25f - diffY * MathUtils.random();
@@ -133,7 +133,7 @@ public class ClientWorld {
             float vx = 25f + MathUtils.random(25f);
             float vy = -256f - (groundYBonus / diffY * 128f);
 
-            raindrop.initRaindrop(x, y, y + groundYBonus, 22.5f, vx, vy);
+            raindrop.initRaindrop(x, y, y + groundYBonus, 0, vx, vy);
             raindrop.depth = y + groundYBonus;
 
             clientEntityManager.addClientSideEntity(raindrop);

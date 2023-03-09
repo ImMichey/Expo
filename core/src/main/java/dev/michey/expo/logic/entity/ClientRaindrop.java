@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.entity;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -30,7 +29,7 @@ public class ClientRaindrop extends ClientEntity {
         raindropSprite.setScale(scale);
         raindropSprite.setRotation(rotation);
 
-        Array<TextureRegion> tex = new Array<>();
+        Array<TextureRegion> tex = new Array<>(4);
         tex.add(ExpoAssets.get().textureRegion("rainsplash_1"));
         tex.add(ExpoAssets.get().textureRegion("rainsplash_2"));
         tex.add(ExpoAssets.get().textureRegion("rainsplash_3"));
