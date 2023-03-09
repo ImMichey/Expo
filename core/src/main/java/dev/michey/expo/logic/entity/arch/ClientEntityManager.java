@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import dev.michey.expo.render.RenderContext;
@@ -9,6 +10,8 @@ import dev.michey.expo.server.packet.P2_EntityCreate;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ClientEntityManager {
 

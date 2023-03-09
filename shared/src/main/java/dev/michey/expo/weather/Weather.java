@@ -5,9 +5,9 @@ import dev.michey.expo.util.ExpoShared;
 public enum Weather {
 
     SUN(0, "Sun", new float[] {600, 1200, -1, -1}),
-    RAIN(1, "Rain", new float[] {600, 1200, 1.0f, 2.5f}),
-    STORM(2, "Storm", new float[] {600, 1200, 1.0f, 2.5f}),
-    SNOW(3, "Snow", new float[] {600, 1200, 1.0f, 2.5f});
+    RAIN(1, "Rain", new float[] {300, 600, 12.0f, 36.0f}),
+    STORM(2, "Storm", new float[] {300, 600, 1.0f, 2.5f}),
+    SNOW(3, "Snow", new float[] {300, 600, 1.0f, 2.5f});
 
     public final int WEATHER_ID;
     public final String WEATHER_NAME;

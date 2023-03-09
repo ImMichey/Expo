@@ -1,6 +1,8 @@
 package dev.michey.expo.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.render.RenderContext;
 
 public class InputUtils {
@@ -55,6 +57,19 @@ public class InputUtils {
         float vh = rc.expoCamera.camera.viewportHeight; // 720 -> window height
         float cz = rc.expoCamera.camera.zoom;
         return cy - vh * 0.5f * cz + my * cz;
+    }
+
+    public static Vector2 topLeftRainCorner(float xOffset, float yOffset) {
+        OrthographicCamera c = RenderContext.get().expoCamera.camera;
+        float camX = c.position.x;
+        float camY = c.position.y;
+        float width = c.viewportWidth;
+        float height = c.viewportHeight;
+        float zoom = 0.25f;
+
+        float x = camX + ((1f / width * xOffset - 0.5f) * width * zoom);
+        float y = camY - ((1f / height * yOffset - 0.5f) * height * zoom);
+        return new Vector2(x, y);
     }
 
 }

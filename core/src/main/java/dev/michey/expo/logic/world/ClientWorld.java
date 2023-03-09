@@ -8,11 +8,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.localserver.ExpoServerLocal;
+import dev.michey.expo.logic.entity.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.ClientPlayer;
@@ -20,11 +24,14 @@ import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
+import dev.michey.expo.util.InputUtils;
+import dev.michey.expo.weather.Weather;
 
 import java.util.zip.Deflater;
 
@@ -42,8 +49,6 @@ public class ClientWorld {
 
     /** Time */
     public float worldTime;
-    public int worldWeather;
-    public float weatherStrength;
     public final float MAX_SHADOW_X = 2.2f;
     public final float MAX_SHADOW_Y = 1.7f;
     public float worldSunShadowX = MAX_SHADOW_X;
@@ -56,6 +61,11 @@ public class ClientWorld {
     public final Color COLOR_AMBIENT_MIDNIGHT = new Color(24f / 255f, 30f / 255f, 66f / 255f, 1.0f);
     public final Color COLOR_AMBIENT_SUNRISE = new Color(241f / 255f, 241f / 255f, 197f / 255f, 1.0f);
     public final Color COLOR_AMBIENT_SUNSET = new Color(222f / 255f, 177f / 255f, 128f / 255f, 1.0f);
+
+    /** Weather */
+    public int worldWeather;
+    public float weatherStrength;
+    private float spawnRainDelta = 0.1f;
 
     public ClientWorld() {
         clientEntityManager = new ClientEntityManager();
@@ -73,6 +83,61 @@ public class ClientWorld {
 
         // Calculate world time
         calculateWorldTime(delta);
+
+        // Weather tick
+        if(worldWeather == Weather.RAIN.WEATHER_ID) {
+            spawnRainDelta -= delta;
+
+            if(spawnRainDelta <= 0) {
+                spawnRainDelta += 0.1f;
+                spawnRain();
+            }
+        }
+    }
+
+    private void spawnRain() {
+        float zoom = RenderContext.get().expoCamera.camera.zoom;
+        if(zoom > 0.75f) zoom = 0.75f;
+
+        float mul = zoom / (1f / 3f) + 1f;
+        int amount = (int) (weatherStrength * mul);
+
+        Vector2 basePos = InputUtils.topLeftRainCorner(0, 0);
+        Vector2 rightBottomCorner = InputUtils.topLeftRainCorner(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        float baseDiffX = rightBottomCorner.x - basePos.x;
+        float baseDiffY = rightBottomCorner.y - basePos.y;
+
+        if(mul != 1) {
+            float newMul = mul - 1;
+            float additionX = baseDiffX * newMul * 0.5f;
+            float additionY = baseDiffY * newMul * 0.5f;
+
+            rightBottomCorner.x += additionX;
+            basePos.x -= additionX;
+
+            rightBottomCorner.y += additionY;
+            basePos.y -= additionY;
+        }
+
+        float diffX = (rightBottomCorner.x - basePos.x);
+        float diffY = (rightBottomCorner.y - basePos.y);
+
+        for(int i = 0; i < amount; i++) {
+            ClientRaindrop raindrop = new ClientRaindrop();
+            float groundYBonus = diffY * com.badlogic.gdx.math.MathUtils.random();
+
+            float x = basePos.x + MathUtils.random(diffX);
+            float y = basePos.y + diffY * 0.25f - diffY * MathUtils.random();
+
+            float vx = 25f + MathUtils.random(25f);
+            float vy = -256f - (groundYBonus / diffY * 128f);
+
+            raindrop.initRaindrop(x, y, y + groundYBonus, 22.5f, vx, vy);
+            raindrop.depth = y + groundYBonus;
+
+            clientEntityManager.addClientSideEntity(raindrop);
+        }
     }
 
     public void setNoiseSeed(int seed) {
