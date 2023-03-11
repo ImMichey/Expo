@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -11,8 +12,10 @@ import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.util.Pair;
 
 import java.util.List;
 
@@ -20,7 +23,7 @@ import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
 
-public class ClientGrass extends ClientEntity {
+public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     private Texture grass;
     private TextureRegion grassShadow;
@@ -110,6 +113,10 @@ public class ClientGrass extends ClientEntity {
 
             rc.useBatchAndShader(rc.arraySpriteBatch, rc.arrayWindShader);
 
+            if(selected) {
+                rc.arraySpriteBatch.setColor(1.0f, 0.0f, 0.0f, 1.0f);
+            }
+
             if(windSwayAnimationActive()) {
                 contactDelta -= delta * SPEED;
                 if(contactDelta < 0f) contactDelta = 0f;
@@ -123,6 +130,10 @@ public class ClientGrass extends ClientEntity {
                 rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), verticesMovement, verticesMovement);
             } else {
                 rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
+            }
+
+            if(selected) {
+                rc.arraySpriteBatch.setColor(Color.WHITE);
             }
         }
     }
@@ -150,6 +161,30 @@ public class ClientGrass extends ClientEntity {
 
     public boolean windSwayAnimationActive() {
         return contactDelta != 0f;
+    }
+
+    @Override
+    public Object[] isNowSelected() {
+        // only check if in view
+        if(!drawnLastFrame) return null;
+
+        ClientPlayer player = ClientPlayer.getLocalPlayer();
+        RenderContext r = RenderContext.get();
+
+        // range
+        float px = player.playerReachCenterX;
+        float py = player.playerReachCenterY;
+        float distancePlayerEntity = Vector2.dst(px, py, drawCenterX, drawCenterY);
+
+        if(distancePlayerEntity > player.getPlayerRange()) return null;
+
+        float sx = clientPosX + drawOffsetX;
+        float sy = clientPosY + drawOffsetY;
+
+        float distanceMouseEntity = Vector2.dst(r.mouseWorldX, r.mouseWorldY, drawCenterX, drawCenterY);
+        boolean directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + drawWidth) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + drawHeight);
+
+        return new Object[] {directMouseContact, distanceMouseEntity};
     }
 
 }

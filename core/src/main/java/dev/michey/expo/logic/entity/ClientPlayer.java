@@ -470,7 +470,7 @@ public class ClientPlayer extends ClientEntity {
 
             updateTexture(0, 0, draw_tex_base.getRegionWidth(), draw_tex_base.getRegionHeight());
             playerReachCenterX = drawCenterX;
-            playerReachCenterY = clientPosY + drawOffsetY + 13;
+            playerReachCenterY = clientPosY + 7;
 
             draw_tex_arm_left = tex_arm_left;
             draw_tex_arm_right = punchAnimation ? tex_punch_arm : tex_arm_right;
@@ -797,6 +797,11 @@ public class ClientPlayer extends ClientEntity {
 
     private int direction() {
         return punchAnimation ? punchDirection : playerDirection;
+    }
+
+    public float getPlayerRange() {
+        if(holdingItemId == -1) return 20f;
+        return ItemMapper.get().getMapping(holdingItemId).logic.range;
     }
 
     @Override

@@ -10,6 +10,7 @@ public class ItemLogic {
     public ToolType toolType; // can be null
     public int durability;
     public FoodData foodData; // can be null
+    public float range;
 
     public ItemLogic(JSONObject object) {
         maxStackSize = object.getInt("stackSize");
@@ -23,6 +24,12 @@ public class ItemLogic {
 
         if(object.has("foodData")) {
             foodData = new FoodData(object.getJSONObject("foodData"));
+        }
+
+        if(object.has("range")) {
+            range = object.getFloat("range");
+        } else {
+            range = 20.0f;
         }
     }
 

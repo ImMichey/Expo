@@ -2,9 +2,11 @@ package dev.michey.expo.client;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Client;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -166,6 +168,8 @@ public class ExpoClientPacketReader {
                 player.playerHealth = p.health;
                 player.playerHunger = p.hunger;
             }
+        } else if(o instanceof P24_PositionalSound p) {
+            AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false);
         }
     }
 

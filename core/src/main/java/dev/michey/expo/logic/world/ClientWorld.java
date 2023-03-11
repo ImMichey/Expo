@@ -138,6 +138,10 @@ public class ClientWorld {
         float diffX = (rightBottomCorner.x - basePos.x);
         float diffY = (rightBottomCorner.y - basePos.y);
 
+        float minStr = Weather.RAIN.WEATHER_DATA[2];
+        float maxStr = Weather.RAIN.WEATHER_DATA[3];
+        float normStr = (weatherStrength - minStr) / (maxStr - minStr);
+
         for(int i = 0; i < amount; i++) {
             ClientRaindrop raindrop = new ClientRaindrop();
             float groundYBonus = diffY * MathUtils.random();
@@ -145,10 +149,12 @@ public class ClientWorld {
             float x = basePos.x + MathUtils.random(diffX);
             float y = basePos.y + diffY * 0.25f - diffY * MathUtils.random();
 
-            float vx = 25f + MathUtils.random(25f);
+            float vx = MathUtils.random(100f, 150f) * normStr;
             float vy = -256f - (groundYBonus / diffY * 128f);
 
-            raindrop.initRaindrop(x, y, y + groundYBonus, 0, vx, vy);
+            float rot = normStr * 45f;
+
+            raindrop.initRaindrop(x, y, y + groundYBonus, rot, vx, vy);
             raindrop.depth = y + groundYBonus;
 
             clientEntityManager.addClientSideEntity(raindrop);
@@ -403,6 +409,9 @@ public class ClientWorld {
                                     player.holdingItemSprite.getY() + player.holdingItemSprite.getOriginY(),
                                     0.5f, 8);
                         }
+
+                        r.chunkRenderer.setColor(Color.RED);
+                        r.chunkRenderer.circle(player.playerReachCenterX, player.playerReachCenterY, 1f, 8);
                     }
                 }
             }

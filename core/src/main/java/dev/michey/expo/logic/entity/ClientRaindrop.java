@@ -105,7 +105,7 @@ public class ClientRaindrop extends ClientEntity {
     public void initRaindrop(float x, float y, float groundY, float rotation, float velocityX, float velocityY) {
         clientPosX = x;
         clientPosY = y;
-        scale = 0.25f + MathUtils.random(0.15f);
+        scale = 0.4f + MathUtils.random(0.1f);
         this.groundY = groundY;
         this.rotation = rotation;
         this.velocityX = velocityX;

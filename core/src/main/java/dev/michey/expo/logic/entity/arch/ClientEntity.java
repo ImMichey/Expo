@@ -28,6 +28,8 @@ public abstract class ClientEntity {
     public int clientChunkY;
     public int clientTileX;
     public int clientTileY;
+    // Selection fields
+    public boolean selected;
 
     /** Used for networking syncing. */
     public float lastPosX;
@@ -152,7 +154,7 @@ public abstract class ClientEntity {
     public Array<TextureRegion> ta(String name, int frames) {
         Array<TextureRegion> array = new Array<>(frames);
         for(int i = 0; i < frames; i++) {
-            array.items[i] = tr(name + "_" + (i + 1));
+            array.add(tr(name + "_" + (i + 1)));
         }
         return array;
     }

@@ -2,8 +2,10 @@ package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
+import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.packet.P2_EntityCreate;
@@ -31,6 +33,10 @@ public class ClientEntityManager {
     /** Method helper */
     private final List<List<ClientEntity>> listOfEntities;
 
+    /** Selectable entities */
+    private final HashMap<ClientEntity, Object[]> selectableEntities;
+    private ClientEntity selectedEntity;
+
     public ClientEntityManager() {
         depthEntityList = new LinkedList<>();
         idEntityMap = new HashMap<>();
@@ -43,11 +49,18 @@ public class ClientEntityManager {
         }
 
         listOfEntities = new LinkedList<>();
+        selectableEntities = new HashMap<>();
 
         INSTANCE = this;
     }
 
     public void tickEntities(float delta) {
+        selectableEntities.clear();
+        if(selectedEntity != null) {
+            selectedEntity.selected = false;
+            selectedEntity = null;
+        }
+
         // poll addition
         while(!additionQueue.isEmpty()) {
             ClientEntity toAdd = additionQueue.poll();
@@ -77,13 +90,66 @@ public class ClientEntityManager {
 
         for(ClientEntity entity : depthEntityList) {
             entity.tick(delta);
+
+            if(entity instanceof SelectableEntity se) {
+                Object[] data = se.isNowSelected();
+
+                if(data != null) {
+                    selectableEntities.put(entity, data);
+                }
+            }
+        }
+
+        if(!selectableEntities.isEmpty()) {
+            ClientEntity directContactEntity = null;
+            ClientEntity mouseProximityEntity = null;
+            float lowestProximityDistance = Float.MAX_VALUE;
+
+            for(ClientEntity e : selectableEntities.keySet()) {
+                Object[] data = selectableEntities.get(e);
+                boolean direct = (boolean) data[0];
+
+                if(direct) {
+                    if(directContactEntity == null) {
+                        directContactEntity = e;
+                    } else {
+                        if(e.depth < directContactEntity.depth) {
+                            directContactEntity = e;
+                        }
+                    }
+                } else {
+                    if(directContactEntity == null) {
+                        float dis = (float) data[1];
+
+                        if(mouseProximityEntity == null) {
+                            mouseProximityEntity = e;
+                            lowestProximityDistance = dis;
+                        } else {
+                            if(dis < lowestProximityDistance) {
+                                mouseProximityEntity = e;
+                                lowestProximityDistance = dis;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(directContactEntity != null) {
+                selectedEntity = directContactEntity;
+            } else if(mouseProximityEntity != null) {
+                selectedEntity = mouseProximityEntity;
+            }
+
+            if(selectedEntity != null) {
+                selectedEntity.selected = true;
+            }
         }
     }
 
     public void renderEntities(float delta) {
         RenderContext rc = RenderContext.get();
 
-        rc.forceBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_SHADER);
+        rc.forceBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
 
         for(ClientEntity entity : depthEntityList) {
             entity.render(rc, delta);

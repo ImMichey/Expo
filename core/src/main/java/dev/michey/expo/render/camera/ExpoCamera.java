@@ -84,7 +84,7 @@ public class ExpoCamera {
             RenderContext.get().expoCamera.camera.zoom = newZoom;
         }
 
-        cameraLerpTowards(p.playerReachCenterX, p.playerReachCenterY);
+        cameraLerpTowards(p.drawCenterX, p.clientPosY + p.drawOffsetY + 13);
         cameraLerpMouse();
 
         if(Float.isNaN(camera.position.x)) {

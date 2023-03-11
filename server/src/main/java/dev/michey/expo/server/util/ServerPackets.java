@@ -218,6 +218,16 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P24_PositionalSound packet via UDP protocol. */
+    public static void p24PositionalSound(String soundName, float worldX, float worldY, float maxSoundRange, PacketReceiver receiver) {
+        P24_PositionalSound p = new P24_PositionalSound();
+        p.soundName = soundName;
+        p.worldX = worldX;
+        p.worldY = worldY;
+        p.maxSoundRange = maxSoundRange;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

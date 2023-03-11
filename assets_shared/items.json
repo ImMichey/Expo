@@ -21,7 +21,8 @@
             "logic": {
                 "stackSize": 64,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "range": 25
             }
         },
         {
