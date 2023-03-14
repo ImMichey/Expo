@@ -1,4 +1,4 @@
-package dev.michey.expo.command;
+package dev.michey.expo.command.util;
 
 public class CommandSyntaxException extends Exception {
 

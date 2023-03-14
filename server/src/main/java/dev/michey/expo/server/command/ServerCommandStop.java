@@ -1,12 +1,11 @@
 package dev.michey.expo.server.command;
 
-import dev.michey.expo.command.AbstractCommand;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
+import dev.michey.expo.server.main.arch.AbstractServerCommand;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
-public class ServerCommandStop extends AbstractCommand {
+public class ServerCommandStop extends AbstractServerCommand {
 
     @Override
     public String getCommandName() {
@@ -24,8 +23,8 @@ public class ServerCommandStop extends AbstractCommand {
     }
 
     @Override
-    public void executeCommand(String[] args) throws CommandSyntaxException {
-        log("Received server stop signal, shutting down application...");
+    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+        sendToSender("Received server stop signal, shutting down application...", player);
         ExpoServerBase.get().stopServer();
     }
 

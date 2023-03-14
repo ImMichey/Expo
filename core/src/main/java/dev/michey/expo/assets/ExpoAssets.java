@@ -22,6 +22,8 @@ public class ExpoAssets {
     private TextureAtlas mainAtlas;
     public TextureRegion soil;
 
+    private TileSheet tileSheet;
+
     public ExpoAssets() {
         assetManager = new AssetManager();
         tileMappings = new HashMap<>();
@@ -69,6 +71,12 @@ public class ExpoAssets {
                 }
             }
         }
+
+        tileSheet = new TileSheet(textureRegion("tileset"));
+    }
+
+    public TileSheet getTileSheet() {
+        return tileSheet;
     }
 
     public void slice() {

@@ -49,7 +49,7 @@ public class GameConsole {
     private boolean lastDirectionRight = true;
     // Render related members
     private boolean visible;
-    private final ShapeRenderer shapeRenderer;
+    public final ShapeRenderer shapeRenderer;
     private final SpriteBatch batch;
     public BitmapFont consoleFont;
     private BitmapFont consoleFontNoMarkup;
@@ -98,10 +98,9 @@ public class GameConsole {
         resolver.addCommand(new CommandSpawn());
         resolver.addCommand(new CommandTp());
         resolver.addCommand(new CommandTime());
-        resolver.addCommand(new CommandCol());
-        resolver.addCommand(new Client_Volume());
-        resolver.addCommand(new CommandItems());
+        resolver.addCommand(new CommandVolume());
         resolver.addCommand(new CommandReload());
+        resolver.addCommand(new CommandUiscale());
 
         messageHistory = new LinkedList<>();
         shapeRenderer = new ShapeRenderer();

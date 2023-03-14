@@ -2,9 +2,8 @@ package dev.michey.expo.server.main.arch;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
-import dev.michey.expo.command.CommandResolver;
-import dev.michey.expo.server.command.*;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
@@ -30,9 +29,6 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
 
     /** Connection handler */
     private final PlayerConnectionHandler connectionHandler;
-
-    /** Command line input */
-    private CommandResolver resolver;
 
     /** Threads */
     private Thread consoleCommandThread;
@@ -72,15 +68,6 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
 
         // Start console input thread to poll commands
         if(config.isConsoleInput()) {
-            resolver = new CommandResolver();
-            resolver.addCommand(new ServerCommandHelp());
-            resolver.addCommand(new ServerCommandStop());
-            resolver.addCommand(new ServerCommandWhitelist());
-            resolver.addCommand(new ServerCommandChunkDump());
-            resolver.addCommand(new ServerCommandEntityDump());
-            resolver.addCommand(new ServerCommandTime());
-            resolver.addCommand(new ServerCommandItems());
-
             consoleCommandThread = new Thread("ExpoServerDedicated-ConsoleCommandScanner") {
 
                 @Override
@@ -90,7 +77,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
                     while(!consoleCommandThread.isInterrupted()) {
                         String cmd = scanner.nextLine();
                         log("User input: '" + cmd + "'");
-                        resolver.resolveCommand(cmd);
+                        ExpoServerBase.get().getCommandResolver().resolveCommand(cmd, null);
                     }
                 }
 
@@ -126,6 +113,16 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
     @Override
     public void broadcastPacketUDP(Packet packet) {
         kryoServer.sendToAllUDP(packet);
+    }
+
+    @Override
+    public void broadcastPacketTCPExcept(Packet packet, Connection connection) {
+        kryoServer.sendToAllExceptTCP(connection.getID(), packet);
+    }
+
+    @Override
+    public void broadcastPacketUDPExcept(Packet packet, Connection connection) {
+        kryoServer.sendToAllExceptUDP(connection.getID(), packet);
     }
 
     @Override

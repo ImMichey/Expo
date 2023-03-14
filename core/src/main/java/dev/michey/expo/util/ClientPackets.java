@@ -59,6 +59,14 @@ public class ClientPackets {
         udp(p);
     }
 
+    /** Sends the P25_ChatMessage packet via TCP protocol. */
+    public static void p25ChatMessage(String message) {
+        P25_ChatMessage p = new P25_ChatMessage();
+        p.message = message;
+        p.sender = ClientStatic.PLAYER_USERNAME;
+        tcp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

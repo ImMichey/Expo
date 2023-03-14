@@ -1,6 +1,6 @@
 package dev.michey.expo.console.command;
 
-import dev.michey.expo.command.AbstractCommand;
+import dev.michey.expo.command.abstraction.AbstractCommand;
 import dev.michey.expo.console.GameConsole;
 
 import java.util.Collection;

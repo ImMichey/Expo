@@ -1,6 +1,9 @@
 package dev.michey.expo.server.main.arch;
 
+import com.esotericsoftware.kryonet.Connection;
+import dev.michey.expo.command.CommandResolver;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.server.command.*;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.fs.world.WorldSaveFile;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
@@ -34,6 +37,9 @@ public abstract class ExpoServerBase {
     /** I/O handlers */
     private final WorldSaveFile worldSaveFile;
 
+    /** Command resolver */
+    private final ServerCommandResolver commandResolver;
+
     public ExpoServerBase(boolean localServer, String worldName) {
         this.localServer = localServer;
         packetReader = new ExpoServerPacketReader();
@@ -43,6 +49,15 @@ public abstract class ExpoServerBase {
             log("Failed to load WorldSaveFile, aborting application.");
             System.exit(0);
         }
+        commandResolver = new ServerCommandResolver();
+        commandResolver.addCommand(new ServerCommandTime());
+        commandResolver.addCommand(new ServerCommandChunkDump());
+        commandResolver.addCommand(new ServerCommandEntityDump());
+        commandResolver.addCommand(new ServerCommandHelp());
+        commandResolver.addCommand(new ServerCommandItems());
+        commandResolver.addCommand(new ServerCommandStop());
+        commandResolver.addCommand(new ServerCommandWhitelist());
+        commandResolver.addCommand(new ServerCommandTiles());
         INSTANCE = this;
         applyFileProperties();
     }
@@ -103,6 +118,8 @@ public abstract class ExpoServerBase {
     /** Implemented by its extensions. */
     public abstract void broadcastPacketTCP(Packet packet);
     public abstract void broadcastPacketUDP(Packet packet);
+    public abstract void broadcastPacketTCPExcept(Packet packet, Connection connection);
+    public abstract void broadcastPacketUDPExcept(Packet packet, Connection connection);
 
     public boolean isLocalServer() {
         return localServer;
@@ -110,6 +127,10 @@ public abstract class ExpoServerBase {
 
     public int getTicksPerSecond() {
         return tps;
+    }
+
+    public ServerCommandResolver getCommandResolver() {
+        return commandResolver;
     }
 
     public WorldSaveFile getWorldSaveHandler() {

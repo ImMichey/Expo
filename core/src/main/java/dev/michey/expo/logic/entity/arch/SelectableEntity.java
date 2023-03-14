@@ -1,8 +1,9 @@
 package dev.michey.expo.logic.entity.arch;
 
+import dev.michey.expo.render.RenderContext;
+
 public interface SelectableEntity {
 
-    /** Returns whether the entity is currently hovered/selected by the mouse or not. */
-    Object[] isNowSelected();
+    void renderSelected(RenderContext rc, float delta);
 
 }

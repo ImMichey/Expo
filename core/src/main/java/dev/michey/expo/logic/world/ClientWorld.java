@@ -31,11 +31,13 @@ import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.InputUtils;
+import dev.michey.expo.util.Pair;
 import dev.michey.expo.weather.Weather;
 
 import java.util.zip.Deflater;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE;
 import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
 
@@ -76,6 +78,9 @@ public class ClientWorld {
 
     /** Ticking the game world. */
     public void tickWorld(float delta, float serverDelta) {
+        // Tick chunks
+        clientChunkGrid.tick(delta);
+
         // Tick entities
         clientEntityManager.tickEntities(delta);
 
@@ -356,8 +361,61 @@ public class ClientWorld {
         // Render tile debug data
         if(r.drawTileInfo) {
             r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+            r.chunkRenderer.setColor(Color.WHITE);
             r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE, TILE_SIZE);
             r.chunkRenderer.end();
+
+            var tileMap = ExpoAssets.get().getTileSheet().getTilesetTextureMap();
+            int amount = tileMap.size();
+
+            int breakLine = 0;
+            int lines = 0;
+            int space = 2;
+            int drawPerLine = 16;
+            int tileSize = 32;
+            int totalLines = amount / drawPerLine + 1;
+
+            r.hudBatch.begin();
+            r.hudBatch.setColor(Color.BLACK);
+            r.hudBatch.draw(ExpoAssets.get().textureRegion("square16x16"),
+                    r.mouseX + 50 - 4,
+                    r.mouseY + 50 - 4 - (totalLines - 1) * tileSize + ((totalLines - 1) * space) - 8,
+                    (tileSize + space) * 16 + 8,
+                    totalLines * tileSize + ((totalLines - 1) * space) + 8);
+            r.hudBatch.setColor(Color.WHITE);
+
+            for(int i = 0; i < amount; i++) {
+                float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
+                float tileY = r.mouseY + 50 - lines * (tileSize + space);
+
+                r.hudBatch.draw(tileMap.get(i), tileX, tileY, tileSize, tileSize);
+
+                breakLine++;
+
+                if(breakLine == drawPerLine) {
+                    breakLine = 0;
+                    lines++;
+                }
+            }
+
+            breakLine = 0;
+            lines = 0;
+
+            for(int i = 0; i < amount; i++) {
+                float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
+                float tileY = r.mouseY + 50 - lines * (tileSize + space);
+
+                r.m5x7_border_all[1].draw(r.hudBatch, "" + i, tileX + 2, tileY + 14 + 9);
+
+                breakLine++;
+
+                if(breakLine == drawPerLine) {
+                    breakLine = 0;
+                    lines++;
+                }
+            }
+
+            r.hudBatch.end();
         }
 
         // Render debug shapes
@@ -434,7 +492,7 @@ public class ClientWorld {
     }
 
     private void screencap(String name) {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.T) && DEV_MODE) {
             Pixmap pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
             PixmapIO.writePNG(Gdx.files.external("TEST/" + System.currentTimeMillis() + "_" + name + ".png"), pixmap, Deflater.DEFAULT_COMPRESSION, true);
             pixmap.dispose();
@@ -472,10 +530,10 @@ public class ClientWorld {
 
     private void cursorText(String text, Color color) {
         RenderContext r = RenderContext.get();
-        Color prevColor = r.m6x11_bordered.getColor();
-        r.m6x11_bordered.setColor(color);
-        r.m6x11_bordered.draw(r.hudBatch, text, r.mouseX, r.mouseY - 32 - offset);
-        r.m6x11_bordered.setColor(prevColor);
+        Color prevColor = r.m5x7_border_all[1].getColor();
+        r.m5x7_border_all[1].setColor(color);
+        r.m5x7_border_all[1].draw(r.hudBatch, text, r.mouseX, r.mouseY - 32 - offset);
+        r.m5x7_border_all[1].setColor(prevColor);
         offset += 16;
     }
 
@@ -514,8 +572,8 @@ public class ClientWorld {
                 if(chunk != null) {
                     if(chunk.chunkContainsWater) {
                         if(r.inDrawBounds(chunk)) {
-                            for(int k = 0; k < chunk.biomeData.length; k++) {
-                                if(BiomeType.isWater(chunk.biomeData[k]) || chunk.waterLoggedData[k]) {
+                            for(int k = 0; k < chunk.biomes.length; k++) {
+                                if(BiomeType.isWater(chunk.biomes[k])) {
                                     int tx = k % 8;
                                     int ty = k / 8;
                                     float wx = px + ExpoShared.tileToPos(tx);
@@ -536,6 +594,33 @@ public class ClientWorld {
         r.batch.end();
     }
 
+    private void drawLayer(int k, ClientChunk chunk, TextureRegion[] layer, RenderContext rc, float wx, float wy, Pair[][] displacementPairs) {
+        Pair[] displacement = displacementPairs != null ? displacementPairs[k] : null;
+
+        for(int i = 0; i < layer.length; i++) {
+            TextureRegion t = layer[i];
+            if(t == null) continue;
+
+            if(layer.length == 1) {
+                rc.batch.draw(t, wx, wy);
+            } else {
+                if(displacement == null) {
+                    rc.batch.draw(layer[0], wx, wy);
+                    rc.batch.draw(layer[1], wx + 8, wy);
+                    rc.batch.draw(layer[2], wx, wy + 8);
+                    rc.batch.draw(layer[3], wx + 8, wy + 8);
+                } else {
+                    float val = clientChunkGrid.interpolation;
+
+                    rc.batch.draw(layer[0], wx + val * (int) displacement[0].key, wy + val * (int) displacement[0].value);
+                    rc.batch.draw(layer[1], wx + 8 + val * (int) displacement[1].key, wy + val * (int) displacement[1].value);
+                    rc.batch.draw(layer[2], wx + val * (int) displacement[2].key, wy + 8 + val * (int) displacement[2].value);
+                    rc.batch.draw(layer[3], wx + 8 + val * (int) displacement[3].key, wy + 8 + val * (int) displacement[3].value);
+                }
+            }
+        }
+    }
+
     private void renderChunkTiles() {
         if(ClientPlayer.getLocalPlayer() != null) {
             RenderContext rc = RenderContext.get();
@@ -549,30 +634,15 @@ public class ClientWorld {
                         int px = ExpoShared.chunkToPos(chunk.chunkX); // CHUNK WORLD X
                         int py = ExpoShared.chunkToPos(chunk.chunkY); // CHUNK WORLD Y
 
-                        for(int k = 0; k < chunk.biomeData.length; k++) {
+                        for(int k = 0; k < chunk.biomes.length; k++) {
                             int tx = k % 8;
                             int ty = k / 8;
                             float wx = px + ExpoShared.tileToPos(tx);
                             float wy = py + ExpoShared.tileToPos(ty);
 
-                            int tileIndex = chunk.tileTextureData[k];
-
-                            if(tileIndex != 15 && !BiomeType.isWater(chunk.biomeData[k])) {
-                                if(!chunk.waterLoggedData[k]) {
-                                    // Soil.
-                                    rc.batch.draw(ExpoAssets.get().soil, wx, wy);
-                                }
-                            }
-
-                            TextureRegion tile = chunk.tileTextureRegionData[k];
-
-                            if(tile != null) {
-                                rc.batch.draw(tile, wx, wy);
-                            }
-
-                            if(chunk.waterLoggedData[k] && chunk.tileShadowData[k] != null) {
-                                rc.batch.draw(chunk.tileShadowData[k], wx, wy - TILE_SIZE + chunk.tileShadowDataOffset[k]);
-                            }
+                            drawLayer(k, chunk, chunk.layer0Tex[k], rc, wx, wy, null);
+                            drawLayer(k, chunk, chunk.layer1Tex[k], rc, wx, wy, chunk.layer1Displacement);
+                            drawLayer(k, chunk, chunk.layer2Tex[k], rc, wx, wy, null);
                         }
                     }
                 }

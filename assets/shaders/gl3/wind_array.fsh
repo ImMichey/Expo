@@ -14,6 +14,9 @@ in float v_texture_index;
 uniform sampler2DArray u_texturearray;
 uniform float u_time;
 
+uniform int u_selected;
+uniform float u_progress;
+
 const float textureAdjustment = 128.0; // (2048.0 / 16.0) -> equal to MAX_TEXTURE_WIDTH / TEXTURE_WIDTH;
 const float speed = 2.0; // 2
 const float bendFactor = 0.2 / textureAdjustment;
@@ -26,5 +29,12 @@ void main() {
     float offset = pow(height, skewStartHeightMultiplier);
     offset *= (sin(u_time * speed) * bendFactor);
 
-    fragColor = v_color * texture(u_texturearray, vec3(vec2(v_texCoords.x + offset, v_texCoords.y), v_texture_index));
+    if(u_selected == 1) {
+        vec4 c = texture(u_texturearray, vec3(vec2(v_texCoords.x + offset, v_texCoords.y), v_texture_index));
+        c.rgb = mix(c.rgb * 1.05, c.rgb * 1.25, u_progress);
+        fragColor = v_color * c;
+    } else {
+        fragColor = v_color * texture(u_texturearray, vec3(vec2(v_texCoords.x + offset, v_texCoords.y), v_texture_index));
+    }
+
 }

@@ -14,6 +14,7 @@ public class ExpoServerRegistry {
         register(kryo,
                 // Java classes
                 int[].class,
+                int[][].class,
                 boolean[].class,
                 String[].class,
 
@@ -50,7 +51,9 @@ public class ExpoServerRegistry {
                 P20_PlayerInventorySwitch.class,
                 P21_PlayerGearUpdate.class,
                 P22_PlayerArmDirection.class,
-                P23_PlayerLifeUpdate.class
+                P23_PlayerLifeUpdate.class,
+                P24_PositionalSound.class,
+                P25_ChatMessage.class
         );
     }
 

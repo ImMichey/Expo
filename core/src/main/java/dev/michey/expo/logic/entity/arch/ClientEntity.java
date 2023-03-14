@@ -195,7 +195,7 @@ public abstract class ClientEntity {
         int relativeTileY = clientTileY - startTileY;
         int mouseTileArray = relativeTileY * 8 + relativeTileX;
 
-        return c.biomeData[mouseTileArray];
+        return c.biomes[mouseTileArray];
     }
 
 }

@@ -236,7 +236,7 @@ public class ServerChunkGrid {
             chunk.loadFromFile();
         } else {
             // Generate chunk.
-            chunk.generate();
+            chunk.generate(true);
         }
 
         activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));

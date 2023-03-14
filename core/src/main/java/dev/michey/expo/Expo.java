@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class Expo implements ApplicationListener {
 
@@ -46,9 +47,9 @@ public class Expo implements ApplicationListener {
 	private final HashMap<String, AbstractScreen> inactiveScreens;
 
 	/** ImGui */
-	private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
-	private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
-	private final ImGuiExpo imGuiExpo = new ImGuiExpo();
+	private ImGuiImplGlfw imGuiGlfw;
+	private ImGuiImplGl3 imGuiGl3;
+	private ImGuiExpo imGuiExpo;
 
 	public Expo() {
 		// Enable logging to file + console for debugging
@@ -58,7 +59,12 @@ public class Expo implements ApplicationListener {
 
 	@Override
 	public void create() {
-		{ // Initialize ImGui
+		if(DEV_MODE) {
+			imGuiGlfw = new ImGuiImplGlfw();
+			imGuiGl3 = new ImGuiImplGl3();
+			imGuiExpo = new ImGuiExpo();
+
+			// Initialize ImGui
 			long pointer = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
 			GLFW.glfwMakeContextCurrent(pointer);
 			ImGui.createContext();
@@ -115,7 +121,7 @@ public class Expo implements ApplicationListener {
 		AudioEngine.get().tick();
 		ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1.0f);
 
-		if(r.drawImGui) {
+		if(r.drawImGui && DEV_MODE) {
 			imGuiGlfw.newFrame();
 			ImGui.newFrame();
 		}
@@ -127,7 +133,7 @@ public class Expo implements ApplicationListener {
 		GameConsole.get().draw();
 		DevHUD.get().draw();
 
-		if(r.drawImGui) {
+		if(r.drawImGui && DEV_MODE) {
 			imGuiExpo.draw();
 			ImGui.render();
 			imGuiGl3.renderDrawData(ImGui.getDrawData());

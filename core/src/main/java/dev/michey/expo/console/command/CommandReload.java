@@ -1,8 +1,7 @@
 package dev.michey.expo.console.command;
 
 import dev.michey.expo.Expo;
-import dev.michey.expo.command.CommandSyntaxException;
-import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 

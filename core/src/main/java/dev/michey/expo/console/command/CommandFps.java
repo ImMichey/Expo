@@ -1,7 +1,7 @@
 package dev.michey.expo.console.command;
 
 import com.badlogic.gdx.Gdx;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 
 public class CommandFps extends AbstractConsoleCommand {
 

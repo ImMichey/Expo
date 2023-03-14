@@ -1,9 +1,10 @@
 package dev.michey.expo.console.command;
 
-import dev.michey.expo.command.AbstractCommand;
+import dev.michey.expo.command.abstraction.AbstractCommand;
+import dev.michey.expo.command.abstraction.ExecutableSingle;
 import dev.michey.expo.console.GameConsole;
 
-public abstract class AbstractConsoleCommand extends AbstractCommand {
+public abstract class AbstractConsoleCommand extends AbstractCommand implements ExecutableSingle {
 
     /** Command lock */
     private boolean commandLock;

@@ -2,26 +2,23 @@ package dev.michey.expo.render.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Colors;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
-import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.ExpoTime;
 
-import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class PlayerUI {
 
@@ -42,9 +39,11 @@ public class PlayerUI {
     public float slotW, slotH;
     private float healthW, healthH;
     private float hungerW, hungerH;
-    private final Color COLOR_GREEN = new Color(127f / 255f, 237f / 255f, 51f / 255f, 1.0f);
+    public final Color COLOR_GREEN = new Color(127f / 255f, 237f / 255f, 51f / 255f, 1.0f);
+    public final String COLOR_GREEN_HEX = COLOR_GREEN.toString();
     private final Color COLOR_YELLOW  = new Color(251f / 255f, 242f / 255f, 54f / 255f, 1.0f);
     private final Color COLOR_RED = new Color(210f / 255f, 27f / 255f, 27f / 255f, 1.0f);
+    public final String COLOR_DESCRIPTOR_HEX = "[#5875b0]";
     private final float[] COLOR_GRADIENTS = new float[] {100f, 80f, 60f, 40f, 20f, 0f};
     public InteractableItemSlot[] hotbarSlots;
     public InteractableItemSlot hoveredSlot = null;
@@ -56,7 +55,10 @@ public class PlayerUI {
     public InteractableItemSlot[] inventoryArmorSlots;
 
     /** Minimap */
-    private final PlayerMinimap playerMinimap;
+    public final PlayerMinimap playerMinimap;
+
+    /** Multiplayer chat */
+    public final ExpoClientChat chat;
 
     /** Textures */
     public final TextureRegion invSlot;             // Regular Item Slot
@@ -99,6 +101,7 @@ public class PlayerUI {
     private final TextureRegion tooltipBorder7x1;
     private final TextureRegion tooltipBorder1x7;
     private final TextureRegion tooltipFiller;
+    private final TextureRegion tooltipFillerLight;
 
     private boolean inventoryOpenState;
 
@@ -175,7 +178,10 @@ public class PlayerUI {
         tooltipBorder1x7 = new TextureRegion(tooltip, 16, 16, 1, 4);
         tooltipBorder7x1 = new TextureRegion(tooltip, 18, 16, 4, 1);
         tooltipFiller = new TextureRegion(tooltip, 18, 2+16, 1, 1);
+        tooltipFillerLight = new TextureRegion(tooltip, 20, 2+16, 1, 1);
         // tooltip end
+
+        chat = new ExpoClientChat(this);
 
         changeUiScale(2.0f);
     }
@@ -196,18 +202,37 @@ public class PlayerUI {
         drawTooltipColored(text, Color.WHITE);
     }
 
-    public void drawTooltipColored(String text, Color color) {
+    public void drawTooltipColored(String text, Color color, String... extraLines) {
         RenderContext r = RenderContext.get();
-        drawTooltipColored((int) r.mouseX, (int) r.mouseY, text, color);
+        drawTooltipColored((int) r.mouseX, (int) r.mouseY, text, color, extraLines);
     }
 
-    public void drawTooltipColored(int x, int y, String text, Color color) {
+    public void drawTooltipColored(int x, int y, String text, Color color, String... extraLines) {
         x += 4 * uiScale; // offset
         y += 4 * uiScale; // offset
 
         glyphLayout.setText(m5x7_use, text);
         float tw = glyphLayout.width;
+
+        if(extraLines.length > 0) {
+            for(String str : extraLines) {
+                glyphLayout.setText(m5x7_use, str);
+                if(glyphLayout.width > tw) tw = glyphLayout.width;
+            }
+        }
+
         float th = glyphLayout.height;
+        float titleHeight = glyphLayout.height;
+
+        if(extraLines.length > 0) {
+            th += 9 * uiScale;
+
+            for(int i = 0; i < extraLines.length; i++) {
+                glyphLayout.setText(m5x7_use, extraLines[i]);
+                th += glyphLayout.height;
+                if(i > 0) th += 4 * uiScale;
+            }
+        }
 
         float cornerSize = tooltipBottomLeft.getRegionWidth() * uiScale;
         float borderSize = 1 * uiScale * 2;
@@ -217,6 +242,25 @@ public class PlayerUI {
         RenderContext r = RenderContext.get();
 
         r.hudBatch.draw(tooltipFiller, x + 4 * uiScale, y + 4 * uiScale, tw + 4 * uiScale, th + 4 * uiScale);
+
+        drawBorderAt(r, x, y, tw, th);
+
+        m5x7_use.setColor(color);
+        m5x7_use.draw(r.hudBatch, text, x + cornerSize + uiScale, y + cornerSize + th - uiScale);
+        m5x7_use.setColor(Color.WHITE);
+
+        if(extraLines.length > 0) {
+            r.hudBatch.draw(tooltipFillerLight, x + cornerSize + uiScale, y + cornerSize + th - uiScale - titleHeight - 5 * uiScale, tw, uiScale);
+
+            for(int i = 0; i < extraLines.length; i++) {
+                String c = extraLines[i];
+                m5x7_use.draw(r.hudBatch, c, x + cornerSize + uiScale, y + cornerSize + th - uiScale - titleHeight - 9 * uiScale - i * (4 * uiScale + titleHeight));
+            }
+        }
+    }
+
+    public void drawBorderAt(RenderContext r, int x, int y, float tw, float th) {
+        float cornerSize = tooltipBottomLeft.getRegionWidth() * uiScale;
 
         r.hudBatch.draw(tooltipBottomLeft, x, y, cornerSize, cornerSize);
         r.hudBatch.draw(tooltipBottomRight, x + tw + cornerSize, y, cornerSize, cornerSize);
@@ -228,10 +272,6 @@ public class PlayerUI {
         r.hudBatch.draw(tooltipTopLeft, x, y + cornerSize + th, cornerSize, cornerSize);
         r.hudBatch.draw(tooltipTopRight, x + tw + cornerSize, y + cornerSize + th, cornerSize, cornerSize);
         r.hudBatch.draw(tooltipBorder1x7, x + cornerSize, y + cornerSize + th + (cornerSize - 4 * uiScale), tw, 4 * uiScale);
-
-        m5x7_use.setColor(color);
-        m5x7_use.draw(r.hudBatch, text, x + cornerSize + (tw - glyphLayout.width) * 0.5f, y + cornerSize + th - (th - glyphLayout.height) * 0.5f);
-        m5x7_use.setColor(Color.WHITE);
     }
 
     private void updateSlotVisibility() {
@@ -374,6 +414,8 @@ public class PlayerUI {
         }
 
         r.hudBatch.end();
+
+        chat.draw();
     }
 
     private void drawSlots(InteractableItemSlot[]... slots) {
@@ -386,7 +428,7 @@ public class PlayerUI {
                 slot.drawContents();
             }
 
-            if(Expo.get().getImGuiExpo().shouldDrawSlotIndices()) {
+            if(DEV_MODE && Expo.get().getImGuiExpo().shouldDrawSlotIndices()) {
                 for(InteractableItemSlot slot : array) {
                     slot.drawSlotIndices();
                 }
@@ -575,16 +617,16 @@ public class PlayerUI {
         m5x7_border_use.setColor(Color.WHITE);
     }
 
-    private void status(RenderContext rc, float status, float x, float y) {
+    public float[] percentageToColor(float percentage) {
         float r, g, b;
 
-        if(status > COLOR_GRADIENTS[1]) {
+        if(percentage > COLOR_GRADIENTS[1]) {
             r = COLOR_GREEN.r;
             g = COLOR_GREEN.g;
             b = COLOR_GREEN.b;
-        } else if(status > COLOR_GRADIENTS[2]) {
+        } else if(percentage > COLOR_GRADIENTS[2]) {
             float d = COLOR_GRADIENTS[1] - COLOR_GRADIENTS[2]; // =20
-            float s = COLOR_GRADIENTS[1] - status; // 0->20
+            float s = COLOR_GRADIENTS[1] - percentage; // 0->20
             float n = s / d;
 
             float rD = COLOR_YELLOW.r - COLOR_GREEN.r;
@@ -593,13 +635,13 @@ public class PlayerUI {
             g = COLOR_GREEN.g + gD * n;
             float bD = COLOR_YELLOW.b - COLOR_GREEN.b;
             b = COLOR_GREEN.b + bD * n;
-        } else if(status > COLOR_GRADIENTS[3]) {
+        } else if(percentage > COLOR_GRADIENTS[3]) {
             r = COLOR_YELLOW.r;
             g = COLOR_YELLOW.g;
             b = COLOR_YELLOW.b;
-        } else if(status > COLOR_GRADIENTS[4]) {
+        } else if(percentage > COLOR_GRADIENTS[4]) {
             float d = COLOR_GRADIENTS[3] - COLOR_GRADIENTS[4]; // =20
-            float s = COLOR_GRADIENTS[3] - status; // 0->20
+            float s = COLOR_GRADIENTS[3] - percentage; // 0->20
             float n = s / d;
 
             float rD = COLOR_YELLOW.r - COLOR_RED.r;
@@ -614,10 +656,16 @@ public class PlayerUI {
             b = COLOR_RED.b;
         }
 
+        return new float[] {r, g, b};
+    }
+
+    private void status(RenderContext rc, float status, float x, float y) {
+        float[] rgb = percentageToColor(status);
+
         String text = (int) status + "%";
         glyphLayout.setText(m5x7_border_use, text);
 
-        m5x7_border_use.setColor(r, g, b, 1.0f);
+        m5x7_border_use.setColor(rgb[0], rgb[1], rgb[2], 1.0f);
         m5x7_border_use.draw(rc.hudBatch, text, x + (32 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
     }
 
@@ -662,6 +710,14 @@ public class PlayerUI {
         m5x7_shadow_use = RenderContext.get().m5x7_shadow_all[(int) uiScale - 1];
 
         updateHotbarPosition();
+
+        int lines = 12;
+        int total = 19 + lines * 11;
+
+        float _uiScale = uiScale - 1;
+        if(_uiScale <= 0) _uiScale = 1;
+
+        chat.resize((int) (180 * (_uiScale + 1)), (int) (total * (_uiScale)), _uiScale);
     }
 
     public void onResize() {
@@ -671,6 +727,8 @@ public class PlayerUI {
         invX = center(invW);
         invY = centerY(invH);
         updateHotbarPosition();
+
+        chat.readjust();
     }
 
     private float center(float w) {
@@ -686,11 +744,11 @@ public class PlayerUI {
     }
 
     public void onPlayerJoin(String username) {
-
+        chat.addServerMessage(username + " joined the server.");
     }
 
     public void onPlayerQuit(String username) {
-
+        chat.addServerMessage(username + " left the server.");
     }
 
 }

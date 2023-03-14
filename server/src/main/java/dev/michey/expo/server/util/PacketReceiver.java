@@ -14,11 +14,13 @@ public class PacketReceiver {
 
     public boolean all;
     public Connection receiverSingle;
+    public Connection receiverAllExcept;
     public List<Connection> receiverList;
 
-    public PacketReceiver(boolean all, Connection receiverSingle, List<Connection> receiverList) {
+    public PacketReceiver(boolean all, Connection receiverSingle, Connection receiverAllExcept, List<Connection> receiverList) {
         this.all = all;
         this.receiverSingle = receiverSingle;
+        this.receiverAllExcept = receiverAllExcept;
         this.receiverList = receiverList;
     }
 
@@ -37,24 +39,28 @@ public class PacketReceiver {
             list.add(player.playerConnection.getKryoConnection());
         }
 
-        return new PacketReceiver(false, null, list);
+        return new PacketReceiver(false, null, null, list);
     }
 
     public static PacketReceiver all() {
-        return new PacketReceiver(true, null, null);
+        return new PacketReceiver(true, null, null, null);
+    }
+
+    public static PacketReceiver allExcept(Connection except) {
+        return new PacketReceiver(false, null, except, null);
     }
 
     public static PacketReceiver local() {
-        return new PacketReceiver(true, null, null);
+        return new PacketReceiver(true, null, null, null);
     }
 
     public static PacketReceiver player(ServerPlayer player) {
         if(player.localServerPlayer) return all();
-        return new PacketReceiver(false, player.playerConnection.getKryoConnection(), null);
+        return new PacketReceiver(false, player.playerConnection.getKryoConnection(), null, null);
     }
 
     public static PacketReceiver connection(Connection receiver) {
-        return new PacketReceiver(false, receiver, null);
+        return new PacketReceiver(false, receiver, null, null);
     }
 
     public static PacketReceiver whoCanSee(ServerEntity entity) {
@@ -73,7 +79,7 @@ public class PacketReceiver {
             }
         }
 
-        return new PacketReceiver(false, null, list);
+        return new PacketReceiver(false, null, null, list);
     }
 
 }

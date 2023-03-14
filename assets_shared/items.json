@@ -74,7 +74,8 @@
             "logic": {
                 "stackSize": 1,
                 "durability": 100,
-                "toolType": "PICKAXE"
+                "toolType": "PICKAXE",
+                "attackSpeed": 0.8
             }
         },
         {
@@ -98,7 +99,9 @@
             "logic": {
                 "stackSize": 1,
                 "durability": 100,
-                "toolType": "AXE"
+                "toolType": "AXE",
+                "range": 50,
+                "attackSpeed": 0.1
             }
         },
         {

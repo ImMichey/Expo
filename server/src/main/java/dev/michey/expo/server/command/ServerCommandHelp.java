@@ -1,11 +1,11 @@
 package dev.michey.expo.server.command;
 
-import dev.michey.expo.command.AbstractCommand;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.abstraction.AbstractCommand;
+import dev.michey.expo.command.util.CommandSyntaxException;
+import dev.michey.expo.server.main.arch.AbstractServerCommand;
+import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
-public class ServerCommandHelp extends AbstractCommand {
+public class ServerCommandHelp extends AbstractServerCommand {
 
     @Override
     public String getCommandName() {
@@ -23,11 +23,11 @@ public class ServerCommandHelp extends AbstractCommand {
     }
 
     @Override
-    public void executeCommand(String[] args) {
-        log("All available commands: ");
+    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+        sendToSender("All available commands: ", player);
 
         for(AbstractCommand command : getResolver().getCommands()) {
-            log(command.getCommandName() + " - " + command.getCommandDescription());
+            sendToSender(command.getCommandName() + " - " + command.getCommandDescription(), player);
         }
     }
 

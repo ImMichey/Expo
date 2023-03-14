@@ -7,6 +7,7 @@ import com.esotericsoftware.kryonet.Client;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.client.chat.ChatMessage;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -102,7 +103,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P10_PlayerQuit p) {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
-            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.biomeData, p.tileIndexData, p.waterLoggedData);
+            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.biomes, p.layer0, p.layer1, p.layer2);
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);
 
@@ -170,6 +171,8 @@ public class ExpoClientPacketReader {
             }
         } else if(o instanceof P24_PositionalSound p) {
             AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false);
+        } else if(o instanceof P25_ChatMessage p) {
+            ExpoClientContainer.get().getPlayerUI().chat.addConsoleMessage(new ChatMessage(p.message, p.sender, false));
         }
     }
 

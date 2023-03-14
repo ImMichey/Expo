@@ -1,6 +1,7 @@
 package dev.michey.expo.input;
 
 import com.badlogic.gdx.InputProcessor;
+import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.logic.entity.ClientPlayer;
 
@@ -14,30 +15,30 @@ public class GameInput implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        controller.onKeyDown(keycode, consoleOpen(), inventoryOpen());
+        controller.onKeyDown(keycode, consoleOpen(), chatOpen(), inventoryOpen());
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        controller.onKeyUp(keycode, consoleOpen(), inventoryOpen());
+        controller.onKeyUp(keycode, consoleOpen(), chatOpen(), inventoryOpen());
         return false;
     }
 
     @Override
     public boolean keyTyped(char character) {
-        controller.onKeyTyped(character, consoleOpen(), inventoryOpen());
+        controller.onKeyTyped(character, consoleOpen(), chatOpen(), inventoryOpen());
         return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(button == 0) {
-            controller.onLeftClickBegin(screenX, screenY, consoleOpen(), inventoryOpen());
+            controller.onLeftClickBegin(screenX, screenY, consoleOpen(), chatOpen(), inventoryOpen());
         } else if(button == 1) {
-            controller.onRightClickBegin(screenX, screenY, consoleOpen(), inventoryOpen());
+            controller.onRightClickBegin(screenX, screenY, consoleOpen(), chatOpen(), inventoryOpen());
         } else if(button == 2) {
-            controller.onMiddleClickBegin(screenX, screenY, consoleOpen(), inventoryOpen());
+            controller.onMiddleClickBegin(screenX, screenY, consoleOpen(), chatOpen(), inventoryOpen());
         }
 
         return false;
@@ -46,11 +47,11 @@ public class GameInput implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if(button == 0) {
-            controller.onLeftClickEnd(screenX, screenY, consoleOpen(), inventoryOpen());
+            controller.onLeftClickEnd(screenX, screenY, consoleOpen(), chatOpen(), inventoryOpen());
         } else if(button == 1) {
-            controller.onRightClickEnd(screenX, screenY, consoleOpen(), inventoryOpen());
+            controller.onRightClickEnd(screenX, screenY, consoleOpen(), chatOpen(), inventoryOpen());
         } else if(button == 2) {
-            controller.onMiddleClickEnd(screenX, screenY, consoleOpen(), inventoryOpen());
+            controller.onMiddleClickEnd(screenX, screenY, consoleOpen(), chatOpen(), inventoryOpen());
         }
 
         return false;
@@ -58,7 +59,7 @@ public class GameInput implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        controller.onDrag(screenX, screenY, consoleOpen(), inventoryOpen());
+        controller.onDrag(screenX, screenY, consoleOpen(), chatOpen(), inventoryOpen());
         return false;
     }
 
@@ -69,7 +70,7 @@ public class GameInput implements InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        controller.onScroll(amountX, amountY, consoleOpen(), inventoryOpen());
+        controller.onScroll(amountX, amountY, consoleOpen(), chatOpen(), inventoryOpen());
         return false;
     }
 
@@ -79,6 +80,10 @@ public class GameInput implements InputProcessor {
 
     private boolean consoleOpen() {
         return GameConsole.get().isVisible();
+    }
+
+    private boolean chatOpen() {
+        return ExpoClientChat.get() != null && ExpoClientChat.get().isFocused();
     }
 
 }

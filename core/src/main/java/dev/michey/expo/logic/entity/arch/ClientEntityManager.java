@@ -5,10 +5,15 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.packet.P2_EntityCreate;
+import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.util.ExpoShared;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -35,7 +40,12 @@ public class ClientEntityManager {
 
     /** Selectable entities */
     private final HashMap<ClientEntity, Object[]> selectableEntities;
-    private ClientEntity selectedEntity;
+    public ClientEntity selectedEntity;
+    // Rendering helpers
+    private int lastEntityId = -1;
+    private float pDelta;
+    private boolean plus = true;
+    public float pulseProgress;
 
     public ClientEntityManager() {
         depthEntityList = new LinkedList<>();
@@ -56,10 +66,6 @@ public class ClientEntityManager {
 
     public void tickEntities(float delta) {
         selectableEntities.clear();
-        if(selectedEntity != null) {
-            selectedEntity.selected = false;
-            selectedEntity = null;
-        }
 
         // poll addition
         while(!additionQueue.isEmpty()) {
@@ -91,13 +97,18 @@ public class ClientEntityManager {
         for(ClientEntity entity : depthEntityList) {
             entity.tick(delta);
 
-            if(entity instanceof SelectableEntity se) {
-                Object[] data = se.isNowSelected();
+            if(entity instanceof SelectableEntity) {
+                Object[] data = isNowSelected(entity);
 
                 if(data != null) {
                     selectableEntities.put(entity, data);
                 }
             }
+        }
+
+        if(selectedEntity != null) {
+            selectedEntity.selected = false;
+            selectedEntity = null;
         }
 
         if(!selectableEntities.isEmpty()) {
@@ -146,13 +157,58 @@ public class ClientEntityManager {
         }
     }
 
+    private void updateSelectionShader(ClientEntity entity, RenderContext rc) {
+        if(entity.entityId != lastEntityId) {
+            lastEntityId = entity.entityId;
+            plus = false;
+            pDelta = 1.0f;
+        }
+
+        float speed = 3.0f;
+
+        if(plus) {
+            pDelta += rc.delta * speed;
+
+            if(pDelta >= 1f) {
+                pDelta = 1f;
+                plus = false;
+            }
+        } else {
+            pDelta -= rc.delta * speed;
+
+            if(pDelta <= 0f) {
+                pDelta = 0f;
+                plus = true;
+            }
+        }
+
+        pulseProgress = Interpolation.smooth2.apply(pDelta);
+
+        rc.currentBatch.end();
+
+        rc.selectionShader.bind();
+        rc.selectionShader.setUniformf("u_progress", pulseProgress);
+        rc.selectionShader.setUniformf("u_pulseStrength", 1.25f);
+        rc.selectionShader.setUniformf("u_pulseMin", 1.05f);
+
+        rc.currentBatch = rc.batch;
+        rc.currentBatch.begin();
+        rc.currentBatch.setShader(rc.selectionShader);
+    }
+
     public void renderEntities(float delta) {
         RenderContext rc = RenderContext.get();
 
         rc.forceBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
 
         for(ClientEntity entity : depthEntityList) {
-            entity.render(rc, delta);
+            if(entity.selected) {
+                updateSelectionShader(entity, rc);
+                ((SelectableEntity) entity).renderSelected(rc, delta);
+                rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
+            } else {
+                entity.render(rc, delta);
+            }
         }
 
         rc.cleanUp();
@@ -248,6 +304,33 @@ public class ClientEntityManager {
 
     public int entityCount() {
         return idEntityMap.size();
+    }
+
+    public Object[] isNowSelected(ClientEntity entity) {
+        // only check if in view
+        if(!entity.drawnLastFrame) return null;
+
+        ClientPlayer player = ClientPlayer.getLocalPlayer();
+        RenderContext r = RenderContext.get();
+
+        // range
+        float px = player.playerReachCenterX;
+        float py = player.playerReachCenterY;
+        float distancePlayerEntity = Vector2.dst(px, py, entity.drawCenterX, entity.drawCenterY);
+
+        if(distancePlayerEntity > player.getPlayerRange()) return null;
+
+        // view angle
+        double entityPlayerAngle = GenerationUtils.angleBetween360(player.playerReachCenterX, player.playerReachCenterY, entity.drawCenterX, entity.drawCenterY);
+        if(!ExpoShared.inAngleProximity(r.mousePlayerAngle, entityPlayerAngle, 225)) return null;
+
+        float sx = entity.clientPosX + entity.drawOffsetX;
+        float sy = entity.clientPosY + entity.drawOffsetY;
+
+        float distanceMouseEntity = Vector2.dst(r.mouseWorldX, r.mouseWorldY, entity.drawCenterX, entity.drawCenterY);
+        boolean directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + entity.drawWidth) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + entity.drawHeight);
+
+        return new Object[] {directMouseContact, distanceMouseEntity};
     }
 
     public static ClientEntityManager get() {

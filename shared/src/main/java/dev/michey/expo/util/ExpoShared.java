@@ -4,6 +4,8 @@ import dev.michey.expo.noise.BiomeType;
 
 import java.util.Random;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ExpoShared {
 
     /** Server constants */
@@ -38,6 +40,10 @@ public class ExpoShared {
     public static final int PLAYER_INVENTORY_ACTION_LEFT = 0;
     public static final int PLAYER_INVENTORY_ACTION_RIGHT = 1;
     public static final int PLAYER_INVENTORY_ACTION_MIDDLE = 2;
+
+    public static final float PLAYER_DEFAULT_RANGE = 20.0f;
+    public static final float PLAYER_DEFAULT_ATTACK_SPEED = 0.4f;
+    public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 32f / 128f;
 
     /** Global random */
     public static final Random RANDOM = new Random();
@@ -95,6 +101,34 @@ public class ExpoShared {
     /** Converts a tile position to an absolute world position. */
     public static int tileToPos(int tilePosition) {
         return tilePosition * TILE_SIZE;
+    }
+
+    public static boolean inAngleProximity(double baseAngle, double checkAngle, double angleSpan) {
+        double halfSpan = angleSpan * 0.5d;
+        double minus = baseAngle - halfSpan;
+        double plus = baseAngle + halfSpan;
+
+        if(minus >= 0 && plus <= 360) {
+            return checkAngle >= minus && checkAngle <= plus;
+        }
+
+        boolean m, p;
+
+        if(minus < 0) {
+            double ceil = 360 + minus;
+            m = checkAngle >= ceil;
+        } else {
+            m = checkAngle >= minus;
+        }
+
+        if(plus > 360) {
+            double floor = plus - 360;
+            p = checkAngle <= floor;
+        } else {
+            p = checkAngle <= plus;
+        }
+
+        return m || p;
     }
 
 }

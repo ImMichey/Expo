@@ -3,7 +3,7 @@ package dev.michey.expo.console.command;
 import com.badlogic.gdx.Gdx;
 import dev.michey.expo.Expo;
 import dev.michey.expo.client.ExpoClient;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.screen.GameScreen;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.util.ClientPackets;

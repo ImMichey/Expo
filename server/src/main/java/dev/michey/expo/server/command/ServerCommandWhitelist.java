@@ -1,12 +1,13 @@
 package dev.michey.expo.server.command;
 
-import dev.michey.expo.command.AbstractCommand;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
+import dev.michey.expo.server.main.arch.AbstractServerCommand;
+import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
-public class ServerCommandWhitelist extends AbstractCommand {
+public class ServerCommandWhitelist extends AbstractServerCommand {
 
     @Override
     public String getCommandName() {
@@ -24,9 +25,9 @@ public class ServerCommandWhitelist extends AbstractCommand {
     }
 
     @Override
-    public void executeCommand(String[] args) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
         if(ServerWhitelist.get() == null) {
-            log("Server whitelist is disabled. Enable whitelist in config and restart the server.");
+            sendToSender("Server whitelist is disabled. Enable whitelist in config and restart the server.", player);
             return;
         }
 

@@ -7,6 +7,7 @@ import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.arch.ExpoServerDedicated;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
@@ -59,6 +60,8 @@ public class ExpoServerPacketReader {
             ServerPlayer sp = ServerPlayer.getLocalPlayer();
             if(sp == null) return;
             sp.switchToSlot(p.slot);
+        } else if(packet instanceof P25_ChatMessage p) {
+            readChatMessage(true, p, null, ServerPlayer.getLocalPlayer());
         }
     }
 
@@ -155,6 +158,18 @@ public class ExpoServerPacketReader {
 
             if(player != null) {
                 player.applyArmDirection(p.rotation);
+            }
+        } else if(o instanceof P25_ChatMessage p) {
+            readChatMessage(false, p, connection, connectionToPlayer(connection));
+        }
+    }
+
+    private void readChatMessage(boolean local, P25_ChatMessage p, Connection connection, ServerPlayer serverPlayer) {
+        if(p.message.startsWith("/")) {
+            ExpoServerBase.get().getCommandResolver().resolveCommand(p.message, serverPlayer);
+        } else {
+            if(!local) {
+                ServerPackets.p25ChatMessage(p.sender, p.message, PacketReceiver.allExcept(connection));
             }
         }
     }

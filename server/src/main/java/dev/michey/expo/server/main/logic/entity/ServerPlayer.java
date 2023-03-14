@@ -8,6 +8,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.server.packet.P16_PlayerPunch;
@@ -21,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ExpoShared.PLAYER_DEFAULT_ATTACK_SPEED;
 
 public class ServerPlayer extends ServerEntity {
 
@@ -184,7 +186,13 @@ public class ServerPlayer extends ServerEntity {
             float angleSpan = 180;
 
             punching = true;
-            punchDeltaFinish = 0.5f;
+            float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
+
+            if(getCurrentItem() != -1) {
+                attackSpeed = ItemMapper.get().getMapping(getCurrentItem()).logic.attackSpeed;
+            }
+
+            punchDeltaFinish = attackSpeed;
             startAngle = p.punchAngle - angleSpan / 2;
             endAngle = p.punchAngle + angleSpan / 2;
             punchDelta = 0;
@@ -227,17 +235,20 @@ public class ServerPlayer extends ServerEntity {
                 hasSeenChunks.add(key);
 
                 var chunk = getChunkGrid().getChunk(x, y);
-                chunkPacketList.add(new Pair<>(key, new P11_ChunkData(x, y,
-                        chunk.getBiomeGrid(),
-                        chunk.getTileIndexGrid(),
-                        chunk.getWaterLoggedGrid()
-                )));
+                var packet = new P11_ChunkData();
+                packet.chunkX = x;
+                packet.chunkY = y;
+                packet.biomes = chunk.biomes;
+                packet.layer0 = chunk.layer0;
+                packet.layer1 = chunk.layer1;
+                packet.layer2 = chunk.layer2;
+                chunkPacketList.add(new Pair<>(key, packet));
             }
         }
 
         if(chunkPacketList != null) {
             for(var pair : chunkPacketList) {
-                ServerPackets.p11ChunkData(pair.value.chunkX, pair.value.chunkY, pair.value.biomeData, pair.value.tileIndexData, pair.value.waterLoggedData, PacketReceiver.player(this));
+                ServerPackets.p11ChunkData(pair.value.chunkX, pair.value.chunkY, pair.value.biomes, pair.value.layer0, pair.value.layer1, pair.value.layer2, PacketReceiver.player(this));
             }
         }
     }

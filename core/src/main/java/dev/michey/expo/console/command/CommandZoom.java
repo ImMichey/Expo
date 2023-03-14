@@ -1,7 +1,7 @@
 package dev.michey.expo.console.command;
 
 import dev.michey.expo.Expo;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.render.RenderContext;
 
 public class CommandZoom extends AbstractConsoleCommand {

@@ -35,10 +35,8 @@ import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.PacketUtils;
 
 import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ClientStatic.CAMERA_ANIMATION_MIN_ZOOM;
-import static dev.michey.expo.util.ClientStatic.DEFAULT_CAMERA_ZOOM;
-import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
-import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
+import static dev.michey.expo.util.ClientStatic.*;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public class ClientPlayer extends ClientEntity {
 
@@ -223,7 +221,7 @@ public class ClientPlayer extends ClientEntity {
         lastLerpedServerPunchAngle = lerpedServerPunchAngle;
         serverPunchAngle = rotation;
         serverPunchAngleStart = RenderContext.get().deltaTotal;
-        serverPunchAngleEnd = serverPunchAngleStart + 0.125f;
+        serverPunchAngleEnd = serverPunchAngleStart + PLAYER_ARM_MOVEMENT_SEND_RATE;
     }
 
     @Override
@@ -299,7 +297,7 @@ public class ClientPlayer extends ClientEntity {
             clientViewport[2] = chunkY - PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // y start
             clientViewport[3] = chunkY + PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // y end
 
-            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE) {
                 new ItemMapper(true, true);
                 Expo.get().loadItemMapperTextures();
                 if(ClientPlayer.getLocalPlayer() != null) ClientPlayer.getLocalPlayer().updateHoldingItemSprite();
@@ -308,9 +306,8 @@ public class ClientPlayer extends ClientEntity {
             // Sending arm rotation packet if needed
             float currentRotation = RenderContext.get().mouseRotation;
             float timeSinceLastSend = RenderContext.get().deltaTotal - lastPunchAngleTimestamp;
-            final float PUNCH_ANGLE_SEND_RATE = 16f / 128f;
 
-            if(holdingItemId != -1 && timeSinceLastSend >= PUNCH_ANGLE_SEND_RATE && (currentRotation != lastPunchAngleOnSend)) {
+            if(holdingItemId != -1 && timeSinceLastSend >= PLAYER_ARM_MOVEMENT_SEND_RATE && (currentRotation != lastPunchAngleOnSend)) {
                 lastPunchAngleTimestamp = RenderContext.get().deltaTotal;
                 lastPunchAngleOnSend = currentRotation;
                 ClientPackets.p22PlayerArmDirection(currentRotation);
@@ -476,7 +473,7 @@ public class ClientPlayer extends ClientEntity {
             draw_tex_arm_right = punchAnimation ? tex_punch_arm : tex_arm_right;
 
             // Draw player username
-            rc.m5x7_bordered.draw(rc.currentBatch, username, clientPosX - 12, clientPosY + 48);
+            //rc.m5x7_bordered.draw(rc.currentBatch, username, clientPosX - 12, clientPosY + 48);
 
             if(moving) {
                 offsetY = offset_arm_walk_right[playerWalkIndex];
@@ -515,7 +512,7 @@ public class ClientPlayer extends ClientEntity {
                 rc.currentBatch.draw(draw_tex_arm_right, clientPosX + offsetXR, clientPosY + offsetY);
             }
 
-            if(!Gdx.input.isKeyPressed(Input.Keys.U)) {
+            if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
                 rc.currentBatch.draw(draw_tex_base, clientPosX, clientPosY);
                 rc.currentBatch.draw(draw_tex_arm_left, clientPosX + offsetXL, clientPosY + offsetY);
 
@@ -769,6 +766,7 @@ public class ClientPlayer extends ClientEntity {
     }
 
     public void updateHoldingItemSprite() {
+        if(holdingItemId == -1) return;
         ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
         holdingItemSprite = new Sprite(mapping.heldRender.textureRegion);
         holdingItemSprite.setPosition(clientPosX, clientPosY);
@@ -800,7 +798,7 @@ public class ClientPlayer extends ClientEntity {
     }
 
     public float getPlayerRange() {
-        if(holdingItemId == -1) return 20f;
+        if(holdingItemId == -1) return ExpoShared.PLAYER_DEFAULT_RANGE;
         return ItemMapper.get().getMapping(holdingItemId).logic.range;
     }
 

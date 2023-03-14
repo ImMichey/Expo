@@ -1,12 +1,17 @@
 package dev.michey.expo.command;
 
+import dev.michey.expo.command.abstraction.AbstractCommand;
+import dev.michey.expo.command.abstraction.ExecutableSingle;
+import dev.michey.expo.command.util.CommandExceptionReason;
+import dev.michey.expo.command.util.CommandSyntaxException;
+
 import java.util.*;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
 public class CommandResolver {
 
-    private HashMap<String, AbstractCommand> commandMap;
+    protected HashMap<String, AbstractCommand> commandMap;
 
     public CommandResolver() {
         commandMap = new HashMap<>();
@@ -39,7 +44,7 @@ public class CommandResolver {
             log("Executing command '" + fullLine + "'");
 
             try {
-                mapped.executeCommand(split);
+                ((ExecutableSingle) mapped).executeCommand(split);
             } catch (CommandSyntaxException e) {
                 log("Syntax parse exception: " + e.getMessage());
 

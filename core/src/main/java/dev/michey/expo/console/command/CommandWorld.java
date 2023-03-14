@@ -1,13 +1,9 @@
 package dev.michey.expo.console.command;
 
-import com.badlogic.gdx.graphics.Color;
 import dev.michey.expo.Expo;
-import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.screen.GameScreen;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ClientStatic;
 

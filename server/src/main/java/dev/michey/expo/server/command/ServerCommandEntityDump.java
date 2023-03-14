@@ -1,7 +1,8 @@
 package dev.michey.expo.server.command;
 
-import dev.michey.expo.command.AbstractCommand;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
+import dev.michey.expo.server.main.arch.AbstractServerCommand;
+import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
@@ -9,7 +10,7 @@ import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionEntityMa
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
-public class ServerCommandEntityDump extends AbstractCommand {
+public class ServerCommandEntityDump extends AbstractServerCommand {
 
     @Override
     public String getCommandName() {
@@ -27,20 +28,20 @@ public class ServerCommandEntityDump extends AbstractCommand {
     }
 
     @Override
-    public void executeCommand(String[] args) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer sender) throws CommandSyntaxException {
         ServerWorld world = ServerWorld.get();
 
-        log("=== ENTITY DUMP START ===");
+        sendToSender("=== ENTITY DUMP START ===", sender);
         for(ServerDimension dimension : world.getDimensions()) {
             ServerDimensionEntityManager m = dimension.getEntityManager();
 
-            log("- DIMENSION: " + dimension.getDimensionName() + " " + m.entityCount() + " entities");
+            sendToSender("- DIMENSION: " + dimension.getDimensionName() + " " + m.entityCount() + " entities", sender);
 
             for(ServerEntityType t : m.getExistingEntityTypes()) {
-                log("- TYPE: " + t.ENTITY_NAME + " - " + m.getEntitiesOf(t).size() + " entities");
+                sendToSender("- TYPE: " + t.ENTITY_NAME + " - " + m.getEntitiesOf(t).size() + " entities", sender);
             }
         }
-        log("=== ENTITY DUMP END ===");
+        sendToSender("=== ENTITY DUMP END ===", sender);
     }
 
 }

@@ -11,7 +11,7 @@ public class ServerDummy extends ServerEntity {
 
     public float dstX;
     public float dstY;
-    public float speed = 1.0f;
+    public float speed = 0.5f;
 
     @Override
     public void tick(float delta) {

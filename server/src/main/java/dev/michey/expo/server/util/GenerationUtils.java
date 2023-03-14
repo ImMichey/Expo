@@ -41,4 +41,18 @@ public class GenerationUtils {
         return positions;
     }
 
+    public static double angleBetween(float x, float y, float x2, float y2) {
+        return Math.toDegrees(Math.atan2(y2 - y, x2 - x));
+    }
+
+    public static double angleBetween360(float x, float y, float x2, float y2) {
+        double deg = Math.toDegrees(Math.atan2(y2 - y, x2 - x));
+
+        if(deg < 0) {
+            return 360d - Math.abs(deg);
+        }
+
+        return deg;
+    }
+
 }

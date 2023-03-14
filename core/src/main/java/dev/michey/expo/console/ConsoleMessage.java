@@ -36,7 +36,7 @@ public class ConsoleMessage {
     }
 
     public void generateRenderData() {
-        synchronized (CONSOLE_LOCK) {
+        synchronized(CONSOLE_LOCK) {
             GlyphLayout layout = new GlyphLayout();
             layout.setText(GameConsole.get().consoleFont, message, Color.WHITE, GameConsole.get().CONSOLE_HISTORY_TARGET_WIDTH, Align.left, true);
             lines = layout.runs.size;

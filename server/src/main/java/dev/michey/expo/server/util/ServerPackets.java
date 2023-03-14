@@ -109,13 +109,14 @@ public class ServerPackets {
     }
 
     /** Sends the P11_ChunkData packet via TCP protocol. */
-    public static void p11ChunkData(int chunkX, int chunkY, BiomeType[] biomeData, int[] tileIndexData, boolean[] waterLoggedData, PacketReceiver receiver) {
+    public static void p11ChunkData(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2, PacketReceiver receiver) {
         P11_ChunkData p = new P11_ChunkData();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
-        p.biomeData = biomeData;
-        p.tileIndexData = tileIndexData;
-        p.waterLoggedData = waterLoggedData;
+        p.biomes = biomes;
+        p.layer0 = layer0;
+        p.layer1 = layer1;
+        p.layer2 = layer2;
         tcp(p, receiver);
     }
 
@@ -228,12 +229,25 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P25_ChatMessage packet via TCP protocol. */
+    public static void p25ChatMessage(String sender, String message, PacketReceiver receiver) {
+        P25_ChatMessage p = new P25_ChatMessage();
+        p.sender = sender;
+        p.message = message;
+        tcp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;
 
         if(receiver.all) {
             ExpoServerBase.get().broadcastPacketUDP(p);
+            return;
+        }
+
+        if(receiver.receiverAllExcept != null) {
+            ExpoServerBase.get().broadcastPacketUDPExcept(p, receiver.receiverAllExcept);
             return;
         }
 
@@ -257,6 +271,11 @@ public class ServerPackets {
 
         if(receiver.all) {
             ExpoServerBase.get().broadcastPacketTCP(p);
+            return;
+        }
+
+        if(receiver.receiverAllExcept != null) {
+            ExpoServerBase.get().broadcastPacketTCPExcept(p, receiver.receiverAllExcept);
             return;
         }
 

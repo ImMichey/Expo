@@ -2,13 +2,13 @@ package dev.michey.expo.console.command;
 
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 
-public class Client_Volume extends AbstractConsoleCommand {
+public class CommandVolume extends AbstractConsoleCommand {
 
     @Override
     public String getCommandName() {
-        return "/cl_volume";
+        return "/volume";
     }
 
     @Override
@@ -18,7 +18,7 @@ public class Client_Volume extends AbstractConsoleCommand {
 
     @Override
     public String getCommandSyntax() {
-        return "/cl_volume";
+        return "/volume";
     }
 
     @Override

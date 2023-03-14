@@ -188,8 +188,25 @@ public class InteractableItemSlot {
                 parent.drawTooltipColored("Boots Armor Slot", ClientStatic.COLOR_ARMOR_TEXT);
             }
         } else {
-            ItemMapping mapping = ItemMapper.get().getMapping(toInventorySlot().item.itemId);
-            parent.drawTooltipColored(mapping.displayName, mapping.color);
+            ClientInventorySlot slot = toInventorySlot();
+            ItemMapping mapping = ItemMapper.get().getMapping(slot.item.itemId);
+
+            if(mapping.logic.isTool()) {
+                float percentage = slot.item.itemMetadata.durability / (float) mapping.logic.durability * 100f;
+                float[] rgb = parent.percentageToColor(percentage);
+                String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();
+
+                parent.drawTooltipColored(mapping.displayName, mapping.color,
+                        parent.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + slot.item.itemMetadata.durability + "/" + mapping.logic.durability);
+            } else if(mapping.logic.isFood()) {
+                int seconds = (int) mapping.logic.foodData.hungerCooldownRestore;
+
+                parent.drawTooltipColored(mapping.displayName, mapping.color,
+                        parent.COLOR_DESCRIPTOR_HEX + "Regenerates [#" + parent.COLOR_GREEN_HEX + "]" + ((int) mapping.logic.foodData.hungerRestore) + "% hunger",
+                        parent.COLOR_DESCRIPTOR_HEX + "Sates hunger for [#" + parent.COLOR_GREEN_HEX + "]" + seconds + " second" + (seconds == 1 ? "" : "s"));
+            } else {
+                parent.drawTooltipColored(mapping.displayName, mapping.color);
+            }
         }
     }
 

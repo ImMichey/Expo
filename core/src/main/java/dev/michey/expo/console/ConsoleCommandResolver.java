@@ -1,8 +1,8 @@
 package dev.michey.expo.console;
 
-import dev.michey.expo.command.CommandExceptionReason;
+import dev.michey.expo.command.util.CommandExceptionReason;
 import dev.michey.expo.command.CommandResolver;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.console.command.AbstractConsoleCommand;
 
 import static dev.michey.expo.log.ExpoLogger.logc;

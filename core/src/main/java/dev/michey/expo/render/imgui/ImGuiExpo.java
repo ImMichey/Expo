@@ -26,6 +26,8 @@ import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.type.ImBoolean;
 
+import java.util.Arrays;
+
 public class ImGuiExpo {
 
     private final int[] worldTimeSlider = new int[1];
@@ -179,10 +181,14 @@ public class ImGuiExpo {
                 ClientChunk chunk = ClientChunkGrid.get().getChunk(r.mouseChunkX, r.mouseChunkY);
 
                 if(chunk != null) {
-                    BiomeType t = chunk.biomeData[r.mouseTileArray];
+                    BiomeType t = chunk.biomes[r.mouseTileArray];
+                    int[] l0 = chunk.layer0[r.mouseTileArray];
+                    int[] l1 = chunk.layer1[r.mouseTileArray];
+                    int[] l2 = chunk.layer2[r.mouseTileArray];
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Mouse Biome: " + t.name());
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Mouse Waterlogged: " + chunk.waterLoggedData[r.mouseTileArray]);
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Mouse Texture Index: " + chunk.tileTextureData[r.mouseTileArray]);
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0: " + Arrays.toString(l0));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1: " + Arrays.toString(l1));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2: " + Arrays.toString(l2));
                 }
 
                 ImGui.treePop();

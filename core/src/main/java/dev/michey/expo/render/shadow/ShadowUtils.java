@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.ClientWorld;
 
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
+
 public class ShadowUtils {
 
     /*
@@ -40,7 +42,7 @@ public class ShadowUtils {
 
         Affine2 r = new Affine2().preMul(rotationAffine);
 
-        if(!Gdx.input.isKeyPressed(Input.Keys.U)) {
+        if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
             r.preMul(shearingAffine).preScale(scaleX, scaleY);
         }
 

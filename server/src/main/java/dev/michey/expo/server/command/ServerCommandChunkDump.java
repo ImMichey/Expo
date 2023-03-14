@@ -1,14 +1,15 @@
 package dev.michey.expo.server.command;
 
-import dev.michey.expo.command.AbstractCommand;
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
+import dev.michey.expo.server.main.arch.AbstractServerCommand;
+import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
-public class ServerCommandChunkDump extends AbstractCommand {
+public class ServerCommandChunkDump extends AbstractServerCommand {
 
     @Override
     public String getCommandName() {
@@ -26,16 +27,16 @@ public class ServerCommandChunkDump extends AbstractCommand {
     }
 
     @Override
-    public void executeCommand(String[] args) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
         ServerWorld world = ServerWorld.get();
 
-        log("=== CHUNKDUMP START ===");
+        sendToSender("=== CHUNKDUMP START ===", player);
         for(ServerDimension dimension : world.getDimensions()) {
-            log("dimension: " + dimension.getDimensionName() + " - spawn: " + dimension.getDimensionSpawnX() + "," + dimension.getDimensionSpawnY());
+            sendToSender("dimension: " + dimension.getDimensionName() + " - spawn: " + dimension.getDimensionSpawnX() + "," + dimension.getDimensionSpawnY(), player);
             ServerChunkGrid grid = dimension.getChunkHandler();
             grid.chunkdump();
         }
-        log("=== CHUNKDUMP END ===");
+        sendToSender("=== CHUNKDUMP END ===", player);
     }
 
 }

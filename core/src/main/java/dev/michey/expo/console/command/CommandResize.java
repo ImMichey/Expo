@@ -1,6 +1,6 @@
 package dev.michey.expo.console.command;
 
-import dev.michey.expo.command.CommandSyntaxException;
+import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.console.GameConsole;
 
 public class CommandResize extends AbstractConsoleCommand {

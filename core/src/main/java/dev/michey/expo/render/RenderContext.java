@@ -14,12 +14,14 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.render.arraybatch.ArrayTextureSpriteBatch;
 import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.render.light.ExpoLightEngine;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.InputUtils;
 
@@ -62,6 +64,7 @@ public class RenderContext {
     public boolean mouseMoved;          // If the mouse moved between frames.
     public int cameraX;
     public int cameraY;
+    public double mousePlayerAngle;
 
     /** Water data */
     public Texture waterNoiseTexture;
@@ -77,6 +80,7 @@ public class RenderContext {
     public ShaderProgram vignetteShader;
     public ShaderProgram waterTileShader;
     public ShaderProgram waterFboShader;
+    public ShaderProgram selectionShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -139,6 +143,7 @@ public class RenderContext {
                 parameter.size = 16 + i * 16;
                 m5x7_all[i] = generator.generateFont(parameter);
                 m5x7_all[i].getData().markupEnabled = true;
+                m5x7_all[i].getData().setLineHeight(11 * (i + 1));
                 if(i == 0) m5x7_base = m5x7_all[i];
             }
 
@@ -150,6 +155,7 @@ public class RenderContext {
                 parameter.size = 16 + i * 16;
                 m5x7_shadow_all[i] = generator.generateFont(parameter);
                 m5x7_shadow_all[i].getData().markupEnabled = true;
+                m5x7_shadow_all[i].getData().setLineHeight(11 * (i + 1));
                 if(i == 0) m5x7_shadowed = m5x7_shadow_all[i];
             }
 
@@ -162,6 +168,8 @@ public class RenderContext {
             for(int i = 0; i < 5; i++) {
                 parameter.size = 16 + i * 16;
                 m5x7_border_all[i] = generator.generateFont(parameter);
+                m5x7_border_all[i].getData().markupEnabled = true;
+                m5x7_border_all[i].getData().setLineHeight(11 * (i + 1));
                 if(i == 0) m5x7_bordered = m5x7_border_all[i];
             }
 
@@ -206,6 +214,7 @@ public class RenderContext {
         arrayWindShader = compileShader("gl3/wind_array");
         waterTileShader = compileShader("gl3/water_tile");
         waterFboShader = compileShader("gl3/water_fbo");
+        selectionShader = compileShader("gl3/selection");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -263,6 +272,12 @@ public class RenderContext {
             mouseRelativeTileY = mouseTileY - startTileY;
 
             mouseTileArray = mouseRelativeTileY * 8 + mouseRelativeTileX;
+
+            ClientPlayer p = ClientPlayer.getLocalPlayer();
+
+            if(p != null) {
+                mousePlayerAngle = GenerationUtils.angleBetween360(p.playerReachCenterX, p.playerReachCenterY, mouseWorldX, mouseWorldY);
+            }
         }
 
         drawStartX = InputUtils.getMouseWorldX(0);
@@ -274,6 +289,7 @@ public class RenderContext {
 
         arrayWindShader.bind();
         arrayWindShader.setUniformf("u_time", deltaTotal);
+        arrayWindShader.setUniformi("u_selected", 0);
     }
 
     public void reset() {

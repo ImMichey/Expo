@@ -1,4 +1,8 @@
-package dev.michey.expo.command;
+package dev.michey.expo.command.abstraction;
+
+import dev.michey.expo.command.util.CommandExceptionReason;
+import dev.michey.expo.command.CommandResolver;
+import dev.michey.expo.command.util.CommandSyntaxException;
 
 public abstract class AbstractCommand {
 
@@ -8,7 +12,6 @@ public abstract class AbstractCommand {
     public abstract String getCommandName();
     public abstract String getCommandDescription();
     public abstract String getCommandSyntax();
-    public abstract void executeCommand(String[] args) throws CommandSyntaxException;
 
     public float parseF(String[] array, int pos) throws CommandSyntaxException {
         if(pos >= array.length) throw new CommandSyntaxException("No argument at pos '" + pos + "' present, float required", CommandExceptionReason.OUT_OF_BOUNDS);
