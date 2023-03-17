@@ -15,6 +15,7 @@ gradle-app.setting
 
 ## Expo:
 /saves/*
+/serverlogs/*
 
 ## Java:
 *.class
