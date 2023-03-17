@@ -6,13 +6,11 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.ClientParticle;
 import dev.michey.expo.render.RenderContext;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ClientParticleHit extends ClientParticle {
 
     @Override
     public void onCreation() {
-        particleTexture = ExpoAssets.get().getParticleSheet().randomHitParticle();
+        particleTexture = ExpoAssets.get().getParticleSheet().getRandomParticle(3, 7);
     }
 
     @Override
@@ -33,17 +31,13 @@ public class ClientParticleHit extends ClientParticle {
     @Override
     public void render(RenderContext rc, float delta) {
         rc.useRegularBatch();
-        int it = 10;
-
         rc.batch.setColor(r, g, b, useAlpha);
-        rc.batch.draw(particleTexture, clientPosX, clientPosY);
 
-        for(int i = 1; i <= it; i++) {
-            float _a = i / (float) it * useAlpha;
-            rc.batch.setColor(1f, 0f, 0f, _a);
-            rc.batch.draw(particleTexture, clientPosX + 32 + i * 4, clientPosY);
+        if(rotationSpeed > 0) {
+            rotation += delta * rotationSpeed;
         }
 
+        rc.batch.draw(particleTexture, clientPosX, clientPosY, 0, 0, particleTexture.getRegionWidth(), particleTexture.getRegionHeight(), scaleX, scaleY, rotation);
         rc.batch.setColor(Color.WHITE);
     }
 

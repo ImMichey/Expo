@@ -16,10 +16,17 @@ public class ParticleSheet {
         createParticle(sheet, 0, 0, 3, 3);
         createParticle(sheet, 4, 0, 3, 3);
         createParticle(sheet, 8, 0, 3, 3);
-        createParticle(sheet, 12, 0, 2, 2);
-        createParticle(sheet, 15, 0, 2, 2);
-        createParticle(sheet, 18, 0, 2, 2);
-        createParticle(sheet, 21, 0, 2, 2);
+
+        createParticle(sheet, 12, 0, 1, 3);
+        createParticle(sheet, 14, 0, 1, 2);
+        createParticle(sheet, 16, 0, 1, 1);
+        createParticle(sheet, 18, 0, 2, 3);
+        createParticle(sheet, 21, 0, 2, 3);
+
+        createParticle(sheet, 24, 0, 2, 2);
+        createParticle(sheet, 27, 0, 2, 2);
+        createParticle(sheet, 30, 0, 2, 2);
+        createParticle(sheet, 33, 0, 2, 2);
     }
 
     public HashMap<Integer, TextureRegion> getParticleTextureMap() {
@@ -32,7 +39,11 @@ public class ParticleSheet {
     }
 
     public TextureRegion randomHitParticle() {
-        return particleTextureMap.get(MathUtils.random(0, 6));
+        return particleTextureMap.get(MathUtils.random(0, 7));
+    }
+
+    public TextureRegion getRandomParticle(int begin, int end) {
+        return particleTextureMap.get(MathUtils.random(begin, end));
     }
 
 }

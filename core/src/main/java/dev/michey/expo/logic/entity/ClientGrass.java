@@ -18,6 +18,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
@@ -82,23 +83,27 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth) {
-        log("onDamage");
         contactDelta = STEPS * 0.5f;
         contactDir = 1;//drawRootX < entity.drawRootX ? -1 : 1;
-        AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+        AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
 
-        int particles = MathUtils.random(1, 1);
+        int particles = MathUtils.random(7, 10);
 
         for(int i = 0; i < particles; i++) {
             ClientParticleHit p = new ClientParticleHit();
 
+            float velocityX = MathUtils.random(-24, 24);
+            float velocityY = MathUtils.random(-24, 24);
+
             p.setParticleColor(MathUtils.randomBoolean() ? ClientStatic.COLOR_PARTICLE_GRASS_1 : ClientStatic.COLOR_PARTICLE_GRASS_2);
-            p.setParticleLifetime(1.0f);
-            p.setParticleOriginAndVelocity(drawCenterX + MathUtils.random(-1, 1), drawCenterY + MathUtils.random(-1, 1), MathUtils.random(-10, 10), MathUtils.random(-10, 10));
+            p.setParticleLifetime(0.3f);
+            p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
             p.setParticleRotation(MathUtils.random(360f));
             float scale = MathUtils.random(0.4f, 0.8f);
             p.setParticleScale(scale, scale);
-            p.setParticleFadeout(0.25f);
+            p.setParticleFadeout(0.1f);
+            p.setParticleConstantRotation((Math.abs(velocityX) + Math.abs(velocityY)) * 0.5f / 24f * 360f);
+            p.depth = depth - 0.0001f;
 
             entityManager().addClientSideEntity(p);
         }
@@ -106,7 +111,9 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onDeletion() {
-
+        if(removalReason == EntityRemovalReason.DEATH) {
+            AudioEngine.get().playSoundGroupManaged("harvest", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.Pair;
 
 import java.util.concurrent.CompletableFuture;
@@ -49,7 +50,7 @@ public class ExpoServerListener implements Listener {
 
         if(pc.player != null) {
             ServerPackets.p10PlayerQuit(pc.player.username, PacketReceiver.all());
-            ServerPackets.p4EntityDelete(pc.player.entityId, PacketReceiver.whoCanSee(pc.player));
+            ServerPackets.p4EntityDelete(pc.player.entityId, EntityRemovalReason.VISIBILITY, PacketReceiver.whoCanSee(pc.player));
             pc.player.getDimension().getEntityManager().removeEntitySafely(pc.player);
             pc.player.updateSaveFile();
 

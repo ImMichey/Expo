@@ -5,7 +5,9 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.util.EntityRemovalReason;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +41,7 @@ public class EntityVisibilityController {
             }
         } else {
             if(visibleEntities.contains(entity.entityId)) {
-                ServerPackets.p4EntityDelete(entity.entityId, PacketReceiver.player(player));
+                ServerPackets.p4EntityDelete(entity.entityId, EntityRemovalReason.VISIBILITY, PacketReceiver.player(player));
                 visibleEntities.remove(entity.entityId);
             }
         }
@@ -61,7 +63,9 @@ public class EntityVisibilityController {
         if(!removePacket.isEmpty()) {
             removePacket.forEach(visibleEntities::remove); // update visible entities set
             int[] array = removePacket.stream().mapToInt(i -> i).toArray(); // convert list to array
-            ServerPackets.p8EntityDeleteStack(array, PacketReceiver.player(player)); // send entity delete packet(s)
+            EntityRemovalReason[] removalArray = new EntityRemovalReason[array.length];
+            Arrays.fill(removalArray, EntityRemovalReason.VISIBILITY);
+            ServerPackets.p8EntityDeleteStack(array, removalArray, PacketReceiver.player(player)); // send entity delete packet(s)
         }
 
         for(ServerEntityType type : player.getDimension().getEntityManager().getExistingEntityTypes()) {

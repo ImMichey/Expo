@@ -350,8 +350,6 @@ public class ClientWorld {
             drawFboTexture(r.mainFbo, r.vignetteShader);
         }
 
-        if(DEV_MODE) return;
-
         {
             // Draw light engine.
             if(!isFullDay()) {

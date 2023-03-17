@@ -7,6 +7,7 @@ import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.packet.*;
+import dev.michey.expo.util.EntityRemovalReason;
 
 public class ExpoServerRegistry {
 
@@ -26,6 +27,7 @@ public class ExpoServerRegistry {
                 ServerInventoryItem[].class,
                 ItemMetadata.class,
                 ToolType.class,
+                EntityRemovalReason.class,
 
                 // Packets
                 P0_Auth_Req.class,

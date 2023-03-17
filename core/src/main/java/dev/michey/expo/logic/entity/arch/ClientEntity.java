@@ -9,6 +9,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 
 public abstract class ClientEntity {
@@ -23,13 +24,15 @@ public abstract class ClientEntity {
     public float clientPosY;
     public float serverDirX;
     public float serverDirY;
-    // Updated only when method called
+    /** Updated only when method called */
     public int clientChunkX;
     public int clientChunkY;
     public int clientTileX;
     public int clientTileY;
-    // Selection fields
+    /** Selection fields */
     public boolean selected;
+    /** Death reason */
+    public EntityRemovalReason removalReason;
 
     /** Used for networking syncing. */
     public float lastPosX;

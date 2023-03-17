@@ -32,3 +32,14 @@ ambience_rain_1.wav
 punch_1.wav
 punch_2.wav
 punch_3.wav
+
+#harvest;true;0.9-1.1;SFX;1.0
+harvest_1.wav
+harvest_2.wav
+harvest_4.wav
+harvest_5.wav
+
+#grass_hit;true;0.9-1.1;SFX;1.0
+grass_hit_1.wav
+grass_hit_2.wav
+grass_hit_3.wav

@@ -8,6 +8,7 @@ import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -88,9 +89,8 @@ public abstract class ServerEntity {
 
         if(health <= 0) {
             onDie();
-            ServerPackets.p4EntityDelete(entityId, PacketReceiver.whoCanSee(this));
+            ServerPackets.p4EntityDelete(entityId, EntityRemovalReason.DEATH, PacketReceiver.whoCanSee(this));
         }
-        log("Applied damage to " + entityId + ": " + damage + " (now " + health + " hp)");
     }
 
 }

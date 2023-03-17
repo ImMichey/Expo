@@ -14,6 +14,7 @@ public abstract class ClientParticle extends ClientEntity {
     public boolean fadeOut;
     public float fadeOutDuration;
     public float useAlpha;
+    public float rotationSpeed;
 
     //private float pox, poy; // Particle origin values
     private float pvx, pvy; // Particle velocity values
@@ -35,8 +36,6 @@ public abstract class ClientParticle extends ClientEntity {
 
         if(pvx != 0) clientPosX += pvx * delta;
         if(pvy != 0) clientPosY += pvy * delta;
-
-        updateDepth();
     }
 
     public void setParticleLifetime(float lifetime) {
@@ -78,6 +77,10 @@ public abstract class ClientParticle extends ClientEntity {
     public void setParticleFadeout(float fadeDuration) {
         fadeOut = true;
         this.fadeOutDuration = fadeDuration;
+    }
+
+    public void setParticleConstantRotation(float speed) {
+        rotationSpeed = speed;
     }
 
 }

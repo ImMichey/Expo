@@ -65,6 +65,10 @@ public class ExpoClientPacketReader {
             ClientEntityManager.get().addEntity(entity);
         } else if(o instanceof P4_EntityDelete p) {
             // log("Removing Entity object " + p.entityId);
+            ClientEntity entity = entityFromId(p.entityId);
+            if(entity == null) return;
+
+            entity.removalReason = p.reason;
             ClientEntityManager.get().removeEntity(p.entityId);
         } else if(o instanceof P6_EntityPosition p) {
             ClientEntity entity = entityFromId(p.entityId);
@@ -72,8 +76,12 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P7_ChunkSnapshot p) {
             //ClientChunkGrid.get().updateChunkViewport(p.activeChunks);
         } else if(o instanceof P8_EntityDeleteStack p) {
-            for(int entityId : p.entityList) {
-                ClientEntityManager.get().removeEntity(entityId);
+            for(int i = 0; i < p.entityList.length; i++) {
+                ClientEntity entity = entityFromId(p.entityList[i]);
+                if(entity == null) continue;
+
+                entity.removalReason = p.reasons[i];
+                ClientEntityManager.get().removeEntity(p.entityList[i]);
             }
         } else if(o instanceof P9_PlayerCreate p) {
             log("Creating Player object " + p.entityId + " " + p.entityType + " " + p.username + " " + p.player);

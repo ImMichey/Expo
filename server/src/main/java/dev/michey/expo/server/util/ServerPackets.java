@@ -12,6 +12,7 @@ import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.packet.*;
+import dev.michey.expo.util.EntityRemovalReason;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -50,9 +51,10 @@ public class ServerPackets {
     }
 
     /** Sends the P4_EntityDelete packet via TCP protocol. */
-    public static void p4EntityDelete(int entityId, PacketReceiver receiver) {
+    public static void p4EntityDelete(int entityId, EntityRemovalReason reason, PacketReceiver receiver) {
         P4_EntityDelete p = new P4_EntityDelete();
         p.entityId = entityId;
+        p.reason = reason;
         tcp(p, receiver);
     }
 
@@ -73,9 +75,10 @@ public class ServerPackets {
     }
 
     /** Sends the P8_EntityDeleteStack packet via TCP protocol. */
-    public static void p8EntityDeleteStack(int[] entityList, PacketReceiver receiver) {
+    public static void p8EntityDeleteStack(int[] entityList, EntityRemovalReason[] reasons, PacketReceiver receiver) {
         P8_EntityDeleteStack p = new P8_EntityDeleteStack();
         p.entityList = entityList;
+        p.reasons = reasons;
         tcp(p, receiver);
     }
 
