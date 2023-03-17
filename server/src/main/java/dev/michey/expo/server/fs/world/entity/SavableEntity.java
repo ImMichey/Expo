@@ -18,6 +18,8 @@ public class SavableEntity {
 
     public boolean staticEntity;
 
+    public float health;
+
     /** Packaged entity */
     public JSONObject packaged;
 
@@ -35,6 +37,7 @@ public class SavableEntity {
         }
 
         this.staticEntity = serverEntity.staticPosition;
+        this.health = serverEntity.health;
     }
 
     public SavableEntity pack() {
@@ -54,6 +57,10 @@ public class SavableEntity {
             packaged.put("static", true);
         }
 
+        if(health != 0f) {
+            packaged.put("hp", health);
+        }
+
         return this;
     }
 
@@ -69,6 +76,10 @@ public class SavableEntity {
 
         if(object.has("tx") && object.has("ty")) {
             entity.attachToTile(chunk, object.getInt("tx"), object.getInt("ty"));
+        }
+
+        if(object.has("hp")) {
+            entity.health = object.getFloat("hp");
         }
 
         return entity;

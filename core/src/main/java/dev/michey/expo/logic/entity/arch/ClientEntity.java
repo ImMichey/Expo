@@ -54,6 +54,7 @@ public abstract class ClientEntity {
     /** ClientEntity base methods */
     public abstract void onCreation();
     public abstract void onDeletion();
+    public abstract void onDamage(float damage, float newHealth);
     public abstract void tick(float delta);
     public abstract void render(RenderContext rc, float delta);
     public abstract void renderShadow(RenderContext rc, float delta);

@@ -13,6 +13,8 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.*;
@@ -155,9 +157,18 @@ public class ClientEntityManager {
                 selectedEntity.selected = true;
             }
         }
+
+        if(selectedEntity != null) {
+            if(selectedEntity.entityId != lastEntityId) ClientPackets.p27PlayerEntitySelection(selectedEntity.entityId);
+        } else {
+            if(lastEntityId != -1) {
+                lastEntityId = -1;
+                ClientPackets.p27PlayerEntitySelection(-1);
+            }
+        }
     }
 
-    private void updateSelectionShader(ClientEntity entity, RenderContext rc) {
+    public void updateSelectionShader(ClientEntity entity, RenderContext rc) {
         if(entity.entityId != lastEntityId) {
             lastEntityId = entity.entityId;
             plus = false;
@@ -184,52 +195,62 @@ public class ClientEntityManager {
 
         pulseProgress = Interpolation.smooth2.apply(pDelta);
 
-        rc.currentBatch.end();
+        if(rc.batch.isDrawing()) rc.batch.end();
+        if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
 
         rc.selectionShader.bind();
         rc.selectionShader.setUniformf("u_progress", pulseProgress);
         rc.selectionShader.setUniformf("u_pulseStrength", 1.25f);
         rc.selectionShader.setUniformf("u_pulseMin", 1.05f);
-
-        rc.currentBatch = rc.batch;
-        rc.currentBatch.begin();
-        rc.currentBatch.setShader(rc.selectionShader);
     }
 
     public void renderEntities(float delta) {
         RenderContext rc = RenderContext.get();
 
-        rc.forceBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
+        rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
+        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+        rc.batch.begin();
+
+        rc.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE);
 
         for(ClientEntity entity : depthEntityList) {
             if(entity.selected) {
                 updateSelectionShader(entity, rc);
                 ((SelectableEntity) entity).renderSelected(rc, delta);
-                rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
+
+                rc.useRegularBatch();
+                rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
             } else {
                 entity.render(rc, delta);
             }
         }
 
-        rc.cleanUp();
+        if(rc.batch.isDrawing()) rc.batch.end();
+        if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
+        rc.batch.setShader(null);
+        rc.arraySpriteBatch.setShader(null);
+
+        rc.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public void renderEntityShadows(float delta) {
         RenderContext rc = RenderContext.get();
 
-        rc.forceBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_SHADER);
+        rc.arraySpriteBatch.begin();
+        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
 
-        rc.arraySpriteBatch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
+        rc.arraySpriteBatch.setBlendFunction(GL30.GL_ONE, GL30.GL_ONE);
         Gdx.gl30.glBlendEquation(GL30.GL_MAX);
 
         for(ClientEntity entity : depthEntityList) {
             entity.renderShadow(rc, delta);
         }
 
-        rc.cleanUp();
-
-        Gdx.gl30.glBlendEquation(GL20.GL_FUNC_ADD);
         rc.arraySpriteBatch.setBlendFunction(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl30.glBlendEquation(GL30.GL_FUNC_ADD);
+
+        rc.arraySpriteBatch.end();
+        rc.arraySpriteBatch.setShader(null);
     }
 
     public ClientEntity getEntityById(int entityId) {

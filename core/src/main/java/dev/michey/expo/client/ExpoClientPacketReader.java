@@ -173,6 +173,12 @@ public class ExpoClientPacketReader {
             AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false);
         } else if(o instanceof P25_ChatMessage p) {
             ExpoClientContainer.get().getPlayerUI().chat.addConsoleMessage(new ChatMessage(p.message, p.sender, false));
+        } else if(o instanceof P26_EntityDamage p) {
+            ClientEntity entity = entityFromId(p.entityId);
+
+            if(entity != null) {
+                entity.onDamage(p.damage, p.newHealth);
+            }
         }
     }
 

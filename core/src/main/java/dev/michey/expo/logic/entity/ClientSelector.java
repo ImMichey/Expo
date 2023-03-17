@@ -29,11 +29,16 @@ public class ClientSelector extends ClientEntity {
     }
 
     @Override
+    public void onDamage(float damage, float newHealth) {
+
+    }
+
+    @Override
     public void render(RenderContext rc, float delta) {
         updateDepth();
 
-        rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_SHADER);
-        rc.currentBatch.draw(selectorTexture, clientPosX - 1, clientPosY - 1);
+        //rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_SHADER);
+        //rc.currentBatch.draw(selectorTexture, clientPosX - 1, clientPosY - 1);
     }
 
     @Override

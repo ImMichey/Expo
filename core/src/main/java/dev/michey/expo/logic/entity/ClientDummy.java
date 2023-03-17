@@ -23,6 +23,11 @@ public class ClientDummy extends ClientEntity implements SelectableEntity {
     }
 
     @Override
+    public void onDamage(float damage, float newHealth) {
+
+    }
+
+    @Override
     public void tick(float delta) {
         syncPositionWithServer();
         updateCenterAndRoot();
@@ -34,14 +39,15 @@ public class ClientDummy extends ClientEntity implements SelectableEntity {
 
         if(drawnLastFrame) {
             updateDepth();
-            rc.useBatchAndShader(rc.batch, rc.DEFAULT_GLES3_SHADER);
-            rc.currentBatch.draw(texture, clientPosX, clientPosY);
+
+            rc.useRegularBatch();
+            rc.batch.draw(texture, clientPosX, clientPosY);
         }
     }
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.currentBatch.draw(texture, clientPosX, clientPosY);
+
     }
 
     @Override

@@ -13,6 +13,7 @@ public class ItemLogic {
     public FoodData foodData; // can be null
     public float range;
     public float attackSpeed;
+    public float attackDamage;
 
     public ItemLogic(JSONObject object) {
         maxStackSize = object.getInt("stackSize");
@@ -38,6 +39,12 @@ public class ItemLogic {
             attackSpeed = object.getFloat("attackSpeed");
         } else {
             attackSpeed = ExpoShared.PLAYER_DEFAULT_ATTACK_SPEED;
+        }
+
+        if(object.has("attackDamage")) {
+            attackDamage = object.getFloat("attackDamage");
+        } else {
+            attackDamage = ExpoShared.PLAYER_DEFAULT_ATTACK_DAMAGE;
         }
     }
 

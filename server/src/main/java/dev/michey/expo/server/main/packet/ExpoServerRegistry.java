@@ -53,7 +53,9 @@ public class ExpoServerRegistry {
                 P22_PlayerArmDirection.class,
                 P23_PlayerLifeUpdate.class,
                 P24_PositionalSound.class,
-                P25_ChatMessage.class
+                P25_ChatMessage.class,
+                P26_EntityDamage.class,
+                P27_PlayerEntitySelection.class
         );
     }
 

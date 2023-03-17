@@ -6,8 +6,22 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
 public class ServerGrass extends ServerEntity {
 
+    public ServerGrass() {
+        health = 20.0f;
+    }
+
     @Override
     public void tick(float delta) {
+
+    }
+
+    @Override
+    public void onDamage(ServerEntity damageSource, float damage) {
+
+    }
+
+    @Override
+    public void onDie() {
 
     }
 

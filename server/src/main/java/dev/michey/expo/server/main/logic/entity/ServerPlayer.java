@@ -3,7 +3,6 @@ package dev.michey.expo.server.main.logic.entity;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
-import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -43,6 +42,8 @@ public class ServerPlayer extends ServerEntity {
     public float endAngle;
     public float punchDelta;
     public float punchDeltaFinish;
+    private float punchDeltaCheckDamageAt;
+    private boolean punchDamageApplied;
 
     public float serverArmRotation;
 
@@ -53,6 +54,8 @@ public class ServerPlayer extends ServerEntity {
     public float nextHungerTickDown = 4.0f;     // seconds between each hunger down tick
     public float nextHungerDamageTick = 4.0f;   // seconds between each damage via hunger tick
     public float nextHealthRegenTickDown = 1.0f;// seconds between each health regen tick
+
+    public int selectedEntity = -1;
 
     public HashSet<String> hasSeenChunks = new HashSet<>();
 
@@ -94,6 +97,16 @@ public class ServerPlayer extends ServerEntity {
     }
 
     @Override
+    public void onDamage(ServerEntity damageSource, float damage) {
+
+    }
+
+    @Override
+    public void onDie() {
+
+    }
+
+    @Override
     public void tick(float delta) {
         if(xDir != 0 || yDir != 0) {
             float waterFactor = isInWater() ? 0.5f : 1.0f;
@@ -120,9 +133,29 @@ public class ServerPlayer extends ServerEntity {
         if(punching) {
             punchDelta += delta;
 
+            if(punchDelta >= (punchDeltaFinish * 0.6f) && !punchDamageApplied) {
+                punchDamageApplied = true;
+
+                ServerEntity selected = getDimension().getEntityManager().getEntityById(selectedEntity);
+
+                if(selected != null) {
+                    int item = getCurrentItem();
+                    float dmg = ExpoShared.PLAYER_DEFAULT_ATTACK_DAMAGE;
+
+                    if(item != -1) {
+                        dmg = ItemMapper.get().getMapping(item).logic.attackDamage;
+                    }
+
+                    selected.applyDamageWithPacket(this, dmg);
+                }
+            }
+
             if(punchDelta >= punchDeltaFinish) {
                 punching = false;
+                punchDamageApplied = false;
             }
+
+            // in range entities damage
         }
 
         if(hungerCooldown > 0) {

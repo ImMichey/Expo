@@ -20,6 +20,8 @@ import dev.michey.expo.logic.entity.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
@@ -298,197 +300,221 @@ public class ClientWorld {
         }
     }
 
-    /** Rendering the game world. */
     public void renderWorld() {
         RenderContext r = RenderContext.get();
         offset = 0;
 
-        // Update camera
+        // Update camera.
         r.expoCamera.update();
-
-        { // Draw water tiles to water FBO
-            r.waterTilesFbo.begin();
-            transparentScreen();
-            renderWater();
-            r.waterTilesFbo.end();
-        }
+        r.batch.setShader(r.DEFAULT_GLES3_SHADER);
 
         {
-            // Draw tiles to main FBO
+            // Draw tiles to main FBO.
             r.mainFbo.begin();
-            transparentScreen();
-
-            drawFboTexture(r.waterTilesFbo, r.DEFAULT_GLES3_SHADER);
-
-            // Render chunks
-            renderChunkTiles();
+                transparentScreen();
+                updateChunksToDraw();
+                renderChunkTiles();
             r.mainFbo.end();
         }
 
         {
-            // Draw shadows to shadow FBO
+            // Draw shadows to shadow FBO.
             r.shadowFbo.begin();
-            transparentScreen();
-
-            // Render shadows
-            clientEntityManager.renderEntityShadows(r.delta);
+                transparentScreen();
+                clientEntityManager.renderEntityShadows(r.delta);
             r.shadowFbo.end();
         }
 
         {
-            // Draw shadow FBO to main FBO
-            r.mainFbo.begin();
-            r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
-            drawFboTexture(r.shadowFbo, null);
-            r.batch.setColor(Color.WHITE);
+            // Draw entities to entity FBO.
+            r.entityFbo.begin();
+                transparentScreen();
+                clientEntityManager.renderEntities(r.delta);
+            r.entityFbo.end();
+        }
 
-            // Render entities
-            clientEntityManager.renderEntities(r.delta);
+        {
+            // Draw shadow FBO to main FBO.
+            r.mainFbo.begin();
+                r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
+                drawFboTexture(r.shadowFbo, null);
+                r.batch.setColor(Color.WHITE);
+                r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                drawFboTexture(r.entityFbo, null);
+                r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
             r.mainFbo.end();
         }
 
         {
-            // Draw final FBO with vignette shader
+            // Draw final FBO with vignette shader.
             drawFboTexture(r.mainFbo, r.vignetteShader);
         }
 
-        // Draw light engine
-        if(!isFullDay()) {
-            r.lightEngine.setLighting(ambientLightingR, ambientLightingG, ambientLightingB, ambientLightingDarkness);
-            r.lightEngine.render();
+        if(DEV_MODE) return;
+
+        {
+            // Draw light engine.
+            if(!isFullDay()) {
+                r.lightEngine.setLighting(ambientLightingR, ambientLightingG, ambientLightingB, ambientLightingDarkness);
+                r.lightEngine.render();
+            }
         }
 
-        // Render tile debug data
-        if(r.drawTileInfo) {
-            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
-            r.chunkRenderer.setColor(Color.WHITE);
-            r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE, TILE_SIZE);
-            r.chunkRenderer.end();
+        {
+            // Draw debug info.
+            if(r.drawTileInfo) {
+                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                r.chunkRenderer.setColor(Color.WHITE);
+                r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE, TILE_SIZE);
+                r.chunkRenderer.end();
 
-            var tileMap = ExpoAssets.get().getTileSheet().getTilesetTextureMap();
-            int amount = tileMap.size();
+                var tileMap = ExpoAssets.get().getTileSheet().getTilesetTextureMap();
+                int amount = tileMap.size();
 
-            int breakLine = 0;
-            int lines = 0;
-            int space = 2;
-            int drawPerLine = 16;
-            int tileSize = 32;
-            int totalLines = amount / drawPerLine + 1;
+                int breakLine = 0;
+                int lines = 0;
+                int space = 2;
+                int drawPerLine = 16;
+                int tileSize = 32;
+                int totalLines = amount / drawPerLine + 1;
 
-            r.hudBatch.begin();
-            r.hudBatch.setColor(Color.BLACK);
-            r.hudBatch.draw(ExpoAssets.get().textureRegion("square16x16"),
-                    r.mouseX + 50 - 4,
-                    r.mouseY + 50 - 4 - (totalLines - 1) * tileSize + ((totalLines - 1) * space) - 8,
-                    (tileSize + space) * 16 + 8,
-                    totalLines * tileSize + ((totalLines - 1) * space) + 8);
-            r.hudBatch.setColor(Color.WHITE);
+                r.hudBatch.begin();
+                r.hudBatch.setColor(Color.BLACK);
+                r.hudBatch.draw(ExpoAssets.get().textureRegion("square16x16"),
+                        r.mouseX + 50 - 4,
+                        r.mouseY + 50 - 4 - (totalLines - 1) * tileSize + ((totalLines - 1) * space) - 8,
+                        (tileSize + space) * 16 + 8,
+                        totalLines * tileSize + ((totalLines - 1) * space) + 8);
+                r.hudBatch.setColor(Color.WHITE);
 
-            for(int i = 0; i < amount; i++) {
-                float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
-                float tileY = r.mouseY + 50 - lines * (tileSize + space);
+                for(int i = 0; i < amount; i++) {
+                    float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
+                    float tileY = r.mouseY + 50 - lines * (tileSize + space);
 
-                r.hudBatch.draw(tileMap.get(i), tileX, tileY, tileSize, tileSize);
+                    r.hudBatch.draw(tileMap.get(i), tileX, tileY, tileSize, tileSize);
 
-                breakLine++;
+                    breakLine++;
 
-                if(breakLine == drawPerLine) {
-                    breakLine = 0;
-                    lines++;
+                    if(breakLine == drawPerLine) {
+                        breakLine = 0;
+                        lines++;
+                    }
                 }
+
+                breakLine = 0;
+                lines = 0;
+
+                for(int i = 0; i < amount; i++) {
+                    float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
+                    float tileY = r.mouseY + 50 - lines * (tileSize + space);
+
+                    r.m5x7_border_all[1].draw(r.hudBatch, "" + i, tileX + 2, tileY + 14 + 9);
+
+                    breakLine++;
+
+                    if(breakLine == drawPerLine) {
+                        breakLine = 0;
+                        lines++;
+                    }
+                }
+
+                r.hudBatch.end();
             }
 
-            breakLine = 0;
-            lines = 0;
+            // Render debug shapes
+            if(r.drawShapes) {
+                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-            for(int i = 0; i < amount; i++) {
-                float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
-                float tileY = r.mouseY + 50 - lines * (tileSize + space);
+                for(ClientEntity all : clientEntityManager.allEntities()) {
+                    if(all.drawnLastFrame) {
+                        float x = all.clientPosX;
+                        float y = all.clientPosY;
 
-                r.m5x7_border_all[1].draw(r.hudBatch, "" + i, tileX + 2, tileY + 14 + 9);
+                        float vx = x + all.drawOffsetX;
+                        float vy = y + all.drawOffsetY;
 
-                breakLine++;
-
-                if(breakLine == drawPerLine) {
-                    breakLine = 0;
-                    lines++;
-                }
-            }
-
-            r.hudBatch.end();
-        }
-
-        // Render debug shapes
-        if(r.drawShapes) {
-            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-            for(ClientEntity all : clientEntityManager.allEntities()) {
-                if(all.drawnLastFrame) {
-                    float x = all.clientPosX;
-                    float y = all.clientPosY;
-
-                    float vx = x + all.drawOffsetX;
-                    float vy = y + all.drawOffsetY;
-
-                    if(all.drawWidth != 0 || all.drawHeight != 0) {
-                        r.chunkRenderer.end();
-                        r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
-                        r.chunkRenderer.setColor(Color.WHITE);
-
-                        r.chunkRenderer.rect(vx, vy, all.drawWidth, all.drawHeight);
-                        if(!(x == vx && y == vy)) {
-                            r.chunkRenderer.line(x, y, vx, vy);
-                        }
-
-                        r.chunkRenderer.end();
-                        r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                    }
-
-                    r.chunkRenderer.setColor(Color.CYAN);
-                    r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 1.0f, 8);
-                    r.chunkRenderer.setColor(Color.CORAL);
-                    r.chunkRenderer.circle(all.serverPosX, all.serverPosY, 0.65f, 8);
-                    if(!(x == vx && y == vy)) {
-                        r.chunkRenderer.setColor(Color.GREEN);
-                        r.chunkRenderer.circle(vx, vy, 0.33f, 8);
-                    }
-                    r.chunkRenderer.setColor(Color.RED);
-                    r.chunkRenderer.circle(all.drawRootX, all.drawRootY, 0.33f, 8);
-                    r.chunkRenderer.setColor(Color.YELLOW);
-                    r.chunkRenderer.circle(all.toVisualCenterX(), all.toVisualCenterY(), 0.33f, 8);
-
-                    if(all instanceof ClientPlayer player) {
-                        if(player.holdingItemId != -1) {
+                        if(all.drawWidth != 0 || all.drawHeight != 0) {
+                            r.chunkRenderer.end();
+                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
                             r.chunkRenderer.setColor(Color.WHITE);
-                            r.chunkRenderer.circle(player.holdingItemSprite.getX(), player.holdingItemSprite.getY(), 0.33f, 8);
-                            r.chunkRenderer.setColor(Color.SKY);
-                            r.chunkRenderer.circle(
-                                    player.holdingItemSprite.getX() + player.holdingItemSprite.getOriginX(),
-                                    player.holdingItemSprite.getY() + player.holdingItemSprite.getOriginY(),
-                                    0.5f, 8);
+
+                            r.chunkRenderer.rect(vx, vy, all.drawWidth, all.drawHeight);
+                            if(!(x == vx && y == vy)) {
+                                r.chunkRenderer.line(x, y, vx, vy);
+                            }
+
+                            r.chunkRenderer.end();
+                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
                         }
 
+                        r.chunkRenderer.setColor(Color.CYAN);
+                        r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 1.0f, 8);
+                        r.chunkRenderer.setColor(Color.CORAL);
+                        r.chunkRenderer.circle(all.serverPosX, all.serverPosY, 0.65f, 8);
+                        if(!(x == vx && y == vy)) {
+                            r.chunkRenderer.setColor(Color.GREEN);
+                            r.chunkRenderer.circle(vx, vy, 0.33f, 8);
+                        }
                         r.chunkRenderer.setColor(Color.RED);
-                        r.chunkRenderer.circle(player.playerReachCenterX, player.playerReachCenterY, 1f, 8);
+                        r.chunkRenderer.circle(all.drawRootX, all.drawRootY, 0.33f, 8);
+                        r.chunkRenderer.setColor(Color.YELLOW);
+                        r.chunkRenderer.circle(all.toVisualCenterX(), all.toVisualCenterY(), 0.33f, 8);
+
+                        if(all instanceof ClientPlayer player) {
+                            if(player.holdingItemId != -1) {
+                                r.chunkRenderer.setColor(Color.WHITE);
+                                r.chunkRenderer.circle(player.holdingItemSprite.getX(), player.holdingItemSprite.getY(), 0.33f, 8);
+                                r.chunkRenderer.setColor(Color.SKY);
+                                r.chunkRenderer.circle(
+                                        player.holdingItemSprite.getX() + player.holdingItemSprite.getOriginX(),
+                                        player.holdingItemSprite.getY() + player.holdingItemSprite.getOriginY(),
+                                        0.5f, 8);
+                            }
+
+                            r.chunkRenderer.setColor(Color.RED);
+                            r.chunkRenderer.circle(player.playerReachCenterX, player.playerReachCenterY, 1f, 8);
+                        }
                     }
                 }
+
+                r.chunkRenderer.end();
+
+                r.hudBatch.begin();
+                cursorText("clientPos", Color.CYAN);
+                cursorText("serverPos", Color.CORAL);
+                cursorText("drawPos", Color.GREEN);
+                cursorText("drawRoot", Color.RED);
+                cursorText("visualCenter", Color.YELLOW);
+                r.hudBatch.end();
             }
+        }
+    }
 
-            r.chunkRenderer.end();
+    private void updateChunksToDraw() {
+        ClientPlayer player = ClientPlayer.getLocalPlayer();
+        if(player == null) return;
 
-            r.hudBatch.begin();
-            cursorText("clientPos", Color.CYAN);
-            cursorText("serverPos", Color.CORAL);
-            cursorText("drawPos", Color.GREEN);
-            cursorText("drawRoot", Color.RED);
-            cursorText("visualCenter", Color.YELLOW);
-            r.hudBatch.end();
+        int[] viewport = player.clientViewport;
+        int c = 0;
+
+        for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE; i++) {
+            for(int j = 0; j < PLAYER_CHUNK_VIEW_RANGE; j++) {
+                int cx = viewport[0] + i; // CHUNK X
+                int cy = viewport[2] + j; // CHUNK Y
+
+                ClientChunk chunk = clientChunkGrid.getChunk(cx, cy);
+
+                if(chunk != null) {
+                    drawChunks[c] = chunk;
+                    c++;
+                }
+            }
         }
     }
 
     private void transparentScreen() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
     }
 
     private void screencap(String name) {
@@ -595,6 +621,7 @@ public class ClientWorld {
     }
 
     private void drawLayer(int k, ClientChunk chunk, TextureRegion[] layer, RenderContext rc, float wx, float wy, Pair[][] displacementPairs) {
+        // TODO: Double check layers having 4 instead of 1 length
         Pair[] displacement = displacementPairs != null ? displacementPairs[k] : null;
 
         for(int i = 0; i < layer.length; i++) {
@@ -625,7 +652,6 @@ public class ClientWorld {
         if(ClientPlayer.getLocalPlayer() != null) {
             RenderContext rc = RenderContext.get();
 
-            rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
             rc.batch.begin();
 
             for(ClientChunk chunk : drawChunks) {

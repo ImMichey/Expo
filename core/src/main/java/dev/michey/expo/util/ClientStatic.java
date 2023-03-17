@@ -16,5 +16,7 @@ public class ClientStatic {
 
     /** Color constants */
     public static final Color COLOR_ARMOR_TEXT = Color.valueOf("#a2cadc");
+    public static final Color COLOR_PARTICLE_GRASS_1 = Color.valueOf("#85d155");
+    public static final Color COLOR_PARTICLE_GRASS_2 = Color.valueOf("#89b852");
 
 }

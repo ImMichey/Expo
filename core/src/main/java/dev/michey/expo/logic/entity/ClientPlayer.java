@@ -8,12 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.TimeUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.client.ExpoClient;
-import dev.michey.expo.client.ExpoClientPacketReader;
-import dev.michey.expo.input.GameInput;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -31,10 +27,8 @@ import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.PacketUtils;
 
-import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -222,6 +216,11 @@ public class ClientPlayer extends ClientEntity {
         serverPunchAngle = rotation;
         serverPunchAngleStart = RenderContext.get().deltaTotal;
         serverPunchAngleEnd = serverPunchAngleStart + PLAYER_ARM_MOVEMENT_SEND_RATE;
+    }
+
+    @Override
+    public void onDamage(float damage, float newHealth) {
+
     }
 
     @Override
@@ -438,7 +437,7 @@ public class ClientPlayer extends ClientEntity {
                 }
             }
 
-            rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
+            rc.useRegularBatch();
 
             // Draw player
             boolean moving = isMoving();
@@ -489,7 +488,7 @@ public class ClientPlayer extends ClientEntity {
                 offsetXR = 0;
             }
 
-            rc.useBatchAndShader(rc.batch, rc.DEFAULT_GLES3_SHADER);
+            rc.useRegularBatch();
 
             drawHeldItem(rc, false);
             boolean drawLooseArm = holdingItemId != -1;
@@ -507,19 +506,19 @@ public class ClientPlayer extends ClientEntity {
                 float scaleY = 1.0f;
                 float rotation = getFinalArmRotation();
 
-                rc.currentBatch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+                rc.batch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
             } else {
-                rc.currentBatch.draw(draw_tex_arm_right, clientPosX + offsetXR, clientPosY + offsetY);
+                rc.batch.draw(draw_tex_arm_right, clientPosX + offsetXR, clientPosY + offsetY);
             }
 
             if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
-                rc.currentBatch.draw(draw_tex_base, clientPosX, clientPosY);
-                rc.currentBatch.draw(draw_tex_arm_left, clientPosX + offsetXL, clientPosY + offsetY);
+                rc.batch.draw(draw_tex_base, clientPosX, clientPosY);
+                rc.batch.draw(draw_tex_arm_left, clientPosX + offsetXL, clientPosY + offsetY);
 
                 if(holdingArmorHeadId != -1) {
                     ItemMapping map = ItemMapper.get().getMapping(holdingArmorHeadId);
                     int dir = punchAnimation ? punchDirection : playerDirection;
-                    rc.currentBatch.draw(holdingArmorHeadTexture, clientPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
+                    rc.batch.draw(holdingArmorHeadTexture, clientPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
                 }
 
                 drawHeldItem(rc, true);
@@ -527,7 +526,7 @@ public class ClientPlayer extends ClientEntity {
 
             { // Draw player blink
                 if(playerBlinkDelta < 0) {
-                    rc.currentBatch.draw(tex_blink, clientPosX + 5 - (direction() == 0 ? 4 : 0), clientPosY + offsetY + 13);
+                    rc.batch.draw(tex_blink, clientPosX + 5 - (direction() == 0 ? 4 : 0), clientPosY + offsetY + 13);
                 }
             }
         }
@@ -538,7 +537,8 @@ public class ClientPlayer extends ClientEntity {
         drawnShadowLastFrame = rc.inDrawBoundsShadow(this);
 
         if(draw_tex_shadow_base != null && drawnShadowLastFrame) {
-            rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
+            rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+            rc.useArrayBatch();
 
             { // Base body shadow
                 Affine2 shadowBase = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
@@ -760,7 +760,7 @@ public class ClientPlayer extends ClientEntity {
                         clientPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
                 );
 
-                holdingItemSprite.draw(rc.currentBatch);
+                holdingItemSprite.draw(rc.batch);
             }
         }
     }

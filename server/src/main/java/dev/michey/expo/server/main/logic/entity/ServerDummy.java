@@ -36,6 +36,16 @@ public class ServerDummy extends ServerEntity {
         }
     }
 
+    @Override
+    public void onDamage(ServerEntity damageSource, float damage) {
+
+    }
+
+    @Override
+    public void onDie() {
+
+    }
+
     public void generateDst() {
         dstX = getDimension().getDimensionSpawnX() + MathUtils.random(-64f, 64f);
         dstY = getDimension().getDimensionSpawnY() + MathUtils.random(-64f, 64f);

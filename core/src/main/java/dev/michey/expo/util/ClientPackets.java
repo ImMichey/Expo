@@ -67,6 +67,13 @@ public class ClientPackets {
         tcp(p);
     }
 
+    /** Sends the P27_PlayerEntitySelection packet via UDP protocol. */
+    public static void p27PlayerEntitySelection(int entityId) {
+        P27_PlayerEntitySelection p = new P27_PlayerEntitySelection();
+        p.entityId = entityId;
+        udp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

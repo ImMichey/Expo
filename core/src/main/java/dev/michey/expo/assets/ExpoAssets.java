@@ -23,6 +23,7 @@ public class ExpoAssets {
     public TextureRegion soil;
 
     private TileSheet tileSheet;
+    private ParticleSheet particleSheet;
 
     public ExpoAssets() {
         assetManager = new AssetManager();
@@ -73,10 +74,15 @@ public class ExpoAssets {
         }
 
         tileSheet = new TileSheet(textureRegion("tileset"));
+        particleSheet = new ParticleSheet(textureRegion("particlesheet"));
     }
 
     public TileSheet getTileSheet() {
         return tileSheet;
+    }
+
+    public ParticleSheet getParticleSheet() {
+        return particleSheet;
     }
 
     public void slice() {

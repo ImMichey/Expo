@@ -62,6 +62,9 @@ public class ExpoServerPacketReader {
             sp.switchToSlot(p.slot);
         } else if(packet instanceof P25_ChatMessage p) {
             readChatMessage(true, p, null, ServerPlayer.getLocalPlayer());
+        } else if(packet instanceof P27_PlayerEntitySelection p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            sp.selectedEntity = p.entityId;
         }
     }
 
@@ -161,6 +164,9 @@ public class ExpoServerPacketReader {
             }
         } else if(o instanceof P25_ChatMessage p) {
             readChatMessage(false, p, connection, connectionToPlayer(connection));
+        } else if(o instanceof P27_PlayerEntitySelection p) {
+            ServerPlayer player = connectionToPlayer(connection);
+            player.selectedEntity = p.entityId;
         }
     }
 

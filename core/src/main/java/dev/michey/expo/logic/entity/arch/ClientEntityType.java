@@ -15,6 +15,7 @@ public enum ClientEntityType {
     /** Client only */
     SELECTOR(-1, "Selector", null),
     RAINDROP(-2, "Raindrop", null),
+    PARTICLE_HIT(-3, "ParticleHit", null),
 
     ;
 

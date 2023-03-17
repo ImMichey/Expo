@@ -13,9 +13,11 @@ import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
+import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
@@ -79,6 +81,30 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     }
 
     @Override
+    public void onDamage(float damage, float newHealth) {
+        log("onDamage");
+        contactDelta = STEPS * 0.5f;
+        contactDir = 1;//drawRootX < entity.drawRootX ? -1 : 1;
+        AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+
+        int particles = MathUtils.random(1, 1);
+
+        for(int i = 0; i < particles; i++) {
+            ClientParticleHit p = new ClientParticleHit();
+
+            p.setParticleColor(MathUtils.randomBoolean() ? ClientStatic.COLOR_PARTICLE_GRASS_1 : ClientStatic.COLOR_PARTICLE_GRASS_2);
+            p.setParticleLifetime(1.0f);
+            p.setParticleOriginAndVelocity(drawCenterX + MathUtils.random(-1, 1), drawCenterY + MathUtils.random(-1, 1), MathUtils.random(-10, 10), MathUtils.random(-10, 10));
+            p.setParticleRotation(MathUtils.random(360f));
+            float scale = MathUtils.random(0.4f, 0.8f);
+            p.setParticleScale(scale, scale);
+            p.setParticleFadeout(0.25f);
+
+            entityManager().addClientSideEntity(p);
+        }
+    }
+
+    @Override
     public void onDeletion() {
 
     }
@@ -113,8 +139,8 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         if(drawnLastFrame) {
             updateDepth(drawOffsetY);
 
-            rc.useBatchAndShader(rc.arraySpriteBatch, rc.arrayWindShader);
-
+            rc.arraySpriteBatch.setShader(rc.arrayWindShader);
+            rc.useArrayBatch();
             drawGrass(rc, delta);
         }
     }
@@ -138,7 +164,8 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.useBatchAndShader(rc.arraySpriteBatch, rc.arrayWindShader);
+        rc.useArrayBatch();
+        rc.arraySpriteBatch.setShader(rc.arrayWindShader);
 
         rc.arrayWindShader.bind();
         rc.arrayWindShader.setUniformi("u_selected", 1);
@@ -161,7 +188,8 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
         if(drawnShadowLastFrame) {
             Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY + 1);
-            rc.useBatchAndShader(rc.arraySpriteBatch, rc.arrayWindShader);
+            rc.arraySpriteBatch.setShader(rc.arrayWindShader);
+            rc.useArrayBatch();
 
             if(windSwayAnimationActive()) {
                 rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, drawWidth, drawHeight, shadow, verticesMovement, verticesMovement);

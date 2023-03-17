@@ -38,6 +38,11 @@ public class ClientRaindrop extends ClientEntity {
     }
 
     @Override
+    public void onDamage(float damage, float newHealth) {
+
+    }
+
+    @Override
     public void tick(float delta) {
         if(!splash) {
             float x = velocityX * delta;
@@ -68,14 +73,14 @@ public class ClientRaindrop extends ClientEntity {
                 if(drawnLastFrame) {
                     TextureRegion anim = splashAnimation.getKeyFrame(animationDelta, false);
 
-                    rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
+                    rc.useRegularBatch();
 
                     if(animationAlpha < 1.0f) {
-                        rc.currentBatch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
-                        rc.currentBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
-                        rc.currentBatch.setColor(Color.WHITE);
+                        rc.batch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
+                        rc.batch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                        rc.batch.setColor(Color.WHITE);
                     } else {
-                        rc.currentBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                        rc.batch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
                     }
                 }
 
@@ -86,8 +91,8 @@ public class ClientRaindrop extends ClientEntity {
             }
         } else {
             if(drawnLastFrame) {
-                rc.useBatchAndShader(rc.arraySpriteBatch, rc.DEFAULT_GLES3_ARRAY_SHADER);
-                raindropSprite.draw(rc.currentBatch);
+                rc.useRegularBatch();
+                raindropSprite.draw(rc.batch);
             }
         }
     }

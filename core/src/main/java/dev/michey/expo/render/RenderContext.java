@@ -91,8 +91,8 @@ public class RenderContext {
     public ArrayTextureSpriteBatch arraySpriteBatch;    // Game world batch
     public SpriteBatch hudBatch;                        // HUD batch
 
-    public Batch currentBatch = null;
-    public ShaderProgram currentShader = null;
+    //public Batch currentBatch = null;
+    //public ShaderProgram currentShader = null;
 
     /** Fonts */
     //public BitmapFont font;
@@ -113,7 +113,7 @@ public class RenderContext {
     public FrameBuffer shadowFbo;
     public FrameBuffer waterReflectionFbo;
     public FrameBuffer waterTilesFbo;
-    public FrameBuffer cloudsFbo;
+    public FrameBuffer entityFbo;
 
     /** Debug helpers */
     public boolean drawTileInfo = false;
@@ -303,7 +303,7 @@ public class RenderContext {
         shadowFbo = createFBO(w, h);
         waterReflectionFbo = createFBO(w, h);
         waterTilesFbo = createFBO(w, h);
-        cloudsFbo = createFBO(w, h);
+        entityFbo = createFBO(w, h);
     }
 
     public boolean inDrawBounds(ClientEntity entity) {
@@ -337,55 +337,21 @@ public class RenderContext {
         return drawStartX <= chunk.chunkDrawEndX && drawStartY <= chunk.chunkDrawEndY && drawEndX >= chunk.chunkDrawBeginX && drawEndY >= chunk.chunkDrawBeginY;
     }
 
-    public void cleanUp() {
-        if(currentBatch != null) {
-            if(currentBatch.isDrawing()) currentBatch.end();
-            currentBatch = null;
-        }
-
-        currentShader = null;
-    }
-
-    public void forceBatchAndShader(Batch batch, ShaderProgram program) {
-        currentBatch = batch;
-        currentShader = program;
-        currentBatch.setShader(currentShader);
-        currentBatch.begin();
-    }
-
-    public void updateShader(String key, float value) {
-        currentShader.bind();
-        currentShader.setUniformf(key, value);
-    }
-
-    public void updateShaderAndFlush(String key, float value) {
-        updateShader(key, value);
-        currentBatch.setShader(currentShader);
-    }
-
-    public void useBatchAndShader(Batch batch, ShaderProgram program) {
-        useBatch(batch);
-        useShader(program);
-    }
-
-    public void useBatch(Batch batch) {
-        if(currentBatch == null) {
-            currentBatch = batch;
-            currentBatch.begin();
-            return;
-        }
-
-        if(currentBatch != batch) {
-            currentBatch.end();
-            currentBatch = batch;
-            currentBatch.begin();
+    public void useRegularBatch() {
+        if(arraySpriteBatch.isDrawing()) {
+            arraySpriteBatch.end();
+            batch.begin();
+        } else if(!batch.isDrawing()) {
+            batch.begin();
         }
     }
 
-    public void useShader(ShaderProgram program) {
-        if(currentShader != program) {
-            currentShader = program;
-            currentBatch.setShader(currentShader);
+    public void useArrayBatch() {
+        if(batch.isDrawing()) {
+            batch.end();
+            arraySpriteBatch.begin();
+        } else if(!arraySpriteBatch.isDrawing()) {
+            arraySpriteBatch.begin();
         }
     }
 
@@ -407,7 +373,7 @@ public class RenderContext {
         shadowFbo.dispose();
         waterReflectionFbo.dispose();
         waterTilesFbo.dispose();
-        cloudsFbo.dispose();
+        entityFbo.dispose();
     }
 
     public void onResize(int width, int height) {
