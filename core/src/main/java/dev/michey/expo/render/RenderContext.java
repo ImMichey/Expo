@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -76,11 +75,11 @@ public class RenderContext {
     public ShaderProgram DEFAULT_GLES3_SHADER;          // Should be used by all regular batches.
     public ShaderProgram DEFAULT_GLES3_ARRAY_SHADER;    // Should be used by all array batches.
     public ShaderProgram waterShader;
-    public ShaderProgram arrayWindShader;
     public ShaderProgram vignetteShader;
     public ShaderProgram waterTileShader;
     public ShaderProgram waterFboShader;
     public ShaderProgram selectionShader;
+    public ShaderProgram foliageWindShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -90,9 +89,6 @@ public class RenderContext {
     public ShapeRenderer chunkRenderer;                 // Game world batch
     public ArrayTextureSpriteBatch arraySpriteBatch;    // Game world batch
     public SpriteBatch hudBatch;                        // HUD batch
-
-    //public Batch currentBatch = null;
-    //public ShaderProgram currentShader = null;
 
     /** Fonts */
     //public BitmapFont font;
@@ -121,6 +117,18 @@ public class RenderContext {
     public boolean drawImGui = true;
     public boolean drawShapes = false;
     public boolean drawHUD = true;
+
+    /** ImGui Shader Helper */
+    public float speed = 1.0f;
+    public float minStrength = 0.05f;
+    public float maxStrength = 0.01f;
+    public float strengthScale = 100.0f;
+    public float interval = 3.5f;
+    public float detail = 1.0f;
+    public float distortion = 0.0f;
+    public float heightOffset = 0.0f;
+    public float offset = 0.0f;
+    public float skew = 0.0f;
 
     /** Game camera */
     public ExpoCamera expoCamera;
@@ -211,10 +219,10 @@ public class RenderContext {
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
         waterShader = compileShader("gl3/water");
         vignetteShader = compileShader("gl3/vignette");
-        arrayWindShader = compileShader("gl3/wind_array");
         waterTileShader = compileShader("gl3/water_tile");
         waterFboShader = compileShader("gl3/water_fbo");
         selectionShader = compileShader("gl3/selection");
+        foliageWindShader = compileShader("gl3/foliagewind");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -287,9 +295,9 @@ public class RenderContext {
 
         mouseDirection = mouseX < (Gdx.graphics.getWidth() * 0.5f) ? 0 : 1;
 
-        arrayWindShader.bind();
-        arrayWindShader.setUniformf("u_time", deltaTotal);
-        arrayWindShader.setUniformi("u_selected", 0);
+        foliageWindShader.bind();
+        foliageWindShader.setUniformi("u_selected", 0);
+        foliageWindShader.setUniformf("u_time", deltaTotal);
     }
 
     public void reset() {

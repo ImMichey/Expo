@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.ScreenUtils;
+import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.devhud.DevHUD;
@@ -420,16 +421,19 @@ public class ClientWorld {
             }
 
             // Render debug shapes
-            if(r.drawShapes) {
-                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-                for(ClientEntity all : clientEntityManager.allEntities()) {
-                    if(all.drawnLastFrame) {
-                        float x = all.clientPosX;
-                        float y = all.clientPosY;
+            for(ClientEntity all : clientEntityManager.allEntities()) {
+                if(all.drawnLastFrame) {
+                    float x = all.clientPosX;
+                    float y = all.clientPosY;
 
-                        float vx = x + all.drawOffsetX;
-                        float vy = y + all.drawOffsetY;
+                    float vx = x + all.drawOffsetX;
+                    float vy = y + all.drawOffsetY;
+
+                    if(Expo.get().getImGuiExpo().renderDrawPos.get()) {
+                        r.chunkRenderer.setColor(Color.GREEN);
+                        r.chunkRenderer.circle(vx, vy, 0.33f, 8);
 
                         if(all.drawWidth != 0 || all.drawHeight != 0) {
                             r.chunkRenderer.end();
@@ -444,47 +448,60 @@ public class ClientWorld {
                             r.chunkRenderer.end();
                             r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
                         }
+                    }
 
+                    if(Expo.get().getImGuiExpo().renderClientPos.get()) {
                         r.chunkRenderer.setColor(Color.CYAN);
                         r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 1.0f, 8);
+                    }
+
+                    if(Expo.get().getImGuiExpo().renderServerPos.get()) {
                         r.chunkRenderer.setColor(Color.CORAL);
                         r.chunkRenderer.circle(all.serverPosX, all.serverPosY, 0.65f, 8);
-                        if(!(x == vx && y == vy)) {
-                            r.chunkRenderer.setColor(Color.GREEN);
-                            r.chunkRenderer.circle(vx, vy, 0.33f, 8);
-                        }
+                    }
+
+                    if(Expo.get().getImGuiExpo().renderDrawRoot.get()) {
                         r.chunkRenderer.setColor(Color.RED);
                         r.chunkRenderer.circle(all.drawRootX, all.drawRootY, 0.33f, 8);
+                    }
+
+                    if(Expo.get().getImGuiExpo().renderVisualCenter.get()) {
                         r.chunkRenderer.setColor(Color.YELLOW);
                         r.chunkRenderer.circle(all.toVisualCenterX(), all.toVisualCenterY(), 0.33f, 8);
+                    }
 
-                        if(all instanceof ClientPlayer player) {
-                            if(player.holdingItemId != -1) {
-                                r.chunkRenderer.setColor(Color.WHITE);
-                                r.chunkRenderer.circle(player.holdingItemSprite.getX(), player.holdingItemSprite.getY(), 0.33f, 8);
-                                r.chunkRenderer.setColor(Color.SKY);
-                                r.chunkRenderer.circle(
-                                        player.holdingItemSprite.getX() + player.holdingItemSprite.getOriginX(),
-                                        player.holdingItemSprite.getY() + player.holdingItemSprite.getOriginY(),
-                                        0.5f, 8);
+                    if(Expo.get().getImGuiExpo().renderInteractionPoints.get()) {
+                        if(all instanceof SelectableEntity sel) {
+                            r.chunkRenderer.setColor(Color.PURPLE);
+                            float[] points = sel.interactionPoints();
+
+                            for(int i = 0; i < points.length; i += 2) {
+                                r.chunkRenderer.circle(points[i], points[i + 1], 0.5f, 8);
                             }
-
-                            r.chunkRenderer.setColor(Color.RED);
-                            r.chunkRenderer.circle(player.playerReachCenterX, player.playerReachCenterY, 1f, 8);
                         }
                     }
+
+                    /*
+
+                    if(all instanceof ClientPlayer player) {
+                        if(player.holdingItemId != -1) {
+                            r.chunkRenderer.setColor(Color.WHITE);
+                            r.chunkRenderer.circle(player.holdingItemSprite.getX(), player.holdingItemSprite.getY(), 0.33f, 8);
+                            r.chunkRenderer.setColor(Color.SKY);
+                            r.chunkRenderer.circle(
+                                    player.holdingItemSprite.getX() + player.holdingItemSprite.getOriginX(),
+                                    player.holdingItemSprite.getY() + player.holdingItemSprite.getOriginY(),
+                                    0.5f, 8);
+                        }
+
+                        r.chunkRenderer.setColor(Color.RED);
+                        r.chunkRenderer.circle(player.playerReachCenterX, player.playerReachCenterY, 1f, 8);
+                    }
+                    */
                 }
-
-                r.chunkRenderer.end();
-
-                r.hudBatch.begin();
-                cursorText("clientPos", Color.CYAN);
-                cursorText("serverPos", Color.CORAL);
-                cursorText("drawPos", Color.GREEN);
-                cursorText("drawRoot", Color.RED);
-                cursorText("visualCenter", Color.YELLOW);
-                r.hudBatch.end();
             }
+
+            r.chunkRenderer.end();
         }
     }
 
@@ -618,30 +635,25 @@ public class ClientWorld {
         r.batch.end();
     }
 
-    private void drawLayer(int k, ClientChunk chunk, TextureRegion[] layer, RenderContext rc, float wx, float wy, Pair[][] displacementPairs) {
-        // TODO: Double check layers having 4 instead of 1 length
+    private void drawLayer(int k, TextureRegion[] layer, RenderContext rc, float wx, float wy, Pair[][] displacementPairs) {
         Pair[] displacement = displacementPairs != null ? displacementPairs[k] : null;
 
-        for(int i = 0; i < layer.length; i++) {
-            TextureRegion t = layer[i];
-            if(t == null) continue;
-
-            if(layer.length == 1) {
-                rc.batch.draw(t, wx, wy);
+        if(layer.length == 1) {
+            TextureRegion t = layer[0];
+            if(t == null) return;
+            rc.batch.draw(t, wx, wy);
+        } else {
+            if(displacement == null) {
+                rc.batch.draw(layer[0], wx, wy);
+                rc.batch.draw(layer[1], wx + 8, wy);
+                rc.batch.draw(layer[2], wx, wy + 8);
+                rc.batch.draw(layer[3], wx + 8, wy + 8);
             } else {
-                if(displacement == null) {
-                    rc.batch.draw(layer[0], wx, wy);
-                    rc.batch.draw(layer[1], wx + 8, wy);
-                    rc.batch.draw(layer[2], wx, wy + 8);
-                    rc.batch.draw(layer[3], wx + 8, wy + 8);
-                } else {
-                    float val = clientChunkGrid.interpolation;
-
-                    rc.batch.draw(layer[0], wx + val * (int) displacement[0].key, wy + val * (int) displacement[0].value);
-                    rc.batch.draw(layer[1], wx + 8 + val * (int) displacement[1].key, wy + val * (int) displacement[1].value);
-                    rc.batch.draw(layer[2], wx + val * (int) displacement[2].key, wy + 8 + val * (int) displacement[2].value);
-                    rc.batch.draw(layer[3], wx + 8 + val * (int) displacement[3].key, wy + 8 + val * (int) displacement[3].value);
-                }
+                float val = clientChunkGrid.interpolation;
+                rc.batch.draw(layer[0], wx + val * (int) displacement[0].key, wy + val * (int) displacement[0].value);
+                rc.batch.draw(layer[1], wx + 8 + val * (int) displacement[1].key, wy + val * (int) displacement[1].value);
+                rc.batch.draw(layer[2], wx + val * (int) displacement[2].key, wy + 8 + val * (int) displacement[2].value);
+                rc.batch.draw(layer[3], wx + 8 + val * (int) displacement[3].key, wy + 8 + val * (int) displacement[3].value);
             }
         }
     }
@@ -664,9 +676,9 @@ public class ClientWorld {
                             float wx = px + ExpoShared.tileToPos(tx);
                             float wy = py + ExpoShared.tileToPos(ty);
 
-                            drawLayer(k, chunk, chunk.layer0Tex[k], rc, wx, wy, null);
-                            drawLayer(k, chunk, chunk.layer1Tex[k], rc, wx, wy, chunk.layer1Displacement);
-                            drawLayer(k, chunk, chunk.layer2Tex[k], rc, wx, wy, null);
+                            if(chunk.layer1Tex[k].length != 1) drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
+                            drawLayer(k, chunk.layer1Tex[k], rc, wx, wy, chunk.layer1Displacement);
+                            drawLayer(k, chunk.layer2Tex[k], rc, wx, wy, null);
                         }
                     }
                 }

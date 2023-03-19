@@ -94,7 +94,14 @@ public class Expo implements ApplicationListener {
 		INSTANCE = this;
 
 		autoExec();
-		//ExpoAssets.get().slice();
+		/*
+			ExpoAssets.get().slice("tile_soil", true, 0, 0);
+			ExpoAssets.get().slice("tile_grass", false, 0, 16);
+			ExpoAssets.get().slice("tile_sand", false, 0, 48);
+			ExpoAssets.get().slice("tile_not_set", true, 0, 80);
+			ExpoAssets.get().slice("tile_ocean", false, 0, 96);
+			ExpoAssets.get().slice("tile_ocean_deep", false, 0, 128);
+		 */
 	}
 
 	@Override

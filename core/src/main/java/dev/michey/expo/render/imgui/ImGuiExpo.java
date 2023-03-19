@@ -43,6 +43,22 @@ public class ImGuiExpo {
     private final int[] uiScale = new int[3];
     private final float[] playerHealth = new float[1];
     private final float[] playerHunger = new float[1];
+    public final ImBoolean renderInteractionPoints = new ImBoolean(false);
+    public final ImBoolean renderClientPos = new ImBoolean(false);
+    public final ImBoolean renderServerPos = new ImBoolean(false);
+    public final ImBoolean renderVisualCenter = new ImBoolean(false);
+    public final ImBoolean renderDrawRoot = new ImBoolean(false);
+    public final ImBoolean renderDrawPos = new ImBoolean(false);
+    private final float[] speed = new float[1];
+    private final float[] minStrength = new float[1];
+    private final float[] maxStrength = new float[1];
+    private final float[] strengthScale = new float[1];
+    private final float[] interval = new float[1];
+    private final float[] detail = new float[1];
+    private final float[] distortion = new float[1];
+    private final float[] heightOffset = new float[1];
+    private final float[] offset = new float[1];
+    private final float[] skew = new float[1];
 
     public void draw() {
         drawExpoWindow();
@@ -85,6 +101,17 @@ public class ImGuiExpo {
             currentColor[0] = w.ambientLightingR;
             currentColor[1] = w.ambientLightingG;
             currentColor[2] = w.ambientLightingB;
+
+            speed[0] = r.speed;
+            minStrength[0] = r.minStrength;
+            maxStrength[0] = r.maxStrength;
+            strengthScale[0] = r.strengthScale;
+            interval[0] = r.interval;
+            detail[0] = r.detail;
+            distortion[0] = r.distortion;
+            heightOffset[0] = r.heightOffset;
+            offset[0] = r.offset;
+            skew[0] = r.skew;
 
             ClientPlayer player = ClientPlayer.getLocalPlayer();
 
@@ -283,6 +310,8 @@ public class ImGuiExpo {
             ImGui.separator();
 
             if(ImGui.treeNode("Water")) {
+                ImGui.text("Disabled for now");
+                /*
                 if(ImGui.sliderFloat("Flow speed", waterSpeed, 0.0f, 2.0f)) {
                     r.waterSpeed = waterSpeed[0];
                 }
@@ -290,6 +319,7 @@ public class ImGuiExpo {
                 if(ImGui.colorPicker3("Color", waterColor)) {
                     r.waterColor = waterColor;
                 }
+                */
 
                 ImGui.treePop();
             }
@@ -328,12 +358,24 @@ public class ImGuiExpo {
 
             ImGui.separator();
 
-            if(ImGui.treeNode("Debug")) {
-                if(player != null) {
-                    ImGui.text("currentPunchAngle: " + player.currentPunchAngle);
-                    ImGui.text("startPunchAngle: " + player.punchStartAngle);
-                    ImGui.text("endPunchAngle: " + player.punchEndAngle);
-                }
+            if(ImGui.treeNode("Debug Renderer")) {
+                ImGui.checkbox("Interaction Points", renderInteractionPoints);
+                ImGui.checkbox("Client Pos", renderClientPos);
+                ImGui.checkbox("Server Pos", renderServerPos);
+                ImGui.checkbox("Visual Center", renderVisualCenter);
+                ImGui.checkbox("Draw Root", renderDrawRoot);
+                ImGui.checkbox("Draw Pos", renderDrawPos);
+
+                if(ImGui.sliderFloat("speed", speed, 0.0f, 10.0f)) r.speed = speed[0];
+                if(ImGui.sliderFloat("minStrength", minStrength, 0.0f, 1.0f)) r.minStrength = minStrength[0];
+                if(ImGui.sliderFloat("maxStrength", maxStrength, 0.0f, 1.0f)) r.maxStrength = maxStrength[0];
+                if(ImGui.sliderFloat("strengthScale", strengthScale, 0.0f, 500.0f)) r.strengthScale = strengthScale[0];
+                if(ImGui.sliderFloat("interval", interval, 0.0f, 10.0f)) r.interval = interval[0];
+                if(ImGui.sliderFloat("detail", detail, 0.0f, 5.0f)) r.detail = detail[0];
+                if(ImGui.sliderFloat("distortion", distortion, 0.0f, 1.0f)) r.distortion = distortion[0];
+                if(ImGui.sliderFloat("heightOffset", heightOffset, 0.0f, 1.0f)) r.heightOffset = heightOffset[0];
+                if(ImGui.sliderFloat("offset", offset, 0.0f, 10.0f)) r.offset = offset[0];
+                if(ImGui.sliderFloat("skew", skew, -500.0f, 500.0f)) r.skew = skew[0];
 
                 ImGui.treePop();
             }

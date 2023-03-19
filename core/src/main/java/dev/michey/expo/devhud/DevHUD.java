@@ -21,7 +21,7 @@ public class DevHUD {
 
         RenderContext.get().hudBatch.begin();
 
-        // line("[GRAY]FPS: [WHITE]" + Gdx.graphics.getFramesPerSecond());
+        line("[GRAY]FPS: [WHITE]" + Gdx.graphics.getFramesPerSecond());
 
         /*
         for(String s : injectedLines.keySet()) {

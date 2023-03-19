@@ -1,7 +1,7 @@
 === IMPLEMENT ===
 - Chest/Glove/Legs/Boot armor + visuals
 - bounding box system
-- punching entities/damage
+- punching entities in proximity
 - crafting system
 
 
@@ -17,4 +17,5 @@
 - There might be occurrences of ConcurrentModificationException on a local server environment as the packets aren't queued
 - Port all items to a sheet
 - Port all entities to a sheet
-- water tile sheet
+
+- Black fade animation when spawning into world

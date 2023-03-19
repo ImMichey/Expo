@@ -20,7 +20,6 @@ public class ExpoAssets {
     private final HashMap<String, TileMapping> tileMappings;
     private final AssetManager assetManager;
     private TextureAtlas mainAtlas;
-    public TextureRegion soil;
 
     private TileSheet tileSheet;
     private ParticleSheet particleSheet;
@@ -51,7 +50,6 @@ public class ExpoAssets {
 
                         if(mainAtlas == null) {
                             mainAtlas = assetManager.get("textures/atlas/expo-0.atlas", TextureAtlas.class);
-                            soil = textureRegion("soiltile");
                         }
                     }
                 }
@@ -73,7 +71,7 @@ public class ExpoAssets {
             }
         }
 
-        tileSheet = new TileSheet(textureRegion("tileset"));
+        tileSheet = new TileSheet(this);
         particleSheet = new ParticleSheet(textureRegion("particlesheet"));
     }
 
@@ -85,38 +83,66 @@ public class ExpoAssets {
         return particleSheet;
     }
 
-    public void slice() {
-        TextureRegion raw = textureRegion("sandtiles");
-        Texture tex = raw.getTexture();
-        if(!tex.getTextureData().isPrepared()) {
-            tex.getTextureData().prepare();
-        }
+    public void slice(String tileName, boolean singleTile, int startX, int startY) {
+        TextureRegion tiles = textureRegion("tileset");
+        Texture tex = tiles.getTexture();
+        if(!tex.getTextureData().isPrepared()) tex.getTextureData().prepare();
         Pixmap pixmap = tex.getTextureData().consumePixmap();
+        Gdx.files.external("convertedTiles").mkdirs();
 
-        int perTile = 16;
-        int w = raw.getRegionWidth();
-        int h = raw.getRegionHeight();
+        if(singleTile) {
+            TextureRegion tileSingle = new TextureRegion(tiles, startX, startY, 16, 16);
+            Pixmap localPixmap = new Pixmap(16, 16, pixmap.getFormat());
+            localPixmap.drawPixmap(pixmap, 0, 0, tileSingle.getRegionX(), tileSingle.getRegionY(), 16, 16);
+            FileHandle fh = Gdx.files.external("convertedTiles/" + tileName + ".png");
+            PixmapIO.writePNG(fh, localPixmap);
+            localPixmap.dispose();
+        } else {
+            TextureRegion[] slices = new TextureRegion[22];
 
-        int xx = w / perTile;
-        int yy = h / perTile;
+            // Full all sides texture
+            slices[0] = new TextureRegion(tiles, startX, startY, 16, 16);
 
-        for(int x = 0; x < xx; x++) {
-            for(int y = 0; y < yy; y++) {
-                int index = y * xx + x;
-                //log("Index X" + x + " Y" + y + " -> " + index);
-                TextureRegion part = new TextureRegion(raw, x * perTile, y * perTile, perTile, perTile);
-                Pixmap localPixmap = new Pixmap(
-                        16,
-                        16,
-                        pixmap.getFormat()
-                );
+            // Single texture
+            slices[1] = new TextureRegion(tiles, startX + 16, startY, 16, 16);
 
-                localPixmap.drawPixmap(pixmap, 0, 0, part.getRegionX(), part.getRegionY(), 16, 16);
+            // Top Left Corner 2x2
+            slices[2] = new TextureRegion(tiles, startX + 32, startY, 8, 8);
+            slices[3] = new TextureRegion(tiles, startX + 40, startY, 8, 8);
+            slices[4] = new TextureRegion(tiles, startX + 32, startY + 8, 8, 8);
+            slices[5] = new TextureRegion(tiles, startX + 40, startY + 8, 8, 8);
 
-                Gdx.files.external("TEST").mkdirs();
-                FileHandle fh = Gdx.files.external("TEST/tile_sand_" + index + ".png");
+            // Top Right Corner 2x2
+            slices[6] = new TextureRegion(tiles, startX + 48, startY, 8, 8);
+            slices[7] = new TextureRegion(tiles, startX + 56, startY, 8, 8);
+            slices[8] = new TextureRegion(tiles, startX + 48, startY + 8, 8, 8);
+            slices[9] = new TextureRegion(tiles, startX + 56, startY + 8, 8, 8);
 
+            // Bottom Left Corner 2x2
+            slices[10] = new TextureRegion(tiles, startX + 32, startY + 16, 8, 8);
+            slices[11] = new TextureRegion(tiles, startX + 40, startY + 16, 8, 8);
+            slices[12] = new TextureRegion(tiles, startX + 32, startY + 24, 8, 8);
+            slices[13] = new TextureRegion(tiles, startX + 40, startY + 24, 8, 8);
+
+            // Bottom Right Corner 2x2
+            slices[14] = new TextureRegion(tiles, startX + 48, startY + 16, 8, 8);
+            slices[15] = new TextureRegion(tiles, startX + 56, startY + 16, 8, 8);
+            slices[16] = new TextureRegion(tiles, startX + 48, startY + 24, 8, 8);
+            slices[17] = new TextureRegion(tiles, startX + 56, startY + 24, 8, 8);
+
+            // Transition corners 2x2
+            slices[18] = new TextureRegion(tiles, startX + 16, startY + 16, 8, 8);
+            slices[19] = new TextureRegion(tiles, startX + 24, startY + 16, 8, 8);
+            slices[20] = new TextureRegion(tiles, startX + 16, startY + 24, 8, 8);
+            slices[21] = new TextureRegion(tiles, startX + 24, startY + 24, 8, 8);
+
+            for(int i = 0; i < slices.length; i++) {
+                TextureRegion toConsume = slices[i];
+                Pixmap localPixmap = new Pixmap(toConsume.getRegionWidth(), toConsume.getRegionHeight(), pixmap.getFormat());
+                localPixmap.drawPixmap(pixmap, 0, 0, toConsume.getRegionX(), toConsume.getRegionY(), toConsume.getRegionWidth(), toConsume.getRegionHeight());
+                FileHandle fh = Gdx.files.external("convertedTiles/" + tileName + "_" + i + ".png");
                 PixmapIO.writePNG(fh, localPixmap);
+                localPixmap.dispose();
             }
         }
     }

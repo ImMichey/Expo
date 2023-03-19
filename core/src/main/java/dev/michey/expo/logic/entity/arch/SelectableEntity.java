@@ -6,4 +6,6 @@ public interface SelectableEntity {
 
     void renderSelected(RenderContext rc, float delta);
 
+    float[] interactionPoints();
+
 }

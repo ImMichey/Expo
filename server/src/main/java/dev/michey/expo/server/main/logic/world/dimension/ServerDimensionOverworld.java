@@ -14,7 +14,7 @@ public class ServerDimensionOverworld extends ServerDimension {
         float baseX = dimensionSpawnX;
         float baseY = dimensionSpawnY;
 
-        int generate = 3;//MathUtils.random(32, 64);
+        int generate = 1;//MathUtils.random(32, 64);
 
         for(int i = 0; i < generate; i++) {
             ServerDummy dummy = new ServerDummy();

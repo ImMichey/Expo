@@ -13,6 +13,7 @@ in vec2 a_texCoord0;
 in float texture_index;
 
 uniform mat4 u_projTrans;
+uniform float u_time;
 
 out vec4 v_color;
 out vec2 v_texCoords;

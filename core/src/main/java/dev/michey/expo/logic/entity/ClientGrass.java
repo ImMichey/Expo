@@ -1,47 +1,34 @@
 package dev.michey.expo.logic.entity;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.Pair;
 
 import java.util.List;
 
-import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
-import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
 
 public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     private Texture grass;
     private TextureRegion grassShadow;
+    private float[] interactionPointArray;
 
-    /** Wind sway vertices animation */
-    private float contactDelta = 0f;
-    private float contactDir = 0f;
-    private final float SPEED = 3.5f;
-    private final float STRENGTH = 3.5f;
-    private final float STRENGTH_DECREASE = 0.7f;
-    private final int STEPS = 5; // step = 0.5f (half radiant)
-    private float useStrength = STRENGTH;
-    private float verticesMovement;
+    private float shaderSpeed = MathUtils.random(0.3f, 2.0f);
+    private float shaderStrength = MathUtils.random(0.015f, 0.045f);
+    private float shaderOffset = MathUtils.random(4.0f);
 
     @Override
     public void onCreation() {
@@ -79,15 +66,19 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         }
 
         updateTexture(x, y, w, h);
+        interactionPointArray = new float[] {
+                (clientPosX + drawOffsetX + 3), (clientPosY + drawOffsetY + 3),
+                (clientPosX + drawOffsetX - 3 + drawWidth), (clientPosY + drawOffsetY + 3),
+                (clientPosX + drawOffsetX - 3 + drawWidth), (clientPosY + drawOffsetY - 3 + drawHeight),
+                (clientPosX + drawOffsetX + 3), (clientPosY + drawOffsetY - 3 + drawHeight),
+        };
     }
 
     @Override
     public void onDamage(float damage, float newHealth) {
-        contactDelta = STEPS * 0.5f;
-        contactDir = 1;//drawRootX < entity.drawRootX ? -1 : 1;
         AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
 
-        int particles = MathUtils.random(7, 10);
+        int particles = MathUtils.random(4, 7);
 
         for(int i = 0; i < particles; i++) {
             ClientParticleHit p = new ClientParticleHit();
@@ -99,7 +90,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             p.setParticleLifetime(0.3f);
             p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
             p.setParticleRotation(MathUtils.random(360f));
-            float scale = MathUtils.random(0.4f, 0.8f);
+            float scale = MathUtils.random(0.6f, 0.9f);
             p.setParticleScale(scale, scale);
             p.setParticleFadeout(0.1f);
             p.setParticleConstantRotation((Math.abs(velocityX) + Math.abs(velocityY)) * 0.5f / 24f * 360f);
@@ -120,7 +111,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     public void tick(float delta) {
         syncPositionWithServer();
 
-        if(!windSwayAnimationActive() && drawnLastFrame) {
+        if(drawnLastFrame) {
             for(List<ClientEntity> list : entityManager().getEntitiesByType(ClientEntityType.PLAYER, ClientEntityType.DUMMY)) {
                 for(ClientEntity entity : list) {
                     //if(!entity.drawnLastFrame) continue;
@@ -130,13 +121,37 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
                     if(xDst < 6.0f && yDst < 5.0f) {
                         // Contact.
-                        contactDelta = STEPS * 0.5f;
-                        contactDir = drawRootX < entity.drawRootX ? -1 : 1;
-                        AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+                        // AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public float[] interactionPoints() {
+        return interactionPointArray;
+    }
+
+    @Override
+    public void renderSelected(RenderContext rc, float delta) {
+        rc.useArrayBatch();
+        rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+        rc.foliageWindShader.setUniformi("u_selected", 1);
+        rc.foliageWindShader.setUniformf("u_progress", entityManager().pulseProgress);
+        rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
+        rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
+        rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
+
+        rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
+
+        rc.arraySpriteBatch.end();
+
+        rc.foliageWindShader.bind();
+        rc.foliageWindShader.setUniformi("u_selected", 0);
+
+        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+        rc.arraySpriteBatch.begin();
     }
 
     @Override
@@ -145,14 +160,27 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
         if(drawnLastFrame) {
             updateDepth(drawOffsetY);
-
-            rc.arraySpriteBatch.setShader(rc.arrayWindShader);
             rc.useArrayBatch();
-            drawGrass(rc, delta);
+
+            if(rc.expoCamera.camera.zoom > 0.5f) {
+                rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
+            } else {
+                rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+                rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
+                rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
+                rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
+                //rc.TEST_WIND_SHADER.setUniformf("skew", verticesMovement * 10);
+                rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
+
+                rc.arraySpriteBatch.end();
+                rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+                rc.arraySpriteBatch.begin();
+            }
         }
     }
 
-    private void drawGrass(RenderContext rc, float delta) {
+    private void drawGrassx(RenderContext rc, float delta) {
+        /*
         if(windSwayAnimationActive()) {
             contactDelta -= delta * SPEED;
             if(contactDelta < 0f) contactDelta = 0f;
@@ -167,26 +195,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         } else {
             rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
         }
-    }
-
-    @Override
-    public void renderSelected(RenderContext rc, float delta) {
-        rc.useArrayBatch();
-        rc.arraySpriteBatch.setShader(rc.arrayWindShader);
-
-        rc.arrayWindShader.bind();
-        rc.arrayWindShader.setUniformi("u_selected", 1);
-        rc.arrayWindShader.setUniformf("u_progress", entityManager().pulseProgress);
-
-        drawGrass(rc, delta);
-
-        rc.arraySpriteBatch.end();
-
-        rc.arrayWindShader.bind();
-        rc.arrayWindShader.setUniformi("u_selected", 0);
-
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
+        */
     }
 
     @Override
@@ -195,24 +204,20 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
         if(drawnShadowLastFrame) {
             Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY + 1);
-            rc.arraySpriteBatch.setShader(rc.arrayWindShader);
             rc.useArrayBatch();
+            rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+            rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
+            rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
+            rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
+            rc.arraySpriteBatch.drawGradient(grassShadow, drawWidth, drawHeight, shadow);
 
-            if(windSwayAnimationActive()) {
-                rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, drawWidth, drawHeight, shadow, verticesMovement, verticesMovement);
-            } else {
-                rc.arraySpriteBatch.drawGradient(grassShadow, drawWidth, drawHeight, shadow);
-            }
+            // rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, drawWidth, drawHeight, shadow, verticesMovement, verticesMovement);
         }
     }
 
     @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.GRASS;
-    }
-
-    public boolean windSwayAnimationActive() {
-        return contactDelta != 0f;
     }
 
 }

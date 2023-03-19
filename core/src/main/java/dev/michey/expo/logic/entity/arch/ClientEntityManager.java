@@ -19,6 +19,7 @@ import dev.michey.expo.util.ExpoShared;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -337,18 +338,30 @@ public class ClientEntityManager {
         // range
         float px = player.playerReachCenterX;
         float py = player.playerReachCenterY;
-        float distancePlayerEntity = Vector2.dst(px, py, entity.drawCenterX, entity.drawCenterY);
 
-        if(distancePlayerEntity > player.getPlayerRange()) return null;
+        float shortestDistance = Float.MAX_VALUE, shortestDistanceX = 0, shortestDistanceY = 0;
+        float[] points = ((SelectableEntity) entity).interactionPoints();
+
+        for(int i = 0; i < points.length; i += 2) {
+            float distancePlayerEntity = Vector2.dst(px, py, points[i], points[i + 1]);
+
+            if(distancePlayerEntity < shortestDistance) {
+                shortestDistance = distancePlayerEntity;
+                shortestDistanceX = points[i];
+                shortestDistanceY = points[i + 1];
+            }
+        }
+
+        if(shortestDistance > player.getPlayerRange()) return null;
 
         // view angle
-        double entityPlayerAngle = GenerationUtils.angleBetween360(player.playerReachCenterX, player.playerReachCenterY, entity.drawCenterX, entity.drawCenterY);
+        double entityPlayerAngle = GenerationUtils.angleBetween360(player.playerReachCenterX, player.playerReachCenterY, shortestDistanceX, shortestDistanceY);
         if(!ExpoShared.inAngleProximity(r.mousePlayerAngle, entityPlayerAngle, 225)) return null;
 
         float sx = entity.clientPosX + entity.drawOffsetX;
         float sy = entity.clientPosY + entity.drawOffsetY;
 
-        float distanceMouseEntity = Vector2.dst(r.mouseWorldX, r.mouseWorldY, entity.drawCenterX, entity.drawCenterY);
+        float distanceMouseEntity = Vector2.dst(r.mouseWorldX, r.mouseWorldY, shortestDistanceX, shortestDistanceY);
         boolean directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + entity.drawWidth) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + entity.drawHeight);
 
         return new Object[] {directMouseContact, distanceMouseEntity};

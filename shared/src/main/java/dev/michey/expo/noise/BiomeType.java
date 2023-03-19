@@ -54,8 +54,8 @@ public enum BiomeType {
     public static BiomeType convertNoise(float noise, float riverNoise) {
         if(noise <= ELEVATION_WATER_DEEP) return OCEAN_DEEP;
         if(noise <= ELEVATION_WATER) return OCEAN;
-        if(riverNoise >= ELEVATION_RIVER) return RIVER;
-        if(riverNoise <= ELEVATION_LAKE) return LAKE;
+        //if(riverNoise >= ELEVATION_RIVER) return RIVER;
+        //if(riverNoise <= ELEVATION_LAKE) return LAKE;
         if(noise <= ELEVATION_BEACH) return BEACH;
         return GRASS;
     }

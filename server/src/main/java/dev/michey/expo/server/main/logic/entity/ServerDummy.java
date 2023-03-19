@@ -47,8 +47,8 @@ public class ServerDummy extends ServerEntity {
     }
 
     public void generateDst() {
-        dstX = getDimension().getDimensionSpawnX() + MathUtils.random(-64f, 64f);
-        dstY = getDimension().getDimensionSpawnY() + MathUtils.random(-64f, 64f);
+        dstX = getDimension().getDimensionSpawnX() + MathUtils.random(-48f, 48f);
+        dstY = getDimension().getDimensionSpawnY() + MathUtils.random(-48f, 48f);
     }
 
     @Override

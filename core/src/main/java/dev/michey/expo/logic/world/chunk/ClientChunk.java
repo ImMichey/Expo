@@ -112,8 +112,9 @@ public class ClientChunk {
 
     private Pair<Integer, Integer> idToDir(int id) {
         int dirX = 0, dirY = 0;
+        int del = id >= 90 ? 90 : 46;
 
-        switch(id - 46) {
+        switch(id - del) {
             case 3, 6 -> {
                 dirX = 0;
                 dirY = -1;
