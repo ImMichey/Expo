@@ -55,7 +55,8 @@ public class ClientWorld {
     /** Time */
     public float worldTime;
     public final float MAX_SHADOW_X = 1.8f;
-    public final float MAX_SHADOW_Y = 1.4f;
+    public final float MIN_SHADOW_Y = 0.6f;
+    public final float MAX_SHADOW_Y = 1.5f;
     public float worldSunShadowX = MAX_SHADOW_X;
     public float worldSunShadowY = MAX_SHADOW_Y;
     public float worldSunShadowAlpha = 1.0f;
@@ -294,10 +295,12 @@ public class ClientWorld {
     private void calculateShadows(float normalized) {
         if(normalized < 0.5) {
             worldSunShadowX = MAX_SHADOW_X * (normalized * 2 - 1.0f);
-            worldSunShadowY = MAX_SHADOW_Y - (MAX_SHADOW_Y * normalized * 2);
+            worldSunShadowY = MIN_SHADOW_Y + (MAX_SHADOW_Y - MIN_SHADOW_Y) - ((MAX_SHADOW_Y - MIN_SHADOW_Y) * normalized * 2);
         } else {
-            worldSunShadowX = MAX_SHADOW_X * (normalized - 0.5f) * 2;
-            worldSunShadowY = MAX_SHADOW_Y * (normalized - 0.5f) * 2;
+            float adjusted = (normalized - 0.5f) * 2;
+
+            worldSunShadowX = MAX_SHADOW_X * adjusted;
+            worldSunShadowY = MIN_SHADOW_Y + (MAX_SHADOW_Y - MIN_SHADOW_Y) * adjusted;
         }
     }
 

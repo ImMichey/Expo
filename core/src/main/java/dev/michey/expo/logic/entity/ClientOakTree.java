@@ -98,7 +98,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth();
+            updateDepth(6);
             rc.useArrayBatch();
 
             if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);

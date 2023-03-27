@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.entity.arch;
 
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
@@ -33,6 +34,7 @@ public abstract class ServerEntity {
     public int tileX;
     public int tileY;
     public float health;
+    public ToolType damageableWith = null;
 
     /** ServerEntity base methods */
     public abstract void tick(float delta);

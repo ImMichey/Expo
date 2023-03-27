@@ -146,7 +146,15 @@ public class ServerPlayer extends ServerEntity {
                         dmg = ItemMapper.get().getMapping(item).logic.attackDamage;
                     }
 
-                    selected.applyDamageWithPacket(this, dmg);
+                    if(selected.damageableWith != null) {
+                        if(item != -1) {
+                            if(selected.damageableWith == ItemMapper.get().getMapping(item).logic.toolType) {
+                                selected.applyDamageWithPacket(this, dmg);
+                            }
+                        }
+                    } else {
+                        selected.applyDamageWithPacket(this, dmg);
+                    }
                 }
             }
 

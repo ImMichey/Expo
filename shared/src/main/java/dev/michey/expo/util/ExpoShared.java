@@ -25,7 +25,7 @@ public class ExpoShared {
     public static final int ROW_TILES = CHUNK_SIZE / TILE_SIZE;
     public static final int SPAWN_AREA_CHUNK_RANGE = 7;
     public static final int PLAYER_CHUNK_VIEW_RANGE = 9;
-    public static final int PLAYER_CHUNK_VIEW_RANGE_ONE_DIR = (PLAYER_CHUNK_VIEW_RANGE - 1) / 2; // 4
+    public static final int PLAYER_CHUNK_VIEW_RANGE_ONE_DIR = (PLAYER_CHUNK_VIEW_RANGE - 1) / 2; // (9 - 1) / 2 = 4
 
     public static final int PLAYER_INVENTORY_SLOTS = 36 + 5;
     public static final int PLAYER_INVENTORY_SLOT_HEAD = 36;

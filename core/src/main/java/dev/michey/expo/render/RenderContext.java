@@ -328,15 +328,10 @@ public class RenderContext {
     }
 
     public boolean verticesInBounds(float[] vertices) {
-        float rWidth = drawEndX - drawStartX;
-        float width = vertices[2] - vertices[0];
-        float rHeight = drawEndY - drawStartY;
-        float height = vertices[3] - vertices[1];
-
-        return vertices[0] < drawStartX + rWidth
-                && vertices[0] + width > drawStartX
-                && vertices[1] < drawStartY + rHeight
-                && vertices[1] + height > drawStartY;
+        return vertices[0] < drawEndX
+                && vertices[2] > drawStartX
+                && vertices[1] < drawEndY
+                && vertices[3] > drawStartY;
     }
 
     public boolean inDrawBounds(ClientChunk chunk) {
