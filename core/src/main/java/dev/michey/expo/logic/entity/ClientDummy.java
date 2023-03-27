@@ -34,27 +34,15 @@ public class ClientDummy extends ClientEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        drawnLastFrame = rc.inDrawBounds(this);
+        visibleToRenderEngine = rc.inDrawBounds(this);
 
-        if(drawnLastFrame) {
+        if(visibleToRenderEngine) {
             updateDepth();
 
             rc.useRegularBatch();
             rc.batch.draw(texture, clientPosX, clientPosY);
         }
     }
-
-    /*
-    @Override
-    public float[] interactionPoints() {
-        return new float[] {
-                clientPosX, clientPosY,
-                clientPosX + drawWidth, clientPosY,
-                clientPosX, clientPosY + drawHeight,
-                clientPosX + drawWidth, clientPosY + drawHeight,
-        };
-    }
-    */
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {

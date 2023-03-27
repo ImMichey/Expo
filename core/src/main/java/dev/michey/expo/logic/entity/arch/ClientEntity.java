@@ -51,8 +51,7 @@ public abstract class ClientEntity {
     public float drawCenterY;
     public float drawRootX;
     public float drawRootY;
-    public boolean drawnLastFrame;
-    public boolean drawnShadowLastFrame;
+    public boolean visibleToRenderEngine;
 
     /** ClientEntity base methods */
     public abstract void onCreation();

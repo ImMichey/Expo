@@ -18,6 +18,7 @@ import dev.michey.expo.util.EntityRemovalReason;
 
 import java.util.List;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 
 public class ClientGrass extends ClientEntity implements SelectableEntity {
@@ -29,6 +30,16 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     private float shaderSpeed = MathUtils.random(0.3f, 2.0f);
     private float shaderStrength = MathUtils.random(0.015f, 0.045f);
     private float shaderOffset = MathUtils.random(4.0f);
+
+    /** Wind sway vertices animation */
+    private float contactDelta = 0f;
+    private float contactDir = 0f;
+    private final float SPEED = 3.5f;
+    private final float STRENGTH = 3.5f;
+    private final float STRENGTH_DECREASE = 0.7f;
+    private final int STEPS = 5; // step = 0.5f (half radiant)
+    private float useStrength = STRENGTH;
+    private float verticesMovement;
 
     @Override
     public void onCreation() {
@@ -77,6 +88,8 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     @Override
     public void onDamage(float damage, float newHealth) {
         AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+        contactDelta = STEPS * 0.5f;
+        contactDir = 1;
 
         int particles = MathUtils.random(4, 7);
 
@@ -111,7 +124,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     public void tick(float delta) {
         syncPositionWithServer();
 
-        if(drawnLastFrame) {
+        if(contactDelta == 0 && visibleToRenderEngine) {
             for(List<ClientEntity> list : entityManager().getEntitiesByType(ClientEntityType.PLAYER, ClientEntityType.DUMMY)) {
                 for(ClientEntity entity : list) {
                     //if(!entity.drawnLastFrame) continue;
@@ -121,10 +134,26 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
                     if(xDst < 6.0f && yDst < 5.0f) {
                         // Contact.
-                        // AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+                        AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+                        contactDelta = STEPS * 0.5f;
+                        contactDir = entity.serverDirX == 0 ? (entity.drawRootX < drawRootX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
                     }
                 }
             }
+        }
+
+        if(contactDelta != 0) {
+            contactDelta -= delta * SPEED;
+            if(contactDelta < 0f) contactDelta = 0f;
+
+            float full = STEPS * 0.5f;
+            float diff = full - contactDelta;
+            int decreases = (int) (diff / 0.5f);
+            useStrength = STRENGTH - STRENGTH_DECREASE * decreases;
+
+            verticesMovement = useStrength * contactDir * MathUtils.sin(((STEPS * 0.5f) - contactDelta) * MathUtils.PI2);
+        } else {
+            verticesMovement = 0;
         }
     }
 
@@ -136,14 +165,14 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         rc.useArrayBatch();
-        rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+        if(rc.arraySpriteBatch.getShader() != rc.foliageWindShader) rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+
         rc.foliageWindShader.setUniformi("u_selected", 1);
         rc.foliageWindShader.setUniformf("u_progress", entityManager().pulseProgress);
         rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
         rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
         rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
-
-        rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
+        rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), verticesMovement, verticesMovement);
 
         rc.arraySpriteBatch.end();
 
@@ -156,62 +185,46 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        drawnLastFrame = rc.inDrawBounds(this);
+        visibleToRenderEngine = rc.inDrawBounds(this);
 
-        if(drawnLastFrame) {
+        if(visibleToRenderEngine) {
             updateDepth(drawOffsetY);
             rc.useArrayBatch();
 
             if(rc.expoCamera.camera.zoom > 0.5f) {
                 rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
             } else {
-                rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+                if(rc.arraySpriteBatch.getShader() != rc.foliageWindShader) rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+
                 rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
                 rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
                 rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
-                //rc.TEST_WIND_SHADER.setUniformf("skew", verticesMovement * 10);
-                rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
-
-                rc.arraySpriteBatch.end();
-                rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-                rc.arraySpriteBatch.begin();
+                rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), verticesMovement, verticesMovement);
+                rc.arraySpriteBatch.flush();
             }
         }
     }
 
-    private void drawGrassx(RenderContext rc, float delta) {
-        /*
-        if(windSwayAnimationActive()) {
-            contactDelta -= delta * SPEED;
-            if(contactDelta < 0f) contactDelta = 0f;
-
-            float full = STEPS * 0.5f;
-            float diff = full - contactDelta;
-            int decreases = (int) (diff / 0.5f);
-            useStrength = STRENGTH - STRENGTH_DECREASE * decreases;
-
-            verticesMovement = useStrength * contactDir * MathUtils.sin(((STEPS * 0.5f) - contactDelta) * MathUtils.PI2);
-            rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), verticesMovement, verticesMovement);
-        } else {
-            rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
-        }
-        */
-    }
-
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        drawnShadowLastFrame = rc.inDrawBoundsShadow(this);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY + 1);
+        float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(grassShadow, shadow);
+        boolean drawGrass = rc.verticesInBounds(grassVertices);
 
-        if(drawnShadowLastFrame) {
-            Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY + 1);
+        if(drawGrass) {
             rc.useArrayBatch();
-            rc.arraySpriteBatch.setShader(rc.foliageWindShader);
-            rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
-            rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
-            rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
-            rc.arraySpriteBatch.drawGradient(grassShadow, drawWidth, drawHeight, shadow);
 
-            // rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, drawWidth, drawHeight, shadow, verticesMovement, verticesMovement);
+            if(rc.expoCamera.camera.zoom > 0.5f) {
+                rc.arraySpriteBatch.drawGradient(grassShadow, drawWidth, drawHeight, shadow);
+            } else {
+                if(rc.arraySpriteBatch.getShader() != rc.foliageWindShader) rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+
+                rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
+                rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
+                rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
+                rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, drawWidth, drawHeight, shadow, verticesMovement, verticesMovement);
+                rc.arraySpriteBatch.flush();
+            }
         }
     }
 

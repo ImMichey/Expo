@@ -19,7 +19,7 @@ public class Lwjgl3Launcher {
 		Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
 
 		configuration.setTitle("expo-multiplayer");
-		configuration.setWindowedMode(1600, 720);
+		configuration.setWindowedMode(1280, 720);
 		configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
 		configuration.setOpenGLEmulation(Lwjgl3ApplicationConfiguration.GLEmulation.GL30, 3, 3);
 		//configuration.setResizable(false);

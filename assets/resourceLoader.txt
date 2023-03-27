@@ -17,6 +17,7 @@ foliage/entity_grass_2_shadow.png
 foliage/entity_grass_3_shadow.png
 foliage/entity_grass_4_shadow.png
 foliage/entity_grass_5_shadow.png
+foliage/tree_leaves.png
 water/square16x16.png
 water/trans1x1.png
 

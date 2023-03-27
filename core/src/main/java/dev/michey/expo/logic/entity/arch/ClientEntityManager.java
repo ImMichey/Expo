@@ -330,7 +330,7 @@ public class ClientEntityManager {
 
     public Object[] isNowSelected(ClientEntity entity) {
         // only check if in view
-        if(!entity.drawnLastFrame) return null;
+        if(!entity.visibleToRenderEngine) return null;
 
         ClientPlayer player = ClientPlayer.getLocalPlayer();
         RenderContext r = RenderContext.get();

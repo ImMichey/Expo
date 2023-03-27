@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.entity.ServerOakTree;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.ServerGrass;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
@@ -80,6 +81,17 @@ public class ServerChunk {
         for(int i = 0; i < biomes.length; i++) {
             BiomeType t = biomes[i];
             boolean index = layer1[i].length == 1;
+
+            if(t == BiomeType.GRASS && index && MathUtils.random() <= 0.01) {
+                int x = i % 8;
+                int y = i / 8;
+                ServerOakTree tree = new ServerOakTree();
+                tree.posX = wx + ExpoShared.tileToPos(x);
+                tree.posY = wy + ExpoShared.tileToPos(y);
+                tree.setStaticEntity();
+
+                ServerWorld.get().registerServerEntity(dimension.getDimensionName(), tree);
+            }
 
             if(t == BiomeType.GRASS && index && MathUtils.random() <= 0.15f) {
                 int x = i % 8;

@@ -1,6 +1,7 @@
 package dev.michey.expo.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -23,6 +24,8 @@ import dev.michey.expo.render.light.ExpoLightEngine;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.InputUtils;
+
+import java.util.Arrays;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -324,21 +327,16 @@ public class RenderContext {
                 && drawEndY >= y;
     }
 
-    public boolean inDrawBoundsShadow(ClientEntity entity) {
-        ClientWorld world = ExpoClientContainer.get().getClientWorld();
-        float size = world.worldSunShadowY;
-        float shear = world.worldSunShadowX;
+    public boolean verticesInBounds(float[] vertices) {
+        float rWidth = drawEndX - drawStartX;
+        float width = vertices[2] - vertices[0];
+        float rHeight = drawEndY - drawStartY;
+        float height = vertices[3] - vertices[1];
 
-        float x = entity.clientPosX + entity.drawOffsetX;
-        float y = entity.clientPosY + entity.drawOffsetY;
-
-        float shadowLeftX = x + (shear < 0 ? shear * entity.drawWidth : 0);
-        float shadowRightX = x + entity.drawWidth + (shear > 0 ? shear * entity.drawWidth : 0);
-
-        return drawStartX <= shadowRightX
-                && drawEndX >= shadowLeftX
-                && drawStartY <= (y + entity.drawHeight * size)
-                && drawEndY >= y;
+        return vertices[0] < drawStartX + rWidth
+                && vertices[0] + width > drawStartX
+                && vertices[1] < drawStartY + rHeight
+                && vertices[1] + height > drawStartY;
     }
 
     public boolean inDrawBounds(ClientChunk chunk) {

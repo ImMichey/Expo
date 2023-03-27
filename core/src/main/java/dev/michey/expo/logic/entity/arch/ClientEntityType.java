@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.arch;
 
 import dev.michey.expo.logic.entity.ClientDummy;
 import dev.michey.expo.logic.entity.ClientGrass;
+import dev.michey.expo.logic.entity.ClientOakTree;
 import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
@@ -11,6 +12,7 @@ public enum ClientEntityType {
     PLAYER(0, "Player", ServerEntityType.PLAYER),
     DUMMY(1, "Dummy", ServerEntityType.DUMMY),
     GRASS(2, "Grass", ServerEntityType.GRASS),
+    OAK_TREE(3, "OakTree", ServerEntityType.OAK_TREE),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -34,6 +36,7 @@ public enum ClientEntityType {
             case 0 -> new ClientPlayer();
             case 1 -> new ClientDummy();
             case 2 -> new ClientGrass();
+            case 3 -> new ClientOakTree();
             default -> null;
         };
     }

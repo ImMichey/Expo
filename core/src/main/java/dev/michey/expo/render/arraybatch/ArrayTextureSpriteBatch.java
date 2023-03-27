@@ -34,6 +34,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.world.ClientWorld;
 
 /** Draws batched quads using indices.
  * <p>
@@ -135,6 +137,8 @@ public class ArrayTextureSpriteBatch implements Batch {
     private int currentTextureLFUSwaps = 0;
 
     private final LifecycleListener contextRestoreListener;
+
+    private final float[] SHADOW_CACHE = new float[4];
 
     /** Constructs a new ArrayTextureSpriteBatch with the default shader, texture cache size and texture filters.
      * @see ArrayTextureSpriteBatch#ArrayTextureSpriteBatch(int, int, int, int, int, int, ShaderProgram) */
@@ -815,6 +819,10 @@ public class ArrayTextureSpriteBatch implements Batch {
         vertices[idx++] = ti;
     }
 
+    public void drawPreparedShadowVertices(Texture texture, float[] spriteVertices) {
+
+    }
+
     @Override
     public void draw (Texture texture, float[] spriteVertices, int offset, int count) {
 
@@ -1282,6 +1290,22 @@ public class ArrayTextureSpriteBatch implements Batch {
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = ti;
+    }
+
+    public float[] obtainShadowVertices(TextureRegion region, Affine2 transform) {
+        float shear = ExpoClientContainer.get().getClientWorld().worldSunShadowX;
+
+        if(shear < 0) {
+            SHADOW_CACHE[0] = transform.m01 * region.getRegionHeight() + transform.m02;
+            SHADOW_CACHE[2] = transform.m00 * region.getRegionWidth() + transform.m02;
+        } else {
+            SHADOW_CACHE[0] = transform.m02;
+            SHADOW_CACHE[2] = transform.m00 * region.getRegionWidth() + transform.m01 * region.getRegionHeight() + transform.m02;
+        }
+
+        SHADOW_CACHE[1] = transform.m12;
+        SHADOW_CACHE[3] = transform.m11 * region.getRegionHeight() + transform.m12;
+        return SHADOW_CACHE;
     }
 
     public void drawGradientCustomColor(TextureRegion region, float width, float height, Affine2 transform, float topColor, float bottomColor) {

@@ -54,8 +54,8 @@ public class ClientWorld {
 
     /** Time */
     public float worldTime;
-    public final float MAX_SHADOW_X = 2.2f;
-    public final float MAX_SHADOW_Y = 1.7f;
+    public final float MAX_SHADOW_X = 1.8f;
+    public final float MAX_SHADOW_Y = 1.4f;
     public float worldSunShadowX = MAX_SHADOW_X;
     public float worldSunShadowY = MAX_SHADOW_Y;
     public float worldSunShadowAlpha = 1.0f;
@@ -296,7 +296,7 @@ public class ClientWorld {
             worldSunShadowX = MAX_SHADOW_X * (normalized * 2 - 1.0f);
             worldSunShadowY = MAX_SHADOW_Y - (MAX_SHADOW_Y * normalized * 2);
         } else {
-            worldSunShadowX = MAX_SHADOW_X * (normalized - 0.5f);
+            worldSunShadowX = MAX_SHADOW_X * (normalized - 0.5f) * 2;
             worldSunShadowY = MAX_SHADOW_Y * (normalized - 0.5f) * 2;
         }
     }
@@ -424,7 +424,7 @@ public class ClientWorld {
             r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
             for(ClientEntity all : clientEntityManager.allEntities()) {
-                if(all.drawnLastFrame) {
+                if(all.visibleToRenderEngine) {
                     float x = all.clientPosX;
                     float y = all.clientPosY;
 

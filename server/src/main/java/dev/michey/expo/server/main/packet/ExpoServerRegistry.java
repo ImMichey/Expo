@@ -28,6 +28,7 @@ public class ExpoServerRegistry {
                 ItemMetadata.class,
                 ToolType.class,
                 EntityRemovalReason.class,
+                EntityRemovalReason[].class,
 
                 // Packets
                 P0_Auth_Req.class,

@@ -382,162 +382,156 @@ public class ClientPlayer extends ClientEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        drawnLastFrame = rc.inDrawBounds(this);
+        updateDepth();
 
-        if(drawnLastFrame) {
-            updateDepth();
+        { // Updating breathe + blink
+            playerBlinkDelta += delta;
+            playerBreatheDelta += delta;
 
-            { // Updating breathe + blink
-                playerBlinkDelta += delta;
-                playerBreatheDelta += delta;
+            if(playerBlinkDelta >= PLAYER_BLINK_COOLDOWN) playerBlinkDelta = -PLAYER_BLINK_DURATION;
+            if(playerBreatheDelta >= PLAYER_BREATHE_COOLDOWN) playerBreatheDelta = -PLAYER_BREATHE_DURATION;
+        }
 
-                if(playerBlinkDelta >= PLAYER_BLINK_COOLDOWN) playerBlinkDelta = -PLAYER_BLINK_DURATION;
-                if(playerBreatheDelta >= PLAYER_BREATHE_COOLDOWN) playerBreatheDelta = -PLAYER_BREATHE_DURATION;
-            }
+        { // Flip if necessary
+            boolean flipX;
 
-            { // Flip if necessary
-                boolean flipX;
-
-                if(punchAnimation) {
-                    flipX = (punchDirection == 0 && !flipped) || (punchDirection == 1 && flipped);
-                } else {
-                    flipX = (playerDirection == 0 && !flipped) || (playerDirection == 1 && flipped);
-                }
-
-                if(flipX) {
-                    flipped = !flipped;
-
-                    tex_blink.flip(true, false);
-
-                    tex_base.flip(true, false);
-                    tex_breathe.flip(true, false);
-                    tex_arm_left.flip(true, false);
-                    tex_arm_right.flip(true, false);
-                    tex_punch_arm.flip(true, false);
-
-                    if(holdingArmorHeadTexture != null) holdingArmorHeadTexture.flip(true, false);
-                    if(holdingArmorChestTexture != null) holdingArmorChestTexture.flip(true, false);
-                    if(holdingArmorGlovesTexture != null) holdingArmorGlovesTexture.flip(true, false);
-                    if(holdingArmorLegsTexture != null) holdingArmorLegsTexture.flip(true, false);
-                    if(holdingArmorFeetTexture != null) holdingArmorFeetTexture.flip(true, false);
-
-                    for(TextureRegion tex : textures_walk) {
-                        tex.flip(true, false);
-                    }
-
-                    tex_shadow_base.flip(true, false);
-                    tex_shadow_breathe.flip(true, false);
-                    tex_shadow_arm_right.flip(true, false);
-                    tex_shadow_arm_left.flip(true, false);
-                    tex_shadow_punch_arm.flip(true, false);
-
-                    for(TextureRegion tex : textures_shadow_walk) {
-                        tex.flip(true, false);
-                    }
-                }
-            }
-
-            rc.useRegularBatch();
-
-            // Draw player
-            boolean moving = isMoving();
-
-            if(moving) {
-                playerWalkDelta += delta;
-
-                if(playerWalkDelta >= PLAYER_WALK_PER_FRAME_DURATION) {
-                    playerWalkDelta -= PLAYER_WALK_PER_FRAME_DURATION;
-                    playerWalkIndex++;
-
-                    if(playerWalkIndex == textures_walk.length) {
-                        playerWalkIndex = 0;
-                    }
-                }
-
-                draw_tex_base = textures_walk[playerWalkIndex];
-                draw_tex_shadow_base = textures_shadow_walk[playerWalkIndex];
+            if(punchAnimation) {
+                flipX = (punchDirection == 0 && !flipped) || (punchDirection == 1 && flipped);
             } else {
-                draw_tex_base = playerBreatheDelta < 0 ? tex_breathe : tex_base;
-                draw_tex_shadow_base = playerBreatheDelta < 0 ? tex_shadow_breathe : tex_shadow_base;
-
-                playerWalkDelta = 0;
-                playerWalkIndex = 0;
+                flipX = (playerDirection == 0 && !flipped) || (playerDirection == 1 && flipped);
             }
 
-            updateTexture(0, 0, draw_tex_base.getRegionWidth(), draw_tex_base.getRegionHeight());
-            playerReachCenterX = drawCenterX;
-            playerReachCenterY = clientPosY + 7;
+            if(flipX) {
+                flipped = !flipped;
 
-            draw_tex_arm_left = tex_arm_left;
-            draw_tex_arm_right = punchAnimation ? tex_punch_arm : tex_arm_right;
+                tex_blink.flip(true, false);
 
-            // Draw player username
-            //rc.m5x7_bordered.draw(rc.currentBatch, username, clientPosX - 12, clientPosY + 48);
+                tex_base.flip(true, false);
+                tex_breathe.flip(true, false);
+                tex_arm_left.flip(true, false);
+                tex_arm_right.flip(true, false);
+                tex_punch_arm.flip(true, false);
 
-            if(moving) {
-                offsetY = offset_arm_walk_right[playerWalkIndex];
-            } else {
-                offsetY = offset_arm_base[playerBreatheDelta < 0 ? 0 : 1];
-            }
+                if(holdingArmorHeadTexture != null) holdingArmorHeadTexture.flip(true, false);
+                if(holdingArmorChestTexture != null) holdingArmorChestTexture.flip(true, false);
+                if(holdingArmorGlovesTexture != null) holdingArmorGlovesTexture.flip(true, false);
+                if(holdingArmorLegsTexture != null) holdingArmorLegsTexture.flip(true, false);
+                if(holdingArmorFeetTexture != null) holdingArmorFeetTexture.flip(true, false);
 
-            if(!flipped) {
-                offsetXL = 1;
-                offsetXR = 9;
-            } else {
-                offsetXL = 7;
-                offsetXR = 0;
-            }
-
-            rc.useRegularBatch();
-
-            drawHeldItem(rc, false);
-            boolean drawLooseArm = holdingItemId != -1;
-
-            // Draw punch (debug for now)
-            if(punchAnimation || drawLooseArm) {
-                int px = punchAnimation ? (punchDirection == 1 ? 8 : 0) : (playerDirection == 1 ? 8 : 0);
-                float x = clientPosX + px;
-                float y = clientPosY + offsetY;
-                float originX = tex_punch_arm.getRegionWidth() * 0.5f;
-                float originY = tex_punch_arm.getRegionHeight() - 1;
-                float width = tex_punch_arm.getRegionWidth();
-                float height = tex_punch_arm.getRegionHeight();
-                float scaleX = 1.0f;
-                float scaleY = 1.0f;
-                float rotation = getFinalArmRotation();
-
-                rc.batch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
-            } else {
-                rc.batch.draw(draw_tex_arm_right, clientPosX + offsetXR, clientPosY + offsetY);
-            }
-
-            if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
-                rc.batch.draw(draw_tex_base, clientPosX, clientPosY);
-                rc.batch.draw(draw_tex_arm_left, clientPosX + offsetXL, clientPosY + offsetY);
-
-                if(holdingArmorHeadId != -1) {
-                    ItemMapping map = ItemMapper.get().getMapping(holdingArmorHeadId);
-                    int dir = punchAnimation ? punchDirection : playerDirection;
-                    rc.batch.draw(holdingArmorHeadTexture, clientPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
+                for(TextureRegion tex : textures_walk) {
+                    tex.flip(true, false);
                 }
 
-                drawHeldItem(rc, true);
+                tex_shadow_base.flip(true, false);
+                tex_shadow_breathe.flip(true, false);
+                tex_shadow_arm_right.flip(true, false);
+                tex_shadow_arm_left.flip(true, false);
+                tex_shadow_punch_arm.flip(true, false);
+
+                for(TextureRegion tex : textures_shadow_walk) {
+                    tex.flip(true, false);
+                }
+            }
+        }
+
+        rc.useRegularBatch();
+
+        // Draw player
+        boolean moving = isMoving();
+
+        if(moving) {
+            playerWalkDelta += delta;
+
+            if(playerWalkDelta >= PLAYER_WALK_PER_FRAME_DURATION) {
+                playerWalkDelta -= PLAYER_WALK_PER_FRAME_DURATION;
+                playerWalkIndex++;
+
+                if(playerWalkIndex == textures_walk.length) {
+                    playerWalkIndex = 0;
+                }
             }
 
-            { // Draw player blink
-                if(playerBlinkDelta < 0) {
-                    rc.batch.draw(tex_blink, clientPosX + 5 - (direction() == 0 ? 4 : 0), clientPosY + offsetY + 13);
-                }
+            draw_tex_base = textures_walk[playerWalkIndex];
+            draw_tex_shadow_base = textures_shadow_walk[playerWalkIndex];
+        } else {
+            draw_tex_base = playerBreatheDelta < 0 ? tex_breathe : tex_base;
+            draw_tex_shadow_base = playerBreatheDelta < 0 ? tex_shadow_breathe : tex_shadow_base;
+
+            playerWalkDelta = 0;
+            playerWalkIndex = 0;
+        }
+
+        updateTexture(0, 0, draw_tex_base.getRegionWidth(), draw_tex_base.getRegionHeight());
+        playerReachCenterX = drawCenterX;
+        playerReachCenterY = clientPosY + 7;
+
+        draw_tex_arm_left = tex_arm_left;
+        draw_tex_arm_right = punchAnimation ? tex_punch_arm : tex_arm_right;
+
+        // Draw player username
+        //rc.m5x7_bordered.draw(rc.currentBatch, username, clientPosX - 12, clientPosY + 48);
+
+        if(moving) {
+            offsetY = offset_arm_walk_right[playerWalkIndex];
+        } else {
+            offsetY = offset_arm_base[playerBreatheDelta < 0 ? 0 : 1];
+        }
+
+        if(!flipped) {
+            offsetXL = 1;
+            offsetXR = 9;
+        } else {
+            offsetXL = 7;
+            offsetXR = 0;
+        }
+
+        rc.useRegularBatch();
+
+        drawHeldItem(rc, false);
+        boolean drawLooseArm = holdingItemId != -1;
+
+        // Draw punch (debug for now)
+        if(punchAnimation || drawLooseArm) {
+            int px = punchAnimation ? (punchDirection == 1 ? 8 : 0) : (playerDirection == 1 ? 8 : 0);
+            float x = clientPosX + px;
+            float y = clientPosY + offsetY;
+            float originX = tex_punch_arm.getRegionWidth() * 0.5f;
+            float originY = tex_punch_arm.getRegionHeight() - 1;
+            float width = tex_punch_arm.getRegionWidth();
+            float height = tex_punch_arm.getRegionHeight();
+            float scaleX = 1.0f;
+            float scaleY = 1.0f;
+            float rotation = getFinalArmRotation();
+
+            rc.batch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+        } else {
+            rc.batch.draw(draw_tex_arm_right, clientPosX + offsetXR, clientPosY + offsetY);
+        }
+
+        if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
+            rc.batch.draw(draw_tex_base, clientPosX, clientPosY);
+            rc.batch.draw(draw_tex_arm_left, clientPosX + offsetXL, clientPosY + offsetY);
+
+            if(holdingArmorHeadId != -1) {
+                ItemMapping map = ItemMapper.get().getMapping(holdingArmorHeadId);
+                int dir = punchAnimation ? punchDirection : playerDirection;
+                rc.batch.draw(holdingArmorHeadTexture, clientPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
+            }
+
+            drawHeldItem(rc, true);
+        }
+
+        { // Draw player blink
+            if(playerBlinkDelta < 0) {
+                rc.batch.draw(tex_blink, clientPosX + 5 - (direction() == 0 ? 4 : 0), clientPosY + offsetY + 13);
             }
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        drawnShadowLastFrame = rc.inDrawBoundsShadow(this);
-
-        if(draw_tex_shadow_base != null && drawnShadowLastFrame) {
-            rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+        if(draw_tex_shadow_base != null) {
+            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
             rc.useArrayBatch();
 
             { // Base body shadow

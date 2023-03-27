@@ -6,7 +6,6 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
@@ -94,6 +93,7 @@ public class Expo implements ApplicationListener {
 		INSTANCE = this;
 
 		autoExec();
+
 		/*
 			ExpoAssets.get().slice("tile_soil", true, 0, 0);
 			ExpoAssets.get().slice("tile_grass", false, 0, 16);
@@ -101,7 +101,7 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_not_set", true, 0, 80);
 			ExpoAssets.get().slice("tile_ocean", false, 0, 96);
 			ExpoAssets.get().slice("tile_ocean_deep", false, 0, 128);
-		 */
+		*/
 	}
 
 	@Override

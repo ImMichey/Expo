@@ -62,7 +62,7 @@ public class ClientRaindrop extends ClientEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        drawnLastFrame = rc.inDrawBounds(this);
+        visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(splash) {
             animationDelta += delta;
@@ -70,7 +70,7 @@ public class ClientRaindrop extends ClientEntity {
             if(splashAnimation.isAnimationFinished(animationDelta)) {
                 entityManager().removeEntity(this);
             } else {
-                if(drawnLastFrame) {
+                if(visibleToRenderEngine) {
                     TextureRegion anim = splashAnimation.getKeyFrame(animationDelta, false);
 
                     rc.useRegularBatch();
@@ -90,7 +90,7 @@ public class ClientRaindrop extends ClientEntity {
                 }
             }
         } else {
-            if(drawnLastFrame) {
+            if(visibleToRenderEngine) {
                 rc.useRegularBatch();
                 raindropSprite.draw(rc.batch);
             }
