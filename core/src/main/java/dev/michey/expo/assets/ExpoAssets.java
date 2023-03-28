@@ -8,16 +8,11 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import dev.michey.expo.noise.BiomeType;
-import dev.michey.expo.render.ui.InteractableItemSlot;
-
-import java.util.HashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ExpoAssets {
 
-    private final HashMap<String, TileMapping> tileMappings;
     private final AssetManager assetManager;
     private TextureAtlas mainAtlas;
 
@@ -26,7 +21,6 @@ public class ExpoAssets {
 
     public ExpoAssets() {
         assetManager = new AssetManager();
-        tileMappings = new HashMap<>();
     }
 
     public void loadAssets() {
@@ -44,7 +38,6 @@ public class ExpoAssets {
                 switch (type) {
                     case "TextureAtlas" -> currentMode = TextureAtlas.class;
                     case "Texture" -> currentMode = Texture.class;
-                    case "TileMapping" -> currentMode = TileMapping.class;
                     case "!LOAD" -> {
                         assetManager.finishLoading();
 
@@ -59,15 +52,7 @@ public class ExpoAssets {
                     continue;
                 }
 
-                if(currentMode == TileMapping.class) {
-                    TileMapping mapping = new TileMapping();
-
-                    if(mapping.load(line)) {
-                        tileMappings.put(line, mapping);
-                    }
-                } else {
-                    assetManager.load("textures/" + line, currentMode);
-                }
+                assetManager.load("textures/" + line, currentMode);
             }
         }
 
@@ -145,18 +130,6 @@ public class ExpoAssets {
                 localPixmap.dispose();
             }
         }
-    }
-
-    public TileMapping getTileMapping(String key) {
-        return tileMappings.get(key);
-    }
-
-    public TileMapping biomeToTileMapping(BiomeType type) {
-        return switch (type) {
-            case GRASS -> getTileMapping("atlas/tile_mappings_grass");
-            case BEACH -> getTileMapping("atlas/tile_mappings_sand");
-            default -> null;
-        };
     }
 
     public TextureRegion textureRegion(String name) {

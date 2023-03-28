@@ -21,10 +21,6 @@ foliage/tree_leaves.png
 water/square16x16.png
 water/trans1x1.png
 
-[TileMapping]
-atlas/tile_mappings_grass
-atlas/tile_mappings_sand
-
 #[Sound]
 #sounds/player_death_1.wav
 

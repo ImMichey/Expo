@@ -1,11 +1,13 @@
 package dev.michey.expo.logic.world.chunk;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 
 public class ClientChunk {
@@ -62,7 +64,12 @@ public class ClientChunk {
 
                 for(int j = 0; j < current.length; j++) {
                     int index = current[j];
-                    layer1Tex[i][j] = assets.getTileSheet().getTilesetTextureMap().get(index);
+
+                    if(index == 1 && MathUtils.random(1, 4) == 1) {
+                        layer1Tex[i][j] = assets.getTileSheet().getRandomVariation(index);
+                    } else {
+                        layer1Tex[i][j] = assets.getTileSheet().getTilesetTextureMap().get(index);
+                    }
                 }
             }
         }
