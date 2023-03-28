@@ -17,6 +17,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.weather.Weather;
 
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
@@ -53,6 +54,14 @@ public class PlayerUI {
     private float invX, invY;
     public InteractableItemSlot[] inventorySlots;
     public InteractableItemSlot[] inventoryArmorSlots;
+
+    /** Fade in */
+    public float fadeInDelta;
+    public float fadeInDuration = 3.0f;
+
+    public float fadeRainDelta;
+    public float fadeRainDuration = 1.0f;
+    public float fadeRainTarget;
 
     /** Minimap */
     public final PlayerMinimap playerMinimap;
@@ -358,6 +367,28 @@ public class PlayerUI {
         }
 
         playerMinimap.updateMinimap();
+
+        if(fadeInDelta < fadeInDuration) {
+            fadeInDelta += r.delta;
+            if(fadeInDelta > fadeInDuration) fadeInDelta = fadeInDuration;
+        }
+
+        fadeRainTarget = ExpoClientContainer.get().getClientWorld().worldWeather == Weather.RAIN.WEATHER_ID ? 1.0f : 0.0f;
+
+        if(fadeRainDelta != fadeRainTarget) {
+            if(fadeRainDelta < fadeRainTarget) {
+                fadeRainDelta += r.delta / fadeRainDuration;
+                if(fadeRainDelta > fadeRainTarget) fadeRainDelta = fadeRainTarget;
+            } else {
+                fadeRainDelta -= r.delta / fadeRainDuration;
+                if(fadeRainDelta < fadeRainTarget) fadeRainDelta = fadeRainTarget;
+            }
+        }
+    }
+
+    public void setFade(float duration) {
+        fadeInDelta = 0;
+        fadeInDuration = duration;
     }
 
     private boolean uiElementInBounds(InteractableItemSlot slot) {
@@ -369,6 +400,15 @@ public class PlayerUI {
         RenderContext r = RenderContext.get();
 
         r.hudBatch.begin();
+
+        {
+            if(fadeRainDelta != 0) {
+                Color COLOR_RAIN = ExpoClientContainer.get().getClientWorld().COLOR_RAIN;
+                r.hudBatch.setColor(COLOR_RAIN.r, COLOR_RAIN.g, COLOR_RAIN.b, 0.05f * fadeRainDelta);
+                r.hudBatch.draw(whiteSquare, -1, -1, Gdx.graphics.getWidth() + 2, Gdx.graphics.getHeight() + 2);
+                r.hudBatch.setColor(Color.WHITE);
+            }
+        }
 
         if(PlayerInventory.LOCAL_INVENTORY == null) {
             r.hudBatch.end();
@@ -416,6 +456,17 @@ public class PlayerUI {
         r.hudBatch.end();
 
         chat.draw();
+
+        {
+            // World enter animation black fade out
+            if(fadeInDelta != fadeInDuration) {
+                r.hudBatch.begin();
+                r.hudBatch.setColor(0.0f, 0.0f, 0.0f, 1.0f - fadeInDelta / fadeInDuration);
+                r.hudBatch.draw(whiteSquare, -1, -1, Gdx.graphics.getWidth() + 2, Gdx.graphics.getHeight() + 2);
+                r.hudBatch.setColor(Color.WHITE);
+                r.hudBatch.end();
+            }
+        }
     }
 
     private void drawSlots(InteractableItemSlot[]... slots) {

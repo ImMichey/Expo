@@ -1,8 +1,12 @@
 package dev.michey.expo.server.main.logic.entity;
 
+import com.badlogic.gdx.utils.Null;
+import com.dongbat.jbump.CollisionFilter;
+import com.dongbat.jbump.Item;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
+import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -42,7 +46,6 @@ public class ServerPlayer extends ServerEntity {
     public float endAngle;
     public float punchDelta;
     public float punchDeltaFinish;
-    private float punchDeltaCheckDamageAt;
     private boolean punchDamageApplied;
 
     public float serverArmRotation;
@@ -63,37 +66,19 @@ public class ServerPlayer extends ServerEntity {
 
     public ServerPlayerInventory playerInventory = new ServerPlayerInventory(this);
 
-    public int getCurrentItem() {
-        return playerInventory.slots[selectedInventorySlot].item.itemId;
+    /** Physics body */
+    private BoundingBox physicsBody;
+
+    @Override
+    public void onCreation() {
+        // add physics body of player to world
+        physicsBody = new BoundingBox(this, 2f, 0, 6, 6);
     }
 
-    public int[] getEquippedItemIds() {
-        // [0] = hand
-        // [1-6] = armor
-        return new int[] {
-            playerInventory.slots[selectedInventorySlot].item.itemId,
-            playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_HEAD].item.itemId,
-            playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_CHEST].item.itemId,
-            playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES].item.itemId,
-            playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_LEGS].item.itemId,
-            playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_FEET].item.itemId
-        };
-    }
-
-    public void switchToSlot(int slot) {
-        selectedInventorySlot = slot;
-        heldItemPacket(PacketReceiver.whoCanSee(this));
-    }
-
-    public void heldItemPacket(PacketReceiver receiver) {
-        ServerPackets.p21PlayerGearUpdate(entityId, getEquippedItemIds(), receiver);
-    }
-
-    public void applyArmDirection(float rotation) {
-        if(getCurrentItem() != -1) {
-            serverArmRotation = rotation;
-            ServerPackets.p22PlayerArmDirection(entityId, serverArmRotation, PacketReceiver.whoCanSee(this));
-        }
+    @Override
+    public void onDeletion() {
+        // remove physics body of player from world
+        physicsBody.dispose();
     }
 
     @Override
@@ -118,8 +103,13 @@ public class ServerPlayer extends ServerEntity {
                 normalizer = 1 / len;
             }
 
-            posX += xDir * playerSpeed * waterFactor * normalizer;
-            posY += yDir * playerSpeed * waterFactor * normalizer;
+            float toMoveX = xDir * playerSpeed * waterFactor * normalizer;
+            float toMoveY = yDir * playerSpeed * waterFactor * normalizer;
+
+            var result = physicsBody.move(toMoveX, toMoveY);
+
+            posX = result.goalX - physicsBody.xOffset;
+            posY = result.goalY - physicsBody.yOffset;
 
             ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, PacketReceiver.whoCanSee(this));
             dirResetPacket = true;
@@ -199,6 +189,39 @@ public class ServerPlayer extends ServerEntity {
                 if(health > 100f) health = 100f;
                 ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
             }
+        }
+    }
+
+    public int getCurrentItem() {
+        return playerInventory.slots[selectedInventorySlot].item.itemId;
+    }
+
+    public int[] getEquippedItemIds() {
+        // [0] = hand
+        // [1-6] = armor
+        return new int[] {
+                playerInventory.slots[selectedInventorySlot].item.itemId,
+                playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_HEAD].item.itemId,
+                playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_CHEST].item.itemId,
+                playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES].item.itemId,
+                playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_LEGS].item.itemId,
+                playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_FEET].item.itemId
+        };
+    }
+
+    public void switchToSlot(int slot) {
+        selectedInventorySlot = slot;
+        heldItemPacket(PacketReceiver.whoCanSee(this));
+    }
+
+    public void heldItemPacket(PacketReceiver receiver) {
+        ServerPackets.p21PlayerGearUpdate(entityId, getEquippedItemIds(), receiver);
+    }
+
+    public void applyArmDirection(float rotation) {
+        if(getCurrentItem() != -1) {
+            serverArmRotation = rotation;
+            ServerPackets.p22PlayerArmDirection(entityId, serverArmRotation, PacketReceiver.whoCanSee(this));
         }
     }
 

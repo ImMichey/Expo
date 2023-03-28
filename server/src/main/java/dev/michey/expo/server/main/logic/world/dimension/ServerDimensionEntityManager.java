@@ -76,12 +76,14 @@ public class ServerDimensionEntityManager {
     private void addEntityUnsafely(ServerEntity entity) {
         idEntityMap.put(entity.entityId, entity);
         typeEntityListMap.get(entity.getEntityType()).add(entity);
+        entity.onCreation();
     }
 
     /** Removes the ServerEntity from the storage maps without modifying them. */
     private void removeEntityUnsafely(ServerEntity entity) {
         idEntityMap.remove(entity.entityId);
         typeEntityListMap.get(entity.getEntityType()).remove(entity);
+        entity.onDeletion();
     }
 
     /** Removes the ServerEntity from the storage maps without modifying them. */

@@ -69,6 +69,7 @@ public class SavableEntity {
         entity.posX = object.getFloat("x");
         entity.posY = object.getFloat("y");
         entity.entityId = object.getInt("id");
+        entity.entityDimension = chunk.getDimension().getDimensionName();
 
         if(object.has("static")) {
             entity.setStaticEntity();

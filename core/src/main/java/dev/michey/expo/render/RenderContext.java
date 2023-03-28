@@ -228,7 +228,7 @@ public class RenderContext {
         foliageWindShader = compileShader("gl3/foliagewind");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
-        createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        // createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         lightEngine = new ExpoLightEngine();
 
         INSTANCE = this;
@@ -370,6 +370,7 @@ public class RenderContext {
     }
 
     private void disposeFBOs() {
+        if(mainFbo == null) return;
         mainFbo.dispose();
         shadowFbo.dispose();
         waterReflectionFbo.dispose();

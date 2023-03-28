@@ -37,6 +37,7 @@ import dev.michey.expo.util.InputUtils;
 import dev.michey.expo.util.Pair;
 import dev.michey.expo.weather.Weather;
 
+import java.util.ConcurrentModificationException;
 import java.util.zip.Deflater;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -67,6 +68,7 @@ public class ClientWorld {
     public final Color COLOR_AMBIENT_MIDNIGHT = new Color(24f / 255f, 30f / 255f, 66f / 255f, 1.0f);
     public final Color COLOR_AMBIENT_SUNRISE = new Color(241f / 255f, 241f / 255f, 197f / 255f, 1.0f);
     public final Color COLOR_AMBIENT_SUNSET = new Color(222f / 255f, 177f / 255f, 128f / 255f, 1.0f);
+    public final Color COLOR_RAIN = new Color(104f / 255f, 199f / 255f, 219f / 255f, 1.0f);
 
     /** Weather */
     public int worldWeather;
@@ -424,65 +426,84 @@ public class ClientWorld {
             }
 
             // Render debug shapes
-            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            if(Expo.get().getImGuiExpo() != null) {
+                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-            for(ClientEntity all : clientEntityManager.allEntities()) {
-                if(all.visibleToRenderEngine) {
-                    float x = all.clientPosX;
-                    float y = all.clientPosY;
+                for(ClientEntity all : clientEntityManager.allEntities()) {
+                    if(all.visibleToRenderEngine) {
+                        float x = all.clientPosX;
+                        float y = all.clientPosY;
 
-                    float vx = x + all.drawOffsetX;
-                    float vy = y + all.drawOffsetY;
+                        float vx = x + all.drawOffsetX;
+                        float vy = y + all.drawOffsetY;
 
-                    if(Expo.get().getImGuiExpo().renderDrawPos.get()) {
-                        r.chunkRenderer.setColor(Color.GREEN);
-                        r.chunkRenderer.circle(vx, vy, 0.33f, 8);
+                        if(Expo.get().getImGuiExpo().renderDrawPos.get()) {
+                            r.chunkRenderer.setColor(Color.GREEN);
+                            r.chunkRenderer.circle(vx, vy, 0.33f, 8);
 
-                        if(all.drawWidth != 0 || all.drawHeight != 0) {
-                            r.chunkRenderer.end();
-                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
-                            r.chunkRenderer.setColor(Color.WHITE);
+                            if(all.drawWidth != 0 || all.drawHeight != 0) {
+                                r.chunkRenderer.end();
+                                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                                r.chunkRenderer.setColor(Color.WHITE);
 
-                            r.chunkRenderer.rect(vx, vy, all.drawWidth, all.drawHeight);
-                            if(!(x == vx && y == vy)) {
-                                r.chunkRenderer.line(x, y, vx, vy);
-                            }
+                                r.chunkRenderer.rect(vx, vy, all.drawWidth, all.drawHeight);
+                                if(!(x == vx && y == vy)) {
+                                    r.chunkRenderer.line(x, y, vx, vy);
+                                }
 
-                            r.chunkRenderer.end();
-                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                        }
-                    }
-
-                    if(Expo.get().getImGuiExpo().renderClientPos.get()) {
-                        r.chunkRenderer.setColor(Color.CYAN);
-                        r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 1.0f, 8);
-                    }
-
-                    if(Expo.get().getImGuiExpo().renderServerPos.get()) {
-                        r.chunkRenderer.setColor(Color.CORAL);
-                        r.chunkRenderer.circle(all.serverPosX, all.serverPosY, 0.65f, 8);
-                    }
-
-                    if(Expo.get().getImGuiExpo().renderDrawRoot.get()) {
-                        r.chunkRenderer.setColor(Color.RED);
-                        r.chunkRenderer.circle(all.drawRootX, all.drawRootY, 0.33f, 8);
-                    }
-
-                    if(Expo.get().getImGuiExpo().renderVisualCenter.get()) {
-                        r.chunkRenderer.setColor(Color.YELLOW);
-                        r.chunkRenderer.circle(all.toVisualCenterX(), all.toVisualCenterY(), 0.33f, 8);
-                    }
-
-                    if(Expo.get().getImGuiExpo().renderInteractionPoints.get()) {
-                        if(all instanceof SelectableEntity sel) {
-                            r.chunkRenderer.setColor(Color.PURPLE);
-                            float[] points = sel.interactionPoints();
-
-                            for(int i = 0; i < points.length; i += 2) {
-                                r.chunkRenderer.circle(points[i], points[i + 1], 0.5f, 8);
+                                r.chunkRenderer.end();
+                                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
                             }
                         }
-                    }
+
+                        if(Expo.get().getImGuiExpo().renderClientPos.get()) {
+                            r.chunkRenderer.setColor(Color.CYAN);
+                            r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 1.0f, 8);
+                        }
+
+                        if(Expo.get().getImGuiExpo().renderServerPos.get()) {
+                            r.chunkRenderer.setColor(Color.CORAL);
+                            r.chunkRenderer.circle(all.serverPosX, all.serverPosY, 0.65f, 8);
+                        }
+
+                        if(Expo.get().getImGuiExpo().renderDrawRoot.get()) {
+                            r.chunkRenderer.setColor(Color.RED);
+                            r.chunkRenderer.circle(all.drawRootX, all.drawRootY, 0.33f, 8);
+                        }
+
+                        if(Expo.get().getImGuiExpo().renderVisualCenter.get()) {
+                            r.chunkRenderer.setColor(Color.YELLOW);
+                            r.chunkRenderer.circle(all.toVisualCenterX(), all.toVisualCenterY(), 0.33f, 8);
+                        }
+
+                        if(Expo.get().getImGuiExpo().renderInteractionPoints.get()) {
+                            if(all instanceof SelectableEntity sel) {
+                                r.chunkRenderer.setColor(Color.PURPLE);
+                                float[] points = sel.interactionPoints();
+
+                                for(int i = 0; i < points.length; i += 2) {
+                                    r.chunkRenderer.circle(points[i], points[i + 1], 0.5f, 8);
+                                }
+                            }
+                        }
+
+                        if(Expo.get().getImGuiExpo().renderJBump.get()) {
+                            if(ServerWorld.get() != null) {
+                                r.chunkRenderer.end();
+                                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                                r.chunkRenderer.setColor(Color.PINK);
+                                var world = ServerWorld.get().getMainDimension().getPhysicsWorld();
+
+                                try {
+                                    for(var o : world.getRects()) {
+                                        r.chunkRenderer.rect(o.x, o.y, o.w, o.h);
+                                    }
+                                } catch (ConcurrentModificationException e) {
+                                    // ignore it because it happens due to different tick rates between client->localserver
+                                    // and JBump doesn't offer any ability to get the physic bodies thread-safe
+                                }
+                            }
+                        }
 
                     /*
 
@@ -501,10 +522,11 @@ public class ClientWorld {
                         r.chunkRenderer.circle(player.playerReachCenterX, player.playerReachCenterY, 1f, 8);
                     }
                     */
+                    }
                 }
-            }
 
-            r.chunkRenderer.end();
+                r.chunkRenderer.end();
+            }
         }
     }
 

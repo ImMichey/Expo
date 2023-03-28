@@ -49,6 +49,7 @@ public class ImGuiExpo {
     public final ImBoolean renderVisualCenter = new ImBoolean(false);
     public final ImBoolean renderDrawRoot = new ImBoolean(false);
     public final ImBoolean renderDrawPos = new ImBoolean(false);
+    public final ImBoolean renderJBump = new ImBoolean(true);
     private final float[] speed = new float[1];
     private final float[] minStrength = new float[1];
     private final float[] maxStrength = new float[1];
@@ -59,6 +60,7 @@ public class ImGuiExpo {
     private final float[] heightOffset = new float[1];
     private final float[] offset = new float[1];
     private final float[] skew = new float[1];
+    private final float[] rainColor = new float[3];
 
     public void draw() {
         drawExpoWindow();
@@ -113,6 +115,10 @@ public class ImGuiExpo {
             offset[0] = r.offset;
             skew[0] = r.skew;
 
+            rainColor[0] = w.COLOR_RAIN.r;
+            rainColor[1] = w.COLOR_RAIN.g;
+            rainColor[2] = w.COLOR_RAIN.b;
+
             ClientPlayer player = ClientPlayer.getLocalPlayer();
 
             if(player != null) {
@@ -161,6 +167,11 @@ public class ImGuiExpo {
                 }
 
                 ImGui.colorEdit3("Current color", currentColor);
+
+                if(ImGui.treeNode("Rain color")) {
+                    if(ImGui.colorPicker3("rainColor", rainColor)) setRainColor(rainColor);
+                    ImGui.treePop();
+                }
 
                 ImGui.treePop();
             }
@@ -365,7 +376,9 @@ public class ImGuiExpo {
                 ImGui.checkbox("Visual Center", renderVisualCenter);
                 ImGui.checkbox("Draw Root", renderDrawRoot);
                 ImGui.checkbox("Draw Pos", renderDrawPos);
+                ImGui.checkbox("J Bump", renderJBump);
 
+                /*
                 if(ImGui.sliderFloat("speed", speed, 0.0f, 10.0f)) r.speed = speed[0];
                 if(ImGui.sliderFloat("minStrength", minStrength, 0.0f, 1.0f)) r.minStrength = minStrength[0];
                 if(ImGui.sliderFloat("maxStrength", maxStrength, 0.0f, 1.0f)) r.maxStrength = maxStrength[0];
@@ -376,6 +389,7 @@ public class ImGuiExpo {
                 if(ImGui.sliderFloat("heightOffset", heightOffset, 0.0f, 1.0f)) r.heightOffset = heightOffset[0];
                 if(ImGui.sliderFloat("offset", offset, 0.0f, 10.0f)) r.offset = offset[0];
                 if(ImGui.sliderFloat("skew", skew, -500.0f, 500.0f)) r.skew = skew[0];
+                */
 
                 ImGui.treePop();
             }
@@ -420,6 +434,10 @@ public class ImGuiExpo {
 
     private void setSunsetColor(float[] sunsetColor) {
         ExpoClientContainer.get().getClientWorld().COLOR_AMBIENT_SUNSET.set(sunsetColor[0], sunsetColor[1], sunsetColor[2], 1.0f);
+    }
+
+    private void setRainColor(float[] rainColor) {
+        ExpoClientContainer.get().getClientWorld().COLOR_RAIN.set(rainColor[0], rainColor[1], rainColor[2], 1.0f);
     }
 
     private void setTime(int time) {

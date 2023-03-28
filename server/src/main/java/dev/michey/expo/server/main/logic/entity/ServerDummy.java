@@ -14,6 +14,16 @@ public class ServerDummy extends ServerEntity {
     public float speed = 0.5f;
 
     @Override
+    public void onCreation() {
+
+    }
+
+    @Override
+    public void onDeletion() {
+
+    }
+
+    @Override
     public void tick(float delta) {
         boolean travelX = Math.abs(dstX - posX) > 2.0f;
         boolean travelY = Math.abs(dstY - posY) > 2.0f;

@@ -6,6 +6,16 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
 public class ServerGrass extends ServerEntity {
 
+    @Override
+    public void onCreation() {
+
+    }
+
+    @Override
+    public void onDeletion() {
+
+    }
+
     public ServerGrass() {
         health = 20.0f;
     }

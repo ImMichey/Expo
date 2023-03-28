@@ -38,6 +38,8 @@ public abstract class ServerEntity {
 
     /** ServerEntity base methods */
     public abstract void tick(float delta);
+    public abstract void onCreation();
+    public abstract void onDeletion();
     public abstract ServerEntityType getEntityType();
     public abstract void onChunkChanged();
     public abstract void onDamage(ServerEntity damageSource, float damage);

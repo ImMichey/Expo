@@ -7,13 +7,11 @@ dependencies {
 	api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
 	api "com.badlogicgames.gdx:gdx:$gdxVersion"
 	api "com.github.czyzby:noise4j:$noise4jVersion"
-	api "com.github.tommyettinger:libgdx-utils-box2d:$utilsBox2dVersion"
 	api "com.github.tommyettinger:libgdx-utils:$utilsVersion"
-	api "org.projectlombok:lombok:$lombokVersion"
 	api "space.earlygrey:shapedrawer:$shapeDrawerVersion"
+	api "com.github.implicit-invocation:jbump:v1.0.2"
 	api project(':shared')
 	api project(':server')
-	annotationProcessor "org.projectlombok:lombok:$lombokVersion"
 
 	// required for retrieving a handle within core module
 	api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"

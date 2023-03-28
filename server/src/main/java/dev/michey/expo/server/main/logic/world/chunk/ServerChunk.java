@@ -74,6 +74,10 @@ public class ServerChunk {
         return dimension.getChunkHandler().getBiome(x, y);
     }
 
+    public ServerDimension getDimension() {
+        return dimension;
+    }
+
     public void populate() {
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);

@@ -1,8 +1,10 @@
 package dev.michey.expo.server.main.logic.world.dimension;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.dongbat.jbump.World;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.world.chunk.EntityMasterVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.util.PacketReceiver;
@@ -35,12 +37,16 @@ public abstract class ServerDimension {
     /** Chunk handler */
     private final ServerChunkGrid chunkHandler;
 
+    /** Physics handler */
+    private final World<ServerEntity> physicsWorld;
+
     public ServerDimension(String dimensionName, boolean mainDimension) {
         this.dimensionName = dimensionName;
         this.mainDimension = mainDimension;
         entityManager = new ServerDimensionEntityManager();
         chunkHandler = new ServerChunkGrid(this);
         visibilityController = new EntityMasterVisibilityController(this);
+        physicsWorld = new World<>(16f);
     }
 
     private void tickDimension() {
@@ -178,6 +184,10 @@ public abstract class ServerDimension {
 
     public ServerChunkGrid getChunkHandler() {
         return chunkHandler;
+    }
+
+    public World<ServerEntity> getPhysicsWorld() {
+        return physicsWorld;
     }
 
     public EntityMasterVisibilityController getVisibilityController() {
