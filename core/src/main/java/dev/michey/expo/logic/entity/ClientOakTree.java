@@ -50,6 +50,12 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         trunkProximityShadow = tr("tree_trunk_proximity_shadow");
 
         updateTexture(0, 0, 67, 97);
+        interactionPointArray = new float[] {
+                clientPosX + 31, clientPosY + 7,
+                clientPosX + 39, clientPosY + 7,
+                clientPosX + 31, clientPosY + 10,
+                clientPosX + 39, clientPosY + 10,
+        };
     }
 
     @Override
@@ -85,12 +91,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
     @Override
     public float[] interactionPoints() {
-        return new float[] {
-                clientPosX + 31, clientPosY + 7,
-                clientPosX + 39, clientPosY + 7,
-                clientPosX + 31, clientPosY + 10,
-                clientPosX + 39, clientPosY + 10,
-        };
+        return interactionPointArray;
     }
 
     @Override

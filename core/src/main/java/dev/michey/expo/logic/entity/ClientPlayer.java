@@ -152,6 +152,8 @@ public class ClientPlayer extends ClientEntity {
 
     @Override
     public void onCreation() {
+        visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
+
         if(player) {
             RenderContext.get().expoCamera.center(clientPosX, clientPosY);
         }

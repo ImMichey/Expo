@@ -485,6 +485,23 @@ public class ClientWorld {
                                     r.chunkRenderer.circle(points[i], points[i + 1], 0.5f, 8);
                                 }
                             }
+
+                            if(all instanceof ClientPlayer cp) {
+                                r.chunkRenderer.setColor(Color.PINK);
+                                r.chunkRenderer.circle(cp.playerReachCenterX, cp.playerReachCenterY, 0.5f, 8);
+
+                                if(ClientPlayer.getLocalPlayer() == cp) {
+                                    ClientEntity sel = cp.entityManager().selectedEntity;
+
+                                    if(sel != null) {
+                                        r.chunkRenderer.end();
+                                        r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                                        r.chunkRenderer.line(cp.playerReachCenterX, cp.playerReachCenterY, sel.clientPosX, sel.clientPosY);
+                                        r.chunkRenderer.end();
+                                        r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                                    }
+                                }
+                            }
                         }
 
                         if(Expo.get().getImGuiExpo().renderJBump.get()) {
@@ -504,24 +521,6 @@ public class ClientWorld {
                                 }
                             }
                         }
-
-                    /*
-
-                    if(all instanceof ClientPlayer player) {
-                        if(player.holdingItemId != -1) {
-                            r.chunkRenderer.setColor(Color.WHITE);
-                            r.chunkRenderer.circle(player.holdingItemSprite.getX(), player.holdingItemSprite.getY(), 0.33f, 8);
-                            r.chunkRenderer.setColor(Color.SKY);
-                            r.chunkRenderer.circle(
-                                    player.holdingItemSprite.getX() + player.holdingItemSprite.getOriginX(),
-                                    player.holdingItemSprite.getY() + player.holdingItemSprite.getOriginY(),
-                                    0.5f, 8);
-                        }
-
-                        r.chunkRenderer.setColor(Color.RED);
-                        r.chunkRenderer.circle(player.playerReachCenterX, player.playerReachCenterY, 1f, 8);
-                    }
-                    */
                     }
                 }
 

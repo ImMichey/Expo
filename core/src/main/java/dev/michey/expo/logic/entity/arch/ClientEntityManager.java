@@ -15,6 +15,7 @@ import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.*;
@@ -118,17 +119,22 @@ public class ClientEntityManager {
             ClientEntity directContactEntity = null;
             ClientEntity mouseProximityEntity = null;
             float lowestProximityDistance = Float.MAX_VALUE;
+            float lowestDirectDistance = Float.MAX_VALUE;
 
             for(ClientEntity e : selectableEntities.keySet()) {
                 Object[] data = selectableEntities.get(e);
                 boolean direct = (boolean) data[0];
 
                 if(direct) {
+                    float dis = (float) data[1];
+
                     if(directContactEntity == null) {
                         directContactEntity = e;
+                        lowestDirectDistance = dis;
                     } else {
-                        if(e.depth < directContactEntity.depth) {
+                        if(dis < lowestDirectDistance) {
                             directContactEntity = e;
+                            lowestDirectDistance = dis;
                         }
                     }
                 } else {

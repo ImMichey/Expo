@@ -23,6 +23,4 @@ public class ClientStatic {
     public static final Color COLOR_PARTICLE_MUSHROOM_1 = Color.valueOf("#f5ddd1");
     public static final Color COLOR_PARTICLE_MUSHROOM_2 = Color.valueOf("#e1ccc2");
 
-    // public static final Color COLOR_WEATHER_RAIN_OVERLAY = Color.valueOf("#68c7db");
-
 }

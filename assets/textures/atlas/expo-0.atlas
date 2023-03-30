@@ -20,7 +20,7 @@ dummy
   index: -1
 empty
   rotate: false
-  xy: 391, 844
+  xy: 450, 965
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
@@ -158,6 +158,13 @@ mushroom_brown
   orig: 6, 6
   offset: 0, 0
   index: -1
+mushroom_proximity_shadow
+  rotate: false
+  xy: 874, 1194
+  size: 6, 2
+  orig: 6, 2
+  offset: 0, 0
+  index: -1
 mushroom_red
   rotate: false
   xy: 196, 752
@@ -188,7 +195,7 @@ player_arm_r
   index: -1
 player_blink
   rotate: false
-  xy: 874, 1195
+  xy: 391, 844
   size: 4, 1
   orig: 4, 1
   offset: 0, 0
