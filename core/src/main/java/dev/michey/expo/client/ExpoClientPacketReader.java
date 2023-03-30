@@ -1,7 +1,9 @@
 package dev.michey.expo.client;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Client;
 import dev.michey.expo.Expo;
@@ -12,6 +14,8 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.particle.ClientParticleFood;
+import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.ClientWorld;
@@ -27,6 +31,8 @@ import dev.michey.expo.util.PacketUtils;
 import java.util.Arrays;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
+import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
 
 public class ExpoClientPacketReader {
 
@@ -186,6 +192,34 @@ public class ExpoClientPacketReader {
 
             if(entity != null) {
                 entity.onDamage(p.damage, p.newHealth);
+            }
+        } else if(o instanceof P28_PlayerFoodParticle p) {
+            ClientEntity entity = entityFromId(p.entityId);
+
+            if(entity != null) {
+                ClientPlayer player = (ClientPlayer) entity;
+                int particles = MathUtils.random(2, 4);
+                TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(player.holdingItemId).heldRender.textureRegion;
+
+                for(int i = 0; i < particles; i++) {
+                    ClientParticleFood cpf = new ClientParticleFood();
+
+                    float velocityX = (-6.0f + MathUtils.random(36f)) * (player.direction() == 1 ? 1 : -1);
+                    float velocityY = -MathUtils.random(18f, 36f);
+
+                    cpf.depth = player.depth - 0.0001f;
+                    cpf.particleTexture = baseItemFoodTexture;
+                    cpf.setParticleOriginAndVelocity(player.toMouthX(), player.toMouthY(), velocityX, velocityY);
+                    cpf.setParticleLifetime(0.3f);
+                    cpf.setParticleFadeout(0.1f);
+                    float scale = MathUtils.random(0.5f, 1f);
+                    cpf.setParticleScale(scale, scale);
+                    cpf.setParticleColor(Color.WHITE);
+
+                    ClientEntityManager.get().addClientSideEntity(cpf);
+                }
+
+                AudioEngine.get().playSoundGroupManaged("eat", new Vector2(player.toMouthX(), player.toMouthY()), CHUNK_SIZE, false);
             }
         }
     }

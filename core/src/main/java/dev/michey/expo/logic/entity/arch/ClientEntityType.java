@@ -18,6 +18,7 @@ public enum ClientEntityType {
     SELECTOR(-1, "Selector", null),
     RAINDROP(-2, "Raindrop", null),
     PARTICLE_HIT(-3, "ParticleHit", null),
+    PARTICLE_FOOD(-4, "ParticleFood", null),
 
     ;
 

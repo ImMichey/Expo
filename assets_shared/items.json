@@ -44,11 +44,11 @@
                 }
             },
             "logic": {
-                "stackSize": 64,
+                "stackSize": 999,
                 "durability": -1,
                 "toolType": "ITEM",
                 "foodData": {
-                    "hungerRestore": 10.0,
+                    "hungerRestore": 1.0,
                     "hungerCooldownRestore": 30.0
                 }
             }
@@ -155,7 +155,7 @@
         {
             "identifier": "item_leaf_helmet",
             "id": 6,
-            "displayName": "Leaf Headwear",
+            "displayName": "Leaf Head-wear",
             "displayNameColor": "#ffffff",
             "render": {
                 "ui": {

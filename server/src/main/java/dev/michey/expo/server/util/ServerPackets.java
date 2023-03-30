@@ -249,6 +249,14 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P28_PlayerFoodParticle packet via UDP protocol. */
+    public static void p28PlayerFoodParticle(int entityId, int itemId, PacketReceiver receiver) {
+        P28_PlayerFoodParticle p = new P28_PlayerFoodParticle();
+        p.entityId = entityId;
+        p.itemId = itemId;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

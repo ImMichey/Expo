@@ -65,7 +65,7 @@ public class ClientChunk {
                 for(int j = 0; j < current.length; j++) {
                     int index = current[j];
 
-                    if(index == 1 && MathUtils.random(1, 4) == 1) {
+                    if(index == 1 && MathUtils.random() < 0.34f) {
                         layer1Tex[i][j] = assets.getTileSheet().getRandomVariation(index);
                     } else {
                         layer1Tex[i][j] = assets.getTileSheet().getTilesetTextureMap().get(index);

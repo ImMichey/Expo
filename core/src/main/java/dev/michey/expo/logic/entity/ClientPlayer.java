@@ -29,6 +29,7 @@ import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.PacketUtils;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -771,6 +772,14 @@ public class ClientPlayer extends ClientEntity {
         );
     }
 
+    public float toMouthX() {
+        return clientPosX + (direction() == 1 ? 6.5f : 2.5f);
+    }
+
+    public float toMouthY() {
+        return clientPosY + 10.5f + offsetY;
+    }
+
     private float getFinalArmRotation() {
         if(punchAnimation) return currentPunchAngle;
         return player ? RenderContext.get().mouseRotation : lerpedServerPunchAngle;
@@ -787,7 +796,7 @@ public class ClientPlayer extends ClientEntity {
         return array;
     }
 
-    private int direction() {
+    public int direction() {
         return punchAnimation ? punchDirection : playerDirection;
     }
 

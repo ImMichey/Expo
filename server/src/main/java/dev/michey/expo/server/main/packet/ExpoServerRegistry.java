@@ -58,7 +58,8 @@ public class ExpoServerRegistry {
                 P24_PositionalSound.class,
                 P25_ChatMessage.class,
                 P26_EntityDamage.class,
-                P27_PlayerEntitySelection.class
+                P27_PlayerEntitySelection.class,
+                P28_PlayerFoodParticle.class
         );
     }
 

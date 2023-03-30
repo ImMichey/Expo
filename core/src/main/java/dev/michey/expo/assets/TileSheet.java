@@ -33,7 +33,7 @@ public class TileSheet {
         multiEntry("tile_ocean_deep", 22);
 
         // Variations
-        variationEntry("tile_grass", 1, 3);
+        variationEntry("tile_grass", 1, 5);
     }
 
     private void variationEntry(String name, int forId, int amount) {

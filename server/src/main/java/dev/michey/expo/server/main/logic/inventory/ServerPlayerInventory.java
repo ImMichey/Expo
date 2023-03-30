@@ -110,6 +110,7 @@ public class ServerPlayerInventory extends ServerInventory {
                         if(p.hunger < 100f) {
                             p.consumeFood(hr, hcr);
                             ServerPackets.p23PlayerLifeUpdate(p.health, p.hunger, PacketReceiver.player(p));
+                            ServerPackets.p28PlayerFoodParticle(p.entityId, oldIds[0], PacketReceiver.whoCanSee(p));
 
                             int existingAmount = slots[p.selectedInventorySlot].item.itemAmount;
 

@@ -168,7 +168,9 @@ public class PlayerMinimap {
                 float drawAtX = phx - ui.glyphLayout.width * 0.5f;
                 float drawAtY = phy + ui.glyphLayout.height + minimapPlayerH;
 
-                drawUsers.put(p, new Pair<>(drawAtX, drawAtY));
+                if(ServerWorld.get() == null) {
+                    drawUsers.put(p, new Pair<>(drawAtX, drawAtY));
+                }
             }
         }
 

@@ -49,7 +49,7 @@ public class ImGuiExpo {
     public final ImBoolean renderVisualCenter = new ImBoolean(false);
     public final ImBoolean renderDrawRoot = new ImBoolean(false);
     public final ImBoolean renderDrawPos = new ImBoolean(false);
-    public final ImBoolean renderJBump = new ImBoolean(true);
+    public final ImBoolean renderJBump = new ImBoolean(false);
     private final float[] speed = new float[1];
     private final float[] minStrength = new float[1];
     private final float[] maxStrength = new float[1];

@@ -93,6 +93,7 @@ public abstract class ServerEntity {
 
         if(health <= 0) {
             onDie();
+            getDimension().getEntityManager().removeEntitySafely(this);
             ServerPackets.p4EntityDelete(entityId, EntityRemovalReason.DEATH, PacketReceiver.whoCanSee(this));
         }
     }

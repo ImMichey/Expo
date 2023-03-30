@@ -43,3 +43,7 @@ harvest_5.wav
 grass_hit_1.wav
 grass_hit_2.wav
 grass_hit_3.wav
+
+#eat;true;0.9-1.2;SFX;1.0
+eat_1.wav
+eat_2.wav
