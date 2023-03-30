@@ -1,9 +1,6 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
-import dev.michey.expo.server.main.logic.entity.ServerDummy;
-import dev.michey.expo.server.main.logic.entity.ServerGrass;
-import dev.michey.expo.server.main.logic.entity.ServerOakTree;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.*;
 
 public enum ServerEntityType {
 
@@ -11,6 +8,8 @@ public enum ServerEntityType {
     DUMMY(1, "Dummy"),
     GRASS(2, "Grass"),
     OAK_TREE(3, "OakTree"),
+    MUSHROOM_RED(4, "MushroomRed"),
+    MUSHROOM_BROWN(5, "MushroomBrown"),
     ;
 
     public final int ENTITY_ID;
@@ -27,6 +26,8 @@ public enum ServerEntityType {
             case 1 -> new ServerDummy();
             case 2 -> new ServerGrass();
             case 3 -> new ServerOakTree();
+            case 4 -> new ServerMushroomRed();
+            case 5 -> new ServerMushroomBrown();
             default -> null;
         };
     }

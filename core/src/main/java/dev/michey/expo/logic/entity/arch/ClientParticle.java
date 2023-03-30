@@ -8,6 +8,7 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public abstract class ClientParticle extends ClientEntity {
 
     public TextureRegion particleTexture;
+    public int particleRangeStart, particleRangeEnd;
 
     public float r, g, b, a;
     public float lifetime;
@@ -97,6 +98,11 @@ public abstract class ClientParticle extends ClientEntity {
     public void setParticleFadeout(float fadeDuration) {
         fadeOut = true;
         this.fadeOutDuration = fadeDuration;
+    }
+
+    public void setParticleTextureRange(int start, int end) {
+        particleRangeStart = start;
+        particleRangeEnd = end;
     }
 
     public void setParticleFadein(float fadeDuration) {

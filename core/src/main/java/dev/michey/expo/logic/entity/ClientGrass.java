@@ -99,6 +99,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             float velocityX = MathUtils.random(-24, 24);
             float velocityY = MathUtils.random(-24, 24);
 
+            p.setParticleTextureRange(3, 7);
             p.setParticleColor(MathUtils.randomBoolean() ? ClientStatic.COLOR_PARTICLE_GRASS_1 : ClientStatic.COLOR_PARTICLE_GRASS_2);
             p.setParticleLifetime(0.3f);
             p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);

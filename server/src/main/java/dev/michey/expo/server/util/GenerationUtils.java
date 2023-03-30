@@ -33,9 +33,10 @@ public class GenerationUtils {
     public static Vector2[] positions(int amount, float radiusMin, float radiusMax) {
         float anglePer = 360.0f / amount;
         Vector2[] positions = new Vector2[amount];
+        float randomOffset = MathUtils.random(360f);
 
         for(int i = 0; i < amount; i++) {
-            positions[i] = circular(anglePer * i, MathUtils.random(radiusMin, radiusMax));
+            positions[i] = circular(anglePer * i + randomOffset, MathUtils.random(radiusMin, radiusMax));
         }
 
         return positions;

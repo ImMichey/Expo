@@ -10,7 +10,7 @@ public class ClientParticleHit extends ClientParticle {
 
     @Override
     public void onCreation() {
-        particleTexture = ExpoAssets.get().getParticleSheet().getRandomParticle(3, 7);
+        particleTexture = ExpoAssets.get().getParticleSheet().getRandomParticle(particleRangeStart, particleRangeEnd);
     }
 
     @Override

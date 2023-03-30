@@ -184,6 +184,15 @@ public abstract class ClientEntity {
         return array;
     }
 
+    public float[] generateInteractionArray() {
+        return new float[] {
+                clientPosX, clientPosY,
+                clientPosX + drawWidth, clientPosY,
+                clientPosX + drawWidth, clientPosY + drawHeight,
+                clientPosX, clientPosY + drawHeight,
+        };
+    }
+
     /** Util methods */
     public boolean isMoving() {
         return serverDirX != 0 || serverDirY != 0 || doLerp;

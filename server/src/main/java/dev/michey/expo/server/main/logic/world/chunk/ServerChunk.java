@@ -5,9 +5,12 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.entity.ServerMushroomBrown;
+import dev.michey.expo.server.main.logic.entity.ServerMushroomRed;
 import dev.michey.expo.server.main.logic.entity.ServerOakTree;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.ServerGrass;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -95,6 +98,21 @@ public class ServerChunk {
                 tree.setStaticEntity();
 
                 ServerWorld.get().registerServerEntity(dimension.getDimensionName(), tree);
+
+                boolean spawnMushrooms = MathUtils.random() <= 0.25f;
+
+                if(spawnMushrooms) {
+                    int spawnAround = MathUtils.random(1, 5);
+
+                    for(Vector2 v : GenerationUtils.positions(spawnAround, 14.0f, 18.0f)) {
+                        ServerEntity around = MathUtils.randomBoolean() ? new ServerMushroomRed() : new ServerMushroomBrown();
+                        around.posX = tree.posX + 34 + v.x;
+                        around.posY = tree.posY + 9 + v.y;
+                        around.setStaticEntity();
+
+                        ServerWorld.get().registerServerEntity(dimension.getDimensionName(), around);
+                    }
+                }
             }
 
             if(t == BiomeType.GRASS && index && MathUtils.random() <= 0.15f) {
