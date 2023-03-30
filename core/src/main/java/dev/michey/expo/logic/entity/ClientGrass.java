@@ -102,10 +102,10 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             p.setParticleColor(MathUtils.randomBoolean() ? ClientStatic.COLOR_PARTICLE_GRASS_1 : ClientStatic.COLOR_PARTICLE_GRASS_2);
             p.setParticleLifetime(0.3f);
             p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
-            p.setParticleRotation(MathUtils.random(360f));
             float scale = MathUtils.random(0.6f, 0.9f);
             p.setParticleScale(scale, scale);
             p.setParticleFadeout(0.1f);
+            p.setParticleRotation(MathUtils.random(360f));
             p.setParticleConstantRotation((Math.abs(velocityX) + Math.abs(velocityY)) * 0.5f / 24f * 360f);
             p.depth = depth - 0.0001f;
 

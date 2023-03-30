@@ -14,6 +14,13 @@ step_sand_3.wav
 step_sand_4.wav
 step_sand_5.wav
 
+#step_water;true;0.9-1.1;SFX;0.8
+step_water_1.wav
+step_water_2.wav
+step_water_3.wav
+step_water_4.wav
+step_water_5.wav
+
 #leaves_rustle;true;0.9-1.1;SFX;1.0
 leaves_rustle_1.wav
 leaves_rustle_2.wav
@@ -44,6 +51,23 @@ grass_hit_1.wav
 grass_hit_2.wav
 grass_hit_3.wav
 
-#eat;true;0.9-1.2;SFX;1.0
+#eat;true;0.9-1.4;SFX;1.0
 eat_1.wav
-eat_2.wav
+
+#slap;true;0.9-1.1;SFX;1.0
+slap_1.wav
+
+#wood_cut;true;0.9-1.1;SFX;1.0
+wood_cut_1.wav
+wood_cut_2.wav
+wood_cut_3.wav
+wood_cut_4.wav
+
+#wood_break;true;0.9-1.1;SFX;1.0
+wood_break_1.wav
+
+#inv_open;true;0.9-1.1;SFX;1.0
+inv_open_1.wav
+
+#click;true;1.0-1.1;SFX;0.6
+click_1.wav

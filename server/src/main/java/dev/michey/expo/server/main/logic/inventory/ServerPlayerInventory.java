@@ -98,7 +98,7 @@ public class ServerPlayerInventory extends ServerInventory {
                 playerCursorItem = null;
             } else {
                 // Cursor is null and right-clicked, check if you can interact with item
-                if(oldIds[0] != -1) {
+                if(oldIds[0] != -1 && actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT) {
                     ItemMapping mapping = ItemMapper.get().getMapping(oldIds[0]);
 
                     if(mapping.logic.foodData != null) {

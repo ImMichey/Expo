@@ -198,23 +198,26 @@ public class ExpoClientPacketReader {
 
             if(entity != null) {
                 ClientPlayer player = (ClientPlayer) entity;
-                int particles = MathUtils.random(2, 4);
+                int particles = MathUtils.random(3, 6);
                 TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(player.holdingItemId).heldRender.textureRegion;
 
                 for(int i = 0; i < particles; i++) {
                     ClientParticleFood cpf = new ClientParticleFood();
 
-                    float velocityX = (-6.0f + MathUtils.random(36f)) * (player.direction() == 1 ? 1 : -1);
-                    float velocityY = -MathUtils.random(18f, 36f);
+                    float velocityX = (-7.0f + MathUtils.random(30f)) * (player.direction() == 1 ? 1 : -1);
+                    float velocityY = -MathUtils.random(30f, 36f);
 
                     cpf.depth = player.depth - 0.0001f;
                     cpf.particleTexture = baseItemFoodTexture;
                     cpf.setParticleOriginAndVelocity(player.toMouthX(), player.toMouthY(), velocityX, velocityY);
-                    cpf.setParticleLifetime(0.3f);
+                    cpf.setParticleLifetime(0.35f);
                     cpf.setParticleFadeout(0.1f);
-                    float scale = MathUtils.random(0.5f, 1f);
+                    float scale = MathUtils.random(0.5f, 0.9f);
                     cpf.setParticleScale(scale, scale);
                     cpf.setParticleColor(Color.WHITE);
+                    cpf.setParticleFadein(0.1f);
+                    cpf.setParticleRotation(MathUtils.random(360f));
+                    cpf.setParticleConstantRotation(360f);
 
                     ClientEntityManager.get().addClientSideEntity(cpf);
                 }

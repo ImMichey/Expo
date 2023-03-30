@@ -2,6 +2,7 @@ package dev.michey.expo.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.logic.container.ExpoClientContainer;
@@ -32,6 +33,7 @@ public class InputController {
         } else {
             // Clicked on a slot
             ui.hoveredSlot.onLeftClick();
+            AudioEngine.get().playSoundGroup("click");
         }
     }
 
@@ -48,6 +50,7 @@ public class InputController {
             ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, ExpoShared.PLAYER_INVENTORY_SLOT_VOID);
         } else {
             ui.hoveredSlot.onRightClick();
+            AudioEngine.get().playSoundGroup("click");
         }
     }
 

@@ -46,6 +46,10 @@ public class ClientParticleFood extends ClientParticle {
         rc.useRegularBatch();
         rc.batch.setColor(r, g, b, useAlpha);
 
+        if(rotationSpeed > 0) {
+            rotation += delta * rotationSpeed;
+        }
+
         rc.batch.draw(subTexture, clientPosX, clientPosY, 0, 0, subTexture.getRegionWidth(), subTexture.getRegionHeight(), scaleX, scaleY, rotation);
         rc.batch.setColor(Color.WHITE);
     }

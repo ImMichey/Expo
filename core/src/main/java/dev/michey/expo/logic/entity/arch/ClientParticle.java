@@ -3,14 +3,19 @@ package dev.michey.expo.logic.entity.arch;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public abstract class ClientParticle extends ClientEntity {
 
     public TextureRegion particleTexture;
 
     public float r, g, b, a;
     public float lifetime;
+    public float lifetimeStatic;
     public float rotation;
     public float scaleX = 1.0f, scaleY = 1.0f;
+    public boolean fadeIn;
+    public float fadeInDuration;
     public boolean fadeOut;
     public float fadeOutDuration;
     public float useAlpha;
@@ -27,6 +32,20 @@ public abstract class ClientParticle extends ClientEntity {
             entityManager().removeEntity(this);
         }
 
+        if(fadeIn) {
+            float d = lifetimeStatic - lifetime;
+
+            if(d <= fadeInDuration) {
+                useAlpha = d / fadeInDuration;
+            } else {
+                if(!fadeOut) {
+                    useAlpha = 1.0f;
+                } else if(lifetime > fadeOutDuration) {
+                    useAlpha = 1.0f;
+                }
+            }
+        }
+
         if(fadeOut) {
             if(lifetime <= fadeOutDuration) {
                 useAlpha = (lifetime / fadeOutDuration);
@@ -40,6 +59,7 @@ public abstract class ClientParticle extends ClientEntity {
 
     public void setParticleLifetime(float lifetime) {
         this.lifetime = lifetime;
+        this.lifetimeStatic = lifetime;
     }
 
     public void setParticleOriginAndVelocity(float pox, float poy, float pvx, float pvy) {
@@ -77,6 +97,12 @@ public abstract class ClientParticle extends ClientEntity {
     public void setParticleFadeout(float fadeDuration) {
         fadeOut = true;
         this.fadeOutDuration = fadeDuration;
+    }
+
+    public void setParticleFadein(float fadeDuration) {
+        fadeIn = true;
+        useAlpha = 0;
+        this.fadeInDuration = fadeDuration;
     }
 
     public void setParticleConstantRotation(float speed) {

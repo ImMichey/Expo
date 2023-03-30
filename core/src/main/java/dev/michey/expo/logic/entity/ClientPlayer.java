@@ -247,6 +247,7 @@ public class ClientPlayer extends ClientEntity {
             // Client-sided inventory check
             if(IngameInput.get().keyJustPressed(Input.Keys.E)) {
                 inventoryOpen = !inventoryOpen;
+                AudioEngine.get().playSoundGroup("inv_open");
             }
 
             // World enter animation
@@ -366,6 +367,8 @@ public class ClientPlayer extends ClientEntity {
                 group = "step_sand";
             } else if(t == BiomeType.GRASS) {
                 group = "step_forest";
+            } else if(BiomeType.isWater(t)) {
+                group = "step_water";
             }
 
             if(group != null) {
