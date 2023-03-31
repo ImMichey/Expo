@@ -33,14 +33,12 @@ public class TileSheet {
         multiEntry("tile_ocean_deep", 22);
 
         // Variations
-        variationEntry("tile_grass", 1, 5);
+        variationEntry("tile_grass", 1, 7);
     }
 
     private void variationEntry(String name, int forId, int amount) {
         TextureRegion[] array = new TextureRegion[amount];
-        for(int i = 0; i < amount; i++) {
-            array[i] = assets.textureRegion(name + "_variation_" + i);
-        }
+        for(int i = 0; i < amount; i++) array[i] = assets.textureRegion(name + "_variation_" + i);
         tilesetVariationTextureMap.put(forId, array);
     }
 

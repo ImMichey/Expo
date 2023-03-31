@@ -9,6 +9,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ExpoShared;
 

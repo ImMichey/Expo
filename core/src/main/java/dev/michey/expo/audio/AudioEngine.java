@@ -79,13 +79,14 @@ public class AudioEngine {
 
                 qualifiedNameMap.put(qualifiedName, database.getGroupName());
                 database.addSound(qualifiedName, volume);
-                log("Added sound entry: " + database.getGroupName() + "->" + qualifiedName);
             }
         }
 
         for(SoundGroupType group : SoundGroupType.values()) {
             soundTypeVolumeMap.put(group, 1.0f);
         }
+
+        log("Added " + qualifiedNameMap.size() + " sound entries in " + soundGroupMap.size() + " sound groups.");
     }
 
     public void setMasterVolume(float masterVolume) {

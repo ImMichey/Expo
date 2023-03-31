@@ -85,7 +85,7 @@ public abstract class ExpoServerBase {
             if(dimension.isMainDimension()) {
                 // find proper spawn
                 if(worldSaveFile.getCreationTimestamp() == worldSaveFile.getLastSaveTimestamp()) {
-                    log("Finding spawn area...");
+                    log("Finding spawn area for '" + dimension.getDimensionName() + "'...");
                     var found = world.getMainDimension().findBiome(-1, BiomeType.GRASS);
 
                     if(found.key) {

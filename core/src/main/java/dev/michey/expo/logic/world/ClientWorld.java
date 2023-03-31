@@ -30,6 +30,8 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
@@ -175,6 +177,10 @@ public class ClientWorld {
     public void setNoiseSeed(int seed) {
         clientChunkGrid.noise.setSeed(seed);
         clientChunkGrid.riverNoise.setSeed(seed);
+    }
+
+    public void setGenSettings(WorldGenSettings genSettings) {
+        clientChunkGrid.applyGenSettings(genSettings);
     }
 
     private void calculateWorldTime(float delta) {

@@ -6,7 +6,7 @@ import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.main.arch.ExpoServerDedicated;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
-import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -24,6 +24,8 @@ public class ServerLauncher {
 			log("Failed to load ExpoServerConfiguration, aborting application.");
 			System.exit(0);
 		}
+
+		new WorldGen();
 
 		// Create the server instance
 		ExpoServerDedicated server = new ExpoServerDedicated(fileConfig);

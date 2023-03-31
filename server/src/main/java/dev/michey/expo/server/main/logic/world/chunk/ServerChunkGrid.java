@@ -5,6 +5,9 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
+import dev.michey.expo.server.main.logic.world.gen.WorldGen;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
@@ -36,6 +39,9 @@ public class ServerChunkGrid {
     private final Noise riverNoise;
     private final HashMap<String, BiomeType> noiseCacheMap;
 
+    /** Biome logic */
+    private final WorldGenSettings genSettings;
+
     public ServerChunkGrid(ServerDimension dimension) {
         this.dimension = dimension;
         activeChunkMap = new HashMap<>();
@@ -43,9 +49,29 @@ public class ServerChunkGrid {
         knownChunkFiles = new LinkedList<>();
         unloadAfterMillis = ExpoShared.UNLOAD_CHUNKS_AFTER_MILLIS;
         saveAfterMillis = ExpoShared.SAVE_CHUNKS_AFTER_MILLIS;
-        noise = new Noise(0, 1f/80f, Noise.FOAM_FRACTAL, 5); // 1f/384f + 5
-        riverNoise = new Noise(0, 1f/384f, Noise.SIMPLEX_FRACTAL, 1); // 1f/384f + 1
-        riverNoise.setFractalType(Noise.RIDGED_MULTI);
+
+        genSettings = WorldGen.get().getSettings(dimension.getDimensionName());
+        WorldGenNoiseSettings settings = genSettings.getNoiseSettings();
+
+        noise = new Noise(0);
+        riverNoise = new Noise(0);
+
+        if(settings != null) {
+            if(settings.isTerrainGenerator()) {
+                noise.setFrequency(settings.noiseTerrainFrequency);
+                noise.setNoiseType(settings.noiseTerrainType);
+                noise.setFractalOctaves(settings.noiseTerrainOctaves);
+                if(settings.noiseTerrainFractalType != -1) noise.setFractalType(settings.noiseTerrainFractalType);
+            }
+
+            if(settings.isRiversGenerator()) {
+                riverNoise.setFrequency(settings.noiseRiversFrequency);
+                riverNoise.setNoiseType(settings.noiseRiversType);
+                riverNoise.setFractalOctaves(settings.noiseRiversOctaves);
+                if(settings.noiseTerrainFractalType != -1) riverNoise.setFractalType(settings.noiseRiversFractalType);
+            }
+        }
+
         noiseCacheMap = new HashMap<>();
     }
 
@@ -67,14 +93,36 @@ public class ServerChunkGrid {
         BiomeType type = noiseCacheMap.get(key);
 
         if(type == null) {
-            float normalizedNoise = (noise.getConfiguredNoise(x, y) + 1) / 2f;
-            float normalizedRiver = (riverNoise.getConfiguredNoise(x, y) + 1) / 2f;
+            float normalizedNoise = genSettings.getNoiseSettings().isTerrainGenerator() ? ((noise.getConfiguredNoise(x, y) + 1) / 2f) : -1;
+            float normalizedRiver = genSettings.getNoiseSettings().isRiversGenerator() ? ((riverNoise.getConfiguredNoise(x, y) + 1) / 2f) : -1;
 
-            type = BiomeType.convertNoise(normalizedNoise, normalizedRiver);
+            type = convertNoise(normalizedNoise, normalizedRiver);
+
             noiseCacheMap.put(key, type);
         }
 
         return type;
+    }
+
+    private BiomeType convertNoise(float noise, float riverNoise) {
+        BiomeType fit = BiomeType.VOID;
+        float nearestElevation = 1.0f;
+        if(noise == -1) return fit;
+        // riverNoise is ignored for now.
+
+        for(BiomeType toCheck : genSettings.getBiomeDataMap().keySet()) {
+            float[] values = genSettings.getBiomeDataMap().get(toCheck);
+            float elevation = values[0];
+
+            if(noise <= elevation && elevation <= nearestElevation) {
+                fit = toCheck;
+                nearestElevation = values[0];
+            }
+
+            // temperature, moisture is ignored for now.
+        }
+
+        return fit;
     }
 
     /** Initializes the known chunk list. */
@@ -293,6 +341,10 @@ public class ServerChunkGrid {
 
     public Noise getRiverNoise() {
         return riverNoise;
+    }
+
+    public WorldGenSettings getGenSettings() {
+        return genSettings;
     }
 
 }

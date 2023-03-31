@@ -11,6 +11,8 @@ import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
 
@@ -19,12 +21,13 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public class ServerPackets {
 
     /** Sends the P1_Auth_Rsp packet via TCP protocol. */
-    public static void p1AuthResponse(boolean authorized, String message, int serverTps, int worldSeed, PacketReceiver receiver) {
+    public static void p1AuthResponse(boolean authorized, String message, int serverTps, int worldSeed, WorldGenSettings genSettings, PacketReceiver receiver) {
         P1_Auth_Rsp p = new P1_Auth_Rsp();
         p.authorized = authorized;
         p.message = message;
         p.serverTps = serverTps;
         p.worldSeed = worldSeed;
+        p.genSettings = genSettings;
         tcp(p, receiver);
     }
 

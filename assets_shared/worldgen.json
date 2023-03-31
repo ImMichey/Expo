@@ -1,0 +1,83 @@
+{
+    "generators": [
+        {
+            "dimension": "overworld",
+            "noise": {
+                "terrain": {
+                    "octaves": 5,
+                    "type": 11,
+                    "frequency": 0.0125
+                },
+                "rivers": {
+                    "octaves": 1,
+                    "type": 5,
+                    "frequency": 0.0026041666666667,
+                    "fractalType": 2
+                },
+                "biomes": [
+                    {
+                        "type": "OCEAN_DEEP",
+                        "elevation": 0.465,
+                        "temperature": 0,
+                        "moisture": 0
+                    },
+                    {
+                        "type": "OCEAN",
+                        "elevation": 0.515,
+                        "temperature": 0,
+                        "moisture": 0
+                    },
+                    {
+                        "type": "BEACH",
+                        "elevation": 0.552,
+                        "temperature": 0,
+                        "moisture": 0
+                    },
+                    {
+                        "type": "GRASS",
+                        "elevation": 1.0,
+                        "temperature": 0,
+                        "moisture": 0
+                    }
+                ]
+            },
+            "biomePopulators": {
+                "GRASS": {
+                    "entities": [
+                        {
+                            "type": "GRASS",
+                            "static": true,
+                            "chance": 0.1,
+                            "pds": 16,
+                            "spreadData": {
+                                "spread": [0, 7],
+                                "spreadChance": 1.0,
+                                "spreadDis": [8.0, 14.0],
+                                "spreadType": ["GRASS"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        },
+                        {
+                            "type": "OAK_TREE",
+                            "static": true,
+                            "chance": 0.25,
+                            "pds": 64,
+                            "spreadData": {
+                                "spread": [1, 5],
+                                "spreadChance": 0.25,
+                                "spreadDis": [14.0, 16.0],
+                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [34.0, 9.0]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "dimension": "cave"
+        }
+    ]
+}

@@ -4,6 +4,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.screen.GameScreen;
+import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ClientStatic;
 
@@ -29,6 +30,7 @@ public class CommandWorld extends AbstractConsoleCommand {
         if(!Expo.get().isPlaying()) {
             String name = parseString(args, 1);
             success("Starting a single-player game session with world name [CYAN]" + name);
+            new WorldGen();
             ExpoServerLocal localServer = new ExpoServerLocal(name);
 
             if(localServer.startServer()) {

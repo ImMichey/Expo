@@ -6,8 +6,14 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.world.gen.EntityPopulator;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
+
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class ExpoServerRegistry {
 
@@ -17,10 +23,14 @@ public class ExpoServerRegistry {
                 int[].class,
                 int[][].class,
                 boolean[].class,
+                float[].class,
                 String[].class,
+                HashMap.class,
+                LinkedList.class,
 
                 // Util classes
                 ServerEntityType.class,
+                ServerEntityType[].class,
                 BiomeType.class,
                 BiomeType[].class,
                 ServerInventoryItem.class,
@@ -29,6 +39,9 @@ public class ExpoServerRegistry {
                 ToolType.class,
                 EntityRemovalReason.class,
                 EntityRemovalReason[].class,
+                WorldGenSettings.class,
+                WorldGenNoiseSettings.class,
+                EntityPopulator.class,
 
                 // Packets
                 P0_Auth_Req.class,

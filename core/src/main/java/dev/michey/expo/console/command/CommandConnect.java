@@ -6,6 +6,7 @@ import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.screen.GameScreen;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;

@@ -32,4 +32,8 @@ public enum ServerEntityType {
         };
     }
 
+    public static ServerEntity typeToEntity(ServerEntityType type) {
+        return typeToEntity(type.ENTITY_ID);
+    }
+
 }

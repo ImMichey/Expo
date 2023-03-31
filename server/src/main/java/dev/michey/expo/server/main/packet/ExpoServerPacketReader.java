@@ -12,6 +12,7 @@ import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -35,7 +36,9 @@ public class ExpoServerPacketReader {
             ServerPlayer sp = ServerWorld.get().createPlayerEntity(null, req.username);
             registerPlayer(psf, sp);
 
-            ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_SERVER_TICK_RATE, sp.getDimension().getChunkHandler().getNoise().getSeed(), PacketReceiver.local());
+            WorldGenSettings s = sp.getDimension().getChunkHandler().getGenSettings();
+
+            ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_SERVER_TICK_RATE, sp.getDimension().getChunkHandler().getNoise().getSeed(), s, PacketReceiver.local());
             ServerPackets.p3PlayerJoin(req.username, PacketReceiver.local());
             ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.local());
             ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.local());
@@ -98,7 +101,8 @@ public class ExpoServerPacketReader {
                 }
             }
 
-            ServerPackets.p1AuthResponse(authorized, authorizationMessage, ExpoServerConfiguration.get().getServerTps(), ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(), PacketReceiver.connection(connection));
+            WorldGenSettings s = ServerWorld.get().getMainDimension().getChunkHandler().getGenSettings();
+            ServerPackets.p1AuthResponse(authorized, authorizationMessage, ExpoServerConfiguration.get().getServerTps(), ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(), s, PacketReceiver.connection(connection));
 
             if(authorized) {
                 CompletableFuture.runAsync(() -> {

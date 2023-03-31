@@ -13,8 +13,13 @@ import dev.michey.expo.server.main.logic.entity.ServerGrass;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
+import dev.michey.expo.server.main.logic.world.gen.EntityPopulator;
+import dev.michey.expo.server.main.logic.world.gen.GenerationTile;
+import dev.michey.expo.server.main.logic.world.gen.Point;
+import dev.michey.expo.server.main.logic.world.gen.PoissonDiskSampler;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,10 +29,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
 public class ServerChunk {
@@ -85,6 +92,62 @@ public class ServerChunk {
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
 
+        HashMap<BiomeType, List<GenerationTile>> biomeMap = new HashMap<>();
+
+        for(int i = 0; i < biomes.length; i++) {
+            BiomeType t = biomes[i];
+            if(!biomeMap.containsKey(t)) biomeMap.put(t, new LinkedList<>());
+
+            biomeMap.get(t).add(new GenerationTile(
+                    t,
+                    layer1[i].length == 1,
+                    wx + ExpoShared.tileToPos(i % 8),
+                    wy + ExpoShared.tileToPos(i / 8)
+            ));
+        }
+
+        for(BiomeType t : biomeMap.keySet()) {
+            var populators = dimension.getChunkHandler().getGenSettings().getEntityPopulators(t);
+            if(populators == null || populators.size() == 0) continue;
+
+            for(EntityPopulator populator : populators) {
+                List<Point> points = new PoissonDiskSampler(0, 0, CHUNK_SIZE, CHUNK_SIZE, populator.poissonDiskSamplerDistance).sample(wx, wy);
+
+                for(Point p : points) {
+                    if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(p.absoluteX), ExpoShared.posToTile(p.absoluteY)) != t) continue;
+
+                    boolean spawn = MathUtils.random() < populator.spawnChance;
+
+                    if(spawn) {
+                        ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
+                        generatedEntity.posX = p.absoluteX;
+                        generatedEntity.posY = p.absoluteY;
+                        if(populator.asStaticEntity) generatedEntity.setStaticEntity();
+
+                        ServerWorld.get().registerServerEntity(dimension.getDimensionName(), generatedEntity);
+
+                        if(populator.spreadBetweenEntities != null) {
+                            boolean spread = MathUtils.random() < populator.spreadChance;
+
+                            if(spread) {
+                                int amount = MathUtils.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
+
+                                for(Vector2 v : GenerationUtils.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
+                                    ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
+                                    spreadEntity.posX = generatedEntity.posX + v.x + populator.spreadOffsets[0];
+                                    spreadEntity.posY = generatedEntity.posY + v.y + populator.spreadOffsets[1];
+                                    if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
+
+                                    ServerWorld.get().registerServerEntity(dimension.getDimensionName(), spreadEntity);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
         for(int i = 0; i < biomes.length; i++) {
             BiomeType t = biomes[i];
             boolean index = layer1[i].length == 1;
@@ -161,6 +224,7 @@ public class ServerChunk {
                 }
             }
         }
+        */
     }
 
     public void generate(boolean populate) {

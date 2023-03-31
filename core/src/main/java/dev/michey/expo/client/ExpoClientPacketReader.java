@@ -59,7 +59,10 @@ public class ExpoClientPacketReader {
                 Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             } else {
-                if(!local) ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
+                if(!local) {
+                    ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
+                    ExpoClientContainer.get().getClientWorld().setGenSettings(p.genSettings);
+                }
                 ExpoClientContainer.get().setServerTickRate(p.serverTps);
             }
         } else if(o instanceof P3_PlayerJoin p) {
