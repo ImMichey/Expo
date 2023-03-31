@@ -88,7 +88,6 @@ public class ServerChunk {
     }
 
     public void populate() {
-        long start = System.nanoTime();
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
 
@@ -160,6 +159,8 @@ public class ServerChunk {
             }
         }
 
+        int a = 0;
+
         nextEntry: for(var entry : postProcessingList) {
             for(var otherEntry : postProcessingList) {
                 if(otherEntry.value) continue;
@@ -169,6 +170,7 @@ public class ServerChunk {
 
                 if(dis <= 4) {
                     entry.value = true;
+                    a++;
                     continue nextEntry;
                 }
             }
@@ -180,7 +182,7 @@ public class ServerChunk {
             }
         }
 
-        log("Population took " + ((System.nanoTime() - start) / 1_000_000.0d) + "ms.");
+        // log("Population took " + ((System.nanoTime() - start) / 1_000_000.0d) + "ms.");
     }
 
     public void generate(boolean populate) {
