@@ -34,8 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
-import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public class ServerChunk {
 
@@ -89,6 +88,7 @@ public class ServerChunk {
     }
 
     public void populate() {
+        long start = System.nanoTime();
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
 
@@ -106,6 +106,8 @@ public class ServerChunk {
             ));
         }
 
+        List<Pair<ServerEntity, Boolean>> postProcessingList = new LinkedList<>();
+
         for(BiomeType t : biomeMap.keySet()) {
             var populators = dimension.getChunkHandler().getGenSettings().getEntityPopulators(t);
             if(populators == null || populators.size() == 0) continue;
@@ -119,26 +121,37 @@ public class ServerChunk {
                     boolean spawn = MathUtils.random() < populator.spawnChance;
 
                     if(spawn) {
-                        ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
-                        generatedEntity.posX = p.absoluteX;
-                        generatedEntity.posY = p.absoluteY;
-                        if(populator.asStaticEntity) generatedEntity.setStaticEntity();
+                        int xi = (int) p.x;
+                        int yi = (int) p.y;
+                        int tIndex = yi / TILE_SIZE * 8 + xi / TILE_SIZE;
 
-                        ServerWorld.get().registerServerEntity(dimension.getDimensionName(), generatedEntity);
+                        if(layer1[tIndex].length == 1) {
+                            ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
+                            generatedEntity.posX = p.absoluteX;
+                            generatedEntity.posY = p.absoluteY;
+                            if(populator.asStaticEntity) generatedEntity.setStaticEntity();
 
-                        if(populator.spreadBetweenEntities != null) {
-                            boolean spread = MathUtils.random() < populator.spreadChance;
+                            postProcessingList.add(new Pair<>(generatedEntity, false));
 
-                            if(spread) {
-                                int amount = MathUtils.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
+                            if(populator.spreadBetweenEntities != null) {
+                                boolean spread = MathUtils.random() < populator.spreadChance;
 
-                                for(Vector2 v : GenerationUtils.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
-                                    ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
-                                    spreadEntity.posX = generatedEntity.posX + v.x + populator.spreadOffsets[0];
-                                    spreadEntity.posY = generatedEntity.posY + v.y + populator.spreadOffsets[1];
-                                    if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
+                                if(spread) {
+                                    int amount = MathUtils.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
 
-                                    ServerWorld.get().registerServerEntity(dimension.getDimensionName(), spreadEntity);
+                                    for(Vector2 v : GenerationUtils.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
+                                        float targetX = generatedEntity.posX + v.x + populator.spreadOffsets[0];
+                                        float targetY = generatedEntity.posY + v.y + populator.spreadOffsets[1];
+
+                                        if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(targetX), ExpoShared.posToTile(targetY)) == t) {
+                                            ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
+                                            spreadEntity.posX = targetX;
+                                            spreadEntity.posY = targetY;
+                                            if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
+
+                                            postProcessingList.add(new Pair<>(spreadEntity, false));
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -147,84 +160,27 @@ public class ServerChunk {
             }
         }
 
-        /*
-        for(int i = 0; i < biomes.length; i++) {
-            BiomeType t = biomes[i];
-            boolean index = layer1[i].length == 1;
+        nextEntry: for(var entry : postProcessingList) {
+            for(var otherEntry : postProcessingList) {
+                if(otherEntry.value) continue;
+                if(otherEntry.key.equals(entry.key)) continue;
 
-            if(t == BiomeType.GRASS && index && MathUtils.random() <= 0.01) {
-                int x = i % 8;
-                int y = i / 8;
-                ServerOakTree tree = new ServerOakTree();
-                tree.posX = wx + ExpoShared.tileToPos(x);
-                tree.posY = wy + ExpoShared.tileToPos(y);
-                tree.setStaticEntity();
+                float dis = Vector2.dst(entry.key.posX, entry.key.posY, otherEntry.key.posX, otherEntry.key.posY);
 
-                ServerWorld.get().registerServerEntity(dimension.getDimensionName(), tree);
-
-                boolean spawnMushrooms = MathUtils.random() <= 0.25f;
-
-                if(spawnMushrooms) {
-                    int spawnAround = MathUtils.random(1, 5);
-
-                    for(Vector2 v : GenerationUtils.positions(spawnAround, 14.0f, 18.0f)) {
-                        ServerEntity around = MathUtils.randomBoolean() ? new ServerMushroomRed() : new ServerMushroomBrown();
-                        around.posX = tree.posX + 34 + v.x;
-                        around.posY = tree.posY + 9 + v.y;
-                        around.setStaticEntity();
-
-                        ServerWorld.get().registerServerEntity(dimension.getDimensionName(), around);
-                    }
-                }
-            }
-
-            if(t == BiomeType.GRASS && index && MathUtils.random() <= 0.15f) {
-                int x = i % 8;
-                int y = i / 8;
-
-                ServerGrass grass = new ServerGrass();
-                grass.posX = wx + ExpoShared.tileToPos(x);
-                grass.posY = wy + ExpoShared.tileToPos(y);
-                grass.setStaticEntity();
-                //grass.attachToTile(this, x, y);
-
-                ServerWorld.get().registerServerEntity(dimension.getDimensionName(), grass);
-
-                // Spawn around
-                int spawnAround;
-                float r = MathUtils.random();
-
-                if(r <= 0.05f) {
-                    spawnAround = 8;
-                } else if(r <= 0.125f) {
-                    spawnAround = 7;
-                } else if(r <= 0.25f) {
-                    spawnAround = 6;
-                } else if(r <= 0.375f) {
-                    spawnAround = 5;
-                } else if(r <= 0.5f) {
-                    spawnAround = 4;
-                } else if(r <= 0.75f) {
-                    spawnAround = 3;
-                } else if(r <= 0.95f) {
-                    spawnAround = 2;
-                } else if(r <= 0.98) {
-                    spawnAround = 1;
-                } else {
-                    spawnAround = 0;
-                }
-
-                for(Vector2 v : GenerationUtils.positions(spawnAround, 8.0f, 14.0f)) {
-                    ServerGrass around = new ServerGrass();
-                    around.posX = grass.posX + v.x;
-                    around.posY = grass.posY + v.y;
-                    around.setStaticEntity();
-
-                    ServerWorld.get().registerServerEntity(dimension.getDimensionName(), around);
+                if(dis <= 4) {
+                    entry.value = true;
+                    continue nextEntry;
                 }
             }
         }
-        */
+
+        for(var entry : postProcessingList) {
+            if(!entry.value) {
+                ServerWorld.get().registerServerEntity(dimension.getDimensionName(), entry.key);
+            }
+        }
+
+        log("Population took " + ((System.nanoTime() - start) / 1_000_000.0d) + "ms.");
     }
 
     public void generate(boolean populate) {
