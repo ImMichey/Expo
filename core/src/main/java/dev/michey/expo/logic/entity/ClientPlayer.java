@@ -324,7 +324,6 @@ public class ClientPlayer extends ClientEntity {
                 lerpedServerPunchAngle = serverPunchAngle;
             } else {
                 float norm = (n - serverPunchAngleStart) / PLAYER_ARM_MOVEMENT_SEND_RATE;
-
                 lerpedServerPunchAngle = lastLerpedServerPunchAngle + (serverPunchAngle - lastLerpedServerPunchAngle) * norm;
             }
         }

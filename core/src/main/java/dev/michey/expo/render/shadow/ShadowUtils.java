@@ -3,6 +3,7 @@ package dev.michey.expo.render.shadow;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.ClientWorld;
 
@@ -66,6 +67,12 @@ public class ShadowUtils {
 
     public static Affine2 createSimpleShadowAffine(float worldX, float worldY, float x, float y) {
         return createAdvancedShadowAffine(worldX, worldY, 0, 0, 0, 0, 0, x, 0, 1.0f, y);
+    }
+
+    public static float getWind(float maxStrength, float minStrength, float time, float interval, float detail) {
+        double diff = Math.pow(maxStrength - minStrength, 2.0);
+        double strength = MathUtils.clamp(minStrength + diff + MathUtils.sin(time / interval) * diff, minStrength, maxStrength) * 100.0f;
+        return (float) ((MathUtils.sin(time) + MathUtils.cos(time * detail)) * strength);
     }
 
 }

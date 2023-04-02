@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -16,6 +17,7 @@ import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.render.arraybatch.ArrayTextureSpriteBatch;
@@ -82,7 +84,7 @@ public class RenderContext {
     public ShaderProgram waterTileShader;
     public ShaderProgram waterFboShader;
     public ShaderProgram selectionShader;
-    public ShaderProgram foliageWindShader;
+    public ShaderProgram selectionArrayShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -225,7 +227,7 @@ public class RenderContext {
         waterTileShader = compileShader("gl3/water_tile");
         waterFboShader = compileShader("gl3/water_fbo");
         selectionShader = compileShader("gl3/selection");
-        foliageWindShader = compileShader("gl3/foliagewind");
+        selectionArrayShader = compileShader("gl3/selection_array");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         // createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -298,9 +300,8 @@ public class RenderContext {
 
         mouseDirection = mouseX < (Gdx.graphics.getWidth() * 0.5f) ? 0 : 1;
 
-        foliageWindShader.bind();
-        foliageWindShader.setUniformi("u_selected", 0);
-        foliageWindShader.setUniformf("u_time", deltaTotal);
+        selectionShader.bind();
+        selectionShader.setUniformf("u_time", deltaTotal);
     }
 
     public void reset() {
@@ -354,6 +355,18 @@ public class RenderContext {
         } else if(!arraySpriteBatch.isDrawing()) {
             arraySpriteBatch.begin();
         }
+    }
+
+    public void bindAndSetSelection(Batch useBatch) {
+        ShaderProgram useShader = useBatch == batch ? selectionShader : selectionArrayShader;
+
+        useShader.bind();
+        useShader.setUniformf("u_progress", ClientEntityManager.get().pulseProgress);
+        useShader.setUniformf("u_pulseStrength", 1.25f);
+        useShader.setUniformf("u_pulseMin", 1.05f);
+
+        useBatch.setShader(useShader);
+        useBatch.begin();
     }
 
     private FrameBuffer createFBO(int width, int height) {

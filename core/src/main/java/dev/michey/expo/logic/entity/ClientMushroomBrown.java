@@ -78,11 +78,9 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.useArrayBatch();
-        if(rc.arraySpriteBatch.getShader() != rc.selectionShader) rc.arraySpriteBatch.setShader(rc.selectionShader);
+        rc.bindAndSetSelection(rc.arraySpriteBatch);
 
         rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY + 1);
-
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);

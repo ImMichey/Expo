@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.dimension;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.server.main.logic.entity.ServerDummy;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 
@@ -14,14 +15,13 @@ public class ServerDimensionOverworld extends ServerDimension {
         float baseX = dimensionSpawnX;
         float baseY = dimensionSpawnY;
 
-        int generate = 1;//MathUtils.random(32, 64);
+        int generate = MathUtils.random(2, 4);
 
         for(int i = 0; i < generate; i++) {
             ServerDummy dummy = new ServerDummy();
             dummy.posX = baseX;
             dummy.posY = baseY;
             ServerWorld.get().registerServerEntity(dimensionName, dummy);
-            //dummy.generateDst();
         }
     }
 

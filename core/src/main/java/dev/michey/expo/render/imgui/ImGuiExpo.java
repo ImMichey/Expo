@@ -378,18 +378,16 @@ public class ImGuiExpo {
                 ImGui.checkbox("Draw Pos", renderDrawPos);
                 ImGui.checkbox("J Bump", renderJBump);
 
-                /*
                 if(ImGui.sliderFloat("speed", speed, 0.0f, 10.0f)) r.speed = speed[0];
                 if(ImGui.sliderFloat("minStrength", minStrength, 0.0f, 1.0f)) r.minStrength = minStrength[0];
                 if(ImGui.sliderFloat("maxStrength", maxStrength, 0.0f, 1.0f)) r.maxStrength = maxStrength[0];
-                if(ImGui.sliderFloat("strengthScale", strengthScale, 0.0f, 500.0f)) r.strengthScale = strengthScale[0];
+                //if(ImGui.sliderFloat("strengthScale", strengthScale, 0.0f, 500.0f)) r.strengthScale = strengthScale[0];
                 if(ImGui.sliderFloat("interval", interval, 0.0f, 10.0f)) r.interval = interval[0];
                 if(ImGui.sliderFloat("detail", detail, 0.0f, 5.0f)) r.detail = detail[0];
-                if(ImGui.sliderFloat("distortion", distortion, 0.0f, 1.0f)) r.distortion = distortion[0];
-                if(ImGui.sliderFloat("heightOffset", heightOffset, 0.0f, 1.0f)) r.heightOffset = heightOffset[0];
+                //if(ImGui.sliderFloat("distortion", distortion, 0.0f, 1.0f)) r.distortion = distortion[0];
+                //if(ImGui.sliderFloat("heightOffset", heightOffset, 0.0f, 1.0f)) r.heightOffset = heightOffset[0];
                 if(ImGui.sliderFloat("offset", offset, 0.0f, 10.0f)) r.offset = offset[0];
-                if(ImGui.sliderFloat("skew", skew, -500.0f, 500.0f)) r.skew = skew[0];
-                */
+                //if(ImGui.sliderFloat("skew", skew, -500.0f, 500.0f)) r.skew = skew[0];
 
                 ImGui.treePop();
             }

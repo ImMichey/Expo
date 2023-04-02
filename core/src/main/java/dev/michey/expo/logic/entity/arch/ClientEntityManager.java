@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
@@ -176,7 +178,7 @@ public class ClientEntityManager {
     }
 
     public void updateSelectionShader(ClientEntity entity, RenderContext rc) {
-        if(entity.entityId != lastEntityId) {
+        if (entity.entityId != lastEntityId) {
             lastEntityId = entity.entityId;
             plus = false;
             pDelta = 1.0f;
@@ -184,17 +186,17 @@ public class ClientEntityManager {
 
         float speed = 3.0f;
 
-        if(plus) {
+        if (plus) {
             pDelta += rc.delta * speed;
 
-            if(pDelta >= 1f) {
+            if (pDelta >= 1f) {
                 pDelta = 1f;
                 plus = false;
             }
         } else {
             pDelta -= rc.delta * speed;
 
-            if(pDelta <= 0f) {
+            if (pDelta <= 0f) {
                 pDelta = 0f;
                 plus = true;
             }
@@ -202,13 +204,8 @@ public class ClientEntityManager {
 
         pulseProgress = Interpolation.smooth2.apply(pDelta);
 
-        if(rc.batch.isDrawing()) rc.batch.end();
-        if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
-
-        rc.selectionShader.bind();
-        rc.selectionShader.setUniformf("u_progress", pulseProgress);
-        rc.selectionShader.setUniformf("u_pulseStrength", 1.25f);
-        rc.selectionShader.setUniformf("u_pulseMin", 1.05f);
+        if (rc.batch.isDrawing()) rc.batch.end();
+        if (rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
     }
 
     public void renderEntities(float delta) {
@@ -225,8 +222,8 @@ public class ClientEntityManager {
                 updateSelectionShader(entity, rc);
                 ((SelectableEntity) entity).renderSelected(rc, delta);
 
-                rc.useRegularBatch();
-                rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
+                rc.useArrayBatch();
+                rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
             } else {
                 entity.render(rc, delta);
             }

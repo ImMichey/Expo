@@ -11,11 +11,11 @@ public class ServerDummy extends ServerEntity {
 
     public float dstX;
     public float dstY;
-    public float speed = 0.5f;
+    public float speed = 1.0f;
 
     @Override
     public void onCreation() {
-
+        generateDst();
     }
 
     @Override
@@ -57,8 +57,8 @@ public class ServerDummy extends ServerEntity {
     }
 
     public void generateDst() {
-        dstX = getDimension().getDimensionSpawnX() + MathUtils.random(-48f, 48f);
-        dstY = getDimension().getDimensionSpawnY() + MathUtils.random(-48f, 48f);
+        dstX = getDimension().getDimensionSpawnX() + MathUtils.random(-96f, 96f);
+        dstY = getDimension().getDimensionSpawnY() + MathUtils.random(-96f, 96f);
     }
 
     @Override

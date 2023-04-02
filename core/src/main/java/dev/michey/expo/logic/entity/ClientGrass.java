@@ -14,6 +14,7 @@ import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
 import java.util.List;
@@ -27,9 +28,15 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     private TextureRegion grassShadow;
     private float[] interactionPointArray;
 
-    private float shaderSpeed = MathUtils.random(0.3f, 2.0f);
-    private float shaderStrength = MathUtils.random(0.015f, 0.045f);
-    private float shaderOffset = MathUtils.random(4.0f);
+    private final float u_speed = MathUtils.random(0.5f, 1.2f);
+    private final float u_offset = MathUtils.random(100f);
+    private final float u_minStrength = MathUtils.random(0.02f, 0.04f);
+    private final float u_maxStrength = MathUtils.random(0.04f, 0.06f);
+    private final float u_interval = MathUtils.random(2.0f, 5.0f);
+    private final float u_detail = MathUtils.random(0.5f, 1.5f);
+
+    private float wind;
+    private boolean calculatedWindThisTick = false;
 
     /** Wind sway vertices animation */
     private float contactDelta = 0f;
@@ -124,6 +131,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
+        calculatedWindThisTick = false;
 
         if(contactDelta == 0 && visibleToRenderEngine) {
             for(List<ClientEntity> list : entityManager().getEntitiesByType(ClientEntityType.PLAYER, ClientEntityType.DUMMY)) {
@@ -165,23 +173,11 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.useArrayBatch();
-        if(rc.arraySpriteBatch.getShader() != rc.foliageWindShader) rc.arraySpriteBatch.setShader(rc.foliageWindShader);
+        calculateWindOnDemand(rc.deltaTotal);
+        rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.foliageWindShader.setUniformi("u_selected", 1);
-        rc.foliageWindShader.setUniformf("u_progress", entityManager().pulseProgress);
-        rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
-        rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
-        rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
-        rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), verticesMovement, verticesMovement);
-
+        rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), wind + verticesMovement, wind + verticesMovement);
         rc.arraySpriteBatch.end();
-
-        rc.foliageWindShader.bind();
-        rc.foliageWindShader.setUniformi("u_selected", 0);
-
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
     }
 
     @Override
@@ -189,43 +185,33 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
+            calculateWindOnDemand(rc.deltaTotal);
             updateDepth(drawOffsetY);
+
             rc.useArrayBatch();
+            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+            rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), wind + verticesMovement, wind + verticesMovement);
+        }
+    }
 
-            if(rc.expoCamera.camera.zoom > 0.5f) {
-                rc.arraySpriteBatch.draw(grass, clientPosX, clientPosY);
-            } else {
-                if(rc.arraySpriteBatch.getShader() != rc.foliageWindShader) rc.arraySpriteBatch.setShader(rc.foliageWindShader);
-
-                rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
-                rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
-                rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
-                rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), verticesMovement, verticesMovement);
-                rc.arraySpriteBatch.flush();
-            }
+    private void calculateWindOnDemand(float deltaTotal) {
+        if(!calculatedWindThisTick) {
+            calculatedWindThisTick = true;
+            wind = ShadowUtils.getWind(u_maxStrength, u_minStrength, deltaTotal * u_speed + u_offset, u_interval, u_detail);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY + 1);
+        calculateWindOnDemand(rc.deltaTotal);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY);
         float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(grassShadow, shadow);
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 
         if(drawGrass) {
             rc.useArrayBatch();
-
-            if(rc.expoCamera.camera.zoom > 0.5f) {
-                rc.arraySpriteBatch.drawGradient(grassShadow, drawWidth, drawHeight, shadow);
-            } else {
-                if(rc.arraySpriteBatch.getShader() != rc.foliageWindShader) rc.arraySpriteBatch.setShader(rc.foliageWindShader);
-
-                rc.foliageWindShader.setUniformf("u_speed", shaderSpeed);
-                rc.foliageWindShader.setUniformf("u_strength", shaderStrength);
-                rc.foliageWindShader.setUniformf("u_offset", shaderOffset);
-                rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, drawWidth, drawHeight, shadow, verticesMovement, verticesMovement);
-                rc.arraySpriteBatch.flush();
-            }
+            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+            rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight(), shadow, wind + verticesMovement, wind + verticesMovement);
         }
     }
 
