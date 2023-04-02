@@ -24,6 +24,7 @@ import dev.michey.expo.render.arraybatch.ArrayTextureSpriteBatch;
 import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.render.light.ExpoLightEngine;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.InputUtils;
 
@@ -333,6 +334,18 @@ public class RenderContext {
                 && vertices[2] > drawStartX
                 && vertices[1] < drawEndY
                 && vertices[3] > drawStartY;
+    }
+
+    public boolean entityVerticesIntersecting(float[] vertices1, float[] vertices2) {
+        float drawEndX = vertices2[2];
+        float drawStartX = vertices2[0];
+        float drawEndY = vertices2[3];
+        float drawStartY = vertices2[1];
+
+        return vertices1[0] < drawEndX
+                && vertices1[2] > drawStartX
+                && vertices1[1] < drawEndY
+                && vertices1[3] > drawStartY;
     }
 
     public boolean inDrawBounds(ClientChunk chunk) {

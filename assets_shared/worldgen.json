@@ -62,14 +62,14 @@
                             "type": "OAK_TREE",
                             "static": true,
                             "chance": 0.2,
-                            "pds": 48,
+                            "pds": 32,
                             "spreadData": {
                                 "spread": [1, 5],
                                 "spreadChance": 0.025,
                                 "spreadDis": [16.0, 20.0],
                                 "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
                                 "spreadStatic": true,
-                                "spreadOffsets": [34.0, 9.0]
+                                "spreadOffsets": [4.5, 2.5]
                             }
                         },
                         {

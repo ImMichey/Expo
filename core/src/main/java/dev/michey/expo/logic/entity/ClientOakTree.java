@@ -33,6 +33,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private float wind;
     private boolean calculatedWindThisTick = false;
 
+    private float playerBehindDelta = 1.0f;
+
     @Override
     public void onCreation() {
         trunk = tr("entity_large_tree_trunk");
@@ -65,6 +67,31 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     public void tick(float delta) {
         syncPositionWithServer();
         calculatedWindThisTick = false;
+
+        ClientPlayer local = ClientPlayer.getLocalPlayer();
+        boolean playerBehind;
+
+        if(local != null) {
+            playerBehind = RenderContext.get().entityVerticesIntersecting(new float[] {
+                local.clientPosX, local.clientPosY,
+                local.clientPosX + local.drawWidth, local.clientPosY + local.drawHeight
+            }, new float[] {
+                    clientPosX - 23 + wind, clientPosY + 50 + leavesDisplacement,
+                    clientPosX - 23 + 57 + wind, clientPosY + 50 + leavesDisplacement + 76
+            });
+        } else {
+            playerBehind = false;
+        }
+
+        if(playerBehind && playerBehindDelta > 0.5f) {
+            playerBehindDelta -= delta;
+            if(playerBehindDelta < 0.5f) playerBehindDelta = 0.5f;
+        }
+
+        if(!playerBehind && playerBehindDelta < 1.0f) {
+            playerBehindDelta += delta;
+            if(playerBehindDelta > 1.0f) playerBehindDelta = 1.0f;
+        }
     }
 
     @Override
@@ -79,7 +106,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         rc.arraySpriteBatch.begin();
 
         rc.arraySpriteBatch.draw(trunkProximityShadow, clientPosX, clientPosY);
-        rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, 1.0f);
+        rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, playerBehindDelta);
         float wind = ShadowUtils.getWind(u_maxStrength, u_minStrength, rc.deltaTotal * u_speed + u_offset, u_interval, u_detail);
         rc.arraySpriteBatch.drawCustomVertices(leaves, clientPosX - 23, clientPosY + 50 + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), wind, wind);
         rc.arraySpriteBatch.setColor(Color.WHITE);
@@ -96,14 +123,14 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
         if(visibleToRenderEngine) {
             calculateWindOnDemand(rc.deltaTotal);
-            updateDepth(6);
+            updateDepth(2);
             rc.useArrayBatch();
 
             if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
 
             rc.arraySpriteBatch.draw(trunk, clientPosX + 1, clientPosY + 2);
             rc.arraySpriteBatch.draw(trunkProximityShadow, clientPosX, clientPosY);
-            rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, 1.0f);
+            rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, playerBehindDelta);
             rc.arraySpriteBatch.drawCustomVertices(leaves, clientPosX - 23, clientPosY + 50 + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), wind, wind);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
