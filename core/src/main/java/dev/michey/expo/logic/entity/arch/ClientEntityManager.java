@@ -204,8 +204,8 @@ public class ClientEntityManager {
 
         pulseProgress = Interpolation.smooth2.apply(pDelta);
 
-        if (rc.batch.isDrawing()) rc.batch.end();
-        if (rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
+        if(rc.batch.isDrawing()) rc.batch.end();
+        if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
     }
 
     public void renderEntities(float delta) {
@@ -216,6 +216,7 @@ public class ClientEntityManager {
         rc.batch.begin();
 
         rc.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE);
+        rc.arraySpriteBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE);
 
         for(ClientEntity entity : depthEntityList) {
             if(entity.selected) {
@@ -233,8 +234,6 @@ public class ClientEntityManager {
         if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
         rc.batch.setShader(null);
         rc.arraySpriteBatch.setShader(null);
-
-        rc.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     public void renderEntityShadows(float delta) {

@@ -17,7 +17,6 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private Texture leaves;
     private TextureRegion trunkShadowMask;
     private TextureRegion leavesShadowMask;
-    private TextureRegion trunkProximityShadow;
     private float[] interactionPointArray;
 
     private final float leavesDisplacement = MathUtils.random(-20, 13);
@@ -42,7 +41,6 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
         trunkShadowMask = tr("entity_large_tree_trunk_shadow_mask");
         leavesShadowMask = tr("entity_large_tree_leaves_shadow_mask");
-        trunkProximityShadow = tr("entity_large_tree_proximity_shadow");
 
         updateTexture(-23, 0, 57, 126 + leavesDisplacement);
         interactionPointArray = new float[] {
@@ -105,8 +103,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
         rc.arraySpriteBatch.begin();
 
-        rc.arraySpriteBatch.draw(trunkProximityShadow, clientPosX, clientPosY);
-        rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, 1.0f);
+        rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
         float wind = ShadowUtils.getWind(u_maxStrength, u_minStrength, rc.deltaTotal * u_speed + u_offset, u_interval, u_detail);
         rc.arraySpriteBatch.drawCustomVertices(leaves, clientPosX - 23, clientPosY + 50 + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), wind, wind);
         rc.arraySpriteBatch.setColor(Color.WHITE);
@@ -129,8 +126,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
             if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
 
             rc.arraySpriteBatch.draw(trunk, clientPosX + 1, clientPosY + 2);
-            rc.arraySpriteBatch.draw(trunkProximityShadow, clientPosX, clientPosY);
-            rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, 1.0f);
+            rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
             rc.arraySpriteBatch.drawCustomVertices(leaves, clientPosX - 23, clientPosY + 50 + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), wind, wind);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }

@@ -52,12 +52,6 @@ public class ExpoClientPacketReader {
     }
 
     private void handlePacket(Packet o, boolean local) {
-        if(o instanceof P13_EntityMove || o instanceof P15_PingList) {
-
-        } else {
-            log(o.toString());
-        }
-
         if(o instanceof P1_Auth_Rsp p) {
             log("Received authorization packet: " + p.authorized + " (" + p.message + ") server tps: " + p.serverTps);
 

@@ -14,9 +14,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ServerDimensionEntityManager {
 
     /** Storage maps */
-    private HashMap<Integer, ServerEntity> idEntityMap;
-    private HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
-    private ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
+    private final HashMap<Integer, ServerEntity> idEntityMap;
+    private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
+    private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
 
     public ServerDimensionEntityManager() {
         idEntityMap = new HashMap<>();
