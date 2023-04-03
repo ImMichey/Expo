@@ -1,5 +1,6 @@
 package dev.michey.expo.console.command;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.util.ClientStatic;
@@ -31,7 +32,12 @@ public class CommandUsername extends AbstractConsoleCommand {
                 return;
             }
 
-            ClientStatic.PLAYER_USERNAME = username;
+            if(username.equals("<random>")) {
+                ClientStatic.PLAYER_USERNAME = "debug-" + MathUtils.random(0, 10000);
+            } else {
+                ClientStatic.PLAYER_USERNAME = username;
+            }
+
             success("Set client username to [CYAN]" + username);
         } else {
             error("You are already ingame.");

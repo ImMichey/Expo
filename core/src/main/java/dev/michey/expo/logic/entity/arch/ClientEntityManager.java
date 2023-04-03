@@ -320,11 +320,11 @@ public class ClientEntityManager {
     private final Comparator<ClientEntity> depthSorter = ((o1, o2) -> {
         if(o1.depth > o2.depth) {
             return -1;
-        } else if(o1.depth == o2.depth) {
-            return 0;
+        } else if(o1.depth < o2.depth) {
+            return 1;
         }
 
-        return 1;
+        return 0;
     });
 
     public int entityCount() {

@@ -65,21 +65,31 @@ public class PacketReceiver {
 
     public static PacketReceiver whoCanSee(ServerEntity entity) {
         if(ExpoServerBase.get().isLocalServer()) {
-            return local();
-        }
-
-        List<Connection> list = new LinkedList<>();
-        List<ServerEntity> playerList = entity.getDimension().getEntityManager().getEntitiesOf(ServerEntityType.PLAYER);
-
-        for(ServerEntity se : playerList) {
-            ServerPlayer player = (ServerPlayer) se;
+            ServerPlayer player = ServerPlayer.getLocalPlayer();
 
             if(entity.entityId == player.entityId || player.entityVisibilityController.isAlreadyVisible(entity.entityId)) {
-                list.add(player.playerConnection.getKryoConnection());
+                return local();
+            } else {
+                return null;
+            }
+        } else {
+            List<Connection> list = new LinkedList<>();
+            List<ServerEntity> playerList = entity.getDimension().getEntityManager().getEntitiesOf(ServerEntityType.PLAYER);
+
+            for(ServerEntity se : playerList) {
+                ServerPlayer player = (ServerPlayer) se;
+
+                if(entity.entityId == player.entityId || player.entityVisibilityController.isAlreadyVisible(entity.entityId)) {
+                    list.add(player.playerConnection.getKryoConnection());
+                }
+            }
+
+            if(list.size() > 0) {
+                return new PacketReceiver(false, null, null, list);
+            } else {
+                return null;
             }
         }
-
-        return new PacketReceiver(false, null, null, list);
     }
 
 }

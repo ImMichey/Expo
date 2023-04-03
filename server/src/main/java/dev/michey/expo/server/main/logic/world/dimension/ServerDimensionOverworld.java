@@ -21,7 +21,7 @@ public class ServerDimensionOverworld extends ServerDimension {
             ServerDummy dummy = new ServerDummy();
             dummy.posX = baseX;
             dummy.posY = baseY;
-            ServerWorld.get().registerServerEntity(dimensionName, dummy);
+            // ServerWorld.get().registerServerEntity(dimensionName, dummy);
         }
     }
 

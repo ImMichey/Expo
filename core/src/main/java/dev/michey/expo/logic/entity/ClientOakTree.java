@@ -25,8 +25,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
     private final float u_speed = MathUtils.random(0.5f, 1.2f);
     private final float u_offset = MathUtils.random(100f);
-    private final float u_minStrength = MathUtils.random(0.05f, 0.08f);
-    private final float u_maxStrength = MathUtils.random(0.08f, 0.11f);
+    private final float u_minStrength = MathUtils.random(0.04f, 0.07f);
+    private final float u_maxStrength = MathUtils.random(0.08f, 0.09f);
     private final float u_interval = MathUtils.random(2.0f, 5.0f);
     private final float u_detail = MathUtils.random(0.5f, 1.5f);
 
@@ -106,7 +106,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         rc.arraySpriteBatch.begin();
 
         rc.arraySpriteBatch.draw(trunkProximityShadow, clientPosX, clientPosY);
-        rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, playerBehindDelta);
+        rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, 1.0f);
         float wind = ShadowUtils.getWind(u_maxStrength, u_minStrength, rc.deltaTotal * u_speed + u_offset, u_interval, u_detail);
         rc.arraySpriteBatch.drawCustomVertices(leaves, clientPosX - 23, clientPosY + 50 + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), wind, wind);
         rc.arraySpriteBatch.setColor(Color.WHITE);
@@ -130,7 +130,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
             rc.arraySpriteBatch.draw(trunk, clientPosX + 1, clientPosY + 2);
             rc.arraySpriteBatch.draw(trunkProximityShadow, clientPosX, clientPosY);
-            rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, playerBehindDelta);
+            rc.arraySpriteBatch.setColor(1.0f - colorMix, 1.0f, 1.0f - colorMix, 1.0f);
             rc.arraySpriteBatch.drawCustomVertices(leaves, clientPosX - 23, clientPosY + 50 + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), wind, wind);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }

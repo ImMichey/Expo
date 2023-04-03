@@ -52,6 +52,12 @@ public class ExpoClientPacketReader {
     }
 
     private void handlePacket(Packet o, boolean local) {
+        if(o instanceof P13_EntityMove || o instanceof P15_PingList) {
+
+        } else {
+            log(o.toString());
+        }
+
         if(o instanceof P1_Auth_Rsp p) {
             log("Received authorization packet: " + p.authorized + " (" + p.message + ") server tps: " + p.serverTps);
 
@@ -130,7 +136,9 @@ public class ExpoClientPacketReader {
             }
         } else if(o instanceof P13_EntityMove p) {
             ClientEntity entity = entityFromId(p.entityId);
-            if(entity != null) entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir);
+            if(entity != null) {
+                entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir);
+            }
         } else if(o instanceof P14_WorldUpdate p) {
             log("Received WORLD UPDATE " + p.worldTime + " " + p.worldWeather + " " + p.weatherStrength);
 

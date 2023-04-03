@@ -129,7 +129,6 @@ public class ExpoServerPacketReader {
                     ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.connection(connection));
                     ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.connection(connection));
                     ServerPackets.p19PlayerInventoryUpdate(sp, PacketReceiver.player(sp));
-                    //sp.switchToSlot(0);
                 });
             }
         } else if(o instanceof P5_PlayerVelocity p) {

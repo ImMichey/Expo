@@ -80,6 +80,10 @@ public class EntityVisibilityController {
         }
     }
 
+    public void removeTrackedPlayer(int entityId) {
+        visibleEntities.remove(entityId);
+    }
+
     public boolean canSee(ServerEntity entity) {
         int range = PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
         int minChunkX = player.chunkX - range;

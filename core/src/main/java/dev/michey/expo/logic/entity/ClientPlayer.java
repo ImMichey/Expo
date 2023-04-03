@@ -248,7 +248,10 @@ public class ClientPlayer extends ClientEntity {
             }
 
             // Client-sided inventory check
-            if(IngameInput.get().keyJustPressed(Input.Keys.E)) {
+            if(IngameInput.get().keyJustPressed(Input.Keys.ESCAPE) && inventoryOpen) {
+                inventoryOpen = false;
+                AudioEngine.get().playSoundGroup("inv_open");
+            } else if(IngameInput.get().keyJustPressed(Input.Keys.E)) {
                 inventoryOpen = !inventoryOpen;
                 AudioEngine.get().playSoundGroup("inv_open");
             }

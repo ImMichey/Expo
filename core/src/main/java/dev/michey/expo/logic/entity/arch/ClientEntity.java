@@ -206,6 +206,7 @@ public abstract class ClientEntity {
         int relativeTileX = clientTileX - startTileX;
         int relativeTileY = clientTileY - startTileY;
         int mouseTileArray = relativeTileY * 8 + relativeTileX;
+        if(mouseTileArray >= 64) mouseTileArray = 63;
 
         return c.biomes[mouseTileArray];
     }
