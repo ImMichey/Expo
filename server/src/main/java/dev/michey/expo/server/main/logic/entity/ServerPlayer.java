@@ -106,7 +106,7 @@ public class ServerPlayer extends ServerEntity {
             float toMoveX = xDir * playerSpeed * waterFactor * normalizer;
             float toMoveY = yDir * playerSpeed * waterFactor * normalizer;
 
-            var result = physicsBody.move(toMoveX, toMoveY);
+            var result = physicsBody.move(toMoveX, toMoveY, BoundingBox.playerCollisionFilter);
 
             posX = result.goalX - physicsBody.xOffset;
             posY = result.goalY - physicsBody.yOffset;
