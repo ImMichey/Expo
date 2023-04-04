@@ -10,9 +10,11 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.logic.entity.ClientItem;
 import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.ServerPackets;
@@ -301,6 +303,24 @@ public class ClientEntityManager {
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
+        return e;
+    }
+
+    public ClientEntity createFromPacketAdvanced(P29_EntityCreateAdvanced p) {
+        ClientEntity e = ClientEntityType.typeToClientEntity(p.entityType.ENTITY_ID);
+        e.entityId = p.entityId;
+        e.serverPosX = p.serverPosX;
+        e.serverPosY = p.serverPosY;
+        e.clientPosX = p.serverPosX;
+        e.clientPosY = p.serverPosY;
+
+        if(p.entityType == ServerEntityType.ITEM) {
+            int itemId = (int) p.payload[0];
+            int itemAmount = (int) p.payload[1];
+            ((ClientItem) e).itemId = itemId;
+            ((ClientItem) e).itemAmount = itemAmount;
+        }
+
         return e;
     }
 

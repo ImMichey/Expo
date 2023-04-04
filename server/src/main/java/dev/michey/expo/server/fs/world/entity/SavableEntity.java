@@ -64,6 +64,11 @@ public class SavableEntity {
         return this;
     }
 
+    public SavableEntity add(String key, Object value) {
+        packaged.put(key, value);
+        return this;
+    }
+
     public static ServerEntity entityFromSavable(JSONObject object, ServerChunk chunk) {
         ServerEntity entity = ServerEntityType.typeToEntity(object.getInt("type"));
         entity.posX = object.getFloat("x");

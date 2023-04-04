@@ -323,39 +323,37 @@ public class ClientWorld {
         {
             // Draw tiles to main FBO.
             r.mainFbo.begin();
-            transparentScreen();
-            updateChunksToDraw();
-            renderChunkTiles();
+                transparentScreen();
+                updateChunksToDraw();
+                renderChunkTiles();
             r.mainFbo.end();
         }
 
         {
             // Draw shadows to shadow FBO.
             r.shadowFbo.begin();
-            transparentScreen();
-            clientEntityManager.renderEntityShadows(r.delta);
-            screencap("shadows");
+                transparentScreen();
+                clientEntityManager.renderEntityShadows(r.delta);
             r.shadowFbo.end();
         }
 
         {
             // Draw entities to entity FBO.
             r.entityFbo.begin();
-            transparentScreen();
-            clientEntityManager.renderEntities(r.delta);
-            screencap("entities");
+                transparentScreen();
+                clientEntityManager.renderEntities(r.delta);
             r.entityFbo.end();
         }
 
         {
             // Draw shadow FBO to main FBO.
             r.mainFbo.begin();
-            r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
-            drawFboTexture(r.shadowFbo, null);
-            r.batch.setColor(Color.WHITE);
-            r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
-            drawFboTexture(r.entityFbo, null);
-            r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
+                r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
+                drawFboTexture(r.shadowFbo, null);
+                r.batch.setColor(Color.WHITE);
+                r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                drawFboTexture(r.entityFbo, null);
+                r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
             r.mainFbo.end();
         }
 

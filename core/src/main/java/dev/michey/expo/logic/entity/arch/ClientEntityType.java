@@ -13,6 +13,7 @@ public enum ClientEntityType {
     MUSHROOM_RED(4, "MushroomRed", ServerEntityType.MUSHROOM_RED),
     MUSHROOM_BROWN(5, "MushroomBrown", ServerEntityType.MUSHROOM_BROWN),
     BUSH(6, "Bush", ServerEntityType.BUSH),
+    ITEM(7, "Item", ServerEntityType.ITEM),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -41,6 +42,7 @@ public enum ClientEntityType {
             case 4 -> new ClientMushroomRed();
             case 5 -> new ClientMushroomBrown();
             case 6 -> new ClientBush();
+            case 7 -> new ClientItem();
             default -> null;
         };
     }

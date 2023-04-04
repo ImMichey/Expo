@@ -260,6 +260,22 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P29_EntityCreateAdvanced packet via TCP protocol. */
+    public static void p29EntityCreateAdvanced(ServerEntityType entityType, int entityId, String dimensionName, float serverPosX, float serverPosY, Object[] payload, PacketReceiver receiver) {
+        P29_EntityCreateAdvanced p = new P29_EntityCreateAdvanced();
+        p.entityType = entityType;
+        p.entityId = entityId;
+        p.dimensionName = dimensionName;
+        p.serverPosX = serverPosX;
+        p.serverPosY = serverPosY;
+        p.payload = payload;
+        tcp(p, receiver);
+    }
+
+    public static void p29EntityCreateAdvanced(ServerEntity entity, Object[] payload, PacketReceiver receiver) {
+        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, payload, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

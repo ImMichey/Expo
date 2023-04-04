@@ -72,7 +72,8 @@ public class ExpoServerRegistry {
                 P25_ChatMessage.class,
                 P26_EntityDamage.class,
                 P27_PlayerEntitySelection.class,
-                P28_PlayerFoodParticle.class
+                P28_PlayerFoodParticle.class,
+                P29_EntityCreateAdvanced.class
         );
     }
 

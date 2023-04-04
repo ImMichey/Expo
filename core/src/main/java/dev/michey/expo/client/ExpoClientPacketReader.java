@@ -229,6 +229,9 @@ public class ExpoClientPacketReader {
 
                 AudioEngine.get().playSoundGroupManaged("eat", new Vector2(player.toMouthX(), player.toMouthY()), CHUNK_SIZE, false);
             }
+        } else if(o instanceof P29_EntityCreateAdvanced p) {
+            ClientEntity entity = ClientEntityManager.get().createFromPacketAdvanced(p);
+            ClientEntityManager.get().addEntity(entity);
         }
     }
 

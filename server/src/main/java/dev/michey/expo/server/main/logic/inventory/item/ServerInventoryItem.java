@@ -15,6 +15,15 @@ public class ServerInventoryItem {
         return itemId == -1;
     }
 
+    public ServerInventoryItem() {
+
+    }
+
+    public ServerInventoryItem(int itemId, int itemAmount) {
+        this.itemId = itemId;
+        this.itemAmount = itemAmount;
+    }
+
     public ServerInventoryItem clone(ServerInventoryItem from) {
         return clone(from, -1);
     }

@@ -1,8 +1,10 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import dev.michey.expo.server.main.logic.entity.ServerItem;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -36,7 +38,12 @@ public class EntityVisibilityController {
                     ServerPlayer player = (ServerPlayer) entity;
                     ServerPackets.p9PlayerCreate(player, false, PacketReceiver.player(this.player));
                 } else {
-                    ServerPackets.p2EntityCreate(entity, PacketReceiver.player(player));
+                    if(entity.getEntityType() == ServerEntityType.ITEM) {
+                        ServerInventoryItem item = ((ServerItem) entity).itemContainer;
+                        ServerPackets.p29EntityCreateAdvanced(entity, new Object[] {item.itemId, item.itemAmount}, PacketReceiver.player(player));
+                    } else {
+                        ServerPackets.p2EntityCreate(entity, PacketReceiver.player(player));
+                    }
                 }
             }
         } else {

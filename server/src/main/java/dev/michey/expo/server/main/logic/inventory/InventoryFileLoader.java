@@ -54,7 +54,7 @@ public class InventoryFileLoader {
         metadata.durability = object.getInt("durability");
     }
 
-    private static JSONObject itemToStorageObject(ServerInventoryItem item) {
+    public static JSONObject itemToStorageObject(ServerInventoryItem item) {
         JSONObject object = new JSONObject();
 
         object.put("id", item.itemId);
