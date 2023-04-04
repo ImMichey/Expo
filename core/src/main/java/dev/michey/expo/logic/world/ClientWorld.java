@@ -334,6 +334,7 @@ public class ClientWorld {
             r.shadowFbo.begin();
             transparentScreen();
             clientEntityManager.renderEntityShadows(r.delta);
+            screencap("shadows");
             r.shadowFbo.end();
         }
 
@@ -354,7 +355,7 @@ public class ClientWorld {
             r.batch.setColor(Color.WHITE);
             r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
             drawFboTexture(r.entityFbo, null);
-            r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
             r.mainFbo.end();
         }
 

@@ -73,14 +73,14 @@ public class ClientRaindrop extends ClientEntity {
                 if(visibleToRenderEngine) {
                     TextureRegion anim = splashAnimation.getKeyFrame(animationDelta, false);
 
-                    rc.useRegularBatch();
+                    rc.useArrayBatch();
 
                     if(animationAlpha < 1.0f) {
-                        rc.batch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
-                        rc.batch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
-                        rc.batch.setColor(Color.WHITE);
+                        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
+                        rc.arraySpriteBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                        rc.arraySpriteBatch.setColor(Color.WHITE);
                     } else {
-                        rc.batch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                        rc.arraySpriteBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
                     }
                 }
 
@@ -91,8 +91,8 @@ public class ClientRaindrop extends ClientEntity {
             }
         } else {
             if(visibleToRenderEngine) {
-                rc.useRegularBatch();
-                raindropSprite.draw(rc.batch);
+                rc.useArrayBatch();
+                raindropSprite.draw(rc.arraySpriteBatch);
             }
         }
     }

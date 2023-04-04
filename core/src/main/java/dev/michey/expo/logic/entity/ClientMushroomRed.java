@@ -20,13 +20,11 @@ import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 public class ClientMushroomRed extends ClientEntity implements SelectableEntity {
 
     private TextureRegion texture;
-    private TextureRegion textureProximityShadow;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
         texture = ExpoAssets.get().textureRegion("mushroom_red");
-        textureProximityShadow = ExpoAssets.get().textureRegion("mushroom_proximity_shadow");
         updateTexture(0, 0, texture.getRegionWidth(), texture.getRegionHeight() + 1);
         interactionPointArray = generateInteractionArray();
     }
@@ -83,7 +81,6 @@ public class ClientMushroomRed extends ClientEntity implements SelectableEntity 
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
         rc.arraySpriteBatch.begin();
-        rc.arraySpriteBatch.draw(textureProximityShadow, clientPosX, clientPosY);
     }
 
     @Override
@@ -95,7 +92,6 @@ public class ClientMushroomRed extends ClientEntity implements SelectableEntity 
             rc.useArrayBatch();
             if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
             rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY + 1);
-            rc.arraySpriteBatch.draw(textureProximityShadow, clientPosX, clientPosY);
         }
     }
 
