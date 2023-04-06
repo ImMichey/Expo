@@ -19,9 +19,18 @@ public class ServerItem extends ServerEntity {
     public float originX, originY;
     public float dstDelta;
     public float pickupImmunity = 1.0f;
+    public float lifetime;
 
     @Override
     public void tick(float delta) {
+        lifetime += delta;
+
+        if(lifetime >= 300f) {
+            // 5 minutes
+            killEntityWithPacket();
+            return;
+        }
+
         float MAX_DELTA = 0.5f;
 
         if(dstDelta != MAX_DELTA && dstX != 0) {
@@ -91,7 +100,7 @@ public class ServerItem extends ServerEntity {
 
     @Override
     public SavableEntity onSave() {
-        return new SavableEntity(this).pack().add("item", InventoryFileLoader.itemToStorageObject(itemContainer));
+        return new SavableEntity(this).pack().add("lifetime", lifetime).add("item", InventoryFileLoader.itemToStorageObject(itemContainer));
     }
 
 }

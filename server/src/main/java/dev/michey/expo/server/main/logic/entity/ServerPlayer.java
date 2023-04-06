@@ -219,8 +219,9 @@ public class ServerPlayer extends ServerEntity {
     }
 
     public void applyArmDirection(float rotation) {
+        serverArmRotation = rotation;
+
         if(getCurrentItem() != -1) {
-            serverArmRotation = rotation;
             ServerPackets.p22PlayerArmDirection(entityId, serverArmRotation, PacketReceiver.whoCanSee(this));
         }
     }
@@ -315,6 +316,14 @@ public class ServerPlayer extends ServerEntity {
                 ServerPackets.p11ChunkData(pair.value.chunkX, pair.value.chunkY, pair.value.biomes, pair.value.layer0, pair.value.layer1, pair.value.layer2, PacketReceiver.player(this));
             }
         }
+    }
+
+    public float toFeetCenterX() {
+        return posX + 5.0f;
+    }
+
+    public float toFeetCenterY() {
+        return posY;
     }
 
     @Override

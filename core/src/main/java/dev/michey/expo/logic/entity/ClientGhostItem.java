@@ -2,7 +2,6 @@ package dev.michey.expo.logic.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -31,7 +30,7 @@ public class ClientGhostItem extends ClientEntity {
     @Override
     public void tick(float delta) {
         useAlpha -= delta * 2;
-        floatingPosAnimation = Interpolation.pow3Out.apply(1.0f - useAlpha) * 10;
+        floatingPosAnimation += delta * 30;
 
         if(useAlpha <= 0) {
             entityManager().removeEntity(this);

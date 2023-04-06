@@ -46,7 +46,7 @@ public class ExpoShared {
     public static final float PLAYER_DEFAULT_RANGE = 20.0f;
     public static final float PLAYER_DEFAULT_ATTACK_SPEED = 0.4f;
     public static final float PLAYER_DEFAULT_ATTACK_DAMAGE = 10.0f;
-    public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 32f / 128f;
+    public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / 60f;
 
     /** Global random */
     public static final Random RANDOM = new Random();

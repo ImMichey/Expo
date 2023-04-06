@@ -314,7 +314,7 @@ public class ClientPlayer extends ClientEntity {
             float currentRotation = RenderContext.get().mouseRotation;
             float timeSinceLastSend = RenderContext.get().deltaTotal - lastPunchAngleTimestamp;
 
-            if(holdingItemId != -1 && timeSinceLastSend >= PLAYER_ARM_MOVEMENT_SEND_RATE && (currentRotation != lastPunchAngleOnSend)) {
+            if(/*holdingItemId != -1 && */timeSinceLastSend >= PLAYER_ARM_MOVEMENT_SEND_RATE && (currentRotation != lastPunchAngleOnSend)) {
                 lastPunchAngleTimestamp = RenderContext.get().deltaTotal;
                 lastPunchAngleOnSend = currentRotation;
                 ClientPackets.p22PlayerArmDirection(currentRotation);

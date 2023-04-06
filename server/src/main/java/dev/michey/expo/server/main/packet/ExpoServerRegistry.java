@@ -25,6 +25,7 @@ public class ExpoServerRegistry {
                 boolean[].class,
                 float[].class,
                 String[].class,
+                Object[].class,
                 HashMap.class,
                 LinkedList.class,
 

@@ -1,7 +1,9 @@
 package dev.michey.expo.server.main.logic.inventory;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Server;
+import dev.michey.expo.server.main.logic.entity.ServerItem;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
@@ -9,6 +11,8 @@ import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
@@ -167,6 +171,22 @@ public class ServerPlayerInventory extends ServerInventory {
         return result;
     }
 
+    private ServerItem spawnServerItem(ServerInventoryItem container) {
+        // Spawn item entity
+        ServerItem item = new ServerItem();
+        item.itemContainer = container;
+
+        item.posX = getOwner().toFeetCenterX();
+        item.posY = getOwner().toFeetCenterY();
+
+        Vector2 dst = GenerationUtils.circular(getOwner().serverArmRotation + 270, 24.0f);
+        item.dstX = dst.x;
+        item.dstY = dst.y;
+
+        ServerWorld.get().registerServerEntity(getOwner().entityDimension, item);
+        return item;
+    }
+
     public InventoryChangeResult performPlayerAction(int actionType, int slotId) {
         InventoryChangeResult result = new InventoryChangeResult();
         int[] oldIds = getOwner().getEquippedItemIds();
@@ -175,8 +195,19 @@ public class ServerPlayerInventory extends ServerInventory {
             // Clicked into nothing/void.
             if(playerCursorItem != null) {
                 // Something on cursor, throw out.
-                result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null); // Set cursor as null on client
-                playerCursorItem = null;
+                boolean full = actionType == ExpoShared.PLAYER_INVENTORY_ACTION_LEFT || (actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT && playerCursorItem.itemAmount == 1);
+
+                if(full) {
+                    result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null); // Set cursor as null on client
+                    spawnServerItem(playerCursorItem);
+                    playerCursorItem = null;
+                } else {
+                    playerCursorItem.itemAmount -= 1;
+                    ServerInventoryItem cloned = new ServerInventoryItem();
+                    cloned.clone(playerCursorItem, 1);
+                    spawnServerItem(cloned);
+                    result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                }
             } else {
                 // Cursor is null and right-clicked, check if you can interact with item
                 if(oldIds[0] != -1 && actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT) {

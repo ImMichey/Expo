@@ -5,8 +5,6 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class PlayerInventory extends ClientInventory {
 
     public static PlayerInventory LOCAL_INVENTORY;

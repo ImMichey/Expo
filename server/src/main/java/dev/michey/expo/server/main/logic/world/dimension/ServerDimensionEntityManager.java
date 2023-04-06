@@ -117,7 +117,7 @@ public class ServerDimensionEntityManager {
         ServerPlayer player = null;
 
         for(ServerPlayer players : getAllPlayers()) {
-            float dst = Vector2.dst(players.posX + 5f, players.posY, to.posX, to.posY);
+            float dst = Vector2.dst(players.toFeetCenterX(), players.toFeetCenterY(), to.posX, to.posY);
 
             if(dst <= maxDistance) {
                 if(player == null || dis > dst) {

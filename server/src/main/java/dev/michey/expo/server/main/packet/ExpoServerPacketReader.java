@@ -69,6 +69,11 @@ public class ExpoServerPacketReader {
         } else if(packet instanceof P27_PlayerEntitySelection p) {
             ServerPlayer sp = ServerPlayer.getLocalPlayer();
             sp.selectedEntity = p.entityId;
+        } else if(packet instanceof P22_PlayerArmDirection p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            sp.serverArmRotation = p.rotation;
         }
     }
 

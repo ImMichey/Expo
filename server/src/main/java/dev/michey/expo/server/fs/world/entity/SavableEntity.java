@@ -96,6 +96,7 @@ public class SavableEntity {
             ServerInventoryItem item = new ServerInventoryItem();
             InventoryFileLoader.loadItemFromStorage(item, object.getJSONObject("item"));
             itemEntity.itemContainer = item;
+            itemEntity.lifetime = object.getFloat("lifetime");
         }
 
         return entity;
