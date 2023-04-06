@@ -71,3 +71,9 @@ inv_open_1.wav
 
 #click;true;1.0-1.1;SFX;0.6
 click_1.wav
+
+#player_death;true;0.9-1.1;SFX;1.0
+player_death_1.wav
+
+#pop;true;0.9-1.1;SFX;1.0
+pickup.wav

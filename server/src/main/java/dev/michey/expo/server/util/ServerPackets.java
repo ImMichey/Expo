@@ -276,6 +276,14 @@ public class ServerPackets {
         p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, payload, receiver);
     }
 
+    /** Sends the P30_EntityDataUpdate packet via UDP protocol. */
+    public static void p30EntityDataUpdate(int entityId, Object[] payload, PacketReceiver receiver) {
+        P30_EntityDataUpdate p = new P30_EntityDataUpdate();
+        p.entityId = entityId;
+        p.payload = payload;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

@@ -1,7 +1,10 @@
 package dev.michey.expo.server.fs.world.entity;
 
+import dev.michey.expo.server.main.logic.entity.ServerItem;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
+import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import org.json.JSONObject;
 
@@ -86,6 +89,13 @@ public class SavableEntity {
 
         if(object.has("hp")) {
             entity.health = object.getFloat("hp");
+        }
+
+        if(object.has("item")) {
+            ServerItem itemEntity = (ServerItem) entity;
+            ServerInventoryItem item = new ServerInventoryItem();
+            InventoryFileLoader.loadItemFromStorage(item, object.getJSONObject("item"));
+            itemEntity.itemContainer = item;
         }
 
         return entity;

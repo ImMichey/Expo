@@ -36,7 +36,7 @@ public class InventoryFileLoader {
         return array;
     }
 
-    private static void loadItemFromStorage(ServerInventoryItem item, JSONObject object) {
+    public static void loadItemFromStorage(ServerInventoryItem item, JSONObject object) {
         item.itemId = object.getInt("id");
 
         if(object.has("am")) {

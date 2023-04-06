@@ -21,6 +21,7 @@ import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ClientGrass extends ClientEntity implements SelectableEntity {
 
@@ -94,7 +95,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth) {
-        AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+        AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
         contactDelta = STEPS * 0.5f;
         contactDir = 1;
 
@@ -124,7 +125,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     @Override
     public void onDeletion() {
         if(removalReason == EntityRemovalReason.DEATH) {
-            AudioEngine.get().playSoundGroupManaged("harvest", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+            AudioEngine.get().playSoundGroupManaged("harvest", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
         }
     }
 
@@ -143,7 +144,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
                     if(xDst < 6.0f && yDst < 5.0f) {
                         // Contact.
-                        AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+                        AudioEngine.get().playSoundGroupManaged("leaves_rustle", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
                         contactDelta = STEPS * 0.5f;
                         contactDir = entity.serverDirX == 0 ? (entity.drawRootX < drawRootX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
                     }

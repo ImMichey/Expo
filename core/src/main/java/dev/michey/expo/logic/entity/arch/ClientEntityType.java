@@ -20,6 +20,7 @@ public enum ClientEntityType {
     RAINDROP(-2, "Raindrop", null),
     PARTICLE_HIT(-3, "ParticleHit", null),
     PARTICLE_FOOD(-4, "ParticleFood", null),
+    GHOST_ITEM(-5, "GhostItem", null),
 
     ;
 
@@ -43,6 +44,7 @@ public enum ClientEntityType {
             case 5 -> new ClientMushroomBrown();
             case 6 -> new ClientBush();
             case 7 -> new ClientItem();
+            case 8 -> new ClientGhostItem();
             default -> null;
         };
     }

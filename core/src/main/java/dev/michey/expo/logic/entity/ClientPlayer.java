@@ -350,7 +350,7 @@ public class ClientPlayer extends ClientEntity {
                 if(player) {
                     AudioEngine.get().playSoundGroup("punch");
                 } else {
-                    AudioEngine.get().playSoundGroupManaged("punch", new Vector2(drawRootX, drawRootY), PLAYER_CHUNK_VIEW_RANGE_ONE_DIR * CHUNK_SIZE, false);
+                    AudioEngine.get().playSoundGroupManaged("punch", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
                 }
             } else {
                 if(lastPunchValue > interpolationValue) {
@@ -381,7 +381,7 @@ public class ClientPlayer extends ClientEntity {
                     // Don't need dynamic volume + panning
                     AudioEngine.get().playSoundGroup(group);
                 } else {
-                    AudioEngine.get().playSoundGroupManaged(group, new Vector2(drawRootX, drawRootY), PLAYER_CHUNK_VIEW_RANGE_ONE_DIR * CHUNK_SIZE, false);
+                    AudioEngine.get().playSoundGroupManaged(group, new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
                 }
             }
         }

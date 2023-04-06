@@ -182,6 +182,31 @@
                 "durability": 100,
                 "toolType": "HELMET"
             }
+        },
+        {
+            "identifier": "item_grassfiber",
+            "id": 7,
+            "displayName": "Grass Fiber",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_grassfiber"
+                },
+                "held": {
+                    "texture": "item_grassfiber",
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": 1.0,
+                    "offsetY": 3.5,
+                    "rotations": [0.0, -90.0]
+                }
+            },
+            "logic": {
+                "stackSize": 64,
+                "durability": -1,
+                "toolType": "ITEM",
+                "range": 15
+            }
         }
     ]
 }

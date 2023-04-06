@@ -31,8 +31,7 @@ import dev.michey.expo.util.PacketUtils;
 import java.util.Arrays;
 
 import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
-import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public class ExpoClientPacketReader {
 
@@ -227,11 +226,17 @@ public class ExpoClientPacketReader {
                     ClientEntityManager.get().addClientSideEntity(cpf);
                 }
 
-                AudioEngine.get().playSoundGroupManaged("eat", new Vector2(player.toMouthX(), player.toMouthY()), CHUNK_SIZE, false);
+                AudioEngine.get().playSoundGroupManaged("eat", new Vector2(player.toMouthX(), player.toMouthY()), PLAYER_AUDIO_RANGE, false);
             }
         } else if(o instanceof P29_EntityCreateAdvanced p) {
             ClientEntity entity = ClientEntityManager.get().createFromPacketAdvanced(p);
             ClientEntityManager.get().addEntity(entity);
+        } else if(o instanceof P30_EntityDataUpdate p) {
+            ClientEntity entity = entityFromId(p.entityId);
+
+            if(entity != null) {
+                entity.readEntityDataUpdate(p.payload);
+            }
         }
     }
 

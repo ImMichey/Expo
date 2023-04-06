@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.dimension;
 
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
@@ -108,6 +109,25 @@ public class ServerDimensionEntityManager {
         }
 
         return copy;
+    }
+
+    /** Returns the closest player to specified entity. */
+    public ServerPlayer getClosestPlayer(ServerEntity to, float maxDistance) {
+        float dis = Float.MAX_VALUE;
+        ServerPlayer player = null;
+
+        for(ServerPlayer players : getAllPlayers()) {
+            float dst = Vector2.dst(players.posX + 5f, players.posY, to.posX, to.posY);
+
+            if(dst <= maxDistance) {
+                if(player == null || dis > dst) {
+                    dis = dst;
+                    player = players;
+                }
+            }
+        }
+
+        return player;
     }
 
     /** Returns the amount of active entities in the current dimension. */

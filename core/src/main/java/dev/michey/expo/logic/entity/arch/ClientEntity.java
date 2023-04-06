@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
@@ -206,9 +207,18 @@ public abstract class ClientEntity {
         int relativeTileX = clientTileX - startTileX;
         int relativeTileY = clientTileY - startTileY;
         int mouseTileArray = relativeTileY * 8 + relativeTileX;
-        if(mouseTileArray >= 64) mouseTileArray = 63;
+
+        if(mouseTileArray >= 64) {
+            // Not sure why this happens sometimes
+            ExpoLogger.log("MouseTileArray > 63: " + mouseTileArray + " [chunkXY: " + c.chunkX + "," + c.chunkY + "] [startTileXY: " + startTileX + "," + startTileY + "] [relativeTileXY: " + relativeTileX + "," + relativeTileY + "]");
+            mouseTileArray = 63;
+        }
 
         return c.biomes[mouseTileArray];
+    }
+
+    public void readEntityDataUpdate(Object[] payload) {
+
     }
 
 }

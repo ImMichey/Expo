@@ -12,8 +12,11 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -84,6 +87,84 @@ public class ServerPlayerInventory extends ServerInventory {
                         || item.itemMetadata.toolType == ToolType.LEGS
                         || item.itemMetadata.toolType == ToolType.BOOTS
         );
+    }
+
+    public InventoryAddItemResult addItem(ServerInventoryItem item) {
+        InventoryAddItemResult result = new InventoryAddItemResult();
+        result.changeResult = new InventoryChangeResult();
+        result.remainingAmount = item.itemAmount;
+
+        ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
+        boolean singleStack = mapping.logic.maxStackSize == 1;
+
+        if(singleStack) {
+            for(var slot : slots) {
+                if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
+                if(slot.item.isEmpty()) {
+                    slot.item = item;
+                    result.changeResult.addChange(slot.slotIndex, slot.item);
+                    result.fullTransfer = true;
+                    result.remainingAmount = 0;
+                    break;
+                }
+            }
+        } else {
+            int remaining = item.itemAmount;
+
+            // Find slots that are not filled with same id first.
+            List<Integer> visitSlotsFirst = new LinkedList<>();
+            int firstEmptySlot = -1;
+            boolean canFillGaps = false;
+
+            for(var slot : slots) {
+                if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
+
+                if(slot.item.itemId == item.itemId && slot.item.itemAmount < mapping.logic.maxStackSize) {
+                    visitSlotsFirst.add(slot.slotIndex);
+
+                    int existingInSlot = slot.item.itemAmount;
+                    int transferable = mapping.logic.maxStackSize - existingInSlot;
+
+                    if(transferable >= remaining) {
+                        canFillGaps = true;
+                        break;
+                    }
+                } else if(slot.item.isEmpty() && firstEmptySlot == -1) {
+                    firstEmptySlot = slot.slotIndex;
+                }
+            }
+
+            remaining = item.itemAmount;
+
+            for(int slotsToVisit : visitSlotsFirst) {
+                int existingInSlot = slots[slotsToVisit].item.itemAmount;
+                int transferable = mapping.logic.maxStackSize - existingInSlot;
+
+                if(transferable >= remaining) {
+                    slots[slotsToVisit].item.itemAmount += remaining;
+                    remaining = 0;
+                    result.fullTransfer = true;
+                    result.remainingAmount = 0;
+                } else {
+                    slots[slotsToVisit].item.itemAmount += transferable;
+                    remaining -= transferable;
+                    result.remainingAmount -= transferable;
+                }
+
+                result.changeResult.addChange(slotsToVisit, slots[slotsToVisit].item);
+            }
+
+            if(!canFillGaps && firstEmptySlot != -1) {
+                // Fill in empty slot.
+                slots[firstEmptySlot].item = item;
+                slots[firstEmptySlot].item.itemAmount = remaining;
+                result.remainingAmount = 0;
+                result.fullTransfer = true;
+                result.changeResult.addChange(firstEmptySlot, slots[firstEmptySlot].item);
+            }
+        }
+
+        return result;
     }
 
     public InventoryChangeResult performPlayerAction(int actionType, int slotId) {

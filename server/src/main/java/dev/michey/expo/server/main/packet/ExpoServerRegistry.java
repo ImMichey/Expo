@@ -73,7 +73,8 @@ public class ExpoServerRegistry {
                 P26_EntityDamage.class,
                 P27_PlayerEntitySelection.class,
                 P28_PlayerFoodParticle.class,
-                P29_EntityCreateAdvanced.class
+                P29_EntityCreateAdvanced.class,
+                P30_EntityDataUpdate.class
         );
     }
 

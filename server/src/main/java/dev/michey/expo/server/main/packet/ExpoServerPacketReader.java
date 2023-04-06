@@ -9,6 +9,7 @@ import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.arch.ExpoServerDedicated;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.InventoryChangeResult;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
@@ -185,18 +186,14 @@ public class ExpoServerPacketReader {
 
     private void doInventoryInteraction(ServerPlayer player, P18_PlayerInventoryInteraction p, PacketReceiver receiver) {
         var change = player.playerInventory.performPlayerAction(p.actionType, p.slotId);
+        convertInventoryChangeResultToPacket(change, receiver);
+    }
 
-        if(change != null) {
-            ServerInventoryItem[] arr = new ServerInventoryItem[change.changedItems.size()];
-
-            for(int i = 0; i < arr.length; i++) {
-                arr[i] = change.changedItems.get(i);
-            }
-
-            ServerPackets.p19PlayerInventoryUpdate(
-                    change.changedSlots.stream().mapToInt(Integer::intValue).toArray(),
-                    arr,
-                    receiver);
+    public void convertInventoryChangeResultToPacket(InventoryChangeResult result, PacketReceiver receiver) {
+        if(result != null && result.changePresent) {
+            ServerInventoryItem[] arr = new ServerInventoryItem[result.changedItems.size()];
+            for(int i = 0; i < arr.length; i++) arr[i] = result.changedItems.get(i);
+            ServerPackets.p19PlayerInventoryUpdate(result.changedSlots.stream().mapToInt(Integer::intValue).toArray(), arr, receiver);
         }
     }
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -86,6 +87,7 @@ public class RenderContext {
     public ShaderProgram waterFboShader;
     public ShaderProgram selectionShader;
     public ShaderProgram selectionArrayShader;
+    public ShaderProgram itemShineShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -97,7 +99,6 @@ public class RenderContext {
     public SpriteBatch hudBatch;                        // HUD batch
 
     /** Fonts */
-    //public BitmapFont font;
     public BitmapFont[] m5x7_all;
     public BitmapFont m5x7_base;
     public BitmapFont[] m5x7_border_all;
@@ -135,6 +136,9 @@ public class RenderContext {
     public float heightOffset = 0.0f;
     public float offset = 0.0f;
     public float skew = 0.0f;
+
+    /** Numbers */
+    private TextureRegion[] numbers;
 
     /** Game camera */
     public ExpoCamera expoCamera;
@@ -221,6 +225,13 @@ public class RenderContext {
         waterTexture = ExpoAssets.get().texture("water/watertile_single.png");
         waterTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
+        numbers = new TextureRegion[10];
+        TextureRegion baseTexture = ExpoAssets.get().textureRegion("numbers");
+
+        for(int i = 0; i < 10; i++) {
+            numbers[i] = new TextureRegion(baseTexture, i * 8, 0, 6, 8);
+        }
+
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
         waterShader = compileShader("gl3/water");
@@ -229,6 +240,7 @@ public class RenderContext {
         waterFboShader = compileShader("gl3/water_fbo");
         selectionShader = compileShader("gl3/selection");
         selectionArrayShader = compileShader("gl3/selection_array");
+        itemShineShader = compileShader("gl3/itemshine");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         // createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -370,6 +382,10 @@ public class RenderContext {
         }
     }
 
+    public void useRegularArrayShader() {
+        if(arraySpriteBatch.getShader() != DEFAULT_GLES3_ARRAY_SHADER) arraySpriteBatch.setShader(DEFAULT_GLES3_ARRAY_SHADER);
+    }
+
     public void bindAndSetSelection(Batch useBatch) {
         ShaderProgram useShader = useBatch == batch ? selectionShader : selectionArrayShader;
 
@@ -414,6 +430,10 @@ public class RenderContext {
         lightEngine.resize(width, height);
 
         if(ExpoClientContainer.get() != null) ExpoClientContainer.get().getPlayerUI().onResize();
+    }
+
+    public TextureRegion getNumber(int number) {
+        return numbers[number];
     }
 
     private ShaderProgram compileShader(String key) {

@@ -140,6 +140,10 @@ public abstract class ExpoServerBase {
         return worldSaveFile;
     }
 
+    public ExpoServerPacketReader getPacketReader() {
+        return packetReader;
+    }
+
     public void resetInstance() {
         INSTANCE = null;
     }

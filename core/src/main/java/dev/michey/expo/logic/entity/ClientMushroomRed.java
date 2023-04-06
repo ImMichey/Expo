@@ -16,6 +16,7 @@ import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ClientMushroomRed extends ClientEntity implements SelectableEntity {
 
@@ -31,7 +32,7 @@ public class ClientMushroomRed extends ClientEntity implements SelectableEntity 
 
     @Override
     public void onDamage(float damage, float newHealth) {
-        AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+        AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
 
         int particles = MathUtils.random(2, 5);
 
@@ -58,7 +59,7 @@ public class ClientMushroomRed extends ClientEntity implements SelectableEntity 
     @Override
     public void onDeletion() {
         if(removalReason == EntityRemovalReason.DEATH) {
-            AudioEngine.get().playSoundGroupManaged("harvest", new Vector2(drawRootX, drawRootY), CHUNK_SIZE, false);
+            AudioEngine.get().playSoundGroupManaged("harvest", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
         }
     }
 
