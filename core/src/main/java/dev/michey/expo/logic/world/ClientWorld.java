@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.assets.TileSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.localserver.ExpoServerLocal;
@@ -706,7 +707,14 @@ public class ClientWorld {
                             float wx = px + ExpoShared.tileToPos(tx);
                             float wy = py + ExpoShared.tileToPos(ty);
 
-                            if(chunk.layer1Tex[k].length != 1) drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
+                            if(chunk.layer1Tex[k].length == 1) {
+                                // check if full tile or not.
+                                if(!ExpoAssets.get().getTileSheet().isFullTile(chunk.layer1[k][0])) {
+                                    drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
+                                }
+                            } else {
+                                drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
+                            }
                             drawLayer(k, chunk.layer1Tex[k], rc, wx, wy, chunk.layer1Displacement);
                             drawLayer(k, chunk.layer2Tex[k], rc, wx, wy, null);
                         }

@@ -45,8 +45,8 @@ public class ServerGrass extends ServerEntity {
         for(int i = 0; i < grassSpawned; i++) {
             ServerItem item = new ServerItem();
 
-            ItemMapping r = ItemMapper.get().randomMapping();
-            item.itemContainer = new ServerInventoryItem(r.id, MathUtils.random(1, r.logic.maxStackSize));
+            ItemMapping r = ItemMapper.get().getMapping("item_grassfiber");
+            item.itemContainer = new ServerInventoryItem(r.id, 1);
 
             item.posX = posX + 8f;
             item.posY = posY + 4f;

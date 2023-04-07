@@ -63,4 +63,11 @@ public class TileSheet {
         return array[MathUtils.random(0, array.length - 1)];
     }
 
+    public boolean isFullTile(int tileId) {
+        return switch (tileId) {
+            case 1, 23 -> true;
+            default -> false;
+        };
+    }
+
 }
