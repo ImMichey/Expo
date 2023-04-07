@@ -93,6 +93,16 @@ public class ServerPlayerInventory extends ServerInventory {
         );
     }
 
+    public void clear() {
+        for(var slot : slots) {
+            if(!slot.item.isEmpty()) {
+                slot.item.setEmpty();
+            }
+        }
+
+        ServerPackets.p19PlayerInventoryUpdate(getOwner(), PacketReceiver.player(getOwner()));
+    }
+
     public InventoryAddItemResult addItem(ServerInventoryItem item) {
         InventoryAddItemResult result = new InventoryAddItemResult();
         result.changeResult = new InventoryChangeResult();

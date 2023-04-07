@@ -426,12 +426,14 @@ public class ServerChunk {
         }
 
         for(ServerEntity serverEntity : dimension.getEntityManager().getAllEntities()) {
+            if(serverEntity.getEntityType() == ServerEntityType.PLAYER) continue;
             if(serverEntity.chunkX == chunkX && serverEntity.chunkY == chunkY) {
                 inactiveEntities.add(serverEntity);
             }
         }
 
         for(ServerEntity nowInactive : inactiveEntities) {
+            if(nowInactive.getEntityType() == ServerEntityType.PLAYER) continue;
             dimension.getEntityManager().removeEntitySafely(nowInactive);
         }
 

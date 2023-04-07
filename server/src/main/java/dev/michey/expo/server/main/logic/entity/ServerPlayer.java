@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.entity;
 
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
@@ -8,10 +9,13 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
+import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.server.packet.P16_PlayerPunch;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
@@ -69,7 +73,8 @@ public class ServerPlayer extends ServerEntity {
     @Override
     public void onCreation() {
         // add physics body of player to world
-        physicsBody = new BoundingBox(this, 2f, 0, 6, 6);
+        physicsBody = new BoundingBox(this, 2, 0, 6, 6);
+        log("onCreation Player");
     }
 
     @Override
@@ -85,7 +90,64 @@ public class ServerPlayer extends ServerEntity {
 
     @Override
     public void onDie() {
+        // drop items
+        int dropItems = 0;
 
+        for(var slot : playerInventory.slots) {
+            if(!slot.item.isEmpty()) {
+                dropItems++;
+            }
+        }
+
+        Vector2[] positions = GenerationUtils.positions(dropItems, 24.0f);
+        int i = 0;
+
+        for(var slot : playerInventory.slots) {
+            if(!slot.item.isEmpty()) {
+                ServerItem drop = new ServerItem();
+                drop.itemContainer = new ServerInventoryItem().clone(slot.item);
+                drop.posX = toFeetCenterX();
+                drop.posY = toFeetCenterY();
+                drop.dstX = positions[i].x;
+                drop.dstY = positions[i].y;
+                ServerWorld.get().registerServerEntity(entityDimension, drop);
+                i++;
+            }
+        }
+
+        playerInventory.clear();
+
+        ServerGravestone gravestone = new ServerGravestone();
+        gravestone.posX = posX;
+        gravestone.posY = posY;
+        gravestone.setStaticEntity();
+        ServerWorld.get().registerServerEntity(entityDimension, gravestone);
+
+        // play sound
+        ServerPackets.p24PositionalSound("player_death", posX, posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
+
+        // reset health + hunger
+        health = 100.0f;
+        hunger = 100.0f;
+        hungerCooldown = 180.0f;
+        nextHungerTickDown = 4.0f;
+        nextHungerDamageTick = 4.0f;
+        nextHealthRegenTickDown = 1.0f;
+
+        teleportPlayer(
+                getDimension().getDimensionSpawnX(),
+                getDimension().getDimensionSpawnY()
+        );
+
+        // chat message
+        ServerPackets.p25ChatMessage("SERVER", "Player " + username + " died.", PacketReceiver.all());
+    }
+
+    public void teleportPlayer(float x, float y) {
+        physicsBody.teleport(x, y);
+        posX = getDimension().getDimensionSpawnX();
+        posY = getDimension().getDimensionSpawnY();
+        ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, PacketReceiver.whoCanSee(this));
     }
 
     @Override
@@ -235,7 +297,10 @@ public class ServerPlayer extends ServerEntity {
 
     public void damagePlayer(float damage) {
         health -= damage;
-        if(health < 0) health = 0;
+        if(health <= 0) {
+            health = 0;
+            onDie();
+        }
     }
 
     public void removeHunger(float remove) {

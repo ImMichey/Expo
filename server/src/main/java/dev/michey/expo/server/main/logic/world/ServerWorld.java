@@ -68,6 +68,7 @@ public class ServerWorld {
     /** Creates an instance of a ServerPlayer entity. */
     public ServerPlayer createPlayerEntity(PlayerConnection pc, String username) {
         ServerPlayer player = new ServerPlayer();
+        player.forceChunkChange = true;
         player.username = username;
         player.localServerPlayer = pc == null;
         if(player.localServerPlayer) {

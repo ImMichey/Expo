@@ -18,6 +18,12 @@ public class ServerInventoryItem {
         return itemId == -1;
     }
 
+    public void setEmpty() {
+        itemId = -1;
+        itemAmount = 0;
+        itemMetadata = null;
+    }
+
     public ServerInventoryItem() {
 
     }

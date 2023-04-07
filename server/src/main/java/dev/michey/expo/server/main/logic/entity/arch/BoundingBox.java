@@ -5,8 +5,6 @@ import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Response;
 import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class BoundingBox {
 
     private final ServerEntity parent;
@@ -29,6 +27,10 @@ public class BoundingBox {
 
     public void dispose() {
         parent.getDimension().getPhysicsWorld().remove(physicsBody);
+    }
+
+    public void teleport(float x, float y) {
+        parent.getDimension().getPhysicsWorld().update(physicsBody, x + xOffset, y + yOffset);
     }
 
     public Response.Result move(float x, float y, CollisionFilter filter) {

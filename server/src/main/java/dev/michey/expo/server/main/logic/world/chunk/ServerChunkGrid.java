@@ -258,6 +258,10 @@ public class ServerChunkGrid {
         return chunks;
     }
 
+    public boolean isActiveChunk(int chunkX, int chunkY) {
+        return activeChunkMap.containsKey(chunkHash(chunkX, chunkY));
+    }
+
     /** Returns the chunk at chunk coordinates X & Y. */
     public ServerChunk getChunk(int chunkX, int chunkY) {
         // Generate chunk hash.
