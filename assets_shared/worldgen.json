@@ -62,7 +62,7 @@
                             "type": "OAK_TREE",
                             "static": true,
                             "chance": 0.2,
-                            "pds": 32,
+                            "pds": 64,
                             "spreadData": {
                                 "spread": [1, 5],
                                 "spreadChance": 0.025,

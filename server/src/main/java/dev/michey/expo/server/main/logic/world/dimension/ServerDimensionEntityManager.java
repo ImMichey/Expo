@@ -51,7 +51,8 @@ public class ServerDimensionEntityManager {
                 int chunkX = ExpoShared.posToChunk(entity.posX);
                 int chunkY = ExpoShared.posToChunk(entity.posY);
 
-                if(entity.chunkX != chunkX || entity.chunkY != chunkY) {
+                if(entity.forceChunkChange || entity.chunkX != chunkX || entity.chunkY != chunkY) {
+                    entity.forceChunkChange = false;
                     entity.chunkX = chunkX;
                     entity.chunkY = chunkY;
                     entity.changedChunk = true;

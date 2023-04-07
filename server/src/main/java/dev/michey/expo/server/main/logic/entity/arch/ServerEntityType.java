@@ -12,6 +12,7 @@ public enum ServerEntityType {
     MUSHROOM_BROWN(5, "MushroomBrown"),
     BUSH(6, "Bush"),
     ITEM(7, "Item"),
+    ANCIENT_TREE(8, "AncientTree"),
     ;
 
     public final int ENTITY_ID;
@@ -32,6 +33,7 @@ public enum ServerEntityType {
             case 5 -> new ServerMushroomBrown();
             case 6 -> new ServerBush();
             case 7 -> new ServerItem();
+            case 8 -> new ServerAncientTree();
             default -> null;
         };
     }

@@ -1,8 +1,5 @@
 package dev.michey.expo.server.main.logic.entity;
 
-import com.badlogic.gdx.utils.Null;
-import com.dongbat.jbump.CollisionFilter;
-import com.dongbat.jbump.Item;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;

@@ -30,6 +30,7 @@ public abstract class ServerEntity {
     public boolean staticPosition = false;
     public int chunkX;
     public int chunkY;
+    public boolean forceChunkChange = true;
     public boolean tileEntity = false;
     public int tileX;
     public int tileY;

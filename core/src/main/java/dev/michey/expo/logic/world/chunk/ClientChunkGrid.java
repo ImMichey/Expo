@@ -89,7 +89,6 @@ public class ClientChunkGrid {
     }
 
     public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
-        //log("updateChunkData " + chunkX + " " + chunkY);
         String key = chunkX + "," + chunkY;
         clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, layer0, layer1, layer2));
     }
