@@ -91,8 +91,8 @@ public abstract class ExpoServerBase {
 
                     if(found.key) {
                         log("Found spawn area at " + found.value[0] + ", " + found.value[1] + " - using as dimension spawn coordinates.");
-                        dimension.setDimensionSpawnX(found.value[0]);
-                        dimension.setDimensionSpawnY(found.value[1]);
+                        dimension.setDimensionSpawnX(found.value[0] + 8);
+                        dimension.setDimensionSpawnY(found.value[1] + 8);
                     } else {
                         log("Failed to find spawn area, re-using dimension spawn coordinates.");
                     }

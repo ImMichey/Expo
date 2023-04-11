@@ -36,7 +36,7 @@ public class ClientAncientTree extends ClientEntity implements SelectableEntity 
     @Override
     public void onCreation() {
         trunk = tr("entity_ancient_tree_trunk");
-        leaves = t("foliage/entity_ancient_tree_leaves.png");
+        leaves = t("foliage/entity_ancient_tree/entity_ancient_tree_leaves.png");
 
         trunkShadowMask = tr("entity_ancient_tree_trunk_shadow_mask");
         leavesShadowMask = tr("entity_ancient_tree_leaves_shadow_mask");

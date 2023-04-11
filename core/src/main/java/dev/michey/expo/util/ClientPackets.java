@@ -74,6 +74,17 @@ public class ClientPackets {
         udp(p);
     }
 
+    /** Sends the P31_PlayerDig packet via UDP protocol. */
+    public static void p31PlayerDig(int chunkX, int chunkY, int tileX, int tileY, int tileArray) {
+        P31_PlayerDig p = new P31_PlayerDig();
+        p.chunkX = chunkX;
+        p.chunkY = chunkY;
+        p.tileX = tileX;
+        p.tileY = tileY;
+        p.tileArray = tileArray;
+        udp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

@@ -36,7 +36,7 @@ public class ServerCommandTiles extends AbstractServerCommand {
 
         for(ServerChunk chunk : chunks) {
             chunk.generate(false);
-            ServerPackets.p11ChunkData(chunk.chunkX, chunk.chunkY, chunk.biomes, chunk.layer0, chunk.layer1, chunk.layer2, PacketReceiver.player(player));
+            ServerPackets.p11ChunkData(chunk.chunkX, chunk.chunkY, chunk.tiles, PacketReceiver.player(player));
         }
 
         sendToSender("Updated chunks in view", player);

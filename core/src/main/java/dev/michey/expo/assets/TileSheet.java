@@ -50,6 +50,7 @@ public class TileSheet {
     }
 
     private void multiEntry(String name, int amount) {
+        log("TileSheet entry: " + name + " " + currentId + " - " + (currentId + amount - 1));
         for(int i = 0; i < amount; i++) tilesetTextureMap.put(currentId + i, assets.textureRegion(name + "_" + i));
         currentId += amount;
     }

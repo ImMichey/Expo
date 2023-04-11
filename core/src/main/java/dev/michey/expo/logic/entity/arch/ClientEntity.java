@@ -209,7 +209,7 @@ public abstract class ClientEntity {
         int mouseTileArray = relativeTileY * 8 + relativeTileX;
 
         if(mouseTileArray >= 64) {
-            // Not sure why this happens sometimes
+            // TODO: Fix, this happens when mouseX, mouseY == integer at border of chunk
             ExpoLogger.log("MouseTileArray > 63: " + mouseTileArray + " [chunkXY: " + c.chunkX + "," + c.chunkY + "] [startTileXY: " + startTileX + "," + startTileY + "] [relativeTileXY: " + relativeTileX + "," + relativeTileY + "]");
             mouseTileArray = 63;
         }

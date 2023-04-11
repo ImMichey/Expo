@@ -28,7 +28,6 @@ import com.badlogic.gdx.graphics.Mesh.VertexDataType;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -36,7 +35,6 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.logic.world.ClientWorld;
 
 /** Draws batched quads using indices.
  * <p>
@@ -414,9 +412,9 @@ public class ArrayTextureSpriteBatch implements Batch {
         Gdx.gl30.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, arrayTextureHandle);
 
         if (customShader != null) {
-            customShader.begin();
+            customShader.bind();
         } else {
-            shader.begin();
+            shader.bind();
         }
 
         setupMatrices();
@@ -436,12 +434,6 @@ public class ArrayTextureSpriteBatch implements Batch {
 
         if (isBlendingEnabled()) {
             Gdx.gl30.glDisable(GL30.GL_BLEND);
-        }
-
-        if (customShader != null) {
-            customShader.end();
-        } else {
-            shader.end();
         }
     }
 
@@ -818,10 +810,6 @@ public class ArrayTextureSpriteBatch implements Batch {
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = ti;
-    }
-
-    public void drawPreparedShadowVertices(Texture texture, float[] spriteVertices) {
-
     }
 
     @Override
@@ -1857,14 +1845,7 @@ public class ArrayTextureSpriteBatch implements Batch {
     public void setShader (ShaderProgram shader) {
 
         if (drawing) {
-
             flush();
-
-            if (customShader != null) {
-                customShader.end();
-            } else {
-                this.shader.end();
-            }
         }
 
         customShader = shader;
@@ -1872,9 +1853,9 @@ public class ArrayTextureSpriteBatch implements Batch {
         if (drawing) {
 
             if (customShader != null) {
-                customShader.begin();
+                customShader.bind();
             } else {
-                this.shader.begin();
+                this.shader.bind();
             }
 
             setupMatrices();

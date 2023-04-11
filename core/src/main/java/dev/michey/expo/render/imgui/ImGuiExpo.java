@@ -50,6 +50,7 @@ public class ImGuiExpo {
     public final ImBoolean renderDrawRoot = new ImBoolean(false);
     public final ImBoolean renderDrawPos = new ImBoolean(false);
     public final ImBoolean renderJBump = new ImBoolean(false);
+    public final ImBoolean renderChunkBorders = new ImBoolean(false);
     private final float[] speed = new float[1];
     private final float[] minStrength = new float[1];
     private final float[] maxStrength = new float[1];
@@ -227,6 +228,9 @@ public class ImGuiExpo {
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0: " + Arrays.toString(l0));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1: " + Arrays.toString(l1));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2: " + Arrays.toString(l2));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0Tex: " + Arrays.toString(chunk.layer0Tex[r.mouseTileArray]));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1Tex: " + Arrays.toString(chunk.layer1Tex[r.mouseTileArray]));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.layer2Tex[r.mouseTileArray]));
                 }
 
                 ImGui.treePop();
@@ -377,6 +381,7 @@ public class ImGuiExpo {
                 ImGui.checkbox("Draw Root", renderDrawRoot);
                 ImGui.checkbox("Draw Pos", renderDrawPos);
                 ImGui.checkbox("J Bump", renderJBump);
+                ImGui.checkbox("Chunk Borders", renderChunkBorders);
 
                 if(ImGui.sliderFloat("speed", speed, 0.0f, 10.0f)) r.speed = speed[0];
                 if(ImGui.sliderFloat("minStrength", minStrength, 0.0f, 1.0f)) r.minStrength = minStrength[0];

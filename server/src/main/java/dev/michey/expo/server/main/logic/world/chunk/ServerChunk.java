@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.esotericsoftware.kryonet.Server;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
@@ -19,6 +20,7 @@ import dev.michey.expo.server.main.logic.world.gen.Point;
 import dev.michey.expo.server.main.logic.world.gen.PoissonDiskSampler;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.Location;
 import dev.michey.expo.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,11 +47,7 @@ public class ServerChunk {
     public final int chunkX;
     public final int chunkY;
     private final String chunkKey;
-
-    public final BiomeType[] biomes;
-    public int[][] layer0;
-    public int[][] layer1;
-    public int[][] layer2;
+    public final ServerTile[] tiles;
 
     /** Tile based entities */
     private int[] tileBasedEntityIdGrid;
@@ -67,12 +65,19 @@ public class ServerChunk {
 
         int totalTiles = ROW_TILES * ROW_TILES;
 
-        biomes = new BiomeType[totalTiles];
-        layer0 = new int[totalTiles][];
-        layer1 = new int[totalTiles][];
-        layer2 = new int[totalTiles][];
+        tiles = new ServerTile[totalTiles];
 
-        Arrays.fill(biomes, BiomeType.VOID);
+        int wx = ExpoShared.chunkToPos(chunkX);
+        int wy = ExpoShared.chunkToPos(chunkY);
+        int btx = ExpoShared.posToTile(wx);
+        int bty = ExpoShared.posToTile(wy);
+
+        for(int i = 0; i < tiles.length; i++) {
+            int x = btx + i % 8;
+            int y = bty + i / 8;
+            tiles[i] = new ServerTile(this, x, y, i);
+            dimension.getChunkHandler().addTile(tiles[i]);
+        }
     }
 
     public String getChunkKey() {
@@ -93,13 +98,13 @@ public class ServerChunk {
 
         HashMap<BiomeType, List<GenerationTile>> biomeMap = new HashMap<>();
 
-        for(int i = 0; i < biomes.length; i++) {
-            BiomeType t = biomes[i];
+        for(int i = 0; i < tiles.length; i++) {
+            BiomeType t = tiles[i].biome;
             if(!biomeMap.containsKey(t)) biomeMap.put(t, new LinkedList<>());
 
             biomeMap.get(t).add(new GenerationTile(
                     t,
-                    layer1[i].length == 1,
+                    tiles[i].layer1.length == 1,
                     wx + ExpoShared.tileToPos(i % 8),
                     wy + ExpoShared.tileToPos(i / 8)
             ));
@@ -124,7 +129,7 @@ public class ServerChunk {
                         int yi = (int) p.y;
                         int tIndex = yi / TILE_SIZE * 8 + xi / TILE_SIZE;
 
-                        if(layer1[tIndex].length == 1) {
+                        if(tiles[tIndex].layer1.length == 1) {
                             ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
                             generatedEntity.posX = p.absoluteX;
                             generatedEntity.posY = p.absoluteY;
@@ -159,8 +164,6 @@ public class ServerChunk {
             }
         }
 
-        int a = 0;
-
         nextEntry: for(var entry : postProcessingList) {
             for(var otherEntry : postProcessingList) {
                 if(otherEntry.value) continue;
@@ -170,7 +173,6 @@ public class ServerChunk {
 
                 if(dis <= 4) {
                     entry.value = true;
-                    a++;
                     continue nextEntry;
                 }
             }
@@ -194,16 +196,21 @@ public class ServerChunk {
         int btx = ExpoShared.posToTile(wx);
         int bty = ExpoShared.posToTile(wy);
 
-        for(int i = 0; i < layer0.length; i++) layer0[i] = new int[] {-1};
-        for(int i = 0; i < layer1.length; i++) layer1[i] = new int[] {-1};
-        for(int i = 0; i < layer2.length; i++) layer2[i] = new int[] {-1};
+        for(ServerTile st : tiles) {
+            st.layer0 = new int[] {-1};
+            st.layer1 = new int[] {-1};
+            st.layer2 = new int[] {-1};
+        }
 
-        for(int i = 0; i < biomes.length; i++) {
+        for(int i = 0; i < tiles.length; i++) {
+            ServerTile tile = tiles[i];
             int x = btx + i % 8;
             int y = bty + i / 8;
-            biomes[i] = dimension.getChunkHandler().getBiome(x, y);
 
-            BiomeType b = biomes[i];
+            // Assign biome.
+            tile.biome = dimension.getChunkHandler().getBiome(x, y);
+            BiomeType b = tile.biome;
+
             int[] tileBounds = b.BIOME_LAYER_TEXTURES;
 
             if(tileBounds != null) {
@@ -211,7 +218,7 @@ public class ServerChunk {
 
                 // LAYER 0
                 int layer0Id = tileBounds[0];
-                layer0[i][0] = layer0Id;
+                tile.layer0 = new int[] {layer0Id};
 
                 // LAYER 1
                 int[] indices = indexStraightDiagonal(b.BIOME_NEIGHBOURS, x, y);
@@ -220,15 +227,15 @@ public class ServerChunk {
 
                 if(tis == 0 && tid == 0) {
                     // Special case, no neighbour
-                    layer1[i] = new int[] {minTile + 1};
+                    tile.layer1 = new int[] {minTile + 1};
                 } else if(tis == 15 && tid == 15) {
                     // Special case, every 8 neighbours are same tile
-                    layer1[i] = new int[] {minTile};
+                    tile.layer1 = new int[] {minTile};
                 } else if(tis == 15) {
                     // N E S W all valid neighbours (straight)
                     if(tid == 0) {
                         // No diagonal neighbours
-                        layer1[i] = new int[] {minTile + 20, minTile + 21, minTile + 18, minTile + 19};
+                        tile.layer1 = new int[] {minTile + 20, minTile + 21, minTile + 18, minTile + 19};
                     } else {
                         // tig between [1-14]
                         boolean northWest = tid / NORTH_WEST == 1;
@@ -236,7 +243,7 @@ public class ServerChunk {
                         boolean southEast = (tid % NORTH_WEST % SOUTH_WEST) / SOUTH_EAST == 1;
                         boolean northEast = (tid % NORTH_WEST % SOUTH_WEST % SOUTH_EAST) / NORTH_EAST == 1;
 
-                        layer1[i] = new int[] {
+                        tile.layer1 = new int[] {
                                 southWest ? minTile + 8 : minTile + 20,
                                 southEast ? minTile + 5 : minTile + 21,
                                 northWest ? minTile + 14 : minTile + 18,
@@ -329,7 +336,7 @@ public class ServerChunk {
                         }
                     }
 
-                    layer1[i] = new int[] {c1, c2, c3, c4};
+                    tile.layer1 = new int[] {c1, c2, c3, c4};
                 }
             }
         }
@@ -337,15 +344,15 @@ public class ServerChunk {
         if(populate) populate();
     }
 
-    private final int NORTH = 1;
-    private final int EAST = 2;
-    private final int SOUTH = 4;
-    private final int WEST = 8;
+    public static final int NORTH = 1;
+    public static final int EAST = 2;
+    public static final int SOUTH = 4;
+    public static final int WEST = 8;
 
-    private final int NORTH_EAST = 1;
-    private final int SOUTH_EAST = 2;
-    private final int SOUTH_WEST = 4;
-    private final int NORTH_WEST = 8;
+    public static final int NORTH_EAST = 1;
+    public static final int SOUTH_EAST = 2;
+    public static final int SOUTH_WEST = 4;
+    public static final int NORTH_WEST = 8;
 
     private int[] indexStraightDiagonal(String[] acceptedNeighbours, int x, int y) {
         BiomeType[] biomes = new BiomeType[acceptedNeighbours.length];
@@ -407,6 +414,126 @@ public class ServerChunk {
         return new int[] {tis, tid};
     }
 
+    public int[] tileIndexToIds(int tis, int tid, int minTile) {
+        int[] ids;
+
+        if(tis == 0 && tid == 0) {
+            // Special case, no neighbour
+            ids = new int[] {minTile + 1};
+        } else if(tis == 15 && tid == 15) {
+            // Special case, every 8 neighbours are same tile
+            ids = new int[] {minTile};
+        } else if(tis == 15) {
+            // N E S W all valid neighbours (straight)
+            if(tid == 0) {
+                // No diagonal neighbours
+                ids = new int[] {minTile + 20, minTile + 21, minTile + 18, minTile + 19};
+            } else {
+                // tig between [1-14]
+                boolean northWest = tid / NORTH_WEST == 1;
+                boolean southWest = (tid % NORTH_WEST) / SOUTH_WEST == 1;
+                boolean southEast = (tid % NORTH_WEST % SOUTH_WEST) / SOUTH_EAST == 1;
+                boolean northEast = (tid % NORTH_WEST % SOUTH_WEST % SOUTH_EAST) / NORTH_EAST == 1;
+
+                ids = new int[] {
+                        southWest ? minTile + 8 : minTile + 20,
+                        southEast ? minTile + 5 : minTile + 21,
+                        northWest ? minTile + 14 : minTile + 18,
+                        northEast ? minTile + 11 : minTile + 19
+                };
+            }
+        } else {
+            // N E S W not all valid neighbours
+            boolean west = tis / WEST == 1;
+            boolean south = (tis % WEST) / SOUTH == 1;
+            boolean east = (tis % WEST % SOUTH) / EAST == 1;
+            boolean north = (tis % WEST % SOUTH % EAST) / NORTH == 1;
+
+            boolean northWest = tid / NORTH_WEST == 1;
+            boolean southWest = (tid % NORTH_WEST) / SOUTH_WEST == 1;
+            boolean southEast = (tid % NORTH_WEST % SOUTH_WEST) / SOUTH_EAST == 1;
+            boolean northEast = (tid % NORTH_WEST % SOUTH_WEST % SOUTH_EAST) / NORTH_EAST == 1;
+
+            int c1, c2, c3, c4;
+
+            { // Corner Bottom Left
+                if (west && south && southWest) {
+                    c1 = minTile + 8;
+                } else if (west && south) {
+                    c1 = minTile + 20;
+                } else if (west && southWest) {
+                    c1 = minTile + 16;
+                } else if (south && southWest) {
+                    c1 = minTile + 4;
+                } else if (west) {
+                    c1 = minTile + 16;
+                } else if (south) {
+                    c1 = minTile + 4;
+                } else {
+                    c1 = minTile + 12;
+                }
+            }
+
+            { // Corner Bottom Right
+                if (east && south && southEast) {
+                    c2 = minTile + 5;
+                } else if (east && south) {
+                    c2 = minTile + 21;
+                } else if (east && southEast) {
+                    c2 = minTile + 13;
+                } else if (south && southEast) {
+                    c2 = minTile + 9;
+                } else if (east) {
+                    c2 = minTile + 13;
+                } else if (south) {
+                    c2 = minTile + 9;
+                } else {
+                    c2 = minTile + 17;
+                }
+            }
+
+            { // Corner Top Left
+                if (west && north && northWest) {
+                    c3 = minTile + 14;
+                } else if (west && north) {
+                    c3 = minTile + 18;
+                } else if (west && northWest) {
+                    c3 = minTile + 6;
+                } else if (north && northWest) {
+                    c3 = minTile + 10;
+                } else if (west) {
+                    c3 = minTile + 6;
+                } else if (north) {
+                    c3 = minTile + 10;
+                } else {
+                    c3 = minTile + 2;
+                }
+            }
+
+            { // Corner Top Right
+                if (east && north && northEast) {
+                    c4 = minTile + 11;
+                } else if (east && north) {
+                    c4 = minTile + 19;
+                } else if (east && northEast) {
+                    c4 = minTile + 3;
+                } else if (north && northEast) {
+                    c4 = minTile + 15;
+                } else if (east) {
+                    c4 = minTile + 3;
+                } else if (north) {
+                    c4 = minTile + 15;
+                } else {
+                    c4 = minTile + 7;
+                }
+            }
+
+            ids = new int[] {c1, c2, c3, c4};
+        }
+
+        return ids;
+    }
+
     /** Called when the chunk has been inactive before and is now marked as active again. */
     public void onActive() {
         // log(chunkKey + " ACTIVE, re-adding " + inactiveEntities.size() + " entities");
@@ -443,6 +570,7 @@ public class ServerChunk {
     /** Called when the chunk has been inactive before and is now commanded to save. */
     public void onSave() {
         // log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
+        for(ServerTile tile : tiles) dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
         save();
     }
 
@@ -489,11 +617,11 @@ public class ServerChunk {
                     // biomeData
                     JSONObject biomeData = object.getJSONObject("biomeData");
                         JSONArray biomesArray = biomeData.getJSONArray("biomes");
-                        for(int i = 0; i < biomes.length; i++) biomes[i] = BiomeType.idToBiome(biomesArray.getInt(i));
+                        for(int i = 0; i < tiles.length; i++) tiles[i].biome = BiomeType.idToBiome(biomesArray.getInt(i));
 
-                        arrayToLayer(layer0, biomeData.getJSONArray("layer0"));
-                        arrayToLayer(layer1, biomeData.getJSONArray("layer1"));
-                        arrayToLayer(layer2, biomeData.getJSONArray("layer2"));
+                        arrayToLayer(0, biomeData.getJSONArray("layer0"));
+                        arrayToLayer(1, biomeData.getJSONArray("layer1"));
+                        arrayToLayer(2, biomeData.getJSONArray("layer2"));
                 }
 
                 {
@@ -531,12 +659,12 @@ public class ServerChunk {
             // biomeData
             JSONObject biomeData = new JSONObject();
                 JSONArray biomesArray = new JSONArray();
-                for(BiomeType b : biomes) biomesArray.put(b.BIOME_ID);
+                for(ServerTile tile : tiles) biomesArray.put(tile.biome.BIOME_ID);
                 biomeData.put("biomes", biomesArray);
 
-                biomeData.put("layer0", layerToArray(layer0));
-                biomeData.put("layer1", layerToArray(layer1));
-                biomeData.put("layer2", layerToArray(layer2));
+                biomeData.put("layer0", layerToArray(0));
+                biomeData.put("layer1", layerToArray(1));
+                biomeData.put("layer2", layerToArray(2));
 
             // pack
             object.put("biomeData", biomeData);
@@ -560,19 +688,33 @@ public class ServerChunk {
         return object.toString();
     }
 
-    private JSONArray layerToArray(int[][] layer) {
+    private JSONArray layerToArray(int layer) {
         JSONArray layerArray = new JSONArray();
 
-        for(int[] l : layer) {
-            JSONArray ia = new JSONArray();
-            for(int i : l) ia.put(i);
-            layerArray.put(ia);
+        if(layer == 0) {
+            for(ServerTile st : tiles) {
+                JSONArray ia = new JSONArray();
+                for(int i : st.layer0) ia.put(i);
+                layerArray.put(ia);
+            }
+        } else if(layer == 1) {
+            for(ServerTile st : tiles) {
+                JSONArray ia = new JSONArray();
+                for(int i : st.layer1) ia.put(i);
+                layerArray.put(ia);
+            }
+        } else if(layer == 2) {
+            for(ServerTile st : tiles) {
+                JSONArray ia = new JSONArray();
+                for(int i : st.layer2) ia.put(i);
+                layerArray.put(ia);
+            }
         }
 
         return layerArray;
     }
 
-    private void arrayToLayer(int[][] layer, JSONArray array) {
+    private void arrayToLayer(int layer, JSONArray array) {
         for(int i = 0; i < array.length(); i++) {
             JSONArray idArray = array.getJSONArray(i);
 
@@ -582,7 +724,13 @@ public class ServerChunk {
                 insert[j] = idArray.getInt(j);
             }
 
-            layer[i] = insert;
+            if(layer == 0) {
+                tiles[i].layer0 = insert;
+            } else if(layer == 1) {
+                tiles[i].layer1 = insert;
+            } else if(layer == 2) {
+                tiles[i].layer2 = insert;
+            }
         }
     }
 

@@ -27,7 +27,7 @@ public class ExpoShared {
     public static final int PLAYER_CHUNK_VIEW_RANGE = 11;
     public static final int PLAYER_CHUNK_VIEW_RANGE_ONE_DIR = (PLAYER_CHUNK_VIEW_RANGE - 1) / 2; // (11 - 1) / 2 = 5
 
-    public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_ONE_DIR * CHUNK_SIZE;
+    public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_ONE_DIR * 0.5f * CHUNK_SIZE;
 
     public static final int PLAYER_INVENTORY_SLOTS = 36 + 5;
     public static final int PLAYER_INVENTORY_SLOT_HEAD = 36;
@@ -132,6 +132,21 @@ public class ExpoShared {
         }
 
         return m || p;
+    }
+
+    public static Location[] getNeighbourTiles(String dimension, float x, float y) {
+        Location[] array = new Location[8];
+
+        array[0] = new Location(dimension, x - 16, y - 16).toDetailedLocation();
+        array[1] = new Location(dimension, x, y - 16).toDetailedLocation();
+        array[2] = new Location(dimension, x + 16, y - 16).toDetailedLocation();
+        array[3] = new Location(dimension, x + 16, y).toDetailedLocation();
+        array[4] = new Location(dimension, x + 16, y + 16).toDetailedLocation();
+        array[5] = new Location(dimension, x, y + 16).toDetailedLocation();
+        array[6] = new Location(dimension, x - 16, y + 16).toDetailedLocation();
+        array[7] = new Location(dimension, x - 16, y).toDetailedLocation();
+
+        return array;
     }
 
 }

@@ -63,6 +63,37 @@ public class PacketReceiver {
         return new PacketReceiver(false, receiver, null, null);
     }
 
+    public static PacketReceiver whoCanSee(ServerDimension dimension, int chunkX, int chunkY) {
+        if(ExpoServerBase.get().isLocalServer()) {
+            return local();
+        } else {
+            List<Connection> list = new LinkedList<>();
+            List<ServerEntity> playerList = dimension.getEntityManager().getEntitiesOf(ServerEntityType.PLAYER);
+
+            nextPlayer: for(ServerEntity se : playerList) {
+                ServerPlayer player = (ServerPlayer) se;
+
+                if(player.currentlyVisibleChunks != null) {
+                    for(int i = 0; i < player.currentlyVisibleChunks.length; i += 2) {
+                        int x = player.currentlyVisibleChunks[i    ];
+                        int y = player.currentlyVisibleChunks[i + 1];
+
+                        if(x == chunkX && y == chunkY) {
+                            list.add(player.playerConnection.getKryoConnection());
+                            continue nextPlayer;
+                        }
+                    }
+                }
+            }
+
+            if(list.size() > 0) {
+                return new PacketReceiver(false, null, null, list);
+            } else {
+                return null;
+            }
+        }
+    }
+
     public static PacketReceiver whoCanSee(ServerEntity entity) {
         if(ExpoServerBase.get().isLocalServer()) {
             ServerPlayer player = ServerPlayer.getLocalPlayer();

@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -39,6 +40,8 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     private float wind;
     private boolean calculatedWindThisTick = false;
 
+    private final float colorOffset = MathUtils.random(0.15f);
+
     /** Wind sway vertices animation */
     private float contactDelta = 0f;
     private float contactDir = 0f;
@@ -52,8 +55,8 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     @Override
     public void onCreation() {
         int variant = MathUtils.random(1, 5);
-        grass = ExpoAssets.get().texture("foliage/entity_grass_" + variant + ".png");
-        grassShadow = new TextureRegion(t("foliage/entity_grass_" + variant + "_shadow.png"));
+        grass = ExpoAssets.get().texture("foliage/entity_grass/entity_grass_" + variant + ".png");
+        grassShadow = new TextureRegion(t("foliage/entity_grass/entity_grass_" + variant + "_shadow.png"));
 
         float x = 0, y = 0, w = 0, h = 0;
 
@@ -177,8 +180,10 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         calculateWindOnDemand(rc.deltaTotal);
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
+        rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
         rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), wind + verticesMovement, wind + verticesMovement);
         rc.arraySpriteBatch.end();
+        rc.arraySpriteBatch.setColor(Color.WHITE);
     }
 
     @Override
@@ -190,8 +195,10 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             updateDepth(drawOffsetY);
 
             rc.useArrayBatch();
-            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+            rc.useRegularArrayShader();
+            rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
             rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), wind + verticesMovement, wind + verticesMovement);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 
@@ -211,7 +218,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
         if(drawGrass) {
             rc.useArrayBatch();
-            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight(), shadow, wind + verticesMovement, wind + verticesMovement);
         }
     }

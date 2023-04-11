@@ -20,6 +20,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.gen.PoissonDiskSampler;
@@ -40,6 +41,7 @@ public class ClientPlayer extends ClientEntity {
     public String username;
     /** Is this the player controlled player entity? */
     public boolean player;
+    public ClientSelector selector;
 
     /** Player velocity */
     private int cachedVelocityX;
@@ -157,6 +159,8 @@ public class ClientPlayer extends ClientEntity {
 
         if(player) {
             RenderContext.get().expoCamera.center(clientPosX, clientPosY);
+            selector = new ClientSelector();
+            entityManager().addClientSideEntity(selector);
         }
 
         TextureRegion baseSheet = trn("player_sheet");
@@ -238,6 +242,47 @@ public class ClientPlayer extends ClientEntity {
         if(player) {
             // Light update
             proximityLight.update(clientPosX + 5.0f, clientPosY + 22.0f);
+
+            // Selector update
+            if(holdingItemId != -1) {
+                ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
+
+                if(mapping.logic.isTool() && mapping.logic.toolType == ToolType.SHOVEL) {
+                    float tx = RenderContext.get().mouseWorldGridX;
+                    float ty = RenderContext.get().mouseWorldGridY;
+                    float range = mapping.logic.range;
+
+                    float d1 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty);
+                    float d2 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty);
+                    float d3 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty + 16);
+                    float d4 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty + 16);
+
+                    if(d1 <= range || d2 <= range || d3 <= range || d4 <= range) {
+                        selector.tx = tx;
+                        selector.ty = ty;
+                        selector.tix = RenderContext.get().mouseTileX;
+                        selector.tiy = RenderContext.get().mouseTileY;
+                    } else {
+                        Vector2 dst = GenerationUtils.circular(RenderContext.get().mouseRotation + 270, range);
+                        float ntx = playerReachCenterX + dst.x;
+                        float nty = playerReachCenterY + dst.y;
+
+                        int _tix = ExpoShared.posToTile(ntx);
+                        int _tiy = ExpoShared.posToTile(nty);
+
+                        selector.tx = ExpoShared.tileToPos(_tix);
+                        selector.ty = ExpoShared.tileToPos(_tiy);
+                        selector.tix = _tix;
+                        selector.tiy = _tiy;
+                    }
+
+                    selector.visible = true;
+                } else {
+                    selector.visible = false;
+                }
+            } else {
+                selector.visible = false;
+            }
 
             // Player direction
             playerDirection = RenderContext.get().mouseDirection;
@@ -349,6 +394,10 @@ public class ClientPlayer extends ClientEntity {
 
                 if(player) {
                     AudioEngine.get().playSoundGroup("punch");
+
+                    if(selector.visible && selector.canDig) {
+                        ClientPackets.p31PlayerDig(selector.svChunkX, selector.svChunkY, selector.svTileX, selector.svTileY, selector.svTileArray);
+                    }
                 } else {
                     AudioEngine.get().playSoundGroupManaged("punch", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
                 }

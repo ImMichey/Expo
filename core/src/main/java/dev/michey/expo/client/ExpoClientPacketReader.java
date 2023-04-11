@@ -19,6 +19,7 @@ import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.ClientWorld;
+import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
@@ -119,7 +120,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P10_PlayerQuit p) {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
-            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.biomes, p.layer0, p.layer1, p.layer2);
+            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.tiles);
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);
 
@@ -236,6 +237,34 @@ public class ExpoClientPacketReader {
 
             if(entity != null) {
                 entity.readEntityDataUpdate(p.payload);
+            }
+        } else if(o instanceof P32_ChunkDataSingle p) {
+            var grid = ClientChunkGrid.get();
+            if(grid == null) return;
+            var chunk = grid.getChunk(p.chunkX, p.chunkY);
+            if(chunk == null) return;
+
+            if(p.layer == 0) {
+                chunk.layer0[p.tileArray] = p.data;
+
+                if(p.data[0] == -1) {
+                    chunk.layer0Tex[p.tileArray] = new TextureRegion[1];
+                } else {
+                    chunk.layer0Tex[p.tileArray] = new TextureRegion[p.data.length];
+
+                    for(int j = 0; j < p.data.length; j++) {
+                        int index = p.data[j];
+                        chunk.layer0Tex[p.tileArray][j] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(index);
+                    }
+                }
+            } else if(p.layer == 1) {
+                chunk.layer1[p.tileArray] = p.data;
+                chunk.layer1Tex[p.tileArray] = new TextureRegion[p.data.length];
+
+                for(int j = 0; j < p.data.length; j++) {
+                    int index = p.data[j];
+                    chunk.layer1Tex[p.tileArray][j] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(index);
+                }
             }
         }
     }

@@ -32,7 +32,8 @@ public class ServerChunkGrid {
     private final HashMap<String, Pair<ServerChunk, Long>> inactiveChunkMap; // key = hash, value = pair <chunk, inactiveTimestamp>
     private long unloadAfterMillis;
     private long saveAfterMillis;
-    private Pair<Integer, Integer>[] spawnChunks; // can be null if not main dimension
+    private Pair[] spawnChunks; // can be null if not main dimension
+    private final HashMap<String, ServerTile> tileMap;
 
     /** Noise logic */
     private final Noise noise;
@@ -47,6 +48,7 @@ public class ServerChunkGrid {
         activeChunkMap = new HashMap<>();
         inactiveChunkMap = new HashMap<>();
         knownChunkFiles = new LinkedList<>();
+        tileMap = new HashMap<>();
         unloadAfterMillis = ExpoShared.UNLOAD_CHUNKS_AFTER_MILLIS;
         saveAfterMillis = ExpoShared.SAVE_CHUNKS_AFTER_MILLIS;
 
@@ -102,6 +104,21 @@ public class ServerChunkGrid {
         }
 
         return type;
+    }
+
+    public ServerTile getTile(int x, int y) {
+        String key = x + "," + y;
+        return tileMap.get(key);
+    }
+
+    public void removeTile(int x, int y) {
+        String key = x + "," + y;
+        tileMap.remove(key);
+    }
+
+    public void addTile(ServerTile tile) {
+        String key = tile.tileX + "," + tile.tileY;
+        tileMap.put(key, tile);
     }
 
     private BiomeType convertNoise(float noise, float riverNoise) {
@@ -171,8 +188,8 @@ public class ServerChunkGrid {
 
         // Update spawn chunks constantly, so they aren't marked as inactive
         if(spawnChunks != null) {
-            for(Pair<Integer, Integer> hash : spawnChunks) {
-                ServerChunk chunk = getChunk(hash.key, hash.value);
+            for(Pair hash : spawnChunks) {
+                ServerChunk chunk = getChunk((Integer) hash.key, (Integer) hash.value);
                 activeChunkMap.get(chunk.getChunkKey()).value = generateInactiveChunkTimestamp();
             }
         }

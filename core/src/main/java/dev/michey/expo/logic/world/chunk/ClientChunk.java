@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
@@ -32,13 +33,21 @@ public class ClientChunk {
     public int chunkDrawEndX;
     public int chunkDrawEndY;
 
-    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
+    public ClientChunk(int chunkX, int chunkY, ServerTile[] tiles) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
-        this.biomes = biomes;
-        this.layer0 = layer0;
-        this.layer1 = layer1;
-        this.layer2 = layer2;
+        this.biomes = new BiomeType[tiles.length];
+        this.layer0 = new int[tiles.length][];
+        this.layer1 = new int[tiles.length][];
+        this.layer2 = new int[tiles.length][];
+
+        for(int i = 0; i < tiles.length; i++) {
+            ServerTile st = tiles[i];
+            biomes[i] = st.biome;
+            layer0[i] = st.layer0;
+            layer1[i] = st.layer1;
+            layer2[i] = st.layer2;
+        }
 
         layer0Tex = new TextureRegion[layer0.length][];
         layer1Tex = new TextureRegion[layer1.length][];

@@ -18,6 +18,7 @@ import dev.michey.expo.assets.TileSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.localserver.ExpoServerLocal;
+import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -45,8 +46,7 @@ import java.util.zip.Deflater;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
-import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE;
-import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public class ClientWorld {
 
@@ -528,6 +528,15 @@ public class ClientWorld {
                                 }
                             }
                         }
+
+                        if(Expo.get().getImGuiExpo().renderChunkBorders.get()) {
+                            r.chunkRenderer.end();
+                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+                            for(var c : drawChunks) {
+                                r.chunkRenderer.rect(c.chunkDrawBeginX, c.chunkDrawBeginY, CHUNK_SIZE, CHUNK_SIZE);
+                            }
+                        }
                     }
                 }
 
@@ -724,6 +733,10 @@ public class ClientWorld {
 
             rc.batch.end();
         }
+    }
+
+    public ClientChunkGrid getClientChunkGrid() {
+        return clientChunkGrid;
     }
 
 }

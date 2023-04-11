@@ -207,6 +207,79 @@
                 "toolType": "ITEM",
                 "range": 15
             }
+        },
+        {
+            "identifier": "item_flint_shovel",
+            "id": 8,
+            "displayName": "Flint Shovel",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_flint_shovel"
+                },
+                "held": {
+                    "texture": "item_flint_shovel",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 100,
+                "toolType": "SHOVEL",
+                "range": 25
+            }
+        },
+        {
+            "identifier": "item_floor_grass",
+            "id": 9,
+            "displayName": "Grass Floor",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_floor_grass"
+                },
+                "held": {
+                    "texture": "item_floor_grass",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 64,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_floor_sand",
+            "id": 10,
+            "displayName": "Sand Floor",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_floor_sand"
+                },
+                "held": {
+                    "texture": "item_floor_sand",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 64,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
         }
     ]
 }

@@ -11,6 +11,7 @@ import dev.michey.expo.server.main.logic.entity.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
@@ -115,14 +116,11 @@ public class ServerPackets {
     }
 
     /** Sends the P11_ChunkData packet via TCP protocol. */
-    public static void p11ChunkData(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2, PacketReceiver receiver) {
+    public static void p11ChunkData(int chunkX, int chunkY, ServerTile[] tiles, PacketReceiver receiver) {
         P11_ChunkData p = new P11_ChunkData();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
-        p.biomes = biomes;
-        p.layer0 = layer0;
-        p.layer1 = layer1;
-        p.layer2 = layer2;
+        p.tiles = tiles;
         tcp(p, receiver);
     }
 
@@ -281,6 +279,17 @@ public class ServerPackets {
         P30_EntityDataUpdate p = new P30_EntityDataUpdate();
         p.entityId = entityId;
         p.payload = payload;
+        udp(p, receiver);
+    }
+
+    /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
+    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, int[] data, PacketReceiver receiver) {
+        P32_ChunkDataSingle p = new P32_ChunkDataSingle();
+        p.chunkX = chunkX;
+        p.chunkY = chunkY;
+        p.layer = layer;
+        p.tileArray = tileArray;
+        p.data = data;
         udp(p, receiver);
     }
 

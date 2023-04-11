@@ -5,6 +5,10 @@ import com.badlogic.gdx.math.Vector2;
 
 public class GenerationUtils {
 
+    public static Vector2 circularRandom(float radius) {
+        return circular(MathUtils.random(360f), radius);
+    }
+
     public static Vector2 circular(float angle, float radius) {
         return new Vector2(
                 MathUtils.cosDeg(angle) * radius,

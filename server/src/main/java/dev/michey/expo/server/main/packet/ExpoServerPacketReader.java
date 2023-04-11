@@ -74,6 +74,11 @@ public class ExpoServerPacketReader {
             if(sp == null) return;
 
             sp.serverArmRotation = p.rotation;
+        } else if(packet instanceof P31_PlayerDig p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            sp.digAt(p.chunkX, p.chunkY, p.tileArray);
         }
     }
 
@@ -176,6 +181,12 @@ public class ExpoServerPacketReader {
         } else if(o instanceof P27_PlayerEntitySelection p) {
             ServerPlayer player = connectionToPlayer(connection);
             player.selectedEntity = p.entityId;
+        } else if(o instanceof P31_PlayerDig p) {
+            ServerPlayer player = connectionToPlayer(connection);
+
+            if(player != null) {
+                player.digAt(p.chunkX, p.chunkY, p.tileArray);
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.gen.EntityPopulator;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
@@ -43,6 +44,7 @@ public class ExpoServerRegistry {
                 WorldGenSettings.class,
                 WorldGenNoiseSettings.class,
                 EntityPopulator.class,
+                ServerTile.class,
 
                 // Packets
                 P0_Auth_Req.class,
@@ -75,7 +77,9 @@ public class ExpoServerRegistry {
                 P27_PlayerEntitySelection.class,
                 P28_PlayerFoodParticle.class,
                 P29_EntityCreateAdvanced.class,
-                P30_EntityDataUpdate.class
+                P30_EntityDataUpdate.class,
+                P31_PlayerDig.class,
+                P32_ChunkDataSingle.class
         );
     }
 
