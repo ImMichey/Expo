@@ -90,9 +90,9 @@ public class ClientChunkGrid {
         interpolation = Interpolation.smooth2.apply(waveDelta) * WAVE_STRENGTH;
     }
 
-    public void updateChunkData(int chunkX, int chunkY, ServerTile[] tiles) {
+    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
         String key = chunkX + "," + chunkY;
-        clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, tiles));
+        clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, layer0, layer1, layer2));
     }
 
     /** Returns the BiomeType at tile position X & Y. */

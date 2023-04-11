@@ -1,28 +1,16 @@
 package dev.michey.expo.logic.entity;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
-import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.assets.TileSheet;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
-import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.InputUtils;
-
-import java.util.Arrays;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ClientSelector extends ClientEntity {
 
-    private TextureRegion selectorTexture;
     private TextureRegion square;
     public boolean visible = false;
     public float tx, ty;
@@ -46,8 +34,7 @@ public class ClientSelector extends ClientEntity {
 
     @Override
     public void onCreation() {
-        selectorTexture = ExpoAssets.get().textureRegion("selector");
-        square = ExpoAssets.get().textureRegion("square16x16");
+        square = tr("square16x16");
     }
 
     @Override

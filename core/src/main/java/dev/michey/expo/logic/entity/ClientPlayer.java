@@ -23,7 +23,6 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.world.gen.PoissonDiskSampler;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -31,7 +30,6 @@ import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.PacketUtils;
 
-import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -247,7 +245,7 @@ public class ClientPlayer extends ClientEntity {
             if(holdingItemId != -1) {
                 ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
 
-                if(mapping.logic.isTool() && mapping.logic.toolType == ToolType.SHOVEL) {
+                if(entityManager().selectedEntity == null && mapping.logic.isTool() && mapping.logic.toolType == ToolType.SHOVEL) {
                     float tx = RenderContext.get().mouseWorldGridX;
                     float ty = RenderContext.get().mouseWorldGridY;
                     float range = mapping.logic.range;

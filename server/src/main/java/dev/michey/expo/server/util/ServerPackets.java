@@ -17,6 +17,8 @@ import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
 
+import java.util.Arrays;
+
 import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerPackets {
@@ -120,7 +122,16 @@ public class ServerPackets {
         P11_ChunkData p = new P11_ChunkData();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
-        p.tiles = tiles;
+        p.biomes = new BiomeType[tiles.length];
+        p.layer0 = new int[tiles.length][];
+        p.layer1 = new int[tiles.length][];
+        p.layer2 = new int[tiles.length][];
+        for(int i = 0; i < tiles.length; i++) {
+            p.biomes[i] = tiles[i].biome;
+            p.layer0[i] = tiles[i].layer0;
+            p.layer1[i] = tiles[i].layer1;
+            p.layer2[i] = tiles[i].layer2;
+        }
         tcp(p, receiver);
     }
 

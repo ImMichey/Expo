@@ -48,6 +48,7 @@ public class ServerChunk {
     public final int chunkY;
     private final String chunkKey;
     public final ServerTile[] tiles;
+    public long lastTileUpdate;
 
     /** Tile based entities */
     private int[] tileBasedEntityIdGrid;
@@ -78,6 +79,8 @@ public class ServerChunk {
             tiles[i] = new ServerTile(this, x, y, i);
             dimension.getChunkHandler().addTile(tiles[i]);
         }
+
+        lastTileUpdate = System.currentTimeMillis();
     }
 
     public String getChunkKey() {

@@ -33,20 +33,19 @@ public class ClientChunk {
     public int chunkDrawEndX;
     public int chunkDrawEndY;
 
-    public ClientChunk(int chunkX, int chunkY, ServerTile[] tiles) {
+    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
-        this.biomes = new BiomeType[tiles.length];
-        this.layer0 = new int[tiles.length][];
-        this.layer1 = new int[tiles.length][];
-        this.layer2 = new int[tiles.length][];
+        this.biomes = new BiomeType[biomes.length];
+        this.layer0 = new int[biomes.length][];
+        this.layer1 = new int[biomes.length][];
+        this.layer2 = new int[biomes.length][];
 
-        for(int i = 0; i < tiles.length; i++) {
-            ServerTile st = tiles[i];
-            biomes[i] = st.biome;
-            layer0[i] = st.layer0;
-            layer1[i] = st.layer1;
-            layer2[i] = st.layer2;
+        for(int i = 0; i < biomes.length; i++) {
+            this.biomes[i] = biomes[i];
+            this.layer0[i] = layer0[i];
+            this.layer1[i] = layer1[i];
+            this.layer2[i] = layer2[i];
         }
 
         layer0Tex = new TextureRegion[layer0.length][];

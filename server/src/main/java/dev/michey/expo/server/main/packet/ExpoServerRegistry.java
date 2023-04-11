@@ -44,7 +44,6 @@ public class ExpoServerRegistry {
                 WorldGenSettings.class,
                 WorldGenNoiseSettings.class,
                 EntityPopulator.class,
-                ServerTile.class,
 
                 // Packets
                 P0_Auth_Req.class,

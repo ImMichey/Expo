@@ -5,7 +5,6 @@ import dev.michey.expo.noise.BiomeType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.server.main.logic.world.chunk.ServerChunk.*;
 
 public class ServerTile {

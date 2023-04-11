@@ -15,6 +15,7 @@ import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.server.packet.P16_PlayerPunch;
@@ -24,6 +25,7 @@ import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +66,7 @@ public class ServerPlayer extends ServerEntity {
 
     public int selectedEntity = -1;
 
-    public HashSet<String> hasSeenChunks = new HashSet<>();
+    public HashMap<String, Long> hasSeenChunks = new HashMap<>();
     public int[] currentlyVisibleChunks;
 
     public EntityVisibilityController entityVisibilityController = new EntityVisibilityController(this);
@@ -357,31 +359,38 @@ public class ServerPlayer extends ServerEntity {
     public void onChunkChanged() {
         //log("PLAYER " + username + " changed chunk to " + chunkX + "," + chunkY);
         currentlyVisibleChunks = getChunkGrid().getChunkNumbersInPlayerRange(this);
-        List<Pair<String, P11_ChunkData>> chunkPacketList = null;
+        List<Pair<String, ServerTile[]>> chunkPacketList = null;
 
         for(int i = 0; i < currentlyVisibleChunks.length; i += 2) {
             int x = currentlyVisibleChunks[i    ];
             int y = currentlyVisibleChunks[i + 1];
             String key = x + "," + y;
 
-            //log("Seen chunk " + key + " -> " + hasSeenChunks.contains(key));
+            boolean newChunk = !hasSeenChunks.containsKey(key);
+            boolean resend = false;
+            ServerChunk chunk = null;
 
-            if(!hasSeenChunks.contains(key)) {
+            if(!newChunk) {
+                chunk = getChunkGrid().getChunk(x, y);
+                long cached = hasSeenChunks.get(key);
+
+                if(cached < chunk.lastTileUpdate) {
+                    resend = true;
+                }
+            }
+
+            if(newChunk || resend) {
                 if(chunkPacketList == null) chunkPacketList = new LinkedList<>();
-                hasSeenChunks.add(key);
+                if(chunk == null) chunk = getChunkGrid().getChunk(x, y);
 
-                var chunk = getChunkGrid().getChunk(x, y);
-                var packet = new P11_ChunkData();
-                packet.chunkX = x;
-                packet.chunkY = y;
-                packet.tiles = chunk.tiles;
-                chunkPacketList.add(new Pair<>(key, packet));
+                hasSeenChunks.put(key, chunk.lastTileUpdate);
+                chunkPacketList.add(new Pair<>(key, chunk.tiles));
             }
         }
 
         if(chunkPacketList != null) {
             for(var pair : chunkPacketList) {
-                ServerPackets.p11ChunkData(pair.value.chunkX, pair.value.chunkY, pair.value.tiles, PacketReceiver.player(this));
+                ServerPackets.p11ChunkData(pair.value[0].chunk.chunkX, pair.value[0].chunk.chunkY, pair.value, PacketReceiver.player(this));
             }
         }
     }
@@ -398,6 +407,9 @@ public class ServerPlayer extends ServerEntity {
         boolean soil = tile.isSoilTile();
 
         if(grass || sand) {
+            // Update tile timestamp
+            chunk.lastTileUpdate = System.currentTimeMillis();
+
             { // Drop layer 1 tile as item.
                 ServerItem drop = new ServerItem();
                 drop.itemContainer = new ServerInventoryItem(grass ?

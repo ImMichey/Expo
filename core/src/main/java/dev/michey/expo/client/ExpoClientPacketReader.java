@@ -120,7 +120,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P10_PlayerQuit p) {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
-            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.tiles);
+            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.biomes, p.layer0, p.layer1, p.layer2);
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);
 
