@@ -19,7 +19,7 @@
                 }
             },
             "logic": {
-                "stackSize": 64,
+                "stackSize": 100,
                 "durability": -1,
                 "toolType": "ITEM",
                 "range": 25
@@ -44,7 +44,7 @@
                 }
             },
             "logic": {
-                "stackSize": 999,
+                "stackSize": 100,
                 "durability": -1,
                 "toolType": "ITEM",
                 "foodData": {
@@ -202,7 +202,7 @@
                 }
             },
             "logic": {
-                "stackSize": 64,
+                "stackSize": 100,
                 "durability": -1,
                 "toolType": "ITEM",
                 "range": 15
@@ -252,7 +252,7 @@
                 }
             },
             "logic": {
-                "stackSize": 64,
+                "stackSize": 100,
                 "durability": -1,
                 "toolType": "ITEM"
             }
@@ -276,7 +276,7 @@
                 }
             },
             "logic": {
-                "stackSize": 64,
+                "stackSize": 100,
                 "durability": -1,
                 "toolType": "ITEM"
             }

@@ -17,7 +17,6 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
-import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.server.packet.P16_PlayerPunch;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
@@ -26,7 +25,6 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 

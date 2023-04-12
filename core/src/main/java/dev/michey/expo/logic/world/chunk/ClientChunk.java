@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.noise.BiomeType;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
-import static dev.michey.expo.log.ExpoLogger.log;
+import java.util.Arrays;
+
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 
 public class ClientChunk {
@@ -16,10 +16,10 @@ public class ClientChunk {
     // passed by server
     public int chunkX;
     public int chunkY;
-    public final BiomeType[] biomes;
-    public final int[][] layer0;
-    public final int[][] layer1;
-    public final int[][] layer2;
+    public BiomeType[] biomes;
+    public int[][] layer0;
+    public int[][] layer1;
+    public int[][] layer2;
     // SET BY CLIENT
     public final TextureRegion[][] layer0Tex;
     public final TextureRegion[][] layer1Tex;
@@ -33,66 +33,103 @@ public class ClientChunk {
     public int chunkDrawEndX;
     public int chunkDrawEndY;
 
+    private void updateLayer0Tex(int[][] newLayer0, boolean skipCheck) {
+        if(!skipCheck) {
+            for(int i = 0 ; i < newLayer0.length; i++) {
+                int[] newIds = newLayer0[i];
+                boolean updateTex = !Arrays.equals(newIds, layer0[i]);
+                if(updateTex) _genLayer0Tex(newIds, i);
+            }
+        } else {
+            for(int i = 0 ; i < layer0.length; i++) {
+                int[] current = layer0[i];
+                _genLayer0Tex(current, i);
+            }
+        }
+
+        if(!skipCheck) this.layer0 = newLayer0;
+    }
+
+    private void updateLayer1Tex(int[][] newLayer1, boolean skipCheck) {
+        if(!skipCheck) {
+            for(int i = 0 ; i < newLayer1.length; i++) {
+                int[] newIds = newLayer1[i];
+                boolean updateTex = !Arrays.equals(newIds, layer1[i]);
+                if(updateTex) _genLayer1Tex(newIds, i);
+            }
+        } else {
+            for(int i = 0 ; i < layer1.length; i++) {
+                int[] current = layer1[i];
+                _genLayer1Tex(current, i);
+            }
+        }
+
+        if(!skipCheck) this.layer1 = newLayer1;
+    }
+
+    private void updateLayer2Tex(int[][] newLayer2, boolean skipCheck) {
+        if(!skipCheck) {
+            for(int i = 0 ; i < newLayer2.length; i++) {
+                int[] newIds = newLayer2[i];
+                boolean updateTex = !Arrays.equals(newIds, layer2[i]);
+                if(updateTex) _genLayer2Tex(newIds, i);
+            }
+        } else {
+            for(int i = 0 ; i < layer2.length; i++) {
+                int[] current = layer2[i];
+                _genLayer2Tex(current, i);
+            }
+        }
+
+        if(!skipCheck) this.layer2 = newLayer2;
+    }
+
+    private void _genLayer0Tex(int[] ids, int i) {
+        layer0Tex[i] = new TextureRegion[ids.length];
+
+        for(int j = 0; j < ids.length; j++) {
+            int index = ids[j];
+            layer0Tex[i][j] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(index);
+        }
+    }
+
+    private void _genLayer1Tex(int[] ids, int i) {
+        layer1Tex[i] = new TextureRegion[ids.length];
+
+        for(int j = 0; j < ids.length; j++) {
+            int index = ids[j];
+
+            if(index == 1 && MathUtils.random() < 0.66f) {
+                layer1Tex[i][j] = ExpoAssets.get().getTileSheet().getRandomVariation(index);
+            } else {
+                layer1Tex[i][j] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(index);
+            }
+        }
+    }
+
+    private void _genLayer2Tex(int[] ids, int i) {
+        layer2Tex[i] = new TextureRegion[ids.length];
+
+        for(int j = 0; j < ids.length; j++) {
+            int index = ids[j];
+            layer2Tex[i][j] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(index);
+        }
+    }
+
     public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
-        this.biomes = new BiomeType[biomes.length];
-        this.layer0 = new int[biomes.length][];
-        this.layer1 = new int[biomes.length][];
-        this.layer2 = new int[biomes.length][];
-
-        for(int i = 0; i < biomes.length; i++) {
-            this.biomes[i] = biomes[i];
-            this.layer0[i] = layer0[i];
-            this.layer1[i] = layer1[i];
-            this.layer2[i] = layer2[i];
-        }
+        this.biomes = biomes;
+        this.layer0 = layer0;
+        this.layer1 = layer1;
+        this.layer2 = layer2;
 
         layer0Tex = new TextureRegion[layer0.length][];
         layer1Tex = new TextureRegion[layer1.length][];
         layer2Tex = new TextureRegion[layer2.length][];
-        ExpoAssets assets = ExpoAssets.get();
-
-        {
-            for(int i = 0 ; i < layer0.length; i++) {
-                int[] current = layer0[i];
-                layer0Tex[i] = new TextureRegion[current.length];
-
-                for(int j = 0; j < current.length; j++) {
-                    int index = current[j];
-                    layer0Tex[i][j] = assets.getTileSheet().getTilesetTextureMap().get(index);
-                }
-            }
-        }
-
-        {
-            for(int i = 0 ; i < layer1.length; i++) {
-                int[] current = layer1[i];
-                layer1Tex[i] = new TextureRegion[current.length];
-
-                for(int j = 0; j < current.length; j++) {
-                    int index = current[j];
-
-                    if(index == 1 && MathUtils.random() < 0.66f) {
-                        layer1Tex[i][j] = assets.getTileSheet().getRandomVariation(index);
-                    } else {
-                        layer1Tex[i][j] = assets.getTileSheet().getTilesetTextureMap().get(index);
-                    }
-                }
-            }
-        }
-
-        {
-            for(int i = 0 ; i < layer2.length; i++) {
-                int[] current = layer2[i];
-                layer2Tex[i] = new TextureRegion[current.length];
-
-                for(int j = 0; j < current.length; j++) {
-                    int index = current[j];
-                    layer2Tex[i][j] = assets.getTileSheet().getTilesetTextureMap().get(index);
-                }
-            }
-        }
+        updateLayer0Tex(layer0, true);
+        updateLayer1Tex(layer1, true);
+        updateLayer2Tex(layer2, true);
 
         chunkDrawBeginX = ExpoShared.chunkToPos(chunkX);
         chunkDrawBeginY = ExpoShared.chunkToPos(chunkY);
@@ -123,6 +160,13 @@ public class ClientChunk {
                 }
             }
         }
+    }
+
+    public void update(BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
+        this.biomes = biomes;
+        if(!Arrays.deepEquals(layer0, this.layer0)) updateLayer0Tex(layer0, false);
+        if(!Arrays.deepEquals(layer1, this.layer1)) updateLayer1Tex(layer1, false);
+        if(!Arrays.deepEquals(layer2, this.layer2)) updateLayer2Tex(layer2, false);
     }
 
     private Pair<Integer, Integer> idToDir(int id) {
