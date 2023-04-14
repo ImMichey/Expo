@@ -78,7 +78,8 @@ public class ExpoServerRegistry {
                 P29_EntityCreateAdvanced.class,
                 P30_EntityDataUpdate.class,
                 P31_PlayerDig.class,
-                P32_ChunkDataSingle.class
+                P32_ChunkDataSingle.class,
+                P33_TileDig.class
         );
     }
 

@@ -13,6 +13,7 @@ import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
@@ -153,10 +154,22 @@ public class ServerPlayer extends ServerEntity {
         ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, PacketReceiver.whoCanSee(this));
     }
 
+    public float movementSpeedMultiplicator() {
+        boolean water = isInWater();
+        if(water) return 0.5f;
+
+        int tileX = ExpoShared.posToTile(posX);
+        int tileY = ExpoShared.posToTile(posY);
+        boolean hole = getChunkGrid().getTile(tileX, tileY).isHoleSoilTile();
+        if(hole) return 0.75f;
+
+        return 1.0f;
+    }
+
     @Override
     public void tick(float delta) {
         if(xDir != 0 || yDir != 0) {
-            float waterFactor = isInWater() ? 0.5f : 1.0f;
+            float multiplicator = movementSpeedMultiplicator();
             boolean normalize = xDir != 0 && yDir != 0;
             float normalizer = 1.0f;
 
@@ -165,8 +178,8 @@ public class ServerPlayer extends ServerEntity {
                 normalizer = 1 / len;
             }
 
-            float toMoveX = xDir * playerSpeed * waterFactor * normalizer;
-            float toMoveY = yDir * playerSpeed * waterFactor * normalizer;
+            float toMoveX = xDir * playerSpeed * multiplicator * normalizer;
+            float toMoveY = yDir * playerSpeed * multiplicator * normalizer;
 
             var result = physicsBody.move(toMoveX, toMoveY, BoundingBox.playerCollisionFilter);
 
@@ -399,26 +412,71 @@ public class ServerPlayer extends ServerEntity {
 
         var chunk = getChunkGrid().getChunk(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
+        int pColor = tile.toParticleColorId();
 
         boolean grass = tile.isGrassTile();
         boolean sand = tile.isSandTile();
-        boolean soil = tile.isSoilTile();
+        boolean fullSoil = tile.isSoilTile() && tile.layerIsEmpty(1);
 
-        if(grass || sand) {
-            // Update tile timestamp
-            chunk.lastTileUpdate = System.currentTimeMillis();
+        if(grass || sand || fullSoil) {
+            ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
+            boolean dugUp = tile.dig(mapping.logic.attackDamage);
 
-            { // Drop layer 1 tile as item.
-                ServerItem drop = new ServerItem();
-                drop.itemContainer = new ServerInventoryItem(grass ?
-                        ItemMapper.get().getMapping("item_floor_grass").id :
-                        ItemMapper.get().getMapping("item_floor_sand").id, 1);
-                drop.posX = ExpoShared.tileToPos(tile.tileX) + 8f;
-                drop.posY = ExpoShared.tileToPos(tile.tileY) + 8f;
-                Vector2 dst = GenerationUtils.circularRandom(3.0f);
-                drop.dstX = dst.x;
-                drop.dstY = dst.y;
-                ServerWorld.get().registerServerEntity(entityDimension, drop);
+            if(dugUp) {
+                // Update tile health
+                tile.digHealth = 20.0f;
+
+                // Update tile timestamp
+                chunk.lastTileUpdate = System.currentTimeMillis();
+
+                { // Drop layer 1 tile as item.
+                    ServerItem drop = new ServerItem();
+                    drop.itemContainer = new ServerInventoryItem(grass ?
+                            ItemMapper.get().getMapping("item_floor_grass").id :
+                            ItemMapper.get().getMapping("item_floor_sand").id, 1);
+                    drop.posX = ExpoShared.tileToPos(tile.tileX) + 8f;
+                    drop.posY = ExpoShared.tileToPos(tile.tileY) + 8f;
+                    Vector2 dst = GenerationUtils.circularRandom(3.0f);
+                    drop.dstX = dst.x;
+                    drop.dstY = dst.y;
+                    ServerWorld.get().registerServerEntity(entityDimension, drop);
+                }
+
+                { // Update tile data
+                    if(fullSoil) {
+                        tile.updateLayer0(true);
+                        ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 0, tile.tileArray, tile.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+
+                        for(ServerTile st : tile.getNeighbouringTiles()) {
+                            st.updateLayer0(false);
+                            ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 0, st.tileArray, st.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                        }
+                    } else {
+                        tile.layer1 = new int[] {-1};
+                        ServerPackets.p32ChunkDataSingle(chunkX, chunkY, 1, tile.tileArray, new int[] {-1}, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+
+                        for(ServerTile st : tile.getNeighbouringTiles()) {
+                            st.updateLayer1();
+                            ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 1, st.tileArray, st.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                        }
+                    }
+                }
+            }
+
+            { // Dig packet.
+                ServerPackets.p33TileDig(tile.tileX, tile.tileY, pColor, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+            }
+
+            { // Play dig up sound.
+                String digSound = "grass_hit";
+
+                if(fullSoil) {
+                    digSound = "step_water";
+                }
+
+                ServerPackets.p24PositionalSound(digSound,
+                        ExpoShared.tileToPos(tile.tileX) + 8f, ExpoShared.tileToPos(tile.tileY) + 8f,
+                        ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
             }
 
             { // Update player inventory/item.
@@ -432,18 +490,6 @@ public class ServerPlayer extends ServerEntity {
 
                 ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
             }
-
-            { // Update tile data
-                tile.layer1 = new int[] {-1};
-                ServerPackets.p32ChunkDataSingle(chunkX, chunkY, 1, tile.tileArray, new int[] {-1}, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
-
-                for(ServerTile st : tile.getNeighbouringTiles()) {
-                    st.updateLayer1();
-                    ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 1, st.tileArray, st.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
-                }
-            }
-        } else if(soil && tile.layerIsEmpty(1)) {
-
         }
     }
 

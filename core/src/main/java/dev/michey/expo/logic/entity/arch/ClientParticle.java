@@ -23,7 +23,8 @@ public abstract class ClientParticle extends ClientEntity {
     public float rotationSpeed;
 
     //private float pox, poy; // Particle origin values
-    private float pvx, pvy; // Particle velocity values
+    public float pvx;
+    public float pvy; // Particle velocity values
 
     @Override
     public void tick(float delta) {

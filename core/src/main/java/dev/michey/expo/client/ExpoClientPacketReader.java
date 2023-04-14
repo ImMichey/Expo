@@ -14,6 +14,7 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
@@ -24,10 +25,9 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.packet.*;
-import dev.michey.expo.util.ClientStatic;
-import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.PacketUtils;
+import dev.michey.expo.util.*;
 
 import java.util.Arrays;
 
@@ -266,6 +266,23 @@ public class ExpoClientPacketReader {
                     chunk.layer1Tex[p.tileArray][j] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(index);
                 }
             }
+        } else if(o instanceof P33_TileDig p) {
+            float x = ExpoShared.tileToPos(p.tileX);
+            float y = ExpoShared.tileToPos(p.tileY);
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(8, 16)
+                    .scale(0.5f, 0.9f)
+                    .lifetime(0.3f, 0.5f)
+                    .color(ParticleColorMap.random(p.particleColorId))
+                    .position(x + 2, y + 2)
+                    .offset(12, 12)
+                    .velocity(-24, 24, 8, 32)
+                    .fadeout(0.15f)
+                    .textureRange(0, 7)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .spawn();
         }
     }
 

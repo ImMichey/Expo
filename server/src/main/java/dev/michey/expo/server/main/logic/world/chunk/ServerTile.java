@@ -1,10 +1,12 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.util.ExpoShared;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.server.main.logic.world.chunk.ServerChunk.*;
 
 public class ServerTile {
@@ -19,12 +21,64 @@ public class ServerTile {
     public int[] layer1;
     public int[] layer2;
 
+    public float digHealth;
+    public long digTimestamp;
+
     public ServerTile(ServerChunk chunk, int tileX, int tileY, int tileArray) {
         this.chunk = chunk;
         this.tileX = tileX;
         this.tileY = tileY;
         this.tileArray = tileArray;
         biome = BiomeType.VOID;
+    }
+
+    public boolean dig(float hp) {
+        long now = System.currentTimeMillis();
+        long diff = now - digTimestamp;
+
+        if(diff >= ExpoShared.RESET_TILE_DIG_HEALTH_AFTER_MILLIS) {
+            digHealth = 20.0f - hp;
+            digTimestamp = now;
+            return false;
+        }
+
+        digHealth -= hp;
+        digTimestamp = now;
+        return digHealth <= 0;
+    }
+
+    public void updateLayer0(boolean nowHole) {
+        var neighbours = getNeighbouringTiles();
+        int tis = 0, tid = 0;
+        int minTile;
+
+        int n = neighbours.get(5).layer0[0];
+        int e = neighbours.get(3).layer0[0];
+        int s = neighbours.get(1).layer0[0];
+        int w = neighbours.get(7).layer0[0];
+
+        int ne = neighbours.get(4).layer0[0];
+        int se = neighbours.get(2).layer0[0];
+        int sw = neighbours.get(0).layer0[0];
+        int nw = neighbours.get(6).layer0[0];
+
+        if(nowHole || (isHoleSoilTile())) {
+            minTile = 90;
+
+            if(isHoleSoilTile(n)) tis += NORTH;
+            if(isHoleSoilTile(e)) tis += EAST;
+            if(isHoleSoilTile(s)) tis += SOUTH;
+            if(isHoleSoilTile(w)) tis += WEST;
+
+            if(isHoleSoilTile(ne)) tid += NORTH_EAST;
+            if(isHoleSoilTile(se)) tid += SOUTH_EAST;
+            if(isHoleSoilTile(sw)) tid += SOUTH_WEST;
+            if(isHoleSoilTile(nw)) tid += NORTH_WEST;
+
+            layer0 = chunk.tileIndexToIds(tis, tid, minTile);
+        } else {
+            layer0 = new int[] {0};
+        }
     }
 
     public void updateLayer1() {
@@ -103,6 +157,13 @@ public class ServerTile {
                 '}';
     }
 
+    public int toParticleColorId() {
+        if(isGrassTile()) return 1;
+        if(isSandTile()) return 2;
+        if(isSoilTile()) return 0;
+        return -1;
+    }
+
     /** Layer utility methods below */
     public boolean isSandTile() {
         return isSandTile(layer1[0]);
@@ -116,6 +177,10 @@ public class ServerTile {
         return isSoilTile(layer0[0]);
     }
 
+    public boolean isHoleSoilTile() {
+        return isHoleSoilTile(layer0[0]);
+    }
+
     public static boolean isSandTile(int id) {
         return id >= 23 && id <= 44;
     }
@@ -126,6 +191,10 @@ public class ServerTile {
 
     public static boolean isSoilTile(int id) {
         return id == 0;
+    }
+
+    public boolean isHoleSoilTile(int id) {
+        return id >= 90 && id <= 111;
     }
 
     public boolean layerIsEmpty(int layer) {

@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.ClientItem;
 import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.ClientSelector;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
@@ -101,15 +102,19 @@ public class ClientEntityManager {
         }
 
         depthEntityList.sort(depthSorter);
+        var player = ClientPlayer.getLocalPlayer();
+        boolean doCheck = player != null;
 
         for(ClientEntity entity : depthEntityList) {
             entity.tick(delta);
 
-            if(entity instanceof SelectableEntity) {
-                Object[] data = isNowSelected(entity);
+            if(doCheck && !player.selector.visible) {
+                if(entity instanceof SelectableEntity) {
+                    Object[] data = isNowSelected(entity);
 
-                if(data != null) {
-                    selectableEntities.put(entity, data);
+                    if(data != null) {
+                        selectableEntities.put(entity, data);
+                    }
                 }
             }
         }

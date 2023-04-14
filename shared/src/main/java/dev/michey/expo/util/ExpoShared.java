@@ -48,6 +48,8 @@ public class ExpoShared {
     public static final float PLAYER_DEFAULT_ATTACK_DAMAGE = 10.0f;
     public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / 60f;
 
+    public static final long RESET_TILE_DIG_HEALTH_AFTER_MILLIS = 5000;
+
     /** Global random */
     public static final Random RANDOM = new Random();
 

@@ -1,6 +1,8 @@
 package dev.michey.expo.logic.entity.arch;
 
 import dev.michey.expo.logic.entity.*;
+import dev.michey.expo.logic.entity.particle.ClientParticleFood;
+import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
 public enum ClientEntityType {
@@ -38,6 +40,11 @@ public enum ClientEntityType {
 
     public static ClientEntity typeToClientEntity(int id) {
         return switch (id) {
+            case -1 -> new ClientSelector();
+            case -2 -> new ClientRaindrop();
+            case -3 -> new ClientParticleHit();
+            case -4 -> new ClientParticleFood();
+            case -5 -> new ClientGhostItem();
             case 0 -> new ClientPlayer();
             case 1 -> new ClientDummy();
             case 2 -> new ClientGrass();

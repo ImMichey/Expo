@@ -1,11 +1,8 @@
 package dev.michey.expo.logic.world.chunk;
 
 import com.badlogic.gdx.math.Interpolation;
-import com.esotericsoftware.kryonet.Server;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.noise.BiomeType;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
-import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import make.some.noise.Noise;

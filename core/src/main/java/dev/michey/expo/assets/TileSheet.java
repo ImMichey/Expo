@@ -31,6 +31,7 @@ public class TileSheet {
         notSet = singleEntry("tile_not_set");
         multiEntry("tile_ocean", 22);
         multiEntry("tile_ocean_deep", 22);
+        multiEntry("tile_soil_hole", 22);
 
         // Variations
         variationEntry("tile_grass", 1, 7);

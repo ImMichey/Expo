@@ -14,6 +14,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ParticleColorMap;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
             float velocityX = MathUtils.random(-24, 24);
             float velocityY = MathUtils.random(-24, 24);
 
-            p.setParticleColor(MathUtils.randomBoolean() ? ClientStatic.COLOR_PARTICLE_MUSHROOM_1 : ClientStatic.COLOR_PARTICLE_MUSHROOM_2);
+            p.setParticleColor(MathUtils.randomBoolean() ? ParticleColorMap.COLOR_PARTICLE_MUSHROOM_1 : ParticleColorMap.COLOR_PARTICLE_MUSHROOM_2);
             p.setParticleLifetime(0.3f);
             p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
             float scale = MathUtils.random(0.5f, 1.0f);

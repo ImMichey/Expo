@@ -304,6 +304,15 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P33_TileDig packet via UDP protocol. */
+    public static void p33TileDig(int tileX, int tileY, int particleColorId, PacketReceiver receiver) {
+        P33_TileDig p = new P33_TileDig();
+        p.tileX = tileX;
+        p.tileY = tileY;
+        p.particleColorId = particleColorId;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;
