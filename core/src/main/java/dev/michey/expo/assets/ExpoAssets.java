@@ -18,6 +18,7 @@ public class ExpoAssets {
 
     private TileSheet tileSheet;
     private ParticleSheet particleSheet;
+    private ItemSheet itemSheet;
 
     public ExpoAssets() {
         assetManager = new AssetManager();
@@ -58,6 +59,7 @@ public class ExpoAssets {
 
         tileSheet = new TileSheet(this);
         particleSheet = new ParticleSheet(textureRegion("particlesheet"));
+        itemSheet = new ItemSheet(textureRegion("itemsheet"));
     }
 
     public TileSheet getTileSheet() {
@@ -66,6 +68,10 @@ public class ExpoAssets {
 
     public ParticleSheet getParticleSheet() {
         return particleSheet;
+    }
+
+    public ItemSheet getItemSheet() {
+        return itemSheet;
     }
 
     public void slice(String tileName, boolean singleTile, int startX, int startY) {

@@ -193,8 +193,12 @@ public class ServerTile {
         return id == 0;
     }
 
-    public boolean isHoleSoilTile(int id) {
+    public static boolean isHoleSoilTile(int id) {
         return id >= 90 && id <= 111;
+    }
+
+    public static boolean isEmptyTile(int id) {
+        return id == -1;
     }
 
     public boolean layerIsEmpty(int layer) {

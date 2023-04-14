@@ -260,14 +260,38 @@
         {
             "identifier": "item_floor_sand",
             "id": 10,
-            "displayName": "Sand Floor",
+            "displayName": "Sand",
             "displayNameColor": "#ffffff",
             "render": {
                 "ui": {
-                    "texture": "item_floor_sand"
+                    "texture": "item_sand"
                 },
                 "held": {
-                    "texture": "item_floor_sand",
+                    "texture": "item_sand",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_dirt",
+            "id": 11,
+            "displayName": "Dirt",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_dirt"
+                },
+                "held": {
+                    "texture": "item_dirt",
                     "scaleX": 1,
                     "scaleY": 1,
                     "offsetX": -0.5,

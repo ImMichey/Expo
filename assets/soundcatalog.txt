@@ -14,6 +14,23 @@ step_sand_3.wav
 step_sand_4.wav
 step_sand_5.wav
 
+#step_mud;true;0.9-1.1;SFX;1.0
+step_mud_1.wav
+step_mud_2.wav
+step_mud_3.wav
+step_mud_4.wav
+
+#step_dirt;true;0.9-1.1;SFX;1.0
+step_dirt_1.wav
+step_dirt_2.wav
+step_dirt_3.wav
+step_dirt_4.wav
+step_dirt_5.wav
+
+#dig_sand;true;0.9-1.1;SFX;1.0
+dig_sand_1.wav
+dig_sand_2.wav
+
 #step_water;true;0.9-1.1;SFX;0.8
 step_water_1.wav
 step_water_2.wav

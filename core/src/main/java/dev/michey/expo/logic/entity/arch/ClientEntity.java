@@ -10,8 +10,10 @@ import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.weather.Weather;
 
 public abstract class ClientEntity {
 
@@ -199,22 +201,44 @@ public abstract class ClientEntity {
         return serverDirX != 0 || serverDirY != 0 || doLerp;
     }
 
-    public BiomeType getBiome() {
-        ClientChunk c = chunkGrid().getChunk(clientChunkX, clientChunkY);
+    public String getFootstepSound() {
+        int chunkX = ExpoShared.posToChunk(clientPosX);
+        int chunkY = ExpoShared.posToChunk(clientPosY);
+        int tileX = ExpoShared.posToTile(clientPosX);
+        int tileY = ExpoShared.posToTile(clientPosY);
+
+        ClientChunk c = chunkGrid().getChunk(chunkX, chunkY);
 
         int startTileX = ExpoShared.posToTile(ExpoShared.chunkToPos(c.chunkX));
         int startTileY = ExpoShared.posToTile(ExpoShared.chunkToPos(c.chunkY));
-        int relativeTileX = clientTileX - startTileX;
-        int relativeTileY = clientTileY - startTileY;
-        int mouseTileArray = relativeTileY * 8 + relativeTileX;
+        int relativeTileX = tileX - startTileX;
+        int relativeTileY = tileY - startTileY;
+        int tileArray = relativeTileY * 8 + relativeTileX;
 
-        if(mouseTileArray >= 64) {
-            // TODO: Fix, this happens when mouseX, mouseY == integer at border of chunk
-            ExpoLogger.log("MouseTileArray > 63: " + mouseTileArray + " [chunkXY: " + c.chunkX + "," + c.chunkY + "] [startTileXY: " + startTileX + "," + startTileY + "] [relativeTileXY: " + relativeTileX + "," + relativeTileY + "]");
-            mouseTileArray = 63;
+        int l0 = c.layer0[tileArray][0];
+        int l1 = c.layer1[tileArray][0];
+
+        if(ServerTile.isHoleSoilTile(l0)) {
+            return isRaining() ? "step_mud" : "step_dirt";
         }
 
-        return c.biomes[mouseTileArray];
+        if(ServerTile.isGrassTile(l1)) {
+            return "step_forest";
+        }
+
+        if(ServerTile.isSandTile(l1)) {
+            return "step_sand";
+        }
+
+        if(BiomeType.isWater(c.biomes[tileArray])) {
+            return "step_water";
+        }
+
+        return isRaining() ? "step_mud" : "step_dirt";
+    }
+
+    public boolean isRaining() {
+        return ExpoClientContainer.get().getClientWorld().worldWeather == Weather.RAIN.WEATHER_ID;
     }
 
     public void readEntityDataUpdate(Object[] payload) {

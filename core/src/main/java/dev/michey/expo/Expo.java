@@ -258,10 +258,12 @@ public class Expo implements ApplicationListener {
 	public void loadItemMapperTextures() {
 		// load item render
 		for(ItemMapping map : ItemMapper.get().getItemMappings()) {
+			log("Set " + map.displayName);
 			map.color = Color.valueOf(map.displayNameColor);
-			map.uiRender.setTextureRegion(ExpoAssets.get().textureRegion(map.uiRender.texture));
-			map.heldRender.setTextureRegion(ExpoAssets.get().textureRegion(map.heldRender.texture));
-			if(map.armorRender != null) map.armorRender.setTextureRegion(ExpoAssets.get().textureRegion(map.armorRender.texture));
+			map.heldRender.setTextureRegion(ExpoAssets.get().getItemSheet().get(map.heldRender.texture));
+			map.uiRender.setTextureRegion(ExpoAssets.get().getItemSheet().get(map.uiRender.texture));
+			log(".." + map.heldRender.textureRegion + ", " + map.uiRender.textureRegion);
+			if(map.armorRender != null) map.armorRender.setTextureRegion(ExpoAssets.get().getItemSheet().get(map.armorRender.texture));
 		}
 	}
 

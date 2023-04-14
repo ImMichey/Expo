@@ -10,11 +10,14 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.inventory.PlayerInventory;
+import dev.michey.expo.logic.world.ClientWorld;
+import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.ExpoLight;
@@ -23,6 +26,7 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -412,24 +416,13 @@ public class ClientPlayer extends ClientEntity {
 
         // Player footstep sounds
         if((playerWalkIndex == 2 || playerWalkIndex == 7) && (playerWalkIndex != lastPlayerWalkIndex)) {
-            BiomeType t = getBiome();
-            String group = null;
+            String group = getFootstepSound();
 
-            if(t == BiomeType.BEACH) {
-                group = "step_sand";
-            } else if(t == BiomeType.GRASS) {
-                group = "step_forest";
-            } else if(BiomeType.isWater(t)) {
-                group = "step_water";
-            }
-
-            if(group != null) {
-                if(player) {
-                    // Don't need dynamic volume + panning
-                    AudioEngine.get().playSoundGroup(group);
-                } else {
-                    AudioEngine.get().playSoundGroupManaged(group, new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
-                }
+            if(player) {
+                // Don't need dynamic volume + panning
+                AudioEngine.get().playSoundGroup(group);
+            } else {
+                AudioEngine.get().playSoundGroupManaged(group, new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
             }
         }
 

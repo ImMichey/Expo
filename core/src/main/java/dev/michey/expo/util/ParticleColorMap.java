@@ -13,7 +13,7 @@ public class ParticleColorMap {
     public static final HashMap<Integer, List<Color>> COLOR_MAP;
 
     /** Color constants */
-    public static final Color COLOR_PARTICLE_SOIL_1 = Color.valueOf("#000000");
+    public static final Color COLOR_PARTICLE_SOIL_1 = Color.valueOf("#38352b");
 
     public static final Color COLOR_PARTICLE_GRASS_1 = Color.valueOf("#87d46b");
     public static final Color COLOR_PARTICLE_GRASS_2 = Color.valueOf("#70cc4f");

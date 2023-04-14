@@ -430,10 +430,12 @@ public class ServerPlayer extends ServerEntity {
                 chunk.lastTileUpdate = System.currentTimeMillis();
 
                 { // Drop layer 1 tile as item.
+                    String identifier = "item_dirt";
+                    if(grass) identifier = "item_floor_grass";
+                    if(sand) identifier = "item_floor_sand";
+
                     ServerItem drop = new ServerItem();
-                    drop.itemContainer = new ServerInventoryItem(grass ?
-                            ItemMapper.get().getMapping("item_floor_grass").id :
-                            ItemMapper.get().getMapping("item_floor_sand").id, 1);
+                    drop.itemContainer = new ServerInventoryItem(ItemMapper.get().getMapping(identifier).id, 1);
                     drop.posX = ExpoShared.tileToPos(tile.tileX) + 8f;
                     drop.posY = ExpoShared.tileToPos(tile.tileY) + 8f;
                     Vector2 dst = GenerationUtils.circularRandom(3.0f);
@@ -470,7 +472,9 @@ public class ServerPlayer extends ServerEntity {
             { // Play dig up sound.
                 String digSound = "grass_hit";
 
-                if(fullSoil) {
+                if(sand) {
+                    digSound = "dig_sand";
+                } else if(fullSoil) {
                     digSound = "step_water";
                 }
 
