@@ -341,15 +341,7 @@ public class ClientEntityManager {
     }
 
     // A simple depth comparator
-    private final Comparator<ClientEntity> depthSorter = ((o1, o2) -> {
-        if(o1.depth > o2.depth) {
-            return -1;
-        } else if(o1.depth < o2.depth) {
-            return 1;
-        }
-
-        return 0;
-    });
+    private final Comparator<ClientEntity> depthSorter = ((o1, o2) -> Float.compare(o2.depth, o1.depth));
 
     public int entityCount() {
         return idEntityMap.size();
