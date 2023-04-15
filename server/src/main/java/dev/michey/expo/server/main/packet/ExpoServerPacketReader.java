@@ -79,6 +79,11 @@ public class ExpoServerPacketReader {
             if(sp == null) return;
 
             sp.digAt(p.chunkX, p.chunkY, p.tileArray);
+        } else if(packet instanceof P34_PlayerPlace p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            sp.placeAt(p.chunkX, p.chunkY, p.tileArray);
         }
     }
 
@@ -186,6 +191,12 @@ public class ExpoServerPacketReader {
 
             if(player != null) {
                 player.digAt(p.chunkX, p.chunkY, p.tileArray);
+            }
+        } else if(o instanceof P34_PlayerPlace p) {
+            ServerPlayer player = connectionToPlayer(connection);
+
+            if(player != null) {
+                player.placeAt(p.chunkX, p.chunkY, p.tileArray);
             }
         }
     }

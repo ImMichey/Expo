@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.inventory.item.mapping;
 
 import dev.michey.expo.server.main.logic.inventory.item.FoodData;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
@@ -14,6 +15,7 @@ public class ItemLogic {
     public float range;
     public float attackSpeed;
     public float attackDamage;
+    public PlaceData placeData; // can be null
 
     public ItemLogic(JSONObject object) {
         maxStackSize = object.getInt("stackSize");
@@ -46,6 +48,10 @@ public class ItemLogic {
         } else {
             attackDamage = ExpoShared.PLAYER_DEFAULT_ATTACK_DAMAGE;
         }
+
+        if(object.has("placeData")) {
+            placeData = new PlaceData(object.getJSONObject("placeData"));
+        }
     }
 
     public boolean isTool() {
@@ -54,6 +60,10 @@ public class ItemLogic {
 
     public boolean isFood() {
         return foodData != null;
+    }
+
+    public boolean isPlaceable() {
+        return placeData != null;
     }
 
 }

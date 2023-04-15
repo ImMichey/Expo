@@ -34,6 +34,7 @@ import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.PacketUtils;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -249,7 +250,10 @@ public class ClientPlayer extends ClientEntity {
             if(holdingItemId != -1) {
                 ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
 
-                if(entityManager().selectedEntity == null && mapping.logic.isTool() && mapping.logic.toolType == ToolType.SHOVEL) {
+                boolean shovel = mapping.logic.isTool() && mapping.logic.toolType == ToolType.SHOVEL;
+                boolean placeable = holdingItemId >= 9 && holdingItemId <= 11;
+
+                if(entityManager().selectedEntity == null && (shovel || placeable)) {
                     float tx = RenderContext.get().mouseWorldGridX;
                     float ty = RenderContext.get().mouseWorldGridY;
                     float range = mapping.logic.range;
@@ -279,6 +283,7 @@ public class ClientPlayer extends ClientEntity {
                     }
 
                     selector.visible = true;
+                    selector.selectionType = shovel ? 0 : 1;
                 } else {
                     selector.visible = false;
                 }
@@ -366,6 +371,10 @@ public class ClientPlayer extends ClientEntity {
                 lastPunchAngleOnSend = currentRotation;
                 ClientPackets.p22PlayerArmDirection(currentRotation);
             }
+
+            if(selector.visible && selector.canPlace && IngameInput.get().rightJustPressed()) {
+                ClientPackets.p34PlayerPlace(selector.svChunkX, selector.svChunkY, selector.svTileX, selector.svTileY, selector.svTileArray);
+            }
         } else {
             // Sync arm rotation if needed
             float n = RenderContext.get().deltaTotal;
@@ -397,8 +406,10 @@ public class ClientPlayer extends ClientEntity {
                 if(player) {
                     AudioEngine.get().playSoundGroup("punch");
 
-                    if(selector.visible && selector.canDig) {
-                        ClientPackets.p31PlayerDig(selector.svChunkX, selector.svChunkY, selector.svTileX, selector.svTileY, selector.svTileArray);
+                    if(selector.visible) {
+                        if(selector.canDig) {
+                            ClientPackets.p31PlayerDig(selector.svChunkX, selector.svChunkY, selector.svTileX, selector.svTileY, selector.svTileArray);
+                        }
                     }
                 } else {
                     AudioEngine.get().playSoundGroupManaged("punch", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);

@@ -6,6 +6,10 @@ import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.ExpoShared;
 
@@ -13,6 +17,7 @@ public class ClientSelector extends ClientEntity {
 
     private TextureRegion square;
     public boolean visible = false;
+    public int selectionType; // Dig = 0, Place = 1
     public float tx, ty;
     public int tix, tiy;
     private int lastTix, lastTiy;
@@ -22,6 +27,7 @@ public class ClientSelector extends ClientEntity {
     private float alphaDelta;
     private float alpha = MAX_ALPHA;
     public boolean canDig = false;
+    public boolean canPlace = false;
 
     public int svChunkX;
     public int svChunkY;
@@ -65,6 +71,7 @@ public class ClientSelector extends ClientEntity {
                 svChunkX = ExpoShared.posToChunk(tx + 1);
                 svChunkY = ExpoShared.posToChunk(ty + 1);
                 canDig = false;
+                canPlace = false;
 
                 var chunk = chunkGrid().getChunk(svChunkX, svChunkY);
 
@@ -81,18 +88,32 @@ public class ClientSelector extends ClientEntity {
                     int mouseRelativeTileY = svTileY - startTileY;
                     svTileArray = mouseRelativeTileY * 8 + mouseRelativeTileX;
 
-                    var l0 = chunk.layer0[svTileArray];
-                    var l1 = chunk.layer1[svTileArray];
-                    // ignore l2 for now
-                    // var l2 = chunk.layer2[mouseTileArray];
+                    var l0 = chunk.layer0[svTileArray][0];
+                    var l1 = chunk.layer1[svTileArray][0];
 
-                    int checkLayer1 = l1[0];
+                    if(selectionType == 0) {
+                        // Check to dig.
+                        boolean grass = ServerTile.isGrassTile(l1);
+                        boolean sand = ServerTile.isSandTile(l1);
+                        boolean soil = ServerTile.isSoilTile(l0);
 
-                    boolean grass = ServerTile.isGrassTile(checkLayer1);
-                    boolean sand = ServerTile.isSandTile(checkLayer1);
-                    boolean soil = ServerTile.isSoilTile(l0[0]);
+                        canDig = grass || sand || (soil && l1 == -1);
+                    } else if(selectionType == 1) {
+                        // Check to place.
+                        ClientPlayer p = ClientPlayer.getLocalPlayer();
+                        if(p.holdingItemId != -1) {
+                            ItemMapping meta = ItemMapper.get().getMapping(p.holdingItemId);
+                            PlaceData d = meta.logic.placeData;
 
-                    canDig = grass || sand || (soil && checkLayer1 == -1);
+                            if(d != null) {
+                                if(d.type == PlaceType.FLOOR_0) {
+                                    canPlace = ServerTile.isEmptyTile(l1) && ServerTile.isHoleSoilTile(l0);
+                                } else if(d.type == PlaceType.FLOOR_1) {
+                                    canPlace = ServerTile.isSoilTile(l0) && ServerTile.isEmptyTile(l1);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -113,7 +134,7 @@ public class ClientSelector extends ClientEntity {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            Color c = canDig ? COLOR_CAN_DIG : COLOR_CANT_DIG;
+            Color c = (canDig || canPlace) ? COLOR_CAN_DIG : COLOR_CANT_DIG;
             rc.arraySpriteBatch.setColor(c.r, c.g, c.b, alpha);
             rc.arraySpriteBatch.draw(square, tx, ty);
             rc.arraySpriteBatch.setColor(Color.WHITE);

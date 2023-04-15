@@ -243,18 +243,18 @@
                     "texture": "item_floor_grass"
                 },
                 "held": {
-                    "texture": "item_floor_grass",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "texture": "item_floor_grass"
                 }
             },
             "logic": {
                 "stackSize": 100,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_1",
+                    "floorType": "GRASS"
+                }
             }
         },
         {
@@ -267,18 +267,18 @@
                     "texture": "item_sand"
                 },
                 "held": {
-                    "texture": "item_sand",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "texture": "item_sand"
                 }
             },
             "logic": {
                 "stackSize": 100,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_1",
+                    "floorType": "SAND"
+                }
             }
         },
         {
@@ -291,18 +291,18 @@
                     "texture": "item_dirt"
                 },
                 "held": {
-                    "texture": "item_dirt",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "texture": "item_dirt"
                 }
             },
             "logic": {
                 "stackSize": 100,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_0",
+                    "floorType": "DIRT"
+                }
             }
         }
     ]

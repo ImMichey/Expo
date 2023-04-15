@@ -85,6 +85,17 @@ public class ClientPackets {
         udp(p);
     }
 
+    /** Sends the P34_PlayerPlace packet via UDP protocol. */
+    public static void p34PlayerPlace(int chunkX, int chunkY, int tileX, int tileY, int tileArray) {
+        P34_PlayerPlace p = new P34_PlayerPlace();
+        p.chunkX = chunkX;
+        p.chunkY = chunkY;
+        p.tileX = tileX;
+        p.tileY = tileY;
+        p.tileArray = tileArray;
+        udp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

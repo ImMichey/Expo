@@ -10,8 +10,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
-import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
-import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.inventory.item.*;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
@@ -402,6 +401,70 @@ public class ServerPlayer extends ServerEntity {
         if(chunkPacketList != null) {
             for(var pair : chunkPacketList) {
                 ServerPackets.p11ChunkData(pair.value[0].chunk.chunkX, pair.value[0].chunk.chunkY, pair.value, PacketReceiver.player(this));
+            }
+        }
+    }
+
+    public void placeAt(int chunkX, int chunkY, int tileArray) {
+        ServerInventoryItem item = getCurrentItem();
+        ItemMapping m = ItemMapper.get().getMapping(item.itemId);
+        if(m.logic.placeData == null) return; // to combat de-sync server<->client, double check current item
+
+        var chunk = getChunkGrid().getChunk(chunkX, chunkY);
+        var tile = chunk.tiles[tileArray];
+
+        PlaceData p = m.logic.placeData;
+
+        if(p.type == PlaceType.FLOOR_0) {
+            // Update tile timestamp
+            chunk.lastTileUpdate = System.currentTimeMillis();
+
+            { // Update tile data
+                tile.layer0 = new int[] {p.floorType.TILE_TEXTURE_ID};
+                ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 0, tile.tileArray, tile.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+
+                for(ServerTile st : tile.getNeighbouringTiles()) {
+                    st.updateLayer0(false);
+                    ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 0, st.tileArray, st.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                }
+            }
+
+            { // Update inventory
+                item.itemAmount -= 1;
+                boolean itemNowBroken = item.itemAmount == 0;
+
+                if(itemNowBroken) {
+                    playerInventory.slots[selectedInventorySlot].item.setEmpty();
+                    heldItemPacket(PacketReceiver.whoCanSee(this));
+                }
+
+                ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
+            }
+        } else if(p.type == PlaceType.FLOOR_1) {
+            // Update tile timestamp
+            chunk.lastTileUpdate = System.currentTimeMillis();
+
+            { // Update tile data
+                tile.layer1 = new int[] {p.floorType.TILE_TEXTURE_ID};
+                tile.updateLayer1();
+                ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 1, tile.tileArray, tile.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+
+                for(ServerTile st : tile.getNeighbouringTiles()) {
+                    st.updateLayer1();
+                    ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 1, st.tileArray, st.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                }
+            }
+
+            { // Update inventory
+                item.itemAmount -= 1;
+                boolean itemNowBroken = item.itemAmount == 0;
+
+                if(itemNowBroken) {
+                    playerInventory.slots[selectedInventorySlot].item.setEmpty();
+                    heldItemPacket(PacketReceiver.whoCanSee(this));
+                }
+
+                ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
             }
         }
     }
