@@ -103,6 +103,8 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_ocean", false, 0, 96);
 			ExpoAssets.get().slice("tile_ocean_deep", false, 0, 128);
 			ExpoAssets.get().slice("tile_soil_hole", false, 0, 160);
+			ExpoAssets.get().slice("tile_forest", false, 0, 192);
+			ExpoAssets.get().slice("tile_desert", false, 0, 224);
 			*/
 	}
 

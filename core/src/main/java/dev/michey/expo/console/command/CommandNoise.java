@@ -75,7 +75,7 @@ public class CommandNoise extends AbstractConsoleCommand {
                                     float riverValue = riverNoise.getConfiguredNoise(i, j);
                                     float riverNormalized = (riverValue + 1) / 2f;
 
-                                    BiomeType type = BiomeType.convertNoise(normalized, riverNormalized);
+                                    BiomeType type = BiomeType.PLAINS;// BiomeType.convertNoise(normalized, riverNormalized);
                                     float[] color = type.BIOME_COLOR;
 
                                     pixmap.drawPixel(i, j, Color.rgba8888(color[0], color[1], color[2], color[3]));

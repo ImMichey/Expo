@@ -36,7 +36,9 @@ public class ServerChunkGrid {
     private final HashMap<String, ServerTile> tileMap;
 
     /** Noise logic */
-    private final Noise noise;
+    private final Noise terrainNoiseHeight;
+    private final Noise terrainNoiseTemperature;
+    private final Noise terrainNoiseMoisture;
     private final Noise riverNoise;
     private final HashMap<String, BiomeType> noiseCacheMap;
 
@@ -55,22 +57,34 @@ public class ServerChunkGrid {
         genSettings = WorldGen.get().getSettings(dimension.getDimensionName());
         WorldGenNoiseSettings settings = genSettings.getNoiseSettings();
 
-        noise = new Noise(0);
+        terrainNoiseHeight = new Noise(0);
+        terrainNoiseTemperature = new Noise(0);
+        terrainNoiseMoisture = new Noise(0);
         riverNoise = new Noise(0);
 
         if(settings != null) {
             if(settings.isTerrainGenerator()) {
-                noise.setFrequency(settings.noiseTerrainFrequency);
-                noise.setNoiseType(settings.noiseTerrainType);
-                noise.setFractalOctaves(settings.noiseTerrainOctaves);
-                if(settings.noiseTerrainFractalType != -1) noise.setFractalType(settings.noiseTerrainFractalType);
+                terrainNoiseHeight.setFrequency(settings.terrainElevationFrequency);
+                terrainNoiseHeight.setNoiseType(settings.terrainElevationType);
+                terrainNoiseHeight.setFractalOctaves(settings.terrainElevationOctaves);
+                if(settings.terrainElevationFractalType != -1) terrainNoiseHeight.setFractalType(settings.terrainElevationFractalType);
+
+                terrainNoiseTemperature.setFrequency(settings.terrainTemperatureFrequency);
+                terrainNoiseTemperature.setNoiseType(settings.terrainTemperatureType);
+                terrainNoiseTemperature.setFractalOctaves(settings.terrainTemperatureOctaves);
+                if(settings.terrainTemperatureFractalType != -1) terrainNoiseTemperature.setFractalType(settings.terrainTemperatureFractalType);
+
+                terrainNoiseMoisture.setFrequency(settings.terrainMoistureFrequency);
+                terrainNoiseMoisture.setNoiseType(settings.terrainMoistureType);
+                terrainNoiseMoisture.setFractalOctaves(settings.terrainMoistureOctaves);
+                if(settings.terrainMoistureFractalType != -1) terrainNoiseMoisture.setFractalType(settings.terrainMoistureFractalType);
             }
 
             if(settings.isRiversGenerator()) {
                 riverNoise.setFrequency(settings.noiseRiversFrequency);
                 riverNoise.setNoiseType(settings.noiseRiversType);
                 riverNoise.setFractalOctaves(settings.noiseRiversOctaves);
-                if(settings.noiseTerrainFractalType != -1) riverNoise.setFractalType(settings.noiseRiversFractalType);
+                if(settings.noiseRiversFractalType != -1) riverNoise.setFractalType(settings.noiseRiversFractalType);
             }
         }
 
@@ -95,10 +109,12 @@ public class ServerChunkGrid {
         BiomeType type = noiseCacheMap.get(key);
 
         if(type == null) {
-            float normalizedNoise = genSettings.getNoiseSettings().isTerrainGenerator() ? ((noise.getConfiguredNoise(x, y) + 1) / 2f) : -1;
+            float normalizedHeight = genSettings.getNoiseSettings().isTerrainGenerator() ? ((terrainNoiseHeight.getConfiguredNoise(x, y) + 1) / 2f) : -1;
+            float normalizedTemperature = genSettings.getNoiseSettings().isTerrainGenerator() ? ((terrainNoiseTemperature.getConfiguredNoise(x, y) + 1) / 2f) : -1;
+            float normalizedMoisture = genSettings.getNoiseSettings().isTerrainGenerator() ? ((terrainNoiseMoisture.getConfiguredNoise(x, y) + 1) / 2f) : -1;
             float normalizedRiver = genSettings.getNoiseSettings().isRiversGenerator() ? ((riverNoise.getConfiguredNoise(x, y) + 1) / 2f) : -1;
 
-            type = convertNoise(normalizedNoise, normalizedRiver);
+            type = convertNoise(normalizedHeight, normalizedTemperature, normalizedMoisture, normalizedRiver);
 
             noiseCacheMap.put(key, type);
         }
@@ -121,17 +137,17 @@ public class ServerChunkGrid {
         tileMap.put(key, tile);
     }
 
-    private BiomeType convertNoise(float noise, float riverNoise) {
+    private BiomeType convertNoise(float height, float temperature, float moisture, float river) {
         BiomeType fit = BiomeType.VOID;
+        if(height == -1) return fit;
         float nearestElevation = 1.0f;
-        if(noise == -1) return fit;
         // riverNoise is ignored for now.
 
         for(BiomeType toCheck : genSettings.getBiomeDataMap().keySet()) {
             float[] values = genSettings.getBiomeDataMap().get(toCheck);
             float elevation = values[0];
 
-            if(noise <= elevation && elevation <= nearestElevation) {
+            if(height <= elevation && elevation <= nearestElevation) {
                 fit = toCheck;
                 nearestElevation = values[0];
             }
@@ -356,8 +372,16 @@ public class ServerChunkGrid {
         }
     }
 
-    public Noise getNoise() {
-        return noise;
+    public Noise getTerrainNoiseHeight() {
+        return terrainNoiseHeight;
+    }
+
+    public Noise getTerrainNoiseMoisture() {
+        return terrainNoiseMoisture;
+    }
+
+    public Noise getTerrainNoiseTemperature() {
+        return terrainNoiseTemperature;
     }
 
     public Noise getRiverNoise() {

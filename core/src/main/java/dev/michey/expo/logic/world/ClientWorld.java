@@ -176,7 +176,9 @@ public class ClientWorld {
     }
 
     public void setNoiseSeed(int seed) {
-        clientChunkGrid.noise.setSeed(seed);
+        clientChunkGrid.terrainNoiseHeight.setSeed(seed);
+        clientChunkGrid.terrainNoiseTemperature.setSeed(seed + 1);
+        clientChunkGrid.terrainNoiseMoisture.setSeed(seed + 2);
         clientChunkGrid.riverNoise.setSeed(seed);
     }
 

@@ -102,7 +102,7 @@ public class ServerTile {
         int nw = neighbours.get(6).layer1[0];
 
         if(grass) {
-            minTile = BiomeType.GRASS.BIOME_LAYER_TEXTURES[1];
+            minTile = BiomeType.PLAINS.BIOME_LAYER_TEXTURES[1];
 
             if(isGrassTile(n)) tis += NORTH;
             if(isGrassTile(e)) tis += EAST;

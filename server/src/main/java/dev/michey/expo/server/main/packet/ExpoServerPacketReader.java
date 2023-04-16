@@ -39,7 +39,7 @@ public class ExpoServerPacketReader {
 
             WorldGenSettings s = sp.getDimension().getChunkHandler().getGenSettings();
 
-            ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_SERVER_TICK_RATE, sp.getDimension().getChunkHandler().getNoise().getSeed(), s, PacketReceiver.local());
+            ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_SERVER_TICK_RATE, sp.getDimension().getChunkHandler().getTerrainNoiseHeight().getSeed(), s, PacketReceiver.local());
             ServerPackets.p3PlayerJoin(req.username, PacketReceiver.local());
             ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.local());
             ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.local());
