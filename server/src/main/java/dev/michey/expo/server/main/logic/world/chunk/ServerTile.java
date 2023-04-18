@@ -184,8 +184,8 @@ public class ServerTile {
     }
 
     public int toParticleColorId() {
-        if(isGrassTile()) return 1;
-        if(isSandTile()) return 2;
+        if(isGrassTile() || isForestTile()) return 1;
+        if(isSandTile() || isDesertTile()) return 2;
         if(isSoilTile()) return 0;
         return -1;
     }

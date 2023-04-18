@@ -73,4 +73,28 @@ public class WorldGenNoiseSettings {
         if(o.has("fractalType")) noiseRiversFractalType = o.getInt("fractalType");
     }
 
+    @Override
+    public String toString() {
+        return "WorldGenNoiseSettings{" +
+                "terrainElevationOctaves=" + terrainElevationOctaves +
+                ", terrainElevationType=" + terrainElevationType +
+                ", terrainElevationFractalType=" + terrainElevationFractalType +
+                ", terrainElevationFrequency=" + terrainElevationFrequency +
+                ", terrainTemperatureOctaves=" + terrainTemperatureOctaves +
+                ", terrainTemperatureType=" + terrainTemperatureType +
+                ", terrainTemperatureFractalType=" + terrainTemperatureFractalType +
+                ", terrainTemperatureFrequency=" + terrainTemperatureFrequency +
+                ", terrainMoistureOctaves=" + terrainMoistureOctaves +
+                ", terrainMoistureType=" + terrainMoistureType +
+                ", terrainMoistureFractalType=" + terrainMoistureFractalType +
+                ", terrainMoistureFrequency=" + terrainMoistureFrequency +
+                ", terrainElevation=" + terrainElevation +
+                ", noiseRiversOctaves=" + noiseRiversOctaves +
+                ", noiseRiversType=" + noiseRiversType +
+                ", noiseRiversFractalType=" + noiseRiversFractalType +
+                ", noiseRiversFrequency=" + noiseRiversFrequency +
+                ", noiseRivers=" + noiseRivers +
+                '}';
+    }
+
 }

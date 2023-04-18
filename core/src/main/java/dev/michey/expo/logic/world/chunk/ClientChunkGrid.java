@@ -16,7 +16,7 @@ public class ClientChunkGrid {
 
     private static ClientChunkGrid INSTANCE;
 
-    private ConcurrentHashMap<String, ClientChunk> clientChunkMap;
+    private final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
 
     /** Minimap only noise logic on dedicated server connection. */
     public Noise terrainNoiseHeight;
@@ -135,32 +135,29 @@ public class ClientChunkGrid {
     }
 
     private BiomeType convertNoise(float height, float temperature, float moisture, float river) {
-        BiomeType fit = BiomeType.VOID;
-        if(height == -1) return fit;
-        float nearestElevation = 1.0f;
-        float nearestTemperature = 1.0f;
-        float nearestMoisture = 1.0f;
+        if(height == -1) return BiomeType.VOID;
         // riverNoise is ignored for now.
 
         for(BiomeType toCheck : genSettings.getBiomeDataMap().keySet()) {
             float[] values = genSettings.getBiomeDataMap().get(toCheck);
-            float elevation = values[0];
-            float _temperature = values[1];
-            float _moisture = values[2];
 
-            boolean heightCheck = height <= elevation && elevation <= nearestElevation;
-            boolean temperatureCheck = temperature <= _temperature && _temperature <= nearestTemperature;
-            boolean moistureCheck = moisture <= _moisture && _moisture <= nearestMoisture;
+            float elevationMin = values[0];
+            float elevationMax = values[1];
 
-            if(heightCheck && temperatureCheck && moistureCheck) {
-                fit = toCheck;
-                nearestElevation = elevation;
-                nearestTemperature = _temperature;
-                nearestMoisture = _moisture;
+            float temperatureMin = values[2];
+            float temperatureMax = values[3];
+
+            float moistureMin = values[4];
+            float moistureMax = values[5];
+
+            if(height >= elevationMin && height <= elevationMax
+                    && temperature >= temperatureMin && temperature <= temperatureMax
+                    && moisture >= moistureMin && moisture <= moistureMax) {
+                return toCheck;
             }
         }
 
-        return fit;
+        return BiomeType.VOID;
     }
 
     public ClientChunk getChunk(int x, int y) {

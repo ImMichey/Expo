@@ -36,11 +36,19 @@ public class WorldGenSettings {
 
             for(int i = 0; i < ba.length(); i++) {
                 JSONObject entry = ba.getJSONObject(i);
-                biomeDataMap.put(BiomeType.valueOf(entry.getString("type")), new float[] {
-                        entry.getFloat("elevation"),
-                        entry.getFloat("temperature"),
-                        entry.getFloat("moisture"),
-                });
+                float[] values = new float[6];
+                JSONArray e = entry.getJSONArray("elevation");
+                JSONArray t = entry.getJSONArray("temperature");
+                JSONArray m = entry.getJSONArray("moisture");
+
+                values[0] = e.getFloat(0);
+                values[1] = e.getFloat(1);
+                values[2] = t.getFloat(0);
+                values[3] = t.getFloat(1);
+                values[4] = m.getFloat(0);
+                values[5] = m.getFloat(1);
+
+                biomeDataMap.put(BiomeType.valueOf(entry.getString("type")), values);
             }
         }
     }

@@ -29,39 +29,39 @@
                 "biomes": [
                     {
                         "type": "OCEAN_DEEP",
-                        "elevation": 0.425,
-                        "temperature": 1.0,
-                        "moisture": 1.0
+                        "elevation": [0.0, 0.425],
+                        "temperature": [0.0, 1.0],
+                        "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "OCEAN",
-                        "elevation": 0.465,
-                        "temperature": 1.0,
-                        "moisture": 1.0
+                        "elevation": [0.425, 0.465],
+                        "temperature": [0.0, 1.0],
+                        "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "BEACH",
-                        "elevation": 0.5,
-                        "temperature": 1.0,
-                        "moisture": 1.0
+                        "elevation": [0.465, 0.5],
+                        "temperature": [0.0, 1.0],
+                        "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "PLAINS",
-                        "elevation": 1.0,
-                        "temperature": 0.58,
-                        "moisture": 0.5
+                        "elevation": [0.5, 1.0],
+                        "temperature": [0.0, 0.58],
+                        "moisture": [0.0, 0.5]
                     },
                     {
                         "type": "FOREST",
-                        "elevation": 1.0,
-                        "temperature": 1.0,
-                        "moisture": 1.0
+                        "elevation": [0.5, 1.0],
+                        "temperature": [0.0, 1.0],
+                        "moisture": [0.5, 1.0]
                     },
                     {
                         "type": "DESERT",
-                        "elevation": 1.0,
-                        "temperature": 1.0,
-                        "moisture": 0.5
+                        "elevation": [0.5, 1.0],
+                        "temperature": [0.58, 1.0],
+                        "moisture": [0.0, 0.5]
                     }
                 ]
             },
