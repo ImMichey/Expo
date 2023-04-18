@@ -222,11 +222,11 @@ public abstract class ClientEntity {
             return isRaining() ? "step_mud" : "step_dirt";
         }
 
-        if(ServerTile.isGrassTile(l1)) {
+        if(ServerTile.isGrassTile(l1) || ServerTile.isForestTile(l1)) {
             return "step_forest";
         }
 
-        if(ServerTile.isSandTile(l1)) {
+        if(ServerTile.isSandTile(l1) || ServerTile.isDesertTile(l1)) {
             return "step_sand";
         }
 

@@ -85,7 +85,9 @@ public class ServerTile {
         if(layer1[0] == -1) return;
         boolean grass = isGrassTile();
         boolean sand = isSandTile();
-        if(!grass && !sand) return;
+        boolean forest = isForestTile();
+        boolean desert = isDesertTile();
+        if(!grass && !sand && !forest && !desert) return;
 
         var neighbours = getNeighbouringTiles();
         int tis = 0, tid = 0;
@@ -125,6 +127,30 @@ public class ServerTile {
             if(isSandTile(se)) tid += SOUTH_EAST;
             if(isSandTile(sw)) tid += SOUTH_WEST;
             if(isSandTile(nw)) tid += NORTH_WEST;
+        } else if(forest) {
+            minTile = BiomeType.FOREST.BIOME_LAYER_TEXTURES[1];
+
+            if(isForestTile(n)) tis += NORTH;
+            if(isForestTile(e)) tis += EAST;
+            if(isForestTile(s)) tis += SOUTH;
+            if(isForestTile(w)) tis += WEST;
+
+            if(isForestTile(ne)) tid += NORTH_EAST;
+            if(isForestTile(se)) tid += SOUTH_EAST;
+            if(isForestTile(sw)) tid += SOUTH_WEST;
+            if(isForestTile(nw)) tid += NORTH_WEST;
+        } else if(desert) {
+            minTile = BiomeType.DESERT.BIOME_LAYER_TEXTURES[1];
+
+            if(isDesertTile(n)) tis += NORTH;
+            if(isDesertTile(e)) tis += EAST;
+            if(isDesertTile(s)) tis += SOUTH;
+            if(isDesertTile(w)) tis += WEST;
+
+            if(isDesertTile(ne)) tid += NORTH_EAST;
+            if(isDesertTile(se)) tid += SOUTH_EAST;
+            if(isDesertTile(sw)) tid += SOUTH_WEST;
+            if(isDesertTile(nw)) tid += NORTH_WEST;
         }
 
         layer1 = chunk.tileIndexToIds(tis, tid, minTile);
@@ -181,6 +207,14 @@ public class ServerTile {
         return isHoleSoilTile(layer0[0]);
     }
 
+    public boolean isForestTile() {
+        return isForestTile(layer1[0]);
+    }
+
+    public boolean isDesertTile() {
+        return isDesertTile(layer1[0]);
+    }
+
     public static boolean isSandTile(int id) {
         return id >= 23 && id <= 44;
     }
@@ -195,6 +229,14 @@ public class ServerTile {
 
     public static boolean isHoleSoilTile(int id) {
         return id >= 90 && id <= 111;
+    }
+
+    public static boolean isForestTile(int id) {
+        return id >= 112 && id <= 133;
+    }
+
+    public static boolean isDesertTile(int id) {
+        return id >= 134 && id <= 155;
     }
 
     public static boolean isEmptyTile(int id) {

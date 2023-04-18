@@ -93,8 +93,8 @@ public class ClientSelector extends ClientEntity {
 
                     if(selectionType == 0) {
                         // Check to dig.
-                        boolean grass = ServerTile.isGrassTile(l1);
-                        boolean sand = ServerTile.isSandTile(l1);
+                        boolean grass = ServerTile.isGrassTile(l1) || ServerTile.isForestTile(l1);
+                        boolean sand = ServerTile.isSandTile(l1) || ServerTile.isDesertTile(l1);
                         boolean soil = ServerTile.isSoilTile(l0);
 
                         canDig = grass || sand || (soil && l1 == -1);

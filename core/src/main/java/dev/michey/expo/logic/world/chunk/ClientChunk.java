@@ -100,9 +100,7 @@ public class ClientChunk {
         for(int j = 0; j < ids.length; j++) {
             int index = ids[j];
 
-            // check if has variations
-
-            if(index == 1 && MathUtils.random() < 0.66f) {
+            if(ExpoAssets.get().getTileSheet().hasVariation(index) && MathUtils.random() < 0.66f) {
                 layer1Tex[i][j] = ExpoAssets.get().getTileSheet().getRandomVariation(index);
             } else {
                 layer1Tex[i][j] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(index);

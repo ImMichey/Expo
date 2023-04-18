@@ -35,6 +35,7 @@ public class TileSheet {
 
         // Variations
         variationEntry("tile_grass", 1, 7);
+        variationEntry("tile_forest", 112, 7);
     }
 
     private void variationEntry(String name, int forId, int amount) {
@@ -65,9 +66,13 @@ public class TileSheet {
         return array[MathUtils.random(0, array.length - 1)];
     }
 
+    public boolean hasVariation(int id) {
+        return tilesetVariationTextureMap.containsKey(id);
+    }
+
     public boolean isFullTile(int tileId) {
         return switch (tileId) {
-            case 1, 23 -> true;
+            case 1, 23, 112, 133 -> true;
             default -> false;
         };
     }

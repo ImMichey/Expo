@@ -138,18 +138,26 @@ public class ClientChunkGrid {
         BiomeType fit = BiomeType.VOID;
         if(height == -1) return fit;
         float nearestElevation = 1.0f;
+        float nearestTemperature = 1.0f;
+        float nearestMoisture = 1.0f;
         // riverNoise is ignored for now.
 
         for(BiomeType toCheck : genSettings.getBiomeDataMap().keySet()) {
             float[] values = genSettings.getBiomeDataMap().get(toCheck);
             float elevation = values[0];
+            float _temperature = values[1];
+            float _moisture = values[2];
 
-            if(height <= elevation && elevation <= nearestElevation) {
+            boolean heightCheck = height <= elevation && elevation <= nearestElevation;
+            boolean temperatureCheck = temperature <= _temperature && _temperature <= nearestTemperature;
+            boolean moistureCheck = moisture <= _moisture && _moisture <= nearestMoisture;
+
+            if(heightCheck && temperatureCheck && moistureCheck) {
                 fit = toCheck;
-                nearestElevation = values[0];
+                nearestElevation = elevation;
+                nearestTemperature = _temperature;
+                nearestMoisture = _moisture;
             }
-
-            // temperature, moisture is ignored for now.
         }
 
         return fit;

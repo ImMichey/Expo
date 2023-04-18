@@ -477,8 +477,8 @@ public class ServerPlayer extends ServerEntity {
         var tile = chunk.tiles[tileArray];
         int pColor = tile.toParticleColorId();
 
-        boolean grass = tile.isGrassTile();
-        boolean sand = tile.isSandTile();
+        boolean grass = tile.isGrassTile() || tile.isForestTile();
+        boolean sand = tile.isSandTile() || tile.isDesertTile();
         boolean fullSoil = tile.isSoilTile() && tile.layerIsEmpty(1);
 
         if(grass || sand || fullSoil) {

@@ -576,7 +576,7 @@ public class ServerChunk {
     public void onSave() {
         // log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
         for(ServerTile tile : tiles) dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
-        //save();
+        save();
     }
 
     /** Attaches an entity to a tile within the chunk tile structure. */
