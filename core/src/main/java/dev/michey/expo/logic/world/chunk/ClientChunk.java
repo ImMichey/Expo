@@ -9,6 +9,7 @@ import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 
 public class ClientChunk {
@@ -98,6 +99,8 @@ public class ClientChunk {
 
         for(int j = 0; j < ids.length; j++) {
             int index = ids[j];
+
+            // check if has variations
 
             if(index == 1 && MathUtils.random() < 0.66f) {
                 layer1Tex[i][j] = ExpoAssets.get().getTileSheet().getRandomVariation(index);

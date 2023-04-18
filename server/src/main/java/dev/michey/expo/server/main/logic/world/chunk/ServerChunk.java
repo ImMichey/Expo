@@ -359,7 +359,9 @@ public class ServerChunk {
 
     private int[] indexStraightDiagonal(String[] acceptedNeighbours, int x, int y) {
         BiomeType[] biomes = new BiomeType[acceptedNeighbours.length];
-        for(int i = 0; i < acceptedNeighbours.length; i++) biomes[i] = BiomeType.valueOf(acceptedNeighbours[i]);
+        for(int i = 0; i < acceptedNeighbours.length; i++) {
+            biomes[i] = BiomeType.valueOf(acceptedNeighbours[i]);
+        }
         int tis = 0, tid = 0;
 
         BiomeType n = biomeAt(x, y + 1);
@@ -574,7 +576,7 @@ public class ServerChunk {
     public void onSave() {
         // log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
         for(ServerTile tile : tiles) dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
-        save();
+        //save();
     }
 
     /** Attaches an entity to a tile within the chunk tile structure. */

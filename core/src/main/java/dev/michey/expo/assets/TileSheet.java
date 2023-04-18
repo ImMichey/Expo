@@ -30,6 +30,8 @@ public class TileSheet {
         multiEntry("tile_ocean", 22);
         multiEntry("tile_ocean_deep", 22);
         multiEntry("tile_soil_hole", 22);
+        multiEntry("tile_forest", 22);
+        multiEntry("tile_desert", 22);
 
         // Variations
         variationEntry("tile_grass", 1, 7);
