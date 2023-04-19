@@ -13,6 +13,7 @@ import dev.michey.expo.logic.entity.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
@@ -455,7 +456,9 @@ public class PlayerUI {
 
         r.hudBatch.end();
 
-        chat.draw();
+        if(DEV_MODE || ExpoServerBase.get() == null) {
+            chat.draw();
+        }
 
         {
             // World enter animation black fade out

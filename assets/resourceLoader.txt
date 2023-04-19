@@ -7,6 +7,8 @@ atlas/expo-0.atlas
 water/waternoise.png
 water/watertile_single.png
 water/watermap.png
+foliage/entity_dandelion/entity_dandelion.png
+foliage/entity_poppy/entity_poppy.png
 foliage/entity_grass/entity_grass_1.png
 foliage/entity_grass/entity_grass_2.png
 foliage/entity_grass/entity_grass_3.png

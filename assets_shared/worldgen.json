@@ -85,8 +85,8 @@
                         {
                             "type": "OAK_TREE",
                             "static": true,
-                            "chance": 0.05,
-                            "pds": 64,
+                            "chance": 0.01,
+                            "pds": 16,
                             "spreadData": {
                                 "spread": [1, 5],
                                 "spreadChance": 0.025,
@@ -97,29 +97,15 @@
                             }
                         },
                         {
-                            "type": "MUSHROOM_RED",
+                            "type": "DANDELION",
                             "static": true,
-                            "chance": 0.01,
-                            "pds": 64,
+                            "chance": 0.005,
+                            "pds": 32,
                             "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [8.0, 14.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "MUSHROOM_BROWN",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 64,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [8.0, 14.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                                "spread": [2, 7],
+                                "spreadChance": 0.75,
+                                "spreadDis": [10.0, 16.0],
+                                "spreadType": ["DANDELION"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
                             }
@@ -145,8 +131,8 @@
                         {
                             "type": "OAK_TREE",
                             "static": true,
-                            "chance": 0.4,
-                            "pds": 48,
+                            "chance": 0.05,
+                            "pds": 16,
                             "spreadData": {
                                 "spread": [1, 5],
                                 "spreadChance": 0.025,
@@ -180,6 +166,20 @@
                                 "spreadChance": 0.5,
                                 "spreadDis": [8.0, 14.0],
                                 "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        },
+                        {
+                            "type": "DANDELION",
+                            "static": true,
+                            "chance": 0.005,
+                            "pds": 32,
+                            "spreadData": {
+                                "spread": [2, 7],
+                                "spreadChance": 0.75,
+                                "spreadDis": [10.0, 16.0],
+                                "spreadType": ["DANDELION"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
                             }

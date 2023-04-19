@@ -14,6 +14,8 @@ public enum ServerEntityType {
     ITEM(7, "Item"),
     ANCIENT_TREE(8, "AncientTree"),
     GRAVESTONE(9, "Gravestone"),
+    DANDELION(10, "Dandelion"),
+    POPPY(11, "Poppy"),
     ;
 
     public final int ENTITY_ID;
@@ -36,6 +38,8 @@ public enum ServerEntityType {
             case 7 -> new ServerItem();
             case 8 -> new ServerAncientTree();
             case 9 -> new ServerGravestone();
+            case 10 -> new ServerDandelion();
+            case 11 -> new ServerPoppy();
             default -> null;
         };
     }

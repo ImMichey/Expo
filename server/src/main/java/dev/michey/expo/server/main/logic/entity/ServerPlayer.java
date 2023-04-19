@@ -102,7 +102,7 @@ public class ServerPlayer extends ServerEntity {
             }
         }
 
-        Vector2[] positions = GenerationUtils.positions(dropItems, 24.0f);
+        Vector2[] positions = GenerationUtils.positions(dropItems, 28.0f, 56.0f);
         int i = 0;
 
         for(var slot : playerInventory.slots) {

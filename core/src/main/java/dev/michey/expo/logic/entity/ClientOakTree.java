@@ -20,7 +20,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private TextureRegion leavesShadowMask;
     private float[] interactionPointArray;
 
-    private final float leavesDisplacement = MathUtils.random(-20, 13);
+    private final float leavesDisplacement = MathUtils.random(-4, 13);
     private final float colorMix = MathUtils.random(0.1f);
 
     private final float u_speed = MathUtils.random(0.5f, 1.2f);
@@ -98,7 +98,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         calculateWindOnDemand(rc.deltaTotal);
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(trunk, clientPosX + 1, clientPosY + 2);
+        rc.arraySpriteBatch.draw(trunk, clientPosX, clientPosY + 2);
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
@@ -126,7 +126,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
             if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
 
-            rc.arraySpriteBatch.draw(trunk, clientPosX + 1, clientPosY + 2);
+            rc.arraySpriteBatch.draw(trunk, clientPosX, clientPosY + 2);
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
             rc.arraySpriteBatch.drawCustomVertices(leaves, clientPosX - 23, clientPosY + 50 + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), wind, wind);
             rc.arraySpriteBatch.setColor(Color.WHITE);
@@ -143,7 +143,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         calculateWindOnDemand(rc.deltaTotal);
-        Affine2 shadowT = ShadowUtils.createSimpleShadowAffine(clientPosX + 1, clientPosY + 2);
+        Affine2 shadowT = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY + 2);
         Affine2 shadowL = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX, clientPosY + 2, -23, 50 + leavesDisplacement);
 
         float[] trunkVertices = rc.arraySpriteBatch.obtainShadowVertices(trunkShadowMask, shadowT);

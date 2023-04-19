@@ -18,6 +18,8 @@ public enum ClientEntityType {
     ITEM(7, "Item", ServerEntityType.ITEM),
     ANCIENT_TREE(8, "AncientTree", ServerEntityType.ANCIENT_TREE),
     GRAVESTONE(9, "Gravestone", ServerEntityType.GRAVESTONE),
+    DANDELION(10, "Dandelion", ServerEntityType.DANDELION),
+    POPPY(11, "Poppy", ServerEntityType.POPPY),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -55,6 +57,8 @@ public enum ClientEntityType {
             case 7 -> new ClientItem();
             case 8 -> new ClientAncientTree();
             case 9 -> new ClientGravestone();
+            case 10 -> new ClientDandelion();
+            case 11 -> new ClientPoppy();
             default -> null;
         };
     }
