@@ -3,7 +3,7 @@ package dev.michey.expo.server.main.logic.world.chunk;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;

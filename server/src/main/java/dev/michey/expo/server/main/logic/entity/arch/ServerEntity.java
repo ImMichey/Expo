@@ -11,6 +11,7 @@ import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
+import org.json.JSONObject;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -38,14 +39,41 @@ public abstract class ServerEntity {
     public ToolType damageableWith = null;
 
     /** ServerEntity base methods */
-    public abstract void tick(float delta);
-    public abstract void onCreation();
-    public abstract void onDeletion();
-    public abstract ServerEntityType getEntityType();
-    public abstract void onChunkChanged();
-    public abstract void onDamage(ServerEntity damageSource, float damage);
-    public abstract void onDie();
-    public abstract SavableEntity onSave();
+    public void tick(float delta) {
+
+    }
+
+    public void onCreation() {
+
+    }
+
+    public void onDeletion() {
+
+    }
+
+    public ServerEntityType getEntityType() {
+        return ServerEntityType.DUMMY;
+    }
+
+    public void onChunkChanged() {
+
+    }
+
+    public void onDamage(ServerEntity damageSource, float damage) {
+
+    }
+
+    public void onDie() {
+
+    }
+
+    public SavableEntity onSave() {
+        return null;
+    }
+
+    public void onLoad(JSONObject saved) {
+
+    }
 
     /** ServerEntity helper methods */
     public ServerDimension getDimension() {

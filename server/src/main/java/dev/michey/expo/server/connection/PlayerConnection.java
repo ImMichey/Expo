@@ -1,7 +1,7 @@
 package dev.michey.expo.server.connection;
 
 import com.esotericsoftware.kryonet.Connection;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 import java.util.Timer;
 import java.util.TimerTask;

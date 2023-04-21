@@ -1,10 +1,8 @@
 package dev.michey.expo.server.main.logic.world;
 
 import dev.michey.expo.server.connection.PlayerConnection;
-import dev.michey.expo.server.fs.world.WorldSaveFile;
-import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionCave;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionOverworld;

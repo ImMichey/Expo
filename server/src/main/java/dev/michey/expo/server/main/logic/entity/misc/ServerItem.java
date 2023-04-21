@@ -1,8 +1,9 @@
-package dev.michey.expo.server.main.logic.entity;
+package dev.michey.expo.server.main.logic.entity.misc;
 
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -10,6 +11,7 @@ import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
+import org.json.JSONObject;
 
 public class ServerItem extends ServerEntity {
 
@@ -74,33 +76,22 @@ public class ServerItem extends ServerEntity {
     }
 
     @Override
-    public void onDeletion() {
-
-    }
-
-    @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.ITEM;
     }
 
     @Override
-    public void onChunkChanged() {
-
-    }
-
-    @Override
-    public void onDamage(ServerEntity damageSource, float damage) {
-
-    }
-
-    @Override
-    public void onDie() {
-
-    }
-
-    @Override
     public SavableEntity onSave() {
         return new SavableEntity(this).pack().add("lifetime", lifetime).add("item", InventoryFileLoader.itemToStorageObject(itemContainer));
+    }
+
+    @Override
+    public void onLoad(JSONObject saved) {
+        ServerInventoryItem item = new ServerInventoryItem();
+        InventoryFileLoader.loadItemFromStorage(item, saved.getJSONObject("item"));
+        itemContainer = item;
+
+        lifetime = saved.getFloat("lifetime");
     }
 
 }

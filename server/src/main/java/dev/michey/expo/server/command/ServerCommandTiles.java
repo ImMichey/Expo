@@ -2,8 +2,7 @@ package dev.michey.expo.server.command;
 
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.main.arch.AbstractServerCommand;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
-import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;

@@ -1,8 +1,9 @@
-package dev.michey.expo.server.main.logic.entity;
+package dev.michey.expo.server.main.logic.entity.flora;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
@@ -13,28 +14,8 @@ import dev.michey.expo.server.util.GenerationUtils;
 
 public class ServerGrass extends ServerEntity {
 
-    @Override
-    public void onCreation() {
-
-    }
-
-    @Override
-    public void onDeletion() {
-
-    }
-
     public ServerGrass() {
         health = 20.0f;
-    }
-
-    @Override
-    public void tick(float delta) {
-
-    }
-
-    @Override
-    public void onDamage(ServerEntity damageSource, float damage) {
-
     }
 
     @Override
@@ -59,11 +40,6 @@ public class ServerGrass extends ServerEntity {
     @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.GRASS;
-    }
-
-    @Override
-    public void onChunkChanged() {
-
     }
 
     @Override

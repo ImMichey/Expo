@@ -3,7 +3,7 @@ package dev.michey.expo.console.command;
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public class CommandTime extends AbstractConsoleCommand {
 

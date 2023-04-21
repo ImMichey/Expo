@@ -7,19 +7,13 @@ import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
-import dev.michey.expo.server.main.logic.inventory.ServerInventory;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
-import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
-
-import java.util.Arrays;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerPackets {
 

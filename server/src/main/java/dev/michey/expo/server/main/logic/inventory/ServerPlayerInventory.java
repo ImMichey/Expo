@@ -2,10 +2,8 @@ package dev.michey.expo.server.main.logic.inventory;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.esotericsoftware.kryonet.Server;
-import dev.michey.expo.server.main.logic.entity.ServerItem;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
@@ -16,13 +14,10 @@ import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerPlayerInventory extends ServerInventory {
 

@@ -1,7 +1,6 @@
-package dev.michey.expo.server.main.logic.entity;
+package dev.michey.expo.server.main.logic.entity.misc;
 
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.util.PacketReceiver;
@@ -16,11 +15,6 @@ public class ServerDummy extends ServerEntity {
     @Override
     public void onCreation() {
         generateDst();
-    }
-
-    @Override
-    public void onDeletion() {
-
     }
 
     @Override
@@ -46,16 +40,6 @@ public class ServerDummy extends ServerEntity {
         }
     }
 
-    @Override
-    public void onDamage(ServerEntity damageSource, float damage) {
-
-    }
-
-    @Override
-    public void onDie() {
-
-    }
-
     public void generateDst() {
         dstX = getDimension().getDimensionSpawnX() + MathUtils.random(-96f, 96f);
         dstY = getDimension().getDimensionSpawnY() + MathUtils.random(-96f, 96f);
@@ -64,16 +48,6 @@ public class ServerDummy extends ServerEntity {
     @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.DUMMY;
-    }
-
-    @Override
-    public void onChunkChanged() {
-
-    }
-
-    @Override
-    public SavableEntity onSave() {
-        return null;
     }
 
 }

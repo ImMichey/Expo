@@ -3,9 +3,7 @@ package dev.michey.expo.server.command;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
 import dev.michey.expo.server.main.arch.AbstractServerCommand;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
-
-import static dev.michey.expo.log.ExpoLogger.log;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public class ServerCommandWhitelist extends AbstractServerCommand {
 

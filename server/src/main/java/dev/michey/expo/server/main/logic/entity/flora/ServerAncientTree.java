@@ -1,4 +1,4 @@
-package dev.michey.expo.server.main.logic.entity;
+package dev.michey.expo.server.main.logic.entity.flora;
 
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
@@ -6,7 +6,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 
-public class ServerOakTree extends ServerEntity {
+public class ServerAncientTree extends ServerEntity {
 
     /** Physics body */
     private BoundingBox physicsBody;
@@ -14,7 +14,7 @@ public class ServerOakTree extends ServerEntity {
     @Override
     public void onCreation() {
         // add physics body of player to world
-        physicsBody = new BoundingBox(this, 1, 4, 11, 3.5f);
+        physicsBody = new BoundingBox(this, 1, 3, 21, 4.5f);
     }
 
     @Override
@@ -23,34 +23,14 @@ public class ServerOakTree extends ServerEntity {
         physicsBody.dispose();
     }
 
-    public ServerOakTree() {
-        health = 50.0f;
+    public ServerAncientTree() {
+        health = 100.0f;
         damageableWith = ToolType.AXE;
     }
 
     @Override
-    public void tick(float delta) {
-
-    }
-
-    @Override
-    public void onDamage(ServerEntity damageSource, float damage) {
-
-    }
-
-    @Override
-    public void onDie() {
-
-    }
-
-    @Override
     public ServerEntityType getEntityType() {
-        return ServerEntityType.OAK_TREE;
-    }
-
-    @Override
-    public void onChunkChanged() {
-
+        return ServerEntityType.ANCIENT_TREE;
     }
 
     @Override

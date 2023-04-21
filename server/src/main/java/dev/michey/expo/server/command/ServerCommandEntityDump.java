@@ -2,13 +2,11 @@ package dev.michey.expo.server.command;
 
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.main.arch.AbstractServerCommand;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionEntityManager;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerCommandEntityDump extends AbstractServerCommand {
 

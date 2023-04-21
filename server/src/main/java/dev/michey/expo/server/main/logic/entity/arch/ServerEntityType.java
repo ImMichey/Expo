@@ -1,6 +1,10 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
-import dev.michey.expo.server.main.logic.entity.*;
+import dev.michey.expo.server.main.logic.entity.flora.*;
+import dev.michey.expo.server.main.logic.entity.misc.ServerDummy;
+import dev.michey.expo.server.main.logic.entity.misc.ServerGravestone;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public enum ServerEntityType {
 

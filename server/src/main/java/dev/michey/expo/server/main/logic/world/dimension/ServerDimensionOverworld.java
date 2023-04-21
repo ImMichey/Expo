@@ -1,8 +1,7 @@
 package dev.michey.expo.server.main.logic.world.dimension;
 
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.server.main.logic.entity.ServerDummy;
-import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.entity.misc.ServerDummy;
 
 public class ServerDimensionOverworld extends ServerDimension {
 

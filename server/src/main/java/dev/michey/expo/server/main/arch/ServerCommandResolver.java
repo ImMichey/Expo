@@ -4,7 +4,7 @@ import dev.michey.expo.command.abstraction.AbstractCommand;
 import dev.michey.expo.command.util.CommandExceptionReason;
 import dev.michey.expo.command.CommandResolver;
 import dev.michey.expo.command.util.CommandSyntaxException;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 

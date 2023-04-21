@@ -4,7 +4,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.util.ExpoShared;
 

@@ -1,6 +1,7 @@
 package dev.michey.expo.server.fs.world.entity;
 
-import dev.michey.expo.server.main.logic.entity.ServerItem;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
+import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -79,26 +80,15 @@ public class SavableEntity {
         entity.entityId = object.getInt("id");
         entity.entityDimension = chunk.getDimension().getDimensionName();
 
-        if(object.has("static")) {
-            entity.setStaticEntity();
-        }
+        // Static entity keyword
+        if(object.has("static")) entity.setStaticEntity();
+        // Tile entity
+        if(object.has("tx") && object.has("ty")) entity.attachToTile(chunk, object.getInt("tx"), object.getInt("ty"));
+        // Health
+        if(object.has("hp")) entity.health = object.getFloat("hp");
 
-        if(object.has("tx") && object.has("ty")) {
-            entity.attachToTile(chunk, object.getInt("tx"), object.getInt("ty"));
-        }
-
-        if(object.has("hp")) {
-            entity.health = object.getFloat("hp");
-        }
-
-        if(object.has("item")) {
-            ServerItem itemEntity = (ServerItem) entity;
-            ServerInventoryItem item = new ServerInventoryItem();
-            InventoryFileLoader.loadItemFromStorage(item, object.getJSONObject("item"));
-            itemEntity.itemContainer = item;
-            itemEntity.lifetime = object.getFloat("lifetime");
-        }
-
+        // For every custom payload, call this
+        entity.onLoad(object);
         return entity;
     }
 

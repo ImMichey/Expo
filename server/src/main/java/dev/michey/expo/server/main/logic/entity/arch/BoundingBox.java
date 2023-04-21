@@ -3,7 +3,7 @@ package dev.michey.expo.server.main.logic.entity.arch;
 import com.dongbat.jbump.CollisionFilter;
 import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Response;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public class BoundingBox {
 

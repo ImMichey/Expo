@@ -1,4 +1,4 @@
-package dev.michey.expo.server.main.logic.entity;
+package dev.michey.expo.server.main.logic.entity.flora;
 
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -6,43 +6,13 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
 public class ServerDandelion extends ServerEntity {
 
-    @Override
-    public void onCreation() {
-
-    }
-
-    @Override
-    public void onDeletion() {
-
-    }
-
     public ServerDandelion() {
         health = 10.0f;
     }
 
     @Override
-    public void tick(float delta) {
-
-    }
-
-    @Override
-    public void onDamage(ServerEntity damageSource, float damage) {
-
-    }
-
-    @Override
-    public void onDie() {
-
-    }
-
-    @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.DANDELION;
-    }
-
-    @Override
-    public void onChunkChanged() {
-
     }
 
     @Override

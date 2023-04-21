@@ -3,7 +3,7 @@ package dev.michey.expo.server.main.logic.world.dimension;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.Collection;
