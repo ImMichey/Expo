@@ -16,10 +16,25 @@ public class ServerOakTree extends ServerEntity {
     public int age;
     public int variant;
 
+    public static final float[][] TREE_BODIES = new float[][] {
+        new float[] {2.0f, 4.0f, 13.0f, 4.5f},
+        new float[] {2.0f, 4.0f, 13.0f, 4.5f},
+        new float[] {2.0f, 4.0f, 13.0f, 4.5f},
+        new float[] {2.0f, 4.0f, 15.0f, 4.5f},
+        new float[] {2.0f, 4.0f, 15.0f, 4.5f}
+    };
+
     @Override
     public void onCreation() {
         // add physics body of player to world
-        physicsBody = new BoundingBox(this, 1, 4, 11, 3.5f);
+        float[] b = TREE_BODIES[variant - 1];
+        physicsBody = new BoundingBox(this, b[0], b[1], b[2], b[3]);
+    }
+
+    @Override
+    public void onGeneration() {
+        generateAge();
+        generateVariant();
     }
 
     @Override
@@ -47,6 +62,11 @@ public class ServerOakTree extends ServerEntity {
     public void onLoad(JSONObject saved) {
         variant = saved.getInt("variant");
         ageFromVariant();
+    }
+
+    @Override
+    public Object[] getPacketPayload() {
+        return new Object[] {variant};
     }
 
     public void generateAge() {

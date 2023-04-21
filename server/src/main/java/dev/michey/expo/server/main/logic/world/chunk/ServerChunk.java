@@ -131,6 +131,7 @@ public class ServerChunk {
                             generatedEntity.posX = p.absoluteX;
                             generatedEntity.posY = p.absoluteY;
                             if(populator.asStaticEntity) generatedEntity.setStaticEntity();
+                            generatedEntity.onGeneration();
 
                             postProcessingList.add(new Pair<>(generatedEntity, false));
 
@@ -149,6 +150,7 @@ public class ServerChunk {
                                             spreadEntity.posX = targetX;
                                             spreadEntity.posY = targetY;
                                             if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
+                                            spreadEntity.onGeneration();
 
                                             postProcessingList.add(new Pair<>(spreadEntity, false));
                                         }

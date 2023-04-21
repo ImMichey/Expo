@@ -108,6 +108,10 @@ public abstract class ClientEntity {
         clientTileY = ExpoShared.posToTile(clientPosY);
     }
 
+    public void applyPacketPayload(Object[] payload) {
+
+    }
+
     /** Manager methods */
     public ClientEntityManager entityManager() {
         return ClientEntityManager.get();

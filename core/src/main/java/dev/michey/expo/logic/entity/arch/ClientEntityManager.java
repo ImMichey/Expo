@@ -318,14 +318,7 @@ public class ClientEntityManager {
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
-
-        if(p.entityType == ServerEntityType.ITEM) {
-            int itemId = (int) p.payload[0];
-            int itemAmount = (int) p.payload[1];
-            ((ClientItem) e).itemId = itemId;
-            ((ClientItem) e).itemAmount = itemAmount;
-        }
-
+        e.applyPacketPayload(p.payload);
         return e;
     }
 

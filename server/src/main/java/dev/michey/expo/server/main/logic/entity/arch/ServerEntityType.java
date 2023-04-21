@@ -8,26 +8,28 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public enum ServerEntityType {
 
-    PLAYER(0, "Player"),
-    DUMMY(1, "Dummy"),
-    GRASS(2, "Grass"),
-    OAK_TREE(3, "OakTree"),
-    MUSHROOM_RED(4, "MushroomRed"),
-    MUSHROOM_BROWN(5, "MushroomBrown"),
-    BUSH(6, "Bush"),
-    ITEM(7, "Item"),
-    ANCIENT_TREE(8, "AncientTree"),
-    GRAVESTONE(9, "Gravestone"),
-    DANDELION(10, "Dandelion"),
-    POPPY(11, "Poppy"),
+    PLAYER(0, "Player", false),
+    DUMMY(1, "Dummy", false),
+    GRASS(2, "Grass", true),
+    OAK_TREE(3, "OakTree", true),
+    MUSHROOM_RED(4, "MushroomRed", false),
+    MUSHROOM_BROWN(5, "MushroomBrown", false),
+    BUSH(6, "Bush", false),
+    ITEM(7, "Item", true),
+    ANCIENT_TREE(8, "AncientTree", false),
+    GRAVESTONE(9, "Gravestone", false),
+    DANDELION(10, "Dandelion", false),
+    POPPY(11, "Poppy", false),
     ;
 
     public final int ENTITY_ID;
     public final String ENTITY_NAME;
+    public final boolean ADVANCED_PAYLOAD;
 
-    ServerEntityType(int ENTITY_ID, String ENTITY_NAME) {
+    ServerEntityType(int ENTITY_ID, String ENTITY_NAME, boolean ADVANCED_PAYLOAD) {
         this.ENTITY_ID = ENTITY_ID;
         this.ENTITY_NAME = ENTITY_NAME;
+        this.ADVANCED_PAYLOAD = ADVANCED_PAYLOAD;
     }
 
     public static ServerEntity typeToEntity(int id) {

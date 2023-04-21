@@ -133,6 +133,12 @@ public class ClientItem extends ClientEntity {
     }
 
     @Override
+    public void applyPacketPayload(Object[] payload) {
+        itemId = (int) payload[0];
+        itemAmount = (int) payload[1];
+    }
+
+    @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.ITEM;
     }

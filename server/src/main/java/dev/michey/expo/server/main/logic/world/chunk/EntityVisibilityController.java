@@ -38,9 +38,8 @@ public class EntityVisibilityController {
                     ServerPlayer player = (ServerPlayer) entity;
                     ServerPackets.p9PlayerCreate(player, false, PacketReceiver.player(this.player));
                 } else {
-                    if(entity.getEntityType() == ServerEntityType.ITEM) {
-                        ServerInventoryItem item = ((ServerItem) entity).itemContainer;
-                        ServerPackets.p29EntityCreateAdvanced(entity, new Object[] {item.itemId, item.itemAmount}, PacketReceiver.player(player));
+                    if(entity.getEntityType().ADVANCED_PAYLOAD) {
+                        ServerPackets.p29EntityCreateAdvanced(entity, PacketReceiver.player(player));
                     } else {
                         ServerPackets.p2EntityCreate(entity, PacketReceiver.player(player));
                     }

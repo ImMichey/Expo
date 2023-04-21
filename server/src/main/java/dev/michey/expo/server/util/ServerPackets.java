@@ -275,8 +275,8 @@ public class ServerPackets {
         tcp(p, receiver);
     }
 
-    public static void p29EntityCreateAdvanced(ServerEntity entity, Object[] payload, PacketReceiver receiver) {
-        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, payload, receiver);
+    public static void p29EntityCreateAdvanced(ServerEntity entity, PacketReceiver receiver) {
+        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.getPacketPayload(), receiver);
     }
 
     /** Sends the P30_EntityDataUpdate packet via UDP protocol. */

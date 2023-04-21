@@ -94,4 +94,9 @@ public class ServerItem extends ServerEntity {
         lifetime = saved.getFloat("lifetime");
     }
 
+    @Override
+    public Object[] getPacketPayload() {
+        return new Object[] {itemContainer.itemId, itemContainer.itemAmount};
+    }
+
 }

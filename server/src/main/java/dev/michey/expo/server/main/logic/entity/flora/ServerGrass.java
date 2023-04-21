@@ -11,11 +11,19 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.util.GenerationUtils;
+import org.json.JSONObject;
 
 public class ServerGrass extends ServerEntity {
 
+    public int variant;
+
     public ServerGrass() {
         health = 20.0f;
+    }
+
+    @Override
+    public void onGeneration() {
+        variant = MathUtils.random(1, 5);
     }
 
     @Override
@@ -44,7 +52,17 @@ public class ServerGrass extends ServerEntity {
 
     @Override
     public SavableEntity onSave() {
-        return new SavableEntity(this).pack();
+        return new SavableEntity(this).pack().add("variant", variant);
+    }
+
+    @Override
+    public void onLoad(JSONObject saved) {
+        variant = saved.getInt("variant");
+    }
+
+    @Override
+    public Object[] getPacketPayload() {
+        return new Object[] {variant};
     }
 
 }

@@ -14,19 +14,16 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.util.ClientStatic;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
 
 import java.util.List;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ClientGrass extends ClientEntity implements SelectableEntity {
 
+    private int variant;
     private Texture grass;
     private TextureRegion grassShadow;
     private float[] interactionPointArray;
@@ -55,7 +52,6 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onCreation() {
-        int variant = MathUtils.random(1, 5);
         grass = ExpoAssets.get().texture("foliage/entity_grass/entity_grass_" + variant + ".png");
         grassShadow = new TextureRegion(t("foliage/entity_grass/entity_grass_" + variant + "_shadow.png"));
 
@@ -222,6 +218,11 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight(), shadow, wind + verticesMovement, wind + verticesMovement);
         }
+    }
+
+    @Override
+    public void applyPacketPayload(Object[] payload) {
+        variant = (int) payload[0];
     }
 
     @Override

@@ -47,6 +47,10 @@ public abstract class ServerEntity {
 
     }
 
+    public void onGeneration() {
+
+    }
+
     public void onDeletion() {
 
     }
@@ -73,6 +77,10 @@ public abstract class ServerEntity {
 
     public void onLoad(JSONObject saved) {
 
+    }
+
+    public Object[] getPacketPayload() {
+        return null;
     }
 
     /** ServerEntity helper methods */
