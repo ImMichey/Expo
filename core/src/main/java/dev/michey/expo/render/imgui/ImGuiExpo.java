@@ -18,9 +18,11 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableItemSlot;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
+import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -248,6 +250,16 @@ public class ImGuiExpo {
                     ImGui.indent();
 
                     ImGui.text("TPS: " + local.getTicksPerSecond());
+                    ImGui.text("Performance Metrics:");
+
+                    // / 1_000_000.0d
+                    double total = ExpoServerContainer.get().totalTickDuration / 1_000_000d;
+                    double packets = ExpoServerContainer.get().packetTickDuration / 1_000_000d;
+                    double world = ExpoServerContainer.get().worldTickDuration / 1_000_000d;
+                    double max = 1f / (double) ExpoShared.DEFAULT_SERVER_TICK_RATE;
+                    coloredBulletText(0f, 1f, 1f, "Total: " + total + " (" + (Math.round(total / max * 100d) / 100d) + "%)");
+                    coloredBulletText(0f, 1f, 1f, "Packets: " + packets + " (" + (Math.round(packets / max * 100d) / 100d) + "%)");
+                    coloredBulletText(0f, 1f, 1f, "World: " + world + " (" + (Math.round(world / max * 100d) / 100d) + "%)");
 
                     for(ServerDimension dimension : ServerWorld.get().getDimensions()) {
                         ImGui.pushStyleColor(ImGuiCol.Text, 0f, 1f, 0f, 1f);
