@@ -6,7 +6,7 @@ import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.audio.TrackedSoundData;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.inventory.PlayerInventory;

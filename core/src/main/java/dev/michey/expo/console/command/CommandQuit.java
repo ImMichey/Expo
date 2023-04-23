@@ -1,10 +1,9 @@
 package dev.michey.expo.console.command;
 
 import dev.michey.expo.Expo;
-import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.util.ClientStatic;
 
 public class CommandQuit extends AbstractConsoleCommand {

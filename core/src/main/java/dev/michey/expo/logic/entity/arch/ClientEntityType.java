@@ -1,8 +1,10 @@
 package dev.michey.expo.logic.entity.arch;
 
-import dev.michey.expo.logic.entity.*;
+import dev.michey.expo.logic.entity.flora.*;
+import dev.michey.expo.logic.entity.misc.*;
 import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
 public enum ClientEntityType {
@@ -20,6 +22,7 @@ public enum ClientEntityType {
     GRAVESTONE(9, "Gravestone", ServerEntityType.GRAVESTONE),
     DANDELION(10, "Dandelion", ServerEntityType.DANDELION),
     POPPY(11, "Poppy", ServerEntityType.POPPY),
+    BLUEBERRY_BUSH(12, "BlueberryBush", ServerEntityType.BLUEBERRY_BUSH),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -59,6 +62,7 @@ public enum ClientEntityType {
             case 9 -> new ClientGravestone();
             case 10 -> new ClientDandelion();
             case 11 -> new ClientPoppy();
+            case 12 -> new ClientBlueberryBush();
             default -> null;
         };
     }

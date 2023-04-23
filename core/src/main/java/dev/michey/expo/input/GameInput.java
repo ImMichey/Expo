@@ -3,7 +3,7 @@ package dev.michey.expo.input;
 import com.badlogic.gdx.InputProcessor;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
-import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 
 public class GameInput implements InputProcessor {
 

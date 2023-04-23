@@ -104,7 +104,7 @@
                             "spreadData": {
                                 "spread": [2, 7],
                                 "spreadChance": 0.75,
-                                "spreadDis": [10.0, 16.0],
+                                "spreadDis": [16.0, 40.0],
                                 "spreadType": ["DANDELION"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
@@ -178,7 +178,7 @@
                             "spreadData": {
                                 "spread": [2, 7],
                                 "spreadChance": 0.75,
-                                "spreadDis": [10.0, 16.0],
+                                "spreadDis": [16.0, 32.0],
                                 "spreadType": ["DANDELION"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]

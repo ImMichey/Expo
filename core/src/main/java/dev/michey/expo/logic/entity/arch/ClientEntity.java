@@ -2,8 +2,10 @@ package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
@@ -14,6 +16,8 @@ import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
+
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public abstract class ClientEntity {
 
@@ -247,6 +251,10 @@ public abstract class ClientEntity {
 
     public void readEntityDataUpdate(Object[] payload) {
 
+    }
+
+    public void playEntitySound(String group) {
+        AudioEngine.get().playSoundGroupManaged(group, new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
     }
 
 }

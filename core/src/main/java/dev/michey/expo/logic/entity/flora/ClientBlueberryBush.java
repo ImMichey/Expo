@@ -1,25 +1,31 @@
-package dev.michey.expo.logic.entity;
+package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 
-public class ClientGravestone extends ClientEntity implements SelectableEntity {
+public class ClientBlueberryBush extends ClientEntity implements SelectableEntity {
 
-    private TextureRegion texture;
-    private TextureRegion shadowMask;
+    private TextureRegion stem;
+    private Texture bush;
+    private Texture bushFruits;
+    private TextureRegion shadow;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        texture = ExpoAssets.get().textureRegion("entity_gravestone");
-        shadowMask = ExpoAssets.get().textureRegion("entity_gravestone_shadow_mask");
-        updateTexture(0, 0, texture.getRegionWidth(), texture.getRegionHeight());
+        stem = tr("entity_blueberrybush_stem");
+        shadow = tr("entity_blueberrybush_shadowmask");
+        bush = t("foliage/entity_blueberrybush/entity_blueberrybush_crown.png");
+        bushFruits = t("foliage/entity_blueberrybush/entity_blueberrybush_fruits.png");
+
+        // + 1, + 3
+        updateTexture(0, 0, stem.getRegionWidth(), 15);
         interactionPointArray = generateInteractionArray();
     }
 
@@ -39,19 +45,19 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity {
     }
 
     @Override
-    public float[] interactionPoints() {
-        return interactionPointArray;
-    }
-
-    @Override
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);
+        rc.arraySpriteBatch.draw(stem, clientPosX, clientPosY);
+        rc.arraySpriteBatch.draw(bush, clientPosX + 1, clientPosY + 3);
         rc.arraySpriteBatch.end();
-
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
         rc.arraySpriteBatch.begin();
+    }
+
+    @Override
+    public float[] interactionPoints() {
+        return interactionPointArray;
     }
 
     @Override
@@ -59,29 +65,35 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth(drawOffsetY);
+            updateDepth();
             rc.useArrayBatch();
-            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-            rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);
+            rc.useRegularArrayShader();
+
+            rc.arraySpriteBatch.draw(stem, clientPosX, clientPosY);
+            rc.arraySpriteBatch.draw(bush, clientPosX + 1, clientPosY + 3);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
-        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(this.shadow, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
             rc.useArrayBatch();
-            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-            rc.arraySpriteBatch.drawGradient(shadowMask, drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(this.shadow, this.shadow.getRegionWidth(), this.shadow.getRegionHeight(), shadow);
         }
     }
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.GRAVESTONE;
+        return ClientEntityType.BLUEBERRY_BUSH;
+    }
+
+    @Override
+    public void applyPacketPayload(Object[] payload) {
+        
     }
 
 }

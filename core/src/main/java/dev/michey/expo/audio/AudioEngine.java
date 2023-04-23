@@ -2,7 +2,7 @@ package dev.michey.expo.audio;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 
 import java.util.HashMap;
@@ -19,14 +19,14 @@ public class AudioEngine {
     private float masterVolume = 1.0f;
 
     /** Storage maps */
-    private HashMap<String, SoundGroupDatabase> soundGroupMap;
-    private HashMap<String, String> qualifiedNameMap;
-    private HashMap<SoundGroupType, Float> soundTypeVolumeMap;
+    private final HashMap<String, SoundGroupDatabase> soundGroupMap;
+    private final HashMap<String, String> qualifiedNameMap;
+    private final HashMap<SoundGroupType, Float> soundTypeVolumeMap;
 
     /** Tracked audio */
-    private ConcurrentHashMap<Long, TrackedSoundData> soundData;
-    private List<TrackedSoundData> clearList;
-    private HashMap<String, TrackedSoundData> ambienceTrackMap;
+    private final ConcurrentHashMap<Long, TrackedSoundData> soundData;
+    private final List<TrackedSoundData> clearList;
+    private final HashMap<String, TrackedSoundData> ambienceTrackMap;
 
     private float dynamicDelta;
 

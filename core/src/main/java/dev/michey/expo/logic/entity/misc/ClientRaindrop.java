@@ -1,4 +1,4 @@
-package dev.michey.expo.logic.entity;
+package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;

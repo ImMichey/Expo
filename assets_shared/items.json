@@ -304,6 +304,33 @@
                     "floorType": "DIRT"
                 }
             }
+        },
+        {
+            "identifier": "item_op_shovel",
+            "id": 12,
+            "displayName": "Admin Shovel",
+            "displayNameColor": "#ff7f00",
+            "render": {
+                "ui": {
+                    "texture": "item_op_shovel"
+                },
+                "held": {
+                    "texture": "item_op_shovel",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 5000,
+                "toolType": "SHOVEL",
+                "attackSpeed": 0.05,
+                "attackDamage": 100,
+                "range": 50
+            }
         }
     ]
 }

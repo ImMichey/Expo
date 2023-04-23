@@ -1,33 +1,20 @@
 package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.logic.entity.ClientItem;
-import dev.michey.expo.logic.entity.ClientPlayer;
-import dev.michey.expo.logic.entity.ClientSelector;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
-import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ClientEntityManager {
 
@@ -279,6 +266,16 @@ public class ClientEntityManager {
         listOfEntities.clear();
 
         for(ClientEntityType type : types) {
+            listOfEntities.add(getEntitiesByType(type));
+        }
+
+        return listOfEntities;
+    }
+
+    public List<List<ClientEntity>> getEntitiesByType(List<ClientEntityType> list) {
+        listOfEntities.clear();
+
+        for(ClientEntityType type : list) {
             listOfEntities.add(getEntitiesByType(type));
         }
 

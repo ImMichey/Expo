@@ -1,4 +1,4 @@
-package dev.michey.expo.logic.entity;
+package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -16,19 +16,16 @@ import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
 
-import java.util.List;
-
-import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
-public class ClientMushroomBrown extends ClientEntity implements SelectableEntity {
+public class ClientMushroomRed extends ClientEntity implements SelectableEntity {
 
     private TextureRegion texture;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        texture = ExpoAssets.get().textureRegion("mushroom_brown_var2");
+        texture = ExpoAssets.get().textureRegion("mushroom_red_var2");
         updateTexture(0, 0, texture.getRegionWidth(), texture.getRegionHeight());
         interactionPointArray = generateInteractionArray();
     }
@@ -48,7 +45,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
             p.setParticleColor(MathUtils.randomBoolean() ? ParticleColorMap.COLOR_PARTICLE_MUSHROOM_1 : ParticleColorMap.COLOR_PARTICLE_MUSHROOM_2);
             p.setParticleLifetime(0.3f);
             p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
-            float scale = MathUtils.random(0.5f, 1.0f);
+            float scale = MathUtils.random(0.6f, 0.9f);
             p.setParticleScale(scale, scale);
             p.setParticleFadeout(0.1f);
             p.setParticleRotation(MathUtils.random(360f));
@@ -114,7 +111,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.MUSHROOM_BROWN;
+        return ClientEntityType.MUSHROOM_RED;
     }
 
 }

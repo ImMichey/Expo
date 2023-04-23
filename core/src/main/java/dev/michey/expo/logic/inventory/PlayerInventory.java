@@ -1,6 +1,6 @@
 package dev.michey.expo.logic.inventory;
 
-import dev.michey.expo.logic.entity.ClientPlayer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
