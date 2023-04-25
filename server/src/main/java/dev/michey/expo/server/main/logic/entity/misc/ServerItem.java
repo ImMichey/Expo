@@ -13,6 +13,8 @@ import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ServerItem extends ServerEntity {
 
     public ServerInventoryItem itemContainer;
@@ -52,6 +54,8 @@ public class ServerItem extends ServerEntity {
             ServerPlayer closestPlayer = getDimension().getEntityManager().getClosestPlayer(this, 8.0f);
 
             if(closestPlayer != null) {
+                int lastId = closestPlayer.getCurrentItemId();
+
                 var result = closestPlayer.playerInventory.addItem(itemContainer);
                 ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(result.changeResult, PacketReceiver.player(closestPlayer));
 
@@ -63,6 +67,10 @@ public class ServerItem extends ServerEntity {
                     } else {
                         itemContainer.itemAmount = result.remainingAmount;
                         ServerPackets.p30EntityDataUpdate(entityId, new Object[] {itemContainer.itemAmount}, PacketReceiver.whoCanSee(this));
+                    }
+
+                    if(lastId != closestPlayer.getCurrentItemId()) {
+                        closestPlayer.heldItemPacket(PacketReceiver.whoCanSee(this));
                     }
                 }
             }
