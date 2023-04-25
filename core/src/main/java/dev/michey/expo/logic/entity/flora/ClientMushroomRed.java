@@ -12,7 +12,6 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
 
@@ -32,7 +31,7 @@ public class ClientMushroomRed extends ClientEntity implements SelectableEntity 
 
     @Override
     public void onDamage(float damage, float newHealth) {
-        AudioEngine.get().playSoundGroupManaged("grass_hit", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
+        playEntitySound("grass_hit");
 
         int particles = MathUtils.random(2, 5);
 

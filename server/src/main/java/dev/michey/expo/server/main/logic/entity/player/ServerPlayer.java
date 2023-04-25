@@ -88,8 +88,8 @@ public class ServerPlayer extends ServerEntity {
     }
 
     @Override
-    public void onDamage(ServerEntity damageSource, float damage) {
-
+    public boolean onDamage(ServerEntity damageSource, float damage) {
+        return true;
     }
 
     @Override

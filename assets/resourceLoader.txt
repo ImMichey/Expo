@@ -26,8 +26,8 @@ foliage/entity_oak_tree/eot_leaves.png
 foliage/entity_ancient_tree/entity_ancient_tree_leaves.png
 water/square16x16.png
 water/trans1x1.png
-foliage/entity_blueberrybush/entity_blueberrybush_crown.png
-foliage/entity_blueberrybush/entity_blueberrybush_fruits.png
+foliage/entity_blueberrybush/ebbb_crown.png
+foliage/entity_blueberrybush/ebbb_crown_fruits.png
 
 #[Sound]
 #sounds/player_death_1.wav

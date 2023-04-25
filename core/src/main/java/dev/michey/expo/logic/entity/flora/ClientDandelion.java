@@ -1,13 +1,9 @@
 package dev.michey.expo.logic.entity.flora;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -18,10 +14,6 @@ import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
-
-import java.util.List;
-
-import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ClientDandelion extends ClientEntity implements SelectableEntity {
 

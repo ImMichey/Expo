@@ -63,8 +63,8 @@ public abstract class ServerEntity {
 
     }
 
-    public void onDamage(ServerEntity damageSource, float damage) {
-
+    public boolean onDamage(ServerEntity damageSource, float damage) {
+        return true;
     }
 
     public void onDie() {
@@ -124,12 +124,14 @@ public abstract class ServerEntity {
     }
 
     public void applyDamageWithPacket(ServerEntity damageSource, float damage) {
-        health -= damage;
-        onDamage(damageSource, damage);
-        ServerPackets.p26EntityDamage(entityId, damage, health, PacketReceiver.whoCanSee(this));
+        if(onDamage(damageSource, damage)) {
+            health -= damage;
 
-        if(health <= 0) {
-            killEntityWithPacket();
+            ServerPackets.p26EntityDamage(entityId, damage, health, PacketReceiver.whoCanSee(this));
+
+            if(health <= 0) {
+                killEntityWithPacket();
+            }
         }
     }
 

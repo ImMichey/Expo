@@ -12,26 +12,28 @@ import dev.michey.expo.render.shadow.ShadowUtils;
 public class ClientBlueberryBush extends ClientEntity implements SelectableEntity {
 
     private TextureRegion stem;
+    private TextureRegion shadowMask;
     private Texture bush;
     private Texture bushFruits;
-    private TextureRegion shadow;
     private float[] interactionPointArray;
+
+    private boolean hasBerries;
 
     @Override
     public void onCreation() {
-        stem = tr("entity_blueberrybush_stem");
-        shadow = tr("entity_blueberrybush_shadowmask");
-        bush = t("foliage/entity_blueberrybush/entity_blueberrybush_crown.png");
-        bushFruits = t("foliage/entity_blueberrybush/entity_blueberrybush_fruits.png");
+        stem = tr("ebbb_stem");
+        shadowMask = tr("ebbb_shadow_mask");
 
-        // + 1, + 3
-        updateTexture(0, 0, stem.getRegionWidth(), 15);
+        bush = t("foliage/entity_blueberrybush/ebbb_crown.png");
+        bushFruits = t("foliage/entity_blueberrybush/ebbb_crown_fruits.png");
+
+        updateTexture(0, 0, shadowMask.getRegionWidth(), shadowMask.getRegionHeight());
         interactionPointArray = generateInteractionArray();
     }
 
     @Override
     public void onDamage(float damage, float newHealth) {
-
+        playEntitySound("grass_hit");
     }
 
     @Override
@@ -48,8 +50,8 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(stem, clientPosX, clientPosY);
-        rc.arraySpriteBatch.draw(bush, clientPosX + 1, clientPosY + 3);
+        rc.arraySpriteBatch.draw(stem, clientPosX + 1, clientPosY);
+        rc.arraySpriteBatch.draw(hasBerries ? bushFruits : bush, clientPosX, clientPosY + 1);
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
         rc.arraySpriteBatch.begin();
@@ -65,24 +67,24 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth();
+            updateDepth(2);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.draw(stem, clientPosX, clientPosY);
-            rc.arraySpriteBatch.draw(bush, clientPosX + 1, clientPosY + 3);
+            rc.arraySpriteBatch.draw(stem, clientPosX + 1, clientPosY);
+            rc.arraySpriteBatch.draw(hasBerries ? bushFruits : bush, clientPosX, clientPosY + 1);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
-        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(this.shadow, shadow);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
             rc.useArrayBatch();
-            rc.arraySpriteBatch.drawGradient(this.shadow, this.shadow.getRegionWidth(), this.shadow.getRegionHeight(), shadow);
+            rc.arraySpriteBatch.drawGradient(shadowMask, shadowMask.getRegionWidth(), shadowMask.getRegionHeight(), shadow);
         }
     }
 
@@ -93,7 +95,12 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
 
     @Override
     public void applyPacketPayload(Object[] payload) {
-        
+        hasBerries = (boolean) payload[0];
+    }
+
+    @Override
+    public void readEntityDataUpdate(Object[] payload) {
+        hasBerries = (boolean) payload[0];
     }
 
 }
