@@ -39,9 +39,11 @@ public class ServerPlayer extends ServerEntity {
     public PlayerSaveFile playerSaveFile;
     public String username;
 
-    public float playerSpeed = 1.5f;
+    public float playerSpeed = 1.0f;
+    public final float sprintMultiplier = 1.75f;
     public int xDir = 0;
     public int yDir = 0;
+    public boolean sprinting;
     private boolean dirResetPacket = false;
 
     public int playerDirection = 1; // default in client
@@ -151,7 +153,7 @@ public class ServerPlayer extends ServerEntity {
         physicsBody.teleport(x, y);
         posX = getDimension().getDimensionSpawnX();
         posY = getDimension().getDimensionSpawnY();
-        ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, PacketReceiver.whoCanSee(this));
+        ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
     }
 
     public float movementSpeedMultiplicator() {
@@ -169,7 +171,7 @@ public class ServerPlayer extends ServerEntity {
     @Override
     public void tick(float delta) {
         if(xDir != 0 || yDir != 0) {
-            float multiplicator = movementSpeedMultiplicator();
+            float multiplicator = movementSpeedMultiplicator() * (sprinting ? sprintMultiplier : 1.0f);
             boolean normalize = xDir != 0 && yDir != 0;
             float normalizer = 1.0f;
 
@@ -186,13 +188,13 @@ public class ServerPlayer extends ServerEntity {
             posX = result.goalX - physicsBody.xOffset;
             posY = result.goalY - physicsBody.yOffset;
 
-            ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
             dirResetPacket = true;
         }
 
         if(xDir == 0 && yDir == 0 && dirResetPacket) {
             dirResetPacket = false;
-            ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
         }
 
         if(punching) {

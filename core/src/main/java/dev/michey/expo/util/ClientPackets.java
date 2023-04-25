@@ -15,10 +15,11 @@ public class ClientPackets {
     }
 
     /** Sends the P5_PlayerVelocity packet via UDP protocol. */
-    public static void p5PlayerVelocity(int xDir, int yDir) {
+    public static void p5PlayerVelocity(int xDir, int yDir, boolean sprinting) {
         P5_PlayerVelocity p = new P5_PlayerVelocity();
         p.xDir = xDir;
         p.yDir = yDir;
+        p.sprinting = sprinting;
         udp(p);
     }
 

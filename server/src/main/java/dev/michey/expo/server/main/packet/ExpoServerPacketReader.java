@@ -49,6 +49,7 @@ public class ExpoServerPacketReader {
 
             sp.xDir = vel.xDir;
             sp.yDir = vel.yDir;
+            sp.sprinting = vel.sprinting;
         } else if(packet instanceof P12_PlayerDirection dir) {
             // Ignored.
         } else if(packet instanceof P16_PlayerPunch punch) {

@@ -44,6 +44,7 @@ public class ClientPlayer extends ClientEntity {
     /** Player velocity */
     private int cachedVelocityX;
     private int cachedVelocityY;
+    private boolean cachedSprinting;
 
     /** Player chunk */
     public int chunkX;
@@ -317,11 +318,13 @@ public class ClientPlayer extends ClientEntity {
 
             // Player input + movement
             int xDir = 0, yDir = 0;
+            boolean sprinting = false;
 
             if(IngameInput.get().keyPressed(Input.Keys.W)) yDir += 1;
             if(IngameInput.get().keyPressed(Input.Keys.S)) yDir -= 1;
             if(IngameInput.get().keyPressed(Input.Keys.A)) xDir -= 1;
             if(IngameInput.get().keyPressed(Input.Keys.D)) xDir += 1;
+            if(IngameInput.get().keyPressed(Input.Keys.SHIFT_LEFT)) sprinting = true;
 
             int numberPressed = IngameInput.get().pressedNumber();
 
@@ -329,10 +332,11 @@ public class ClientPlayer extends ClientEntity {
                 playerInventory.modifySelectedSlot(numberPressed);
             }
 
-            if(cachedVelocityX != xDir || cachedVelocityY != yDir) {
+            if(cachedVelocityX != xDir || cachedVelocityY != yDir || cachedSprinting != sprinting) {
                 cachedVelocityX = xDir;
                 cachedVelocityY = yDir;
-                ClientPackets.p5PlayerVelocity(xDir, yDir);
+                cachedSprinting = sprinting;
+                ClientPackets.p5PlayerVelocity(xDir, yDir, sprinting);
             }
 
             boolean canSendPunchPacket = (punchEnd - now) < 0 && (clientPunchEnd - now) < 0;
@@ -436,6 +440,15 @@ public class ClientPlayer extends ClientEntity {
     }
 
     @Override
+    public void applyPositionUpdate(float xPos, float yPos, int xDir, int yDir, boolean sprinting) {
+        super.applyPositionUpdate(xPos, yPos, xDir, yDir, sprinting);
+
+        if(!player) {
+            cachedSprinting = sprinting;
+        }
+    }
+
+    @Override
     public void render(RenderContext rc, float delta) {
         updateDepth();
 
@@ -495,7 +508,7 @@ public class ClientPlayer extends ClientEntity {
         boolean moving = isMoving();
 
         if(moving) {
-            playerWalkDelta += delta;
+            playerWalkDelta += delta * (isSprinting() ? 1.25f : 1.0f);
 
             if(playerWalkDelta >= PLAYER_WALK_PER_FRAME_DURATION) {
                 playerWalkDelta -= PLAYER_WALK_PER_FRAME_DURATION;
@@ -863,6 +876,10 @@ public class ClientPlayer extends ClientEntity {
     public boolean isMoving() {
         if(player) return cachedVelocityX != 0 || cachedVelocityY != 0;
         return super.isMoving();
+    }
+
+    public boolean isSprinting() {
+        return cachedSprinting;
     }
 
     @Override

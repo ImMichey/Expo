@@ -80,7 +80,7 @@ public abstract class ClientEntity {
         doLerp = true;
     }
 
-    public void applyPositionUpdate(float xPos, float yPos, int xDir, int yDir) {
+    public void applyPositionUpdate(float xPos, float yPos, int xDir, int yDir, boolean sprinting) {
         applyPositionUpdate(xPos, yPos);
         serverDirX = xDir;
         serverDirY = yDir;
