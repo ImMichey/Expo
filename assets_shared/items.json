@@ -331,6 +331,56 @@
                 "attackDamage": 100,
                 "range": 50
             }
+        },
+        {
+            "identifier": "item_flint",
+            "id": 13,
+            "displayName": "Flint",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_flint"
+                },
+                "held": {
+                    "texture": "item_flint",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "range": 15
+            }
+        },
+        {
+            "identifier": "item_worm",
+            "id": 14,
+            "displayName": "Worm",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_worm"
+                },
+                "held": {
+                    "texture": "item_worm",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "range": 15
+            }
         }
     ]
 }

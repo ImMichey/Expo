@@ -168,7 +168,7 @@ public abstract class ClientEntity {
     public Array<TextureRegion> ta(String name, int frames) {
         Array<TextureRegion> array = new Array<>(frames);
         for(int i = 0; i < frames; i++) {
-            array.add(tr(name + "_" + (i + 1)));
+            array.add(trn(name + "_" + (i + 1)));
         }
         return array;
     }

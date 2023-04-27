@@ -55,9 +55,7 @@ public abstract class ServerEntity {
 
     }
 
-    public ServerEntityType getEntityType() {
-        return ServerEntityType.DUMMY;
-    }
+    public abstract ServerEntityType getEntityType();
 
     public void onChunkChanged() {
 
@@ -133,6 +131,12 @@ public abstract class ServerEntity {
                 killEntityWithPacket();
             }
         }
+    }
+
+    public int velToPos(float vel) {
+        if(vel > 0) return 1;
+        if(vel < 0) return -1;
+        return 0;
     }
 
     public void killEntityWithPacket() {

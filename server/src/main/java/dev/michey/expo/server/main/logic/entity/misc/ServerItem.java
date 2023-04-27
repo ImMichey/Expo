@@ -13,8 +13,6 @@ import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ServerItem extends ServerEntity {
 
     public ServerInventoryItem itemContainer;

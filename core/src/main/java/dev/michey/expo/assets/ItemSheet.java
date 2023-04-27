@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.HashMap;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ItemSheet {
 
     private final HashMap<String, TextureRegion> itemTextureMap;
@@ -29,6 +31,8 @@ public class ItemSheet {
         add("item_floor_grass", 12, 10, 9);
         add("item_dirt", 13, 10, 9);
         add("item_op_shovel", 14, 15, 15);
+        add("item_flint", 15, 8, 7);
+        add("item_worm", 16, 13, 10);
     }
 
     public TextureRegion get(String name) {
@@ -39,7 +43,10 @@ public class ItemSheet {
         int x = tile % tilesPerRow;
         int y = tile / tilesPerRow;
 
-        itemTextureMap.put(name, new TextureRegion(sheet, x * 16, y * 16 + (16 - h), w, h));
+        int xPos = x * 16;
+        int yPos = y * 16 + (16 - h);
+
+        itemTextureMap.put(name, new TextureRegion(sheet, xPos, yPos, w, h));
     }
 
 }

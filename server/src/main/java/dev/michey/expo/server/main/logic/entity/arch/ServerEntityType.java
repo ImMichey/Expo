@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
+import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.flora.*;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDummy;
 import dev.michey.expo.server.main.logic.entity.misc.ServerGravestone;
@@ -21,6 +22,7 @@ public enum ServerEntityType {
     DANDELION(10, "Dandelion", false),
     POPPY(11, "Poppy", false),
     BLUEBERRY_BUSH(12, "BlueberryBush", true),
+    WORM(13, "Worm", false),
     ;
 
     public final int ENTITY_ID;
@@ -48,6 +50,7 @@ public enum ServerEntityType {
             case 10 -> new ServerDandelion();
             case 11 -> new ServerPoppy();
             case 12 -> new ServerBlueberryBush();
+            case 13 -> new ServerWorm();
             default -> null;
         };
     }
