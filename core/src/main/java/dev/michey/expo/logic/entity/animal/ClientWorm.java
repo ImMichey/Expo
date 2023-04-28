@@ -8,26 +8,26 @@ import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.ExpoAnimation;
+import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import org.w3c.dom.Text;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ClientWorm extends ClientEntity {
 
-    private Array<TextureRegion> idleAnimation;
-    private Array<TextureRegion> walkAnimation;
-    private TextureRegion drawCurrentFrame;
-    private float animationDelta;
+    private final ExpoAnimationHandler animationHandler;
 
     private boolean cachedMoving;
     private boolean flipped;
 
+    public ClientWorm() {
+        animationHandler = new ExpoAnimationHandler();
+        animationHandler.addAnimation("idle", new ExpoAnimation("entity_wormS_idle", 3, 0.25f));
+        animationHandler.addAnimation("walk", new ExpoAnimation("entity_wormS_walk", 5, 0.15f));
+    }
+
     @Override
     public void onCreation() {
-        idleAnimation = ta("entity_worm_idle", 3);
-        walkAnimation = ta("entity_worm_walk", 5);
-        drawCurrentFrame = idleAnimation.get(0);
+
     }
 
     @Override
@@ -46,7 +46,8 @@ public class ClientWorm extends ClientEntity {
 
         if(cachedMoving != isMoving()) {
             cachedMoving = !cachedMoving;
-            animationDelta = 0;
+            animationHandler.reset();
+            animationHandler.switchToAnimation(cachedMoving ? "walk" : "idle");
         }
     }
 
@@ -55,36 +56,34 @@ public class ClientWorm extends ClientEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            animationDelta += delta;
+            animationHandler.tick(delta);
             boolean flip = (!flipped && serverDirX == 0) || (flipped && serverDirX == 1);
-            int index = (int) (animationDelta / 0.15f) % (cachedMoving ? 5 : 3);
 
             if(flip) {
-                for(TextureRegion t : idleAnimation) t.flip(true, false);
-                for(TextureRegion t : walkAnimation) t.flip(true, false);
+                animationHandler.flipAllAnimations(true, false);
                 flipped = !flipped;
             }
 
-            drawCurrentFrame = cachedMoving ? walkAnimation.get(index) : idleAnimation.get(index);
-            updateTexture(0, 0, drawCurrentFrame.getRegionWidth(), drawCurrentFrame.getRegionHeight());
+            TextureRegion f = animationHandler.getActiveFrame();
+            updateTexture(0, 0, f.getRegionWidth(), f.getRegionHeight());
 
             updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(drawCurrentFrame, clientPosX, clientPosY, drawWidth, drawHeight);
+            rc.arraySpriteBatch.draw(f, clientPosX, clientPosY, drawWidth, drawHeight);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
-        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(drawCurrentFrame, shadow);
+        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(animationHandler.getActiveFrame(), shadow);
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 
         if(drawMushroom) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(drawCurrentFrame, drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(animationHandler.getActiveFrame(), drawWidth, drawHeight, shadow);
         }
     }
 

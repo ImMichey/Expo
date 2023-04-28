@@ -39,6 +39,11 @@ public class CommandSpawn extends AbstractConsoleCommand {
             return;
         }
 
+        if(typeId == ServerEntityType.ITEM.ENTITY_ID) {
+            error("Invalid entity type id '" + typeId + "' (you cannot spawn item entities)");
+            return;
+        }
+
         ServerEntity spawned = ServerEntityType.typeToEntity(typeId);
 
         if(spawned == null) {

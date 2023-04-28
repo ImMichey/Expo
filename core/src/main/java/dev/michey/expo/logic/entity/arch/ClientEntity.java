@@ -165,14 +165,6 @@ public abstract class ClientEntity {
         return clientPosY + drawOffsetY + drawHeight * 0.5f;
     }
 
-    public Array<TextureRegion> ta(String name, int frames) {
-        Array<TextureRegion> array = new Array<>(frames);
-        for(int i = 0; i < frames; i++) {
-            array.add(trn(name + "_" + (i + 1)));
-        }
-        return array;
-    }
-
     public Texture t(String name) {
         return ExpoAssets.get().texture(name);
     }
@@ -183,6 +175,10 @@ public abstract class ClientEntity {
 
     public TextureRegion trn(String name) {
         return ExpoAssets.get().textureRegionFresh(name);
+    }
+
+    public Array<TextureRegion> ta(String name, int frames) {
+        return ExpoAssets.get().textureArray(name, frames);
     }
 
     public TextureRegion[] trArrayFromSheet(TextureRegion base, int x, int y, int width, int height, int frames, int cellWidth) {

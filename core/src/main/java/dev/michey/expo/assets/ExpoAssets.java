@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -148,6 +149,14 @@ public class ExpoAssets {
 
     public Texture texture(String name) {
         return assetManager.get("textures/" + name, Texture.class);
+    }
+
+    public Array<TextureRegion> textureArray(String name, int frames) {
+        Array<TextureRegion> array = new Array<>(frames);
+        for(int i = 0; i < frames; i++) {
+            array.add(textureRegionFresh(name + "_" + (i + 1)));
+        }
+        return array;
     }
 
     /** Singleton */
