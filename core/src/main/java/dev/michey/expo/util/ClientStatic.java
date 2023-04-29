@@ -15,5 +15,6 @@ public class ClientStatic {
     public static final boolean DEV_MODE = true; // Enables ImGui, Console, etc.
 
     public static final Color COLOR_ARMOR_TEXT = Color.valueOf("#a2cadc");
+    public static final Color COLOR_CRAFT_TEXT = Color.valueOf("#c0ad9d");
 
 }

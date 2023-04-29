@@ -15,87 +15,25 @@ import dev.michey.expo.util.ExpoShared;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
-public class InteractableItemSlot {
-
-    private final PlayerUI parent;
-
-    public float x, y, w, h, ex, ey;
-    public boolean selected, hovered, visible;
-    public int inventorySlotId;
-
-    private float fadeDelta;
-    private float fadeGoal;
-
-    private final TextureRegion drawSelected;
-    private final TextureRegion drawNotSelected;
+public class InteractableItemSlot extends InteractableUIElement {
 
     public InteractableItemSlot(PlayerUI parent, int inventorySlotId) {
         this(parent, inventorySlotId, parent.invSlotS, parent.invSlot);
     }
 
     public InteractableItemSlot(PlayerUI parent, int inventorySlotId, TextureRegion drawSelected, TextureRegion drawNotSelected) {
-        this.parent = parent;
-        this.inventorySlotId = inventorySlotId;
+        super(parent, inventorySlotId, drawSelected, drawNotSelected);
         if(inventorySlotId == 0) selected = true;
-        this.drawSelected = drawSelected;
-        this.drawNotSelected = drawNotSelected;
-        visible = true;
     }
 
-    public void update(float x, float y, float w, float h) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        ex = x + w;
-        ey = y + h;
-    }
-
-    public void onHoverBegin() {
-        fadeGoal = 0f;
-        fadeDelta = 1.0f;
-    }
-
-    public void onHoverEnd() {
-        fadeGoal = 1.0f;
-        fadeDelta = 0.0f;
-    }
-
+    @Override
     public void onLeftClick() {
         ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, inventorySlotId);
     }
 
+    @Override
     public void onRightClick() {
         ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, inventorySlotId);
-    }
-
-    public void drawBase() {
-        RenderContext r = RenderContext.get();
-
-        if(selected) {
-            r.hudBatch.draw(parent.invSlotS, x, y, w, h);
-        } else {
-            if(fadeGoal > fadeDelta) {
-                fadeDelta += r.delta * 5.0f;
-                if(fadeDelta > fadeGoal) fadeDelta = fadeGoal;
-            } else if(fadeGoal < fadeDelta) {
-                fadeDelta -= r.delta * 5.0f;
-                if(fadeDelta < fadeGoal) fadeDelta = fadeGoal;
-            }
-
-            if(fadeDelta == fadeGoal) {
-                if(hovered) {
-                    r.hudBatch.draw(drawSelected, x, y, w, h);
-                } else {
-                    r.hudBatch.draw(drawNotSelected, x, y, w, h);
-                }
-            } else {
-                r.hudBatch.draw(drawNotSelected, x, y, w, h);
-                r.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - fadeDelta);
-                r.hudBatch.draw(drawSelected, x, y, w, h);
-                r.hudBatch.setColor(Color.WHITE);
-            }
-        }
     }
 
     private ClientInventorySlot toInventorySlot() {
@@ -174,6 +112,7 @@ public class InteractableItemSlot {
         parent.m5x7_use.draw(r.hudBatch, text, x + (parent.slotW - w) * 0.5f, y + h + (parent.slotH - h) * 0.5f);
     }
 
+    @Override
     public void onTooltip() {
         if(toInventorySlot().item == null) {
             if(inventorySlotId == ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) {

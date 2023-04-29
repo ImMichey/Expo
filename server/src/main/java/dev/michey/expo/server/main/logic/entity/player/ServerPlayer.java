@@ -41,8 +41,8 @@ public class ServerPlayer extends ServerEntity {
     public PlayerSaveFile playerSaveFile;
     public String username;
 
-    public float playerSpeed = 1.0f;
-    public final float sprintMultiplier = 1.75f;
+    public float playerSpeed = 1.1f;
+    public final float sprintMultiplier = 1.5f;
     public int xDir = 0;
     public int yDir = 0;
     public boolean sprinting;

@@ -56,7 +56,7 @@ public class ServerWorld {
 
             try {
                 executorService.invokeAll(dimensionTickCollection);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | RejectedExecutionException e) {
                 log("ServerWorld ExecutorService crashed");
                 e.printStackTrace();
             }

@@ -36,6 +36,15 @@ public class ExpoShared {
     public static final int PLAYER_INVENTORY_SLOT_LEGS = 39;
     public static final int PLAYER_INVENTORY_SLOT_FEET = 40;
 
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_OPEN = 100;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_ARROW_LEFT = 101;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_ARROW_RIGHT = 102;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_0 = 103;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_1 = 104;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_2 = 105;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_3 = 106;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_RECIPE_BASE = 107;
+
     public static final int PLAYER_INVENTORY_SLOT_VOID = -1;
     public static final int PLAYER_INVENTORY_SLOT_CURSOR = -2;
 

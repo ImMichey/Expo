@@ -16,6 +16,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableItemSlot;
+import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
@@ -371,10 +372,10 @@ public class ImGuiExpo {
                     ImGui.text("selectedSlot: " + PlayerInventory.LOCAL_INVENTORY.selectedSlot);
                     ImGui.text("inventoryOpen: " + ClientPlayer.getLocalPlayer().inventoryOpen);
 
-                    InteractableItemSlot iis = ExpoClientContainer.get().getPlayerUI().hoveredSlot;
+                    InteractableUIElement iis = ExpoClientContainer.get().getPlayerUI().hoveredSlot;
 
                     if(iis != null) {
-                        ImGui.text("hoveredSlot: " + iis.inventorySlotId + " " + iis.hovered + " " + iis.selected);
+                        ImGui.text("hoveredUiElement: " + iis.inventorySlotId + " " + iis.hovered + " " + iis.selected);
                     }
                 }
 

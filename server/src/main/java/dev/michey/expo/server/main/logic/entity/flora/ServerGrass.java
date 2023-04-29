@@ -28,7 +28,7 @@ public class ServerGrass extends ServerEntity {
 
     @Override
     public void onDie() {
-        int grassSpawned = MathUtils.random(2, 4);
+        int grassSpawned = MathUtils.random(1, 3);
         Vector2[] positions = GenerationUtils.positions(grassSpawned, 8.0f);
 
         for(int i = 0; i < grassSpawned; i++) {

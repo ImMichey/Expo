@@ -8,11 +8,13 @@ public class ExpoAnimation {
 
     private final Array<TextureRegion> textureArray;
     private final float frameDuration;
+    private final float totalAnimationDuration;
     private float animationDelta;
 
     public ExpoAnimation(String textureName, int frames, float frameDuration) {
         textureArray = ExpoAssets.get().textureArray(textureName, frames);
         this.frameDuration = frameDuration;
+        this.totalAnimationDuration = this.frameDuration * frames;
     }
 
     public void tick(float delta) {
@@ -30,6 +32,14 @@ public class ExpoAnimation {
     public TextureRegion getFrame() {
         int index = (int) (animationDelta / frameDuration) % textureArray.size;
         return textureArray.get(index);
+    }
+
+    public boolean isAnimationFinished() {
+        return animationDelta >= totalAnimationDuration;
+    }
+
+    public float getDelta() {
+        return animationDelta;
     }
 
 }

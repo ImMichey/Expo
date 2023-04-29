@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.ExpoAnimation;
 
 public class ClientRaindrop extends ClientEntity {
 
@@ -17,11 +19,11 @@ public class ClientRaindrop extends ClientEntity {
     private float groundY;
     private float velocityX, velocityY;
     private boolean splash;
-    private float animationDelta;
 
     private Sprite raindropSprite;
-    private Animation<TextureRegion> splashAnimation;
     private float animationAlpha = 1.0f;
+
+    private ExpoAnimation splashAnimation;
 
     @Override
     public void onCreation() {
@@ -29,7 +31,8 @@ public class ClientRaindrop extends ClientEntity {
         raindropSprite.setPosition(clientPosX, clientPosY);
         raindropSprite.setScale(scale);
         raindropSprite.setRotation(rotation);
-        splashAnimation = new Animation<>(0.15f, ta("rainsplash", 4));
+
+        splashAnimation = new ExpoAnimation("rainsplash", 4, 0.15f);
     }
 
     @Override
@@ -65,13 +68,13 @@ public class ClientRaindrop extends ClientEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(splash) {
-            animationDelta += delta;
+            splashAnimation.tick(delta);
 
-            if(splashAnimation.isAnimationFinished(animationDelta)) {
+            if(splashAnimation.isAnimationFinished()) {
                 entityManager().removeEntity(this);
             } else {
                 if(visibleToRenderEngine) {
-                    TextureRegion anim = splashAnimation.getKeyFrame(animationDelta, false);
+                    TextureRegion anim = splashAnimation.getFrame();
 
                     rc.useArrayBatch();
 
@@ -85,8 +88,8 @@ public class ClientRaindrop extends ClientEntity {
                 }
 
                 // 0.6 = fin
-                if(animationDelta >= 0.3f) {
-                    animationAlpha = 1f - ((animationDelta - 0.3f) / 0.3f * 0.5f);
+                if(splashAnimation.getDelta() >= 0.3f) {
+                    animationAlpha = 1f - ((splashAnimation.getDelta() - 0.3f) / 0.3f * 0.5f);
                 }
             }
         } else {

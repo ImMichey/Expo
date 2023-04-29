@@ -14,6 +14,8 @@ public class ExpoLogger {
     private static final StringBuilder builder = new StringBuilder();
 
     private static final Object LOG_LOCK = new Object();
+    public static String LOG_FILE_ABSOLUTE_PATH = "?";
+    public static String LOG_FOLDER_ABSOLUTE_PATH = "?";
 
     public static void log(String s) {
         builder.append('[');
@@ -50,11 +52,11 @@ public class ExpoLogger {
         TreeOutputStream tos = new TreeOutputStream();
         tos.addStream(System.out); // add console to tree
 
-        String logFolderPath = currentPath + File.separator + logFolderName;
-        new File(logFolderPath).mkdir(); // creates the log folder
+        LOG_FOLDER_ABSOLUTE_PATH = currentPath + File.separator + logFolderName;
+        new File(LOG_FOLDER_ABSOLUTE_PATH).mkdir(); // creates the log folder
 
         String logFileName = "log-" + System.currentTimeMillis() + ".txt";
-        File logFile = new File(logFolderPath + File.separator + logFileName);
+        File logFile = new File(LOG_FOLDER_ABSOLUTE_PATH + File.separator + logFileName);
         boolean logFileCreationSuccessful = false;
 
         try {
@@ -71,7 +73,8 @@ public class ExpoLogger {
                 System.setOut(finalStream);
                 System.setErr(finalStream); // to catch errors on file as well
 
-                log("Logging now to file: " + logFile.getAbsolutePath());
+                LOG_FILE_ABSOLUTE_PATH = logFile.getAbsolutePath();
+                log("Logging now to file: " + LOG_FILE_ABSOLUTE_PATH);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }

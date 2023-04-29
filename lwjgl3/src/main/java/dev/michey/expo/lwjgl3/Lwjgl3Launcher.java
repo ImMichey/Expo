@@ -8,7 +8,14 @@ import dev.michey.expo.Expo;
 public class Lwjgl3Launcher {
 
 	public static void main(String[] args) {
-		createApplication();
+		try {
+			createApplication();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			CrashReportWindow window = new CrashReportWindow();
+			window.show();
+		}
 	}
 
 	private static Lwjgl3Application createApplication() {

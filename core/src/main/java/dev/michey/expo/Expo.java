@@ -53,9 +53,8 @@ public class Expo implements ApplicationListener {
 
 	public Expo() {
 		// Enable logging to file + console for debugging
-		//ExpoLogger.enableDualLogging("clientlogs");
+		if(!DEV_MODE) ExpoLogger.enableDualLogging("clientlogs");
 		inactiveScreens = new HashMap<>();
-		//System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
 	}
 
 	@Override
