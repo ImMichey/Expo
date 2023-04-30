@@ -39,9 +39,9 @@ public class ExpoShared {
     public static final int PLAYER_INVENTORY_SLOT_CRAFT_OPEN = 100;
     public static final int PLAYER_INVENTORY_SLOT_CRAFT_ARROW_LEFT = 101;
     public static final int PLAYER_INVENTORY_SLOT_CRAFT_ARROW_RIGHT = 102;
-    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_0 = 103;
-    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_1 = 104;
-    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_2 = 105;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_MISC = 103;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_TOOLS = 104;
+    public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_FOOD = 105;
     public static final int PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_3 = 106;
     public static final int PLAYER_INVENTORY_SLOT_CRAFT_RECIPE_BASE = 107;
 
@@ -58,6 +58,10 @@ public class ExpoShared {
     public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / 60f;
 
     public static final long RESET_TILE_DIG_HEALTH_AFTER_MILLIS = 5000;
+
+    public static final int CRAFTING_CATEGORY_MISC = 0;
+    public static final int CRAFTING_CATEGORY_TOOLS = 1;
+    public static final int CRAFTING_CATEGORY_FOOD = 2;
 
     /** Global random */
     public static final Random RANDOM = new Random();

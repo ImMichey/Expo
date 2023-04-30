@@ -14,6 +14,8 @@ import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
@@ -99,6 +101,12 @@ public class PlayerUI {
     public final TextureRegion craftArrowLeftS;
     public final TextureRegion craftArrowRight;
     public final TextureRegion craftArrowRightS;
+    public final TextureRegion craftCategoryMisc;
+    public final TextureRegion craftCategoryMiscS;
+    public final TextureRegion craftCategoryTools;
+    public final TextureRegion craftCategoryToolsS;
+    public final TextureRegion craftCategoryFood;
+    public final TextureRegion craftCategoryFoodS;
 
     private final TextureRegion hotbarBase;
     private final TextureRegion hotbarHealth;
@@ -159,6 +167,12 @@ public class PlayerUI {
         craftArrowLeftS = tr("ui_crafting_arrow_left_sel");
         craftArrowRight = tr("ui_crafting_arrow_right");
         craftArrowRightS = tr("ui_crafting_arrow_right_sel");
+        craftCategoryMisc = tr("ui_crafting_category_misc");
+        craftCategoryMiscS = tr("ui_crafting_category_misc_sel");
+        craftCategoryFood = tr("ui_crafting_category_food");
+        craftCategoryFoodS = tr("ui_crafting_category_food_sel");
+        craftCategoryTools = tr("ui_crafting_category_tools");
+        craftCategoryToolsS = tr("ui_crafting_category_tools_sel");
 
         hotbarBase = tr("hotbar_base");
         hotbarHealth = tr("hotbar_health");
@@ -231,7 +245,7 @@ public class PlayerUI {
 
             @Override
             public void onTooltip() {
-                drawTooltipColored("Arrow left", ClientStatic.COLOR_CRAFT_TEXT);
+                drawTooltipColored("Previous categories", ClientStatic.COLOR_CRAFT_TEXT);
             }
 
         };
@@ -245,36 +259,46 @@ public class PlayerUI {
 
             @Override
             public void onTooltip() {
-                drawTooltipColored("Arrow right", ClientStatic.COLOR_CRAFT_TEXT);
+                drawTooltipColored("Next categories", ClientStatic.COLOR_CRAFT_TEXT);
             }
 
         };
 
         craftCategorySlots = new InteractableUIElement[4];
-        craftCategorySlots[0] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_0, craftSlotS, craftSlot) {
+        craftCategorySlots[0] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_MISC, craftCategoryMiscS, craftCategoryMisc) {
             @Override
             public void onTooltip() {
-                drawTooltipColored("Category 0", ClientStatic.COLOR_CRAFT_TEXT);
+                drawTooltipColored("Category: Misc", ClientStatic.COLOR_CRAFT_TEXT);
+            }
+
+            @Override
+            public void onLeftClick() {
+                showCraftingRecipes(ExpoShared.CRAFTING_CATEGORY_MISC);
             }
         };
-        craftCategorySlots[1] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_1, craftSlotS, craftSlot) {
+        craftCategorySlots[1] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_TOOLS, craftCategoryToolsS, craftCategoryTools) {
             @Override
             public void onTooltip() {
-                drawTooltipColored("Category 1", ClientStatic.COLOR_CRAFT_TEXT);
+                drawTooltipColored("Category: Tools", ClientStatic.COLOR_CRAFT_TEXT);
+            }
+
+            @Override
+            public void onLeftClick() {
+                showCraftingRecipes(ExpoShared.CRAFTING_CATEGORY_TOOLS);
             }
         };
-        craftCategorySlots[2] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_2, craftSlotS, craftSlot) {
+        craftCategorySlots[2] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_FOOD, craftCategoryFoodS, craftCategoryFood) {
             @Override
             public void onTooltip() {
-                drawTooltipColored("Category 2", ClientStatic.COLOR_CRAFT_TEXT);
+                drawTooltipColored("Category: Food", ClientStatic.COLOR_CRAFT_TEXT);
             }
-        };
-        craftCategorySlots[3] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_3, craftSlotS, craftSlot) {
+
             @Override
-            public void onTooltip() {
-                drawTooltipColored("Category 3", ClientStatic.COLOR_CRAFT_TEXT);
+            public void onLeftClick() {
+                showCraftingRecipes(ExpoShared.CRAFTING_CATEGORY_FOOD);
             }
         };
+        craftCategorySlots[3] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_3, craftSlotS, craftSlot);
 
         craftRecipeSlots = new InteractableRecipeSlot[25];
         for(int i = 0; i < craftRecipeSlots.length; i++) craftRecipeSlots[i] = new InteractableRecipeSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_RECIPE_BASE);
@@ -295,6 +319,24 @@ public class PlayerUI {
         chat = new ExpoClientChat(this);
 
         changeUiScale(2.0f);
+    }
+
+    public void showCraftingRecipes(int category) {
+        for(var slot : craftRecipeSlots) {
+            slot.setHoldingRecipe(null);
+        }
+
+        CraftingRecipeMapping mapping = CraftingRecipeMapping.get();
+        var recipes = mapping.getCategoryMap().get(category);
+
+        int slotId = 24;
+
+        for(String s : recipes) {
+            CraftingRecipe recipe = mapping.getRecipeMap().get(s);
+            craftRecipeSlots[slotId].setHoldingRecipe(recipe);
+            slotId--;
+            if(slotId == -1) break; // Implement in future when > 25 recipes per category
+        }
     }
 
     private TextureRegion tr(String name) {
@@ -433,7 +475,7 @@ public class PlayerUI {
                     var el = craftRecipeSlots[i];
                     int x = i % 5;
                     int y = i / 5;
-                    el.update(invX + 282 * uiScale + x * slotW + uiScale * x, invY + 20 * uiScale + y * slotH + uiScale * y, slotW, slotH);
+                    el.update(invX + 390 * uiScale - x * slotW - uiScale * x, invY + 4 * uiScale + y * slotH + uiScale * y, slotW, slotH);
                 }
             } else {
                 craftOpenSlot.update(invX + 282 * uiScale, invY + 63 * uiScale, slotW, slotH);
@@ -583,6 +625,13 @@ public class PlayerUI {
             float invTextOffsetX = ((244 * uiScale) - glyphLayout.width) * 0.5f;
             float invTextOffsetY = glyphLayout.height + (craftingOpen ? 15 * uiScale : 0) + 156 * uiScale;
             m5x7_shadow_use.draw(r.hudBatch, "Inventory", invX + 35 * uiScale + invTextOffsetX, invY + invTextOffsetY);
+
+            // Draw Crafting text
+            if(craftingOpen) {
+                glyphLayout.setText(m5x7_shadow_use, "Crafting");
+                float cTextOffsetX = (150 * uiScale - glyphLayout.width) * 0.5f;
+                m5x7_shadow_use.draw(r.hudBatch, "Crafting", invX + 278 * uiScale + cTextOffsetX, invY + 199 * uiScale + glyphLayout.height);
+            }
         } else {
             drawHotbar(r);
             playerMinimap.draw(r);

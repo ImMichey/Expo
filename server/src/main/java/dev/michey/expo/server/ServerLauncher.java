@@ -5,6 +5,7 @@ import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.main.arch.ExpoServerDedicated;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 
@@ -37,6 +38,7 @@ public class ServerLauncher {
 
 		// Item Mapper
 		new ItemMapper(false, false);
+		new CraftingRecipeMapping(false);
 	}
 
 }

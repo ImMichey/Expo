@@ -5,6 +5,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.screen.GameScreen;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.util.ClientPackets;
@@ -58,6 +59,7 @@ public class CommandConnect extends AbstractConsoleCommand {
             if(ItemMapper.get() == null) {
                 new ItemMapper(true, false);
                 Expo.get().loadItemMapperTextures();
+                new CraftingRecipeMapping(true);
             }
 
             String finalIp = ip;

@@ -1,0 +1,28 @@
+{
+    "categories": {
+        "misc": [
+            "recipe_cord"
+        ],
+        "tools": [
+
+        ],
+        "food": [
+
+        ]
+    },
+    "recipes": [
+        {
+            "identifier": "recipe_cord",
+            "output": {
+                "id": 1,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 0,
+                    "amount": 2
+                }
+            ]
+        }
+    ]
+}

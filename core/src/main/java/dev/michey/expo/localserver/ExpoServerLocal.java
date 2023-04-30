@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Connection;
 import dev.michey.expo.Expo;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
@@ -21,6 +22,7 @@ public class ExpoServerLocal extends ExpoServerBase {
         if(ItemMapper.get() == null) {
             new ItemMapper(true, false);
             Expo.get().loadItemMapperTextures();
+            new CraftingRecipeMapping(true);
         }
 
         log("Initialized local ExpoServer");
