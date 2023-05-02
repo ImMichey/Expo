@@ -23,6 +23,7 @@ import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class PlayerUI {
@@ -62,6 +63,7 @@ public class PlayerUI {
     public InteractableUIElement craftButtonLeft, craftButtonRight;
     public InteractableUIElement[] craftCategorySlots;
     public InteractableRecipeSlot[] craftRecipeSlots;
+    private InteractableUIElement selectedCategoryButton;
     public boolean craftingOpen = false;
 
     /** Fade in */
@@ -136,6 +138,7 @@ public class PlayerUI {
     private final TextureRegion tooltipBorder1x7;
     private final TextureRegion tooltipFiller;
     private final TextureRegion tooltipFillerLight;
+    private final TextureRegion tooltipFillerCrafting;
 
     private boolean inventoryOpenState;
     private boolean craftingOpenState;
@@ -273,7 +276,7 @@ public class PlayerUI {
 
             @Override
             public void onLeftClick() {
-                showCraftingRecipes(ExpoShared.CRAFTING_CATEGORY_MISC);
+                showCraftingRecipes(this, ExpoShared.CRAFTING_CATEGORY_MISC);
             }
         };
         craftCategorySlots[1] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_TOOLS, craftCategoryToolsS, craftCategoryTools) {
@@ -284,7 +287,7 @@ public class PlayerUI {
 
             @Override
             public void onLeftClick() {
-                showCraftingRecipes(ExpoShared.CRAFTING_CATEGORY_TOOLS);
+                showCraftingRecipes(this, ExpoShared.CRAFTING_CATEGORY_TOOLS);
             }
         };
         craftCategorySlots[2] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_FOOD, craftCategoryFoodS, craftCategoryFood) {
@@ -295,13 +298,14 @@ public class PlayerUI {
 
             @Override
             public void onLeftClick() {
-                showCraftingRecipes(ExpoShared.CRAFTING_CATEGORY_FOOD);
+                showCraftingRecipes(this, ExpoShared.CRAFTING_CATEGORY_FOOD);
             }
         };
         craftCategorySlots[3] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_3, craftSlotS, craftSlot);
 
         craftRecipeSlots = new InteractableRecipeSlot[25];
         for(int i = 0; i < craftRecipeSlots.length; i++) craftRecipeSlots[i] = new InteractableRecipeSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_RECIPE_BASE);
+        showCraftingRecipes(craftCategorySlots[0], ExpoShared.CRAFTING_CATEGORY_MISC);
 
         // tooltip begin
         TextureRegion tooltip = tr("ui_tooltip");
@@ -314,6 +318,7 @@ public class PlayerUI {
         tooltipBorder7x1 = new TextureRegion(tooltip, 18, 16, 4, 1);
         tooltipFiller = new TextureRegion(tooltip, 18, 2+16, 1, 1);
         tooltipFillerLight = new TextureRegion(tooltip, 20, 2+16, 1, 1);
+        tooltipFillerCrafting = new TextureRegion(tooltip, 22, 2+16, 1, 1);
         // tooltip end
 
         chat = new ExpoClientChat(this);
@@ -321,7 +326,13 @@ public class PlayerUI {
         changeUiScale(2.0f);
     }
 
-    public void showCraftingRecipes(int category) {
+    public void showCraftingRecipes(InteractableUIElement button, int category) {
+        if(selectedCategoryButton != null) {
+            selectedCategoryButton.selected = false;
+        }
+        selectedCategoryButton = button;
+        selectedCategoryButton.selected = true;
+
         for(var slot : craftRecipeSlots) {
             slot.setHoldingRecipe(null);
         }
@@ -358,6 +369,100 @@ public class PlayerUI {
     public void drawTooltipColored(String text, Color color, String... extraLines) {
         RenderContext r = RenderContext.get();
         drawTooltipColored((int) r.mouseX, (int) r.mouseY, text, color, extraLines);
+    }
+
+    public void drawTooltipCraftingRecipe(CraftingRecipe recipe) {
+        RenderContext r = RenderContext.get();
+        int x = (int) r.mouseX;
+        int y = (int) r.mouseY;
+
+        x += 4 * uiScale;
+        y += 4 * uiScale;
+
+        ItemMapping mapping = ItemMapper.get().getMapping(recipe.outputId);
+        String outputText = recipe.outputAmount + "x " + mapping.displayName;
+
+        glyphLayout.setText(m6x11_use, outputText);
+        float titleWidth = glyphLayout.width;
+
+        float innerWidth = 8 * uiScale + titleWidth;
+
+        glyphLayout.setText(m5x7_use, "Ingredients:");
+        float ingredientsWidth = glyphLayout.width + 8 * uiScale;
+        float generalM5X7Height = glyphLayout.height;
+
+        if(ingredientsWidth > innerWidth) innerWidth = (ingredientsWidth);
+        float maxIngredientRowWidth = 0;
+
+        for(int i = 0; i < recipe.inputIds.length; i++) {
+            String ingredientRowText = recipe.inputAmounts[i] + "x " + ItemMapper.get().getMapping(recipe.inputIds[i]).displayName;
+            glyphLayout.setText(m5x7_use, ingredientRowText);
+            float ingredientRowWidth = glyphLayout.width + 28 * uiScale;
+            if(ingredientRowWidth > innerWidth) innerWidth = ingredientRowWidth;
+            if(ingredientRowWidth > maxIngredientRowWidth) maxIngredientRowWidth = ingredientRowWidth;
+        }
+
+        if(titleWidth > maxIngredientRowWidth) maxIngredientRowWidth = titleWidth;
+
+        // Check if shift needed
+        float totalWidthTooltip = maxIngredientRowWidth + 9 * uiScale + cornerWH;
+        float proposedEndX = x + totalWidthTooltip;
+        float maxDisplayX = Gdx.graphics.getWidth();
+
+        if(proposedEndX >= maxDisplayX) {
+            x -= totalWidthTooltip;
+        }
+
+        r.hudBatch.draw(tooltipFiller, x + 4 * uiScale, y + 4 * uiScale, maxIngredientRowWidth + 7 * uiScale, 43 * uiScale + recipe.inputIds.length * 24 * uiScale + (recipe.inputIds.length - 1) * 1 * uiScale);
+
+        // Draw ingredient rows
+        float _cx = x + 7 * uiScale;
+        float _cy = y + 7 * uiScale;
+        float _coy = 0;
+
+        for(int i = 0; i < recipe.inputIds.length; i++) {
+            r.hudBatch.draw(tooltipFillerCrafting, _cx, _cy + _coy, maxIngredientRowWidth, 24 * uiScale);
+
+            int id = recipe.inputIds[i];
+            int am = recipe.inputAmounts[i];
+            boolean hasIngredient = ClientPlayer.getLocalPlayer().playerInventory.hasItem(id, am);
+
+            ItemMapping m = ItemMapper.get().getMapping(id);
+            TextureRegion ingredientTexture = m.uiRender.textureRegion;
+
+            float centeredTextureX = (24 - ingredientTexture.getRegionWidth()) * 0.5f * uiScale;
+            float centeredTextureY = (24 - ingredientTexture.getRegionHeight()) * 0.5f * uiScale;
+
+            r.hudBatch.draw(ingredientTexture, _cx + centeredTextureX, _cy + _coy + centeredTextureY, ingredientTexture.getRegionWidth() * uiScale, ingredientTexture.getRegionHeight() * uiScale);
+
+            String ingredientText = am + "x " + m.displayName;
+            glyphLayout.setText(m5x7_use, ingredientText);
+            float th = glyphLayout.height;
+
+            m5x7_use.setColor(hasIngredient ? ClientStatic.COLOR_CRAFT_GREEN : ClientStatic.COLOR_CRAFT_RED);
+            m5x7_use.draw(r.hudBatch, ingredientText, _cx + 24 * uiScale, _cy + _coy + th + (24 * uiScale - th) * 0.5f);
+            m5x7_use.setColor(Color.WHITE);
+
+            _coy += 24 * uiScale + 1 * uiScale;
+        }
+
+        float _iy = _cy + _coy + 5 * uiScale;
+
+        // Ingredients: text
+        m5x7_use.setColor(ClientStatic.COLOR_CRAFT_INGREDIENTS);
+        m5x7_use.draw(r.hudBatch, "Ingredients:", _cx, _iy + generalM5X7Height);
+        m5x7_use.setColor(Color.WHITE);
+
+        // Header line
+        float headerY = _iy + generalM5X7Height + 11 * uiScale;
+        glyphLayout.setText(m6x11_use, outputText);
+        m6x11_use.draw(r.hudBatch, outputText, _cx, headerY + glyphLayout.height);
+
+        float endY = headerY + glyphLayout.height + 4 * uiScale;
+        drawBorderAt(r, x, y, maxIngredientRowWidth + 2 * uiScale, endY - y - 9 * uiScale);
+
+        // Divider line
+        r.hudBatch.draw(tooltipFillerLight, x + 3 * uiScale, _iy + generalM5X7Height + 4 * uiScale, maxIngredientRowWidth + 8 * uiScale, 2 * uiScale);
     }
 
     public void drawTooltipColored(int x, int y, String text, Color color, String... extraLines) {

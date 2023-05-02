@@ -7,6 +7,8 @@ import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.InventoryChangeResult;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -83,6 +85,11 @@ public class ExpoServerPacketReader {
             if(sp == null) return;
 
             sp.placeAt(p.chunkX, p.chunkY, p.tileArray);
+        } else if(packet instanceof P35_PlayerCraft p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            sp.playerInventory.craft(CraftingRecipeMapping.get().getRecipeMap().get(p.recipeIdentifier));
         }
     }
 
@@ -196,6 +203,13 @@ public class ExpoServerPacketReader {
 
             if(player != null) {
                 player.placeAt(p.chunkX, p.chunkY, p.tileArray);
+            }
+        } else if(o instanceof P35_PlayerCraft p) {
+            ServerPlayer player = connectionToPlayer(connection);
+
+            if(player != null) {
+                CraftingRecipe recipe = CraftingRecipeMapping.get().getRecipeMap().get(p.recipeIdentifier);
+                player.playerInventory.craft(recipe);
             }
         }
     }

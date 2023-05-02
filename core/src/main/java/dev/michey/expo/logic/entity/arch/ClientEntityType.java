@@ -25,6 +25,7 @@ public enum ClientEntityType {
     POPPY(11, "Poppy", ServerEntityType.POPPY),
     BLUEBERRY_BUSH(12, "BlueberryBush", ServerEntityType.BLUEBERRY_BUSH),
     WORM(13, "Worm", ServerEntityType.WORM),
+    ROCK(14, "Rock", ServerEntityType.ROCK),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -66,6 +67,7 @@ public enum ClientEntityType {
             case 11 -> new ClientPoppy();
             case 12 -> new ClientBlueberryBush();
             case 13 -> new ClientWorm();
+            case 14 -> new ClientRock();
             default -> null;
         };
     }

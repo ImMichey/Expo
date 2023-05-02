@@ -76,7 +76,7 @@ public class InteractableUIElement {
         RenderContext r = RenderContext.get();
 
         if(selected) {
-            r.hudBatch.draw(parent.invSlotS, x, y, w, h);
+            r.hudBatch.draw(drawSelected, x, y, w, h);
         } else {
             if(fadeGoal > fadeDelta) {
                 fadeDelta += r.delta * 5.0f;

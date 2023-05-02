@@ -5,6 +5,7 @@ import dev.michey.expo.server.main.logic.entity.flora.*;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDummy;
 import dev.michey.expo.server.main.logic.entity.misc.ServerGravestone;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
+import dev.michey.expo.server.main.logic.entity.misc.ServerRock;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public enum ServerEntityType {
@@ -23,6 +24,7 @@ public enum ServerEntityType {
     POPPY(11, "Poppy", false),
     BLUEBERRY_BUSH(12, "BlueberryBush", true),
     WORM(13, "Worm", false),
+    ROCK(14, "Rock", false),
     ;
 
     public final int ENTITY_ID;
@@ -51,6 +53,7 @@ public enum ServerEntityType {
             case 11 -> new ServerPoppy();
             case 12 -> new ServerBlueberryBush();
             case 13 -> new ServerWorm();
+            case 14 -> new ServerRock();
             default -> null;
         };
     }

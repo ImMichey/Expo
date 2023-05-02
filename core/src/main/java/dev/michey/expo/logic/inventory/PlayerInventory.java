@@ -47,6 +47,21 @@ public class PlayerInventory extends ClientInventory {
         modifySelectedSlot(finalSlot);
     }
 
+    public boolean hasItem(int id, int amount) {
+        var slots = getSlots();
+        int required = amount;
+
+        for(ClientInventorySlot slot : slots) {
+            if(slot.item == null) continue;
+            if(slot.item.itemId == id) {
+                required -= slot.item.itemAmount;
+                if(required <= 0) return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public ClientPlayer getOwner() {
         return (ClientPlayer) super.getOwner();

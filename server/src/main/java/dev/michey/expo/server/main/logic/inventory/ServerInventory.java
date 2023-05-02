@@ -1,6 +1,10 @@
 package dev.michey.expo.server.main.logic.inventory;
 
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.util.Pair;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ServerInventory {
 
@@ -26,6 +30,22 @@ public class ServerInventory {
         }
 
         return true;
+    }
+
+    public Pair<Boolean, List<Integer>> containsItem(int id, int amount) {
+        Pair<Boolean, List<Integer>> pair = new Pair<>(true, new LinkedList<>());
+        int required = amount;
+
+        for(ServerInventorySlot slot : slots) {
+            if(slot.item.itemId == id) {
+                required -= slot.item.itemAmount;
+                pair.value.add(slot.slotIndex);
+                if(required <= 0) return pair;
+            }
+        }
+
+        pair.key = false;
+        return pair;
     }
 
     public boolean hasOwner() {

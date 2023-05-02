@@ -80,7 +80,8 @@ public class ExpoServerRegistry {
                 P31_PlayerDig.class,
                 P32_ChunkDataSingle.class,
                 P33_TileDig.class,
-                P34_PlayerPlace.class
+                P34_PlayerPlace.class,
+                P35_PlayerCraft.class
         );
     }
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.util.ClientPackets;
 
 public class InteractableRecipeSlot extends InteractableUIElement {
 
@@ -17,6 +18,7 @@ public class InteractableRecipeSlot extends InteractableUIElement {
     @Override
     public void onTooltip() {
         // Show crafting ingredients in tooltip
+        if(holdingRecipe != null) parent.drawTooltipCraftingRecipe(holdingRecipe);
     }
 
     public void setHoldingRecipe(CraftingRecipe recipe) {
@@ -27,6 +29,7 @@ public class InteractableRecipeSlot extends InteractableUIElement {
     @Override
     public void onLeftClick() {
         // Try crafting
+        if(holdingRecipe != null) ClientPackets.p35PlayerCraft(holdingRecipe.recipeIdentifier);
     }
 
     @Override

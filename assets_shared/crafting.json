@@ -4,7 +4,9 @@
             "recipe_cord"
         ],
         "tools": [
-
+            "recipe_flint_pickaxe",
+            "recipe_flint_axe",
+            "recipe_flint_shovel"
         ],
         "food": [
 
@@ -14,13 +16,76 @@
         {
             "identifier": "recipe_cord",
             "output": {
-                "id": 1,
+                "id": 15,
                 "amount": 1
             },
             "input": [
                 {
+                    "id": 7,
+                    "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_flint_pickaxe",
+            "output": {
+                "id": 2,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 15,
+                    "amount": 1
+                },
+                {
                     "id": 0,
-                    "amount": 2
+                    "amount": 1
+                },
+                {
+                    "id": 13,
+                    "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_flint_axe",
+            "output": {
+                "id": 3,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 15,
+                    "amount": 1
+                },
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 13,
+                    "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_flint_shovel",
+            "output": {
+                "id": 8,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 15,
+                    "amount": 1
+                },
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 13,
+                    "amount": 4
                 }
             ]
         }

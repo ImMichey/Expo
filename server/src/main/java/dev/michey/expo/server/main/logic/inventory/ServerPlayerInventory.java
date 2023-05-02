@@ -2,6 +2,8 @@ package dev.michey.expo.server.main.logic.inventory;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
@@ -18,6 +20,8 @@ import dev.michey.expo.util.ExpoShared;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerPlayerInventory extends ServerInventory {
 
@@ -354,6 +358,65 @@ public class ServerPlayerInventory extends ServerInventory {
             getOwner().heldItemPacket(PacketReceiver.whoCanSee(getOwner()));
         }
         return result;
+    }
+
+    public void craft(CraftingRecipe recipe) {
+        boolean hasAllIngredients = true;
+        List<Integer> slotsVisited = null;
+
+        for(int i = 0; i < recipe.inputIds.length; i++) {
+            int id = recipe.inputIds[i];
+            int amount = recipe.inputAmounts[i];
+
+            var pair = containsItem(id, amount);
+
+            if(!pair.key) {
+                hasAllIngredients = false;
+                break;
+            } else {
+                if(slotsVisited == null) slotsVisited = new LinkedList<>();
+                slotsVisited.addAll(pair.value);
+            }
+        }
+
+        if(hasAllIngredients) {
+            int[] oldIds = getOwner().getEquippedItemIds();
+            InventoryChangeResult result = new InventoryChangeResult();
+
+            // Do inventory stuff here
+            nextInput: for(int i = 0; i < recipe.inputIds.length; i++) {
+                int id = recipe.inputIds[i];
+                int amount = recipe.inputAmounts[i];
+
+                for(int index : slotsVisited) {
+                    if(slots[index].item.itemId == id) {
+                        int slotAmount = slots[index].item.itemAmount;
+
+                        if(amount > slotAmount) {
+                            slots[index].item.setEmpty();
+                            result.addChange(index, slots[index].item);
+                            amount -= slotAmount;
+                        } else if(amount == slotAmount) {
+                            slots[index].item.setEmpty();
+                            result.addChange(index, slots[index].item);
+                            continue nextInput;
+                        } else {
+                            slots[index].item.itemAmount -= amount;
+                            result.addChange(index, slots[index].item);
+                            continue nextInput;
+                        }
+                    }
+                }
+            }
+
+            var addResult = addItem(new ServerInventoryItem(recipe.outputId, recipe.outputAmount));
+            ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(addResult.changeResult, PacketReceiver.player(getOwner()));
+
+            int[] newIds = getOwner().getEquippedItemIds();
+            boolean sameIds = Arrays.equals(oldIds, newIds);
+            if(!sameIds) getOwner().heldItemPacket(PacketReceiver.whoCanSee(getOwner()));
+            ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(result, PacketReceiver.player(getOwner()));
+        }
     }
 
     private boolean armorCheck(int slot, int itemId) {

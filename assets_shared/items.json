@@ -381,6 +381,31 @@
                 "toolType": "ITEM",
                 "range": 15
             }
+        },
+        {
+            "identifier": "item_cord",
+            "id": 15,
+            "displayName": "Cord",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_cord"
+                },
+                "held": {
+                    "texture": "item_cord",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "range": 25
+            }
         }
     ]
 }

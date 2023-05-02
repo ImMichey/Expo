@@ -19,7 +19,7 @@ public class ItemSheet {
 
         // Add textures to map
         add("item_blueberry", 0, 12, 10);
-        add("item_grassfiber", 1, 10, 11);
+        add("item_grassfiber", 1, 15, 14);
         add("item_stick", 2, 14, 14);
         add("item_flint_pickaxe", 3, 16, 16);
         add("item_flint_shovel", 4, 15, 15);
@@ -33,6 +33,7 @@ public class ItemSheet {
         add("item_op_shovel", 14, 15, 15);
         add("item_flint", 15, 8, 7);
         add("item_worm", 16, 13, 10);
+        add("item_cord", 17, 12, 13);
     }
 
     public TextureRegion get(String name) {

@@ -97,6 +97,13 @@ public class ClientPackets {
         udp(p);
     }
 
+    /** Sends the P35_PlayerCraft packet via UDP protocol. */
+    public static void p35PlayerCraft(String recipeIdentifier) {
+        P35_PlayerCraft p = new P35_PlayerCraft();
+        p.recipeIdentifier = recipeIdentifier;
+        udp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

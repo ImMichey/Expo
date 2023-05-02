@@ -32,6 +32,10 @@ public class ClientInventory {
         return inventoryOwner != null;
     }
 
+    public ClientInventorySlot[] getSlots() {
+        return slots;
+    }
+
     public ClientInventorySlot getSlotAt(int index) {
         return slots[index];
     }

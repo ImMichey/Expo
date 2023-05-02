@@ -35,6 +35,7 @@ public class CraftingRecipeMapping {
             int outputId = recipe.getJSONObject("output").getInt("id");
             int outputAmount = recipe.getJSONObject("output").getInt("amount");
 
+            cr.recipeIdentifier = identifier;
             cr.outputId = outputId;
             cr.outputAmount = outputAmount;
 
@@ -44,7 +45,7 @@ public class CraftingRecipeMapping {
             cr.inputAmounts = new int[inputArray.length()];
 
             for(int j = 0; j < inputArray.length(); j++) {
-                JSONObject input = inputArray.getJSONObject(i);
+                JSONObject input = inputArray.getJSONObject(j);
 
                 cr.inputIds[j] = input.getInt("id");
                 cr.inputAmounts[j] = input.getInt("amount");
