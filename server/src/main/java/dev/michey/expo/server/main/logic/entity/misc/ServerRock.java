@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.entity.misc;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -44,7 +45,7 @@ public class ServerRock extends ServerEntity {
     }
 
     @Override
-    public void onGeneration(boolean spread) {
+    public void onGeneration(boolean spread, BiomeType biome) {
         if(spread) {
             variant = MathUtils.random(3, 4);
         } else {

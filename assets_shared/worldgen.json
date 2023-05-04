@@ -71,7 +71,7 @@
                         {
                             "type": "ROCK",
                             "static": true,
-                            "chance": 0.02,
+                            "chance": 0.01,
                             "pds": 20,
                             "spreadData": {
                                 "spread": [1, 3],

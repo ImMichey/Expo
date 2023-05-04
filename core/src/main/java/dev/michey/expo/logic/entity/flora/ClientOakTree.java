@@ -15,7 +15,7 @@ import dev.michey.expo.render.shadow.ShadowUtils;
 
 public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
-    private final FoliageAnimator foliageAnimator = new FoliageAnimator(0.5f, 1.2f, 0.04f, 0.07f, 0.08f, 0.09f, 2.0f, 5.0f, 0.5f, 1.5f);
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(0.5f, 1.2f, 0.03f, 0.05f, 0.06f, 0.07f, 2.0f, 5.0f, 0.5f, 1.5f);
 
     private int variant;
     private TextureRegion trunk;
@@ -24,7 +24,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private TextureRegion leavesShadowMask;
     private float[] interactionPointArray;
 
-    private final float leavesDisplacement = 0;//-MathUtils.random(0, 2);//MathUtils.random(-4, 13);
+    private final float leavesDisplacement = -MathUtils.random(0, 4);
     private final float colorMix = MathUtils.random(0.1f);
 
     private float playerBehindDelta = 1.0f;
@@ -35,7 +35,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         new float[] {113, -21, 37},
         new float[] {113, -21, 37},
         new float[] {138, -20, 62},
-        new float[] {164, -21, 88},
+        new float[] {185, -30, 90},
     };
 
     @Override
@@ -43,10 +43,11 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         trunk = tr("eot_trunk_" + variant);
         trunkShadowMask = tr("eot_trunk_" + variant);
 
-        leaves = t("foliage/entity_oak_tree/eot_leaves.png");
-        leavesShadowMask = tr("eot_leaves_sm");
+        String large = variant == 5 ? "_big" : "";
+        leaves = t("foliage/entity_oak_tree/eot_leaves" + large + ".png");
+        leavesShadowMask = tr("eot_leaves" + large + "_sm");
 
-        updateTexture(TREE_MATRIX[variant - 1][1], 0, 57, TREE_MATRIX[variant - 1][0] + leavesDisplacement);
+        updateTexture(TREE_MATRIX[variant - 1][1], 0, variant == 5 ? 75 : 57, TREE_MATRIX[variant - 1][0] + leavesDisplacement);
         interactionPointArray = new float[] {
                 clientPosX + 2, clientPosY + 3,
                 clientPosX + 9, clientPosY + 3,
@@ -74,8 +75,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         boolean playerBehind;
 
         if(local != null) {
-            int LEAVES_WIDTH = 57;
-            int LEAVES_HEIGHT = 76;
+            int LEAVES_WIDTH = variant == 5 ? 75 : 57;
+            int LEAVES_HEIGHT = variant == 5 ? 95 : 76;
 
             playerBehind = RenderContext.get().entityVerticesIntersecting(new float[] {
                 local.clientPosX, local.clientPosY,
@@ -164,7 +165,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
             if(drawLeaves) {
                 float tl = 0.0f;
-                float bl = fraction * 76f; // 76f
+                float bl = fraction * (variant == 5 ? 95f : 76f); // 76f
                 float topColorL = new Color(0f, 0f, 0f, tl).toFloatBits();
                 float bottomColorL = new Color(0f, 0f, 0f, bl).toFloatBits();
 

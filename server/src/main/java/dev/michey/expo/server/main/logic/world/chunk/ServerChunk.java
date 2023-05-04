@@ -118,7 +118,6 @@ public class ServerChunk {
 
                 for(Point p : points) {
                     if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(p.absoluteX), ExpoShared.posToTile(p.absoluteY)) != t) continue;
-
                     boolean spawn = MathUtils.random() < populator.spawnChance;
 
                     if(spawn) {
@@ -131,7 +130,7 @@ public class ServerChunk {
                             generatedEntity.posX = (int) p.absoluteX;
                             generatedEntity.posY = (int) p.absoluteY;
                             if(populator.asStaticEntity) generatedEntity.setStaticEntity();
-                            generatedEntity.onGeneration(false);
+                            generatedEntity.onGeneration(false, t);
 
                             postProcessingList.add(new Pair<>(generatedEntity, false));
 
@@ -150,7 +149,7 @@ public class ServerChunk {
                                             spreadEntity.posX = (int) targetX;
                                             spreadEntity.posY = (int) targetY;
                                             if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
-                                            spreadEntity.onGeneration(true);
+                                            spreadEntity.onGeneration(true, t);
 
                                             postProcessingList.add(new Pair<>(spreadEntity, false));
                                         }

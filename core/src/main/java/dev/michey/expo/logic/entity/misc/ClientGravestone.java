@@ -68,7 +68,7 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY + 1);
         float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 

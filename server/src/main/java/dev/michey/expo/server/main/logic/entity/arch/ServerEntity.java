@@ -54,7 +54,7 @@ public abstract class ServerEntity {
 
     }
 
-    public void onGeneration(boolean spread) {
+    public void onGeneration(boolean spread, BiomeType biome) {
 
     }
 

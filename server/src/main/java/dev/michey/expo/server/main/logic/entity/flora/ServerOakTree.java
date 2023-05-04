@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.entity.flora;
 
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -34,12 +35,22 @@ public class ServerOakTree extends ServerEntity {
 
     @Override
     public void onDie() {
-        spawnEntitiesAround(3, 6, 8.5f, 6.0f, "item_oak_log", 14.0f, 18.0f);
+        int min = 3, max = 6;
+
+        if(age == 1) {
+            min += 1;
+            max += 1;
+        } else if(age == 2) {
+            min += 2;
+            max += 3;
+        }
+
+        spawnEntitiesAround(min, max, 8.5f, 6.0f, "item_oak_log", 14.0f, 18.0f);
     }
 
     @Override
-    public void onGeneration(boolean spread) {
-        generateAge();
+    public void onGeneration(boolean spread, BiomeType biome) {
+        generateAge(biome);
         generateVariant();
     }
 
@@ -80,8 +91,24 @@ public class ServerOakTree extends ServerEntity {
         return new Object[] {variant};
     }
 
-    public void generateAge() {
-        age = MathUtils.random(0, 2);
+    public void generateAge(BiomeType biome) {
+        if(biome == BiomeType.PLAINS) {
+            if(MathUtils.random(1, 5) <= 4) {
+                age = 0;
+            } else {
+                age = 1;
+            }
+        } else {
+            int r = MathUtils.random(100);
+
+            if(r <= 60) {
+                age = 0;
+            } else if(r <= 80) {
+                age = 1;
+            } else {
+                age = 2;
+            }
+        }
     }
 
     public void generateVariant() {

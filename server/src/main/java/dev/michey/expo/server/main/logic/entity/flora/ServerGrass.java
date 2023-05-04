@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.entity.flora;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -22,7 +23,7 @@ public class ServerGrass extends ServerEntity {
     }
 
     @Override
-    public void onGeneration(boolean spread) {
+    public void onGeneration(boolean spread, BiomeType biome) {
         variant = MathUtils.random(1, 5);
     }
 

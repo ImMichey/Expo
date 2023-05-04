@@ -87,7 +87,7 @@ public abstract class ExpoServerBase {
                 // find proper spawn
                 if(worldSaveFile.getCreationTimestamp() == worldSaveFile.getLastSaveTimestamp()) {
                     log("Finding spawn area for '" + dimension.getDimensionName() + "'...");
-                    var found = world.getMainDimension().findBiome(-1, BiomeType.PLAINS, BiomeType.FOREST);
+                    var found = world.getMainDimension().findBiome(-1, BiomeType.FOREST);
 
                     if(found.key) {
                         log("Found spawn area at " + found.value[0] + ", " + found.value[1] + " - using as dimension spawn coordinates.");

@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.entity.flora;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -28,7 +29,7 @@ public class ServerBlueberryBush extends ServerEntity {
     }
 
     @Override
-    public void onGeneration(boolean spread) {
+    public void onGeneration(boolean spread, BiomeType biome) {
         hasBerries = MathUtils.randomBoolean();
         berryRegrowthDelta = MathUtils.random(180f, 360f); // 3-6 min
     }
