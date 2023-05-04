@@ -24,7 +24,7 @@ public enum ServerEntityType {
     POPPY(11, "Poppy", false),
     BLUEBERRY_BUSH(12, "BlueberryBush", true),
     WORM(13, "Worm", false),
-    ROCK(14, "Rock", false),
+    ROCK(14, "Rock", true),
     ;
 
     public final int ENTITY_ID;

@@ -506,7 +506,7 @@ public class ServerPlayer extends ServerEntity {
                     } else if(sand) {
                         identifier = "item_floor_sand";
                     } else {
-                        spawnWorm = MathUtils.random() <= 0.5f;
+                        spawnWorm = MathUtils.random() <= 0.05f;
                     }
 
                     ServerItem drop = new ServerItem();

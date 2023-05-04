@@ -27,6 +27,16 @@ step_dirt_3.wav
 step_dirt_4.wav
 step_dirt_5.wav
 
+#stone_hit;true;0.9-1.1;SFX;1.0
+stone_hit_1.wav
+stone_hit_2.wav
+stone_hit_3.wav
+stone_hit_4.wav
+stone_hit_5.wav
+
+#stone_break;true;0.9-1.1;SFX;1.0
+stone_break_1.wav
+
 #dig_sand;true;0.9-1.1;SFX;1.0
 dig_sand_1.wav
 dig_sand_2.wav

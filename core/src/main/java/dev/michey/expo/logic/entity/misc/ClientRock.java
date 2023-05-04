@@ -8,29 +8,45 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientRock extends ClientEntity implements SelectableEntity {
 
+    private int variant;
     private TextureRegion texture;
     private TextureRegion shadowMask;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        texture = ExpoAssets.get().textureRegion("entity_rock_1");
-        shadowMask = ExpoAssets.get().textureRegion("entity_rock_1");
+        texture = ExpoAssets.get().textureRegion("entity_rock_" + variant);
+        shadowMask = ExpoAssets.get().textureRegion("entity_rock_" + variant);
         updateTexture(0, 0, texture.getRegionWidth(), texture.getRegionHeight());
-        interactionPointArray = generateInteractionArray();
+        interactionPointArray = new float[] {
+                clientPosX + 2, clientPosY + 2,
+                clientPosX + drawWidth - 2, clientPosY + 2,
+                clientPosX + drawWidth - 2, clientPosY + drawHeight - 2,
+                clientPosX + 2, clientPosY + drawHeight - 2,
+        };
     }
 
     @Override
     public void onDamage(float damage, float newHealth) {
-
+        if(variant == 2) {
+            playEntitySound("stone_hit");
+        }
     }
 
     @Override
     public void onDeletion() {
+        if(removalReason == EntityRemovalReason.DEATH) {
+            if(variant == 2) playEntitySound("stone_break");
+        }
+    }
 
+    @Override
+    public void applyPacketPayload(Object[] payload) {
+        variant = (int) payload[0];
     }
 
     @Override
@@ -59,7 +75,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth(drawOffsetY);
+            updateDepth(2);
             rc.useArrayBatch();
             if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
             rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);

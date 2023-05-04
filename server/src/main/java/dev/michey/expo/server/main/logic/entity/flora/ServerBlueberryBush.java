@@ -28,7 +28,7 @@ public class ServerBlueberryBush extends ServerEntity {
     }
 
     @Override
-    public void onGeneration() {
+    public void onGeneration(boolean spread) {
         hasBerries = MathUtils.randomBoolean();
         berryRegrowthDelta = MathUtils.random(180f, 360f); // 3-6 min
     }

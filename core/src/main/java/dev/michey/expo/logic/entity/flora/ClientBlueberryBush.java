@@ -28,7 +28,7 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
         bushFruits = t("foliage/entity_blueberrybush/ebbb_crown_fruits.png");
 
         updateTexture(0, 0, shadowMask.getRegionWidth(), shadowMask.getRegionHeight());
-        interactionPointArray = generateInteractionArray();
+        interactionPointArray = generateInteractionArray(2);
     }
 
     @Override

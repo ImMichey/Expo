@@ -624,7 +624,7 @@ public class ClientPlayer extends ClientEntity {
             }
 
             { // Item shadow
-                if(holdingItemId != -1) {
+                if(holdingItemId != -1 && holdingItemSprite != null) {
                     // position
                     ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
                     int dirCheck = direction();

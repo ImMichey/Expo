@@ -29,12 +29,23 @@ public class ServerOakTree extends ServerEntity {
         // add physics body of player to world
         float[] b = TREE_BODIES[variant - 1];
         physicsBody = new BoundingBox(this, b[0], b[1], b[2], b[3]);
+        damageableWith = ToolType.AXE;
     }
 
     @Override
-    public void onGeneration() {
+    public void onDie() {
+        spawnEntitiesAround(3, 6, 8.5f, 6.0f, "item_oak_log", 14.0f, 18.0f);
+    }
+
+    @Override
+    public void onGeneration(boolean spread) {
         generateAge();
         generateVariant();
+    }
+
+    @Override
+    public boolean onDamage(ServerEntity damageSource, float damage) {
+        return super.onDamage(damageSource, damage);
     }
 
     @Override

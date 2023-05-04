@@ -406,6 +406,56 @@
                 "toolType": "ITEM",
                 "range": 25
             }
+        },
+        {
+            "identifier": "item_rock",
+            "id": 16,
+            "displayName": "Rock",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_rock"
+                },
+                "held": {
+                    "texture": "item_rock",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "range": 25
+            }
+        },
+        {
+            "identifier": "item_oak_log",
+            "id": 17,
+            "displayName": "Oak Log",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_oak_log"
+                },
+                "held": {
+                    "texture": "item_oak_log",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "range": 25
+            }
         }
     ]
 }

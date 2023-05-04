@@ -57,7 +57,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth) {
-
+        playEntitySound("wood_cut");
     }
 
     @Override

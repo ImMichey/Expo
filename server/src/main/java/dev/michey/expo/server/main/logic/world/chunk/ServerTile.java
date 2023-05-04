@@ -52,15 +52,15 @@ public class ServerTile {
         int tis = 0, tid = 0;
         int minTile;
 
-        int n = neighbours.get(5).layer0[0];
-        int e = neighbours.get(3).layer0[0];
-        int s = neighbours.get(1).layer0[0];
-        int w = neighbours.get(7).layer0[0];
+        int n = neighbours[5] == null ? 0 : neighbours[5].layer0[0];
+        int e = neighbours[3] == null ? 0 : neighbours[3].layer0[0];
+        int s = neighbours[1] == null ? 0 : neighbours[1].layer0[0];
+        int w = neighbours[7] == null ? 0 : neighbours[7].layer0[0];
 
-        int ne = neighbours.get(4).layer0[0];
-        int se = neighbours.get(2).layer0[0];
-        int sw = neighbours.get(0).layer0[0];
-        int nw = neighbours.get(6).layer0[0];
+        int ne = neighbours[4] == null ? 0 : neighbours[4].layer0[0];
+        int se = neighbours[2] == null ? 0 : neighbours[2].layer0[0];
+        int sw = neighbours[0] == null ? 0 : neighbours[0].layer0[0];
+        int nw = neighbours[6] == null ? 0 : neighbours[6].layer0[0];
 
         if(nowHole || (isHoleSoilTile())) {
             minTile = 90;
@@ -90,18 +90,19 @@ public class ServerTile {
         if(!grass && !sand && !forest && !desert) return;
 
         var neighbours = getNeighbouringTiles();
+        var biomes = getNeighbouringBiomes();
         int tis = 0, tid = 0;
         int minTile = 0;
 
-        int n = neighbours.get(5).layer1[0];
-        int e = neighbours.get(3).layer1[0];
-        int s = neighbours.get(1).layer1[0];
-        int w = neighbours.get(7).layer1[0];
+        int n = neighbours[5] == null ? biomes[5].BIOME_LAYER_TEXTURES[1] : neighbours[5].layer1[0];
+        int e = neighbours[3] == null ? biomes[3].BIOME_LAYER_TEXTURES[1] : neighbours[3].layer1[0];
+        int s = neighbours[1] == null ? biomes[1].BIOME_LAYER_TEXTURES[1] : neighbours[1].layer1[0];
+        int w = neighbours[7] == null ? biomes[7].BIOME_LAYER_TEXTURES[1] : neighbours[7].layer1[0];
 
-        int ne = neighbours.get(4).layer1[0];
-        int se = neighbours.get(2).layer1[0];
-        int sw = neighbours.get(0).layer1[0];
-        int nw = neighbours.get(6).layer1[0];
+        int ne = neighbours[4] == null ? biomes[4].BIOME_LAYER_TEXTURES[1] : neighbours[4].layer1[0];
+        int se = neighbours[2] == null ? biomes[2].BIOME_LAYER_TEXTURES[1] : neighbours[2].layer1[0];
+        int sw = neighbours[0] == null ? biomes[0].BIOME_LAYER_TEXTURES[1] : neighbours[0].layer1[0];
+        int nw = neighbours[6] == null ? biomes[6].BIOME_LAYER_TEXTURES[1] : neighbours[6].layer1[0];
 
         if(grass) {
             minTile = BiomeType.PLAINS.BIOME_LAYER_TEXTURES[1];
@@ -156,18 +157,34 @@ public class ServerTile {
         layer1 = chunk.tileIndexToIds(tis, tid, minTile);
     }
 
-    public List<ServerTile> getNeighbouringTiles() {
-        ArrayList<ServerTile> list = new ArrayList<>(8);
+    public ServerTile[] getNeighbouringTiles() {
+        ServerTile[] list = new ServerTile[8];
         ServerChunkGrid grid = chunk.getDimension().getChunkHandler();
 
-        list.add(grid.getTile(tileX - 1, tileY - 1));
-        list.add(grid.getTile(tileX, tileY - 1));
-        list.add(grid.getTile(tileX + 1, tileY - 1));
-        list.add(grid.getTile(tileX + 1, tileY));
-        list.add(grid.getTile(tileX + 1, tileY + 1));
-        list.add(grid.getTile(tileX, tileY + 1));
-        list.add(grid.getTile(tileX - 1, tileY + 1));
-        list.add(grid.getTile(tileX - 1, tileY));
+        list[0] = grid.getTile(tileX - 1, tileY - 1);
+        list[1] = grid.getTile(tileX, tileY - 1);
+        list[2] = grid.getTile(tileX + 1, tileY - 1);
+        list[3] = grid.getTile(tileX + 1, tileY);
+        list[4] = grid.getTile(tileX + 1, tileY + 1);
+        list[5] = grid.getTile(tileX, tileY + 1);
+        list[6] = grid.getTile(tileX - 1, tileY + 1);
+        list[7] = grid.getTile(tileX - 1, tileY);
+
+        return list;
+    }
+
+    public BiomeType[] getNeighbouringBiomes() {
+        BiomeType[] list = new BiomeType[8];
+        ServerChunkGrid grid = chunk.getDimension().getChunkHandler();
+
+        list[0] = grid.getBiome(tileX - 1, tileY - 1);
+        list[1] = grid.getBiome(tileX, tileY - 1);
+        list[2] = grid.getBiome(tileX + 1, tileY - 1);
+        list[3] = grid.getBiome(tileX + 1, tileY);
+        list[4] = grid.getBiome(tileX + 1, tileY + 1);
+        list[5] = grid.getBiome(tileX, tileY + 1);
+        list[6] = grid.getBiome(tileX - 1, tileY + 1);
+        list[7] = grid.getBiome(tileX - 1, tileY);
 
         return list;
     }
@@ -189,6 +206,8 @@ public class ServerTile {
         if(isSoilTile()) return 0;
         return -1;
     }
+
+    public static final int BIOME_WILDCARD = -1000;
 
     /** Layer utility methods below */
     public boolean isSandTile() {

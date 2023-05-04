@@ -1,12 +1,19 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
+import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -47,7 +54,7 @@ public abstract class ServerEntity {
 
     }
 
-    public void onGeneration() {
+    public void onGeneration(boolean spread) {
 
     }
 
@@ -94,6 +101,28 @@ public abstract class ServerEntity {
         int tx = ExpoShared.posToTile(posX);
         int ty = ExpoShared.posToTile(posY);
         return getChunkGrid().getBiome(tx, ty);
+    }
+
+    public void spawnEntitiesAround(int min, int max, float xOff, float yOff, String itemName, float radius) {
+        spawnEntitiesAround(min, max, xOff, yOff, itemName, radius, radius);
+    }
+
+    public void spawnEntitiesAround(int min, int max, float xOff, float yOff, String itemName, float radiusMin, float radiusMax) {
+        int amount = MathUtils.random(min, max);
+        Vector2[] positions = GenerationUtils.positions(amount, MathUtils.random(radiusMin, radiusMax));
+
+        for(int i = 0; i < amount; i++) {
+            ServerItem item = new ServerItem();
+
+            ItemMapping r = ItemMapper.get().getMapping(itemName);
+            item.itemContainer = new ServerInventoryItem(r.id, 1);
+
+            item.posX = posX + xOff;
+            item.posY = posY + yOff;
+            item.dstX = positions[i].x;
+            item.dstY = positions[i].y;
+            ServerWorld.get().registerServerEntity(entityDimension, item);
+        }
     }
 
     public boolean isInWater() {

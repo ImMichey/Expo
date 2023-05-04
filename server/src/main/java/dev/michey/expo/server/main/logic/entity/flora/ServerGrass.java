@@ -22,13 +22,13 @@ public class ServerGrass extends ServerEntity {
     }
 
     @Override
-    public void onGeneration() {
+    public void onGeneration(boolean spread) {
         variant = MathUtils.random(1, 5);
     }
 
     @Override
     public void onDie() {
-        int grassSpawned = MathUtils.random(1, 3);
+        int grassSpawned = MathUtils.random(1, 2);
         Vector2[] positions = GenerationUtils.positions(grassSpawned, 8.0f);
 
         for(int i = 0; i < grassSpawned; i++) {

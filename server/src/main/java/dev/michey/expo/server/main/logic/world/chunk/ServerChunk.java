@@ -126,12 +126,12 @@ public class ServerChunk {
                         int yi = (int) p.y;
                         int tIndex = yi / TILE_SIZE * 8 + xi / TILE_SIZE;
 
-                        if(tiles[tIndex].layer1.length == 1) {
+                        if(tiles[tIndex].layer1.length == 1 && tiles[tIndex].layer1[0] != -1) {
                             ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
-                            generatedEntity.posX = p.absoluteX;
-                            generatedEntity.posY = p.absoluteY;
+                            generatedEntity.posX = (int) p.absoluteX;
+                            generatedEntity.posY = (int) p.absoluteY;
                             if(populator.asStaticEntity) generatedEntity.setStaticEntity();
-                            generatedEntity.onGeneration();
+                            generatedEntity.onGeneration(false);
 
                             postProcessingList.add(new Pair<>(generatedEntity, false));
 
@@ -142,15 +142,15 @@ public class ServerChunk {
                                     int amount = MathUtils.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
 
                                     for(Vector2 v : GenerationUtils.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
-                                        float targetX = generatedEntity.posX + v.x + populator.spreadOffsets[0];
-                                        float targetY = generatedEntity.posY + v.y + populator.spreadOffsets[1];
+                                        float targetX = p.absoluteX + v.x + populator.spreadOffsets[0];
+                                        float targetY = p.absoluteY + v.y + populator.spreadOffsets[1];
 
                                         if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(targetX), ExpoShared.posToTile(targetY)) == t) {
                                             ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
-                                            spreadEntity.posX = targetX;
-                                            spreadEntity.posY = targetY;
+                                            spreadEntity.posX = (int) targetX;
+                                            spreadEntity.posY = (int) targetY;
                                             if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
-                                            spreadEntity.onGeneration();
+                                            spreadEntity.onGeneration(true);
 
                                             postProcessingList.add(new Pair<>(spreadEntity, false));
                                         }
@@ -340,8 +340,129 @@ public class ServerChunk {
             }
         }
 
+        boolean generateGroundDetail = MathUtils.random() <= 0.075f;
+
+        if(generateGroundDetail) {
+            int minX = 1;
+            int minY = 1;
+            int pop = MathUtils.random(0, DETAIL_LAYERS.length - 1);
+            int[] detail = DETAIL_LAYERS[pop];
+            int maxX = 7 - detail[0];
+            int maxY = 7 - detail[1];
+            int startX = MathUtils.random(minX, maxX);
+            int startY = MathUtils.random(minY, maxY);
+            ServerTile startTile = tiles[tta(startX, startY)];
+
+            if(startTile.biome == BiomeType.PLAINS || startTile.biome == BiomeType.FOREST) {
+                List<ServerTile> visitedTiles = new LinkedList<>();
+
+                for(int i = 2; i < detail.length; i += 2) {
+                    int xOffset = detail[i    ];
+                    int yOffset = detail[i + 1];
+
+                    int targetX = startX + xOffset;
+                    int targetY = startY + yOffset;
+
+                    ServerTile nextTile = tiles[tta(targetX, targetY)];
+
+                    if(nextTile.biome == BiomeType.PLAINS || nextTile.biome == BiomeType.FOREST) {
+                        nextTile.layer1 = new int[] {-1};
+                        visitedTiles.add(nextTile);
+                    }
+                }
+
+                for(ServerTile visited : visitedTiles) {
+                    for(ServerTile n : visited.getNeighbouringTiles()) {
+                        n.updateLayer1();
+                    }
+                }
+            }
+        }
+
         if(populate) populate();
     }
+
+    /** To tileArray index. */
+    private int tta(int x, int y) {
+        return y * 8 + x;
+    }
+
+    /** Structure: [0] = SIZE_X, [1] = SIZE_Y, [2-n] = COORDS */
+    public static final int[][] DETAIL_LAYERS = new int[][] {
+            new int[] {4, 4,
+                    0, 0,
+                    1, 0,
+                    2, 0,
+                    1, 1,
+                    2, 1,
+                    3, 1,
+                    1, 2,
+                    2, 2,
+                    2, 3
+            },
+            new int[] {4, 4,
+                    1, 0,
+                    2, 0,
+                    0, 1,
+                    1, 1,
+                    2, 1,
+                    3, 1,
+                    1, 2,
+                    2, 2,
+                    3, 2,
+                    1, 3
+            },
+            new int[] {5, 3,
+                    3, 0,
+                    0, 1,
+                    1, 1,
+                    2, 1,
+                    3, 1,
+                    4, 1,
+                    2, 2,
+                    3, 2,
+            },
+            new int[] {4, 5,
+                    3, 0,
+                    2, 1,
+                    0, 2,
+                    1, 2,
+                    2, 2,
+                    3, 2,
+                    0, 3,
+                    1, 3,
+                    3, 3,
+                    0, 4,
+            },
+            new int[] {3, 4,
+                    0, 0,
+                    2, 0,
+                    0, 1,
+                    1, 2,
+                    2, 2,
+                    1, 3
+            },
+            new int[] {5, 3,
+                    0, 0,
+                    0, 1,
+                    1, 1,
+                    2, 2,
+                    3, 2,
+                    4, 1
+            },
+            new int[] {5, 4,
+                    0, 2,
+                    1, 0,
+                    1, 1,
+                    1, 2,
+                    1, 3,
+                    2, 0,
+                    2, 1,
+                    3, 1,
+                    4, 1,
+                    4, 0
+            }
+    };
 
     public static final int NORTH = 1;
     public static final int EAST = 2;

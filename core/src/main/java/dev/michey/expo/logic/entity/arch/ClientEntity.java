@@ -200,6 +200,15 @@ public abstract class ClientEntity {
         };
     }
 
+    public float[] generateInteractionArray(float offset) {
+        return new float[] {
+                clientPosX + offset, clientPosY + offset,
+                clientPosX + drawWidth - offset, clientPosY + offset,
+                clientPosX + drawWidth - offset, clientPosY + drawHeight - offset,
+                clientPosX + offset, clientPosY + drawHeight - offset,
+        };
+    }
+
     /** Util methods */
     public boolean isMoving() {
         return serverDirX != 0 || serverDirY != 0 || doLerp;
