@@ -68,6 +68,7 @@ public class ServerItem extends ServerEntity {
             if(closestPlayer != null) {
                 int lastId = closestPlayer.getCurrentItemId();
 
+                int total = itemContainer.itemAmount;
                 var result = closestPlayer.playerInventory.addItem(itemContainer);
                 ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(result.changeResult, PacketReceiver.player(closestPlayer));
 
@@ -75,10 +76,12 @@ public class ServerItem extends ServerEntity {
                     ServerPackets.p24PositionalSound("pop", posX, posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
 
                     if(result.fullTransfer) {
+                        ServerPackets.p36PlayerReceiveItem(new int[] {itemContainer.itemId}, new int[] {total}, PacketReceiver.player(closestPlayer));
                         killEntityWithPacket();
                     } else {
                         itemContainer.itemAmount = result.remainingAmount;
-                        ServerPackets.p30EntityDataUpdate(entityId, new Object[] {itemContainer.itemAmount, true}, PacketReceiver.whoCanSee(this));
+                        ServerPackets.p36PlayerReceiveItem(new int[] {itemContainer.itemId}, new int[] {total - result.remainingAmount}, PacketReceiver.player(closestPlayer));
+                        ServerPackets.p30EntityDataUpdate(entityId, new Object[] {5555, true}, PacketReceiver.whoCanSee(this));
                     }
 
                     if(lastId != closestPlayer.getCurrentItemId()) {

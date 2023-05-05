@@ -411,6 +411,7 @@ public class ServerPlayerInventory extends ServerInventory {
 
             var addResult = addItem(new ServerInventoryItem(recipe.outputId, recipe.outputAmount));
             ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(addResult.changeResult, PacketReceiver.player(getOwner()));
+            ServerPackets.p36PlayerReceiveItem(new int[] {recipe.outputId}, new int[] {recipe.outputAmount}, PacketReceiver.player(getOwner()));
 
             int[] newIds = getOwner().getEquippedItemIds();
             boolean sameIds = Arrays.equals(oldIds, newIds);

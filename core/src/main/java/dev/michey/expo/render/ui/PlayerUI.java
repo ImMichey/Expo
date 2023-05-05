@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
@@ -28,7 +29,9 @@ import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 
-import static dev.michey.expo.log.ExpoLogger.log;
+import java.util.LinkedList;
+import java.util.List;
+
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class PlayerUI {
@@ -70,6 +73,8 @@ public class PlayerUI {
     public InteractableRecipeSlot[] craftRecipeSlots;
     private InteractableUIElement selectedCategoryButton;
     public boolean craftingOpen = false;
+
+    public List<PickupLine> pickupLines;
 
     /** Fade in */
     public float fadeInDelta;
@@ -204,6 +209,7 @@ public class PlayerUI {
         darkenSquarePattern = tr("bg_squares128x128");
 
         playerMinimap = new PlayerMinimap(this, tr("ui_minimap"), tr("ui_minimap_arrow"), tr("ui_minimap_player"));
+        pickupLines = new LinkedList<>();
 
         glyphLayout = new GlyphLayout();
 
@@ -247,11 +253,6 @@ public class PlayerUI {
         craftButtonLeft = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_ARROW_LEFT, craftArrowLeftS, craftArrowLeft) {
 
             @Override
-            public void onLeftClick() {
-
-            }
-
-            @Override
             public void onTooltip() {
                 drawTooltipColored("Previous categories", ClientStatic.COLOR_CRAFT_TEXT);
             }
@@ -259,11 +260,6 @@ public class PlayerUI {
         };
 
         craftButtonRight = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_ARROW_RIGHT, craftArrowRightS, craftArrowRight) {
-
-            @Override
-            public void onLeftClick() {
-
-            }
 
             @Override
             public void onTooltip() {
@@ -329,6 +325,10 @@ public class PlayerUI {
         chat = new ExpoClientChat(this);
 
         changeUiScale(2.0f);
+    }
+
+    public void addPickupLine(int itemId, int itemAmount) {
+        pickupLines.add(new PickupLine(itemId, itemAmount));
     }
 
     public void showCraftingRecipes(InteractableUIElement button, int category) {
@@ -477,11 +477,9 @@ public class PlayerUI {
         glyphLayout.setText(m5x7_use, text);
         float tw = glyphLayout.width;
 
-        if(extraLines.length > 0) {
-            for(String str : extraLines) {
-                glyphLayout.setText(m5x7_use, str);
-                if(glyphLayout.width > tw) tw = glyphLayout.width;
-            }
+        for(String str : extraLines) {
+            glyphLayout.setText(m5x7_use, str);
+            if(glyphLayout.width > tw) tw = glyphLayout.width;
         }
 
         float th = glyphLayout.height;
@@ -708,7 +706,7 @@ public class PlayerUI {
         }
 
         // Draw player names
-        if(DEV_MODE || ExpoServerBase.get() != null) {
+        if(DEV_MODE || ExpoServerBase.get() == null) {
             var players = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PLAYER);
 
             for(ClientEntity entity : players) {
@@ -720,6 +718,38 @@ public class PlayerUI {
                 useFont.draw(r.hudBatch, player.username, (int) hudPos.x - glyphLayout.width * 0.5f, (int) hudPos.y + glyphLayout.height);
             }
         }
+
+        glyphLayout.setText(m5x7_border_use, "U");
+        Vector2 startHudPos = ClientUtils.entityPosToHudPos(ClientPlayer.getLocalPlayer().clientPosX + 5, ClientPlayer.getLocalPlayer().clientPosY + 32 + glyphLayout.height);
+        float MAX_LINE_LIFETIME = 1.25f;
+
+        // Draw pickup lines
+        for(PickupLine line : pickupLines) {
+            line.lifetime += r.delta;
+            if(line.lifetime >= MAX_LINE_LIFETIME) continue;
+
+            float alpha = Interpolation.circleOut.apply(line.lifetime / MAX_LINE_LIFETIME);
+
+            ItemMapping mapping = ItemMapper.get().getMapping(line.itemId);
+            String displayText = line.itemAmount + "x " + mapping.displayName;
+            glyphLayout.setText(m5x7_shadow_use, displayText);
+
+            float itemW = mapping.uiRender.textureRegion.getRegionWidth() * uiScale;
+            float itemH = mapping.uiRender.textureRegion.getRegionHeight() * uiScale;
+            float fullWidth = itemW + 4 * uiScale + glyphLayout.width;
+            float startX = startHudPos.x - fullWidth * 0.5f;
+            float startY = startHudPos.y + alpha * 48;
+
+            r.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
+            m5x7_use.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
+
+            r.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
+            m5x7_use.draw(r.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
+        }
+
+        r.hudBatch.setColor(Color.WHITE);
+        m5x7_use.setColor(Color.WHITE);
+        pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
 
         if(inventoryOpenState) {
             // Draw square pattern background
@@ -826,7 +856,7 @@ public class PlayerUI {
 
         if(mapping.logic.maxStackSize > 1) {
             int amount = item.itemAmount;
-            String amountAsText = amount + "";
+            String amountAsText = String.valueOf(amount);
 
             glyphLayout.setText(m5x7_shadow_use, amountAsText);
             float aw = glyphLayout.width;
@@ -932,7 +962,7 @@ public class PlayerUI {
                 r.hudBatch.setColor(COLOR_RED);
             }
 
-            String pingAsString = (ping > 999 ? "999+" : ping + "");
+            String pingAsString = (ping > 999 ? "999+" : String.valueOf(ping));
             glyphLayout.setText(m5x7_shadow_use, pingAsString);
 
             float pingBoxWidth = pingW + 6 * uiScale + mpW;

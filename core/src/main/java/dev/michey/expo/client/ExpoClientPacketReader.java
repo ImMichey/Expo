@@ -17,6 +17,7 @@ import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
+import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.*;
@@ -276,6 +277,12 @@ public class ExpoClientPacketReader {
                     .randomRotation()
                     .rotateWithVelocity()
                     .spawn();
+        } else if(o instanceof P36_PlayerReceiveItem p) {
+            for(int i = 0; i < p.itemIds.length; i++) {
+                int id = p.itemIds[i];
+                int amount = p.itemAmounts[i];
+                ExpoClientContainer.get().getPlayerUI().addPickupLine(id, amount);
+            }
         }
     }
 

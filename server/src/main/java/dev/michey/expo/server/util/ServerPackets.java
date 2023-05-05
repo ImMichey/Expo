@@ -322,6 +322,14 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P36_PlayerReceiveItem packet via UDP protocol. */
+    public static void p36PlayerReceiveItem(int[] ids, int[] amounts, PacketReceiver receiver) {
+        P36_PlayerReceiveItem p = new P36_PlayerReceiveItem();
+        p.itemIds = ids;
+        p.itemAmounts = amounts;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;
