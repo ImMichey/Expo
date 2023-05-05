@@ -9,6 +9,7 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 
@@ -155,6 +156,10 @@ public class InputController {
                 }
             }
         } else {
+            if(ExpoServerBase.get() != null) {
+                if(keycode == Input.Keys.ENTER) return;
+            }
+
             switch(keycode) {
                 case Input.Keys.F2 -> RenderContext.get().drawTileInfo = !RenderContext.get().drawTileInfo;
                 case Input.Keys.F3 -> RenderContext.get().drawDebugHUD = !RenderContext.get().drawDebugHUD;

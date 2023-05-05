@@ -159,6 +159,7 @@ public class ExpoServerPacketReader {
             if(player != null) {
                 player.xDir = p.xDir;
                 player.yDir = p.yDir;
+                player.sprinting = p.sprinting;
             }
         } else if(o instanceof P12_PlayerDirection p) {
             ServerPlayer player = connectionToPlayer(connection);

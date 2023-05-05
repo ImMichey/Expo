@@ -5,10 +5,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.logic.entity.arch.ClientEntityManager;
+import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
@@ -20,6 +24,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 
@@ -700,6 +705,20 @@ public class PlayerUI {
         if(PlayerInventory.LOCAL_INVENTORY == null) {
             r.hudBatch.end();
             return;
+        }
+
+        // Draw player names
+        if(DEV_MODE || ExpoServerBase.get() != null) {
+            var players = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PLAYER);
+
+            for(ClientEntity entity : players) {
+                ClientPlayer player = (ClientPlayer) entity;
+                BitmapFont useFont = m5x7_border_use;
+                glyphLayout.setText(useFont, player.username);
+
+                Vector2 hudPos = ClientUtils.entityPosToHudPos(player.clientPosX + 5, player.clientPosY + 32);
+                useFont.draw(r.hudBatch, player.username, (int) hudPos.x - glyphLayout.width * 0.5f, (int) hudPos.y + glyphLayout.height);
+            }
         }
 
         if(inventoryOpenState) {
