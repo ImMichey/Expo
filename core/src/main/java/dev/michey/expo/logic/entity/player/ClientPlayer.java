@@ -749,7 +749,7 @@ public class ClientPlayer extends ClientEntity {
     }
 
     private void drawHeldItem(RenderContext rc, boolean postArm) {
-        if(holdingItemId != -1) {
+        if(holdingItemId != -1 && holdingItemSprite != null) {
             ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
 
             if((map.heldRender.renderPriority && postArm) || (!map.heldRender.renderPriority && !postArm)) {

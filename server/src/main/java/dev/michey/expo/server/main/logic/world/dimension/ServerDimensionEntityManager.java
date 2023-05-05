@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.world.dimension;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.util.ExpoShared;
 
@@ -129,6 +130,26 @@ public class ServerDimensionEntityManager {
         }
 
         return player;
+    }
+
+    public ServerEntity getClosestEntity(ServerEntity to, float maxDistance, ServerEntityType... types) {
+        float dis = Float.MAX_VALUE;
+        ServerEntity entity = null;
+
+        for(ServerEntityType type : types) {
+            for(ServerEntity e : getEntitiesOf(type)) {
+                float dst = Vector2.dst(e.posX, e.posY, to.posX, to.posY);
+
+                if(dst <= maxDistance) {
+                    if(entity == null || dis > dst) {
+                        dis = dst;
+                        entity = e;
+                    }
+                }
+            }
+        }
+
+        return entity;
     }
 
     /** Returns the amount of active entities in the current dimension. */

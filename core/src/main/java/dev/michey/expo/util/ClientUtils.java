@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
-import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.render.RenderContext;
 
 public class ClientUtils {

@@ -7,6 +7,8 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ClientGhostItem extends ClientEntity {
 
     public TextureRegion texture;

@@ -19,8 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.log.ExpoLogger.logc;
+import static dev.michey.expo.log.ExpoLogger.*;
 
 public class ExpoClientChat {
 
@@ -286,7 +285,7 @@ public class ExpoClientChat {
             historyLinesTotal += message.lines;
             message.endIndex = historyLinesTotal - 1;
 
-            logc(message.message);
+            logch(message.message);
 
             if(message.byUser) {
                 ClientPackets.p25ChatMessage(message.message);

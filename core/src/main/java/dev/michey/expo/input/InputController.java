@@ -13,6 +13,8 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
+
 public class InputController {
 
     /** Click operations */
@@ -156,7 +158,7 @@ public class InputController {
                 }
             }
         } else {
-            if(ExpoServerBase.get() != null) {
+            if(!DEV_MODE && ExpoServerBase.get() != null) {
                 if(keycode == Input.Keys.ENTER) return;
             }
 

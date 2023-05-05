@@ -14,6 +14,7 @@ import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ExpoShared;
 
 public class ServerPackets {
 
@@ -241,6 +242,15 @@ public class ServerPackets {
         p.worldY = worldY;
         p.maxSoundRange = maxSoundRange;
         udp(p, receiver);
+    }
+
+    public static void p24PositionalSound(String soundName, ServerEntity entity) {
+        P24_PositionalSound p = new P24_PositionalSound();
+        p.soundName = soundName;
+        p.worldX = entity.posX;
+        p.worldY = entity.posY;
+        p.maxSoundRange = ExpoShared.PLAYER_AUDIO_RANGE;
+        udp(p, PacketReceiver.whoCanSee(entity));
     }
 
     /** Sends the P25_ChatMessage packet via TCP protocol. */

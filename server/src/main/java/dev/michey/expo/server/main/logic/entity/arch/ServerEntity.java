@@ -174,4 +174,10 @@ public abstract class ServerEntity {
         ServerPackets.p4EntityDelete(entityId, EntityRemovalReason.DEATH, PacketReceiver.whoCanSee(this));
     }
 
+    public void killEntityWithPacket(EntityRemovalReason reason) {
+        onDie();
+        getDimension().getEntityManager().removeEntitySafely(this);
+        ServerPackets.p4EntityDelete(entityId, reason, PacketReceiver.whoCanSee(this));
+    }
+
 }

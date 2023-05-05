@@ -42,6 +42,20 @@ public class ExpoLogger {
         builder.setLength(0);
     }
 
+    public static void logch(String s) {
+        builder.append('[');
+        builder.append(sdf.format(new Date()));
+        builder.append('*');
+        builder.append('*');
+        builder.append(']');
+        builder.append(' ');
+        builder.append(s);
+        synchronized (LOG_LOCK) {
+            System.out.println(builder);
+        }
+        builder.setLength(0);
+    }
+
     /** Enables logging to console & file simultaneously */
     public static void enableDualLogging(String logFolderName) {
         log("Enabling dual logging (folder: " + logFolderName + ")");

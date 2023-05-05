@@ -48,7 +48,7 @@
                 "durability": -1,
                 "toolType": "ITEM",
                 "foodData": {
-                    "hungerRestore": 1.0,
+                    "hungerRestore": 5.0,
                     "hungerCooldownRestore": 30.0
                 }
             }

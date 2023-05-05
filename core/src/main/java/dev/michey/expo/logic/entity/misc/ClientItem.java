@@ -12,6 +12,8 @@ import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.util.EntityRemovalReason;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ClientItem extends ClientEntity {
 
     public int itemId;
@@ -25,6 +27,11 @@ public class ClientItem extends ClientEntity {
 
     private float lifetime;
     private float useAlpha;
+
+    private boolean stackAnimation;
+    private float stackAnimationDelta;
+    private float stackX = 1.0f;
+    private float stackY = 1.0f;
 
     @Override
     public void onCreation() {
@@ -56,6 +63,29 @@ public class ClientItem extends ClientEntity {
         } else {
             useAlpha = 1.0f;
         }
+
+        if(stackAnimation) {
+            stackAnimationDelta += delta;
+
+            float c = MathUtils.cos(2 * (float) Math.PI * stackAnimationDelta) * 0.5f;
+            if(c < 0) c = 0;
+
+            stackX = 1f + c;
+            stackY = 1f - c;
+
+            float STACK_ANIMATION_DURATION = 0.25f;
+            if(stackAnimationDelta >= STACK_ANIMATION_DURATION) {
+                stackAnimation = false;
+                stackAnimationDelta = 0f;
+                stackX = 1f;
+                stackY = 1f;
+            }
+        }
+    }
+
+    public void playStackAnimation() {
+        stackAnimation = true;
+        stackAnimationDelta = 0;
     }
 
     @Override
@@ -77,8 +107,11 @@ public class ClientItem extends ClientEntity {
 
             float textureX = clientPosX - texture.getRegionWidth() * 0.5f * currentScaleX;
             float textureY = clientPosY + floatingPos;
+
+            float dsp = drawWidth - drawWidth * stackX;
+
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
-            rc.arraySpriteBatch.draw(texture, textureX, textureY, drawWidth, drawHeight);
+            rc.arraySpriteBatch.draw(texture, textureX + dsp * 0.5f, textureY, drawWidth * stackX, drawHeight * stackY);
 
             String numberAsString = itemAmount + "";
 
@@ -93,8 +126,8 @@ public class ClientItem extends ClientEntity {
             int add = 0;
 
             for(char c : numberAsString.toCharArray()) {
-                TextureRegion indiNumber = rc.getNumber(Integer.parseInt(c + ""));
-                rc.arraySpriteBatch.draw(indiNumber, ex + add, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
+                TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
+                rc.arraySpriteBatch.draw(indiNumber, ex + add - dsp * 0.5f, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
                 add += 6 * fontScale;
             }
 
@@ -117,7 +150,9 @@ public class ClientItem extends ClientEntity {
     @Override
     public void readEntityDataUpdate(Object[] payload) {
         int newAmount = (int) payload[0];
-        spawnGhostEntity(itemAmount - newAmount);
+        boolean ghostItem = (boolean) payload[1];
+        if(ghostItem) spawnGhostEntity(itemAmount - newAmount);
+        if(newAmount > itemAmount) playStackAnimation();
         itemAmount = newAmount;
     }
 
