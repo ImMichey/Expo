@@ -3,7 +3,6 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.connection.PlayerConnection;
-import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
@@ -89,11 +88,6 @@ public class ServerPlayer extends ServerEntity {
     public void onDeletion() {
         // remove physics body of player from world
         physicsBody.dispose();
-    }
-
-    @Override
-    public boolean onDamage(ServerEntity damageSource, float damage) {
-        return true;
     }
 
     @Override
@@ -366,11 +360,6 @@ public class ServerPlayer extends ServerEntity {
     }
 
     @Override
-    public SavableEntity onSave() {
-        return null;
-    }
-
-    @Override
     public void onChunkChanged() {
         //log("PLAYER " + username + " changed chunk to " + chunkX + "," + chunkY);
         currentlyVisibleChunks = getChunkGrid().getChunkNumbersInPlayerRange(this);
@@ -506,7 +495,7 @@ public class ServerPlayer extends ServerEntity {
                     } else if(sand) {
                         identifier = "item_floor_sand";
                     } else {
-                        spawnWorm = MathUtils.random() <= 0.05f;
+                        spawnWorm = MathUtils.random() <= 1.0f;
                     }
 
                     ServerItem drop = new ServerItem();

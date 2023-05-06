@@ -103,4 +103,6 @@ click_1.wav
 player_death_1.wav
 
 #pop;true;0.9-1.1;SFX;1.0
-pickup.wav
+pop_1.wav
+pop_2.wav
+pop_3.wav

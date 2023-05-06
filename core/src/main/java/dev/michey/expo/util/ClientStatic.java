@@ -14,6 +14,8 @@ public class ClientStatic {
     public static final float CAMERA_ANIMATION_MIN_ZOOM = 0.075f;
     public static final boolean DEV_MODE = true; // Enables ImGui, Console, etc.
 
+    public static final String GAME_VERSION = "0.0.0";
+
     public static final Color COLOR_ARMOR_TEXT = Color.valueOf("#a2cadc");
     public static final Color COLOR_CRAFT_TEXT = Color.valueOf("#c0ad9d");
     public static final Color COLOR_CRAFT_GREEN = Color.valueOf("#99e550");

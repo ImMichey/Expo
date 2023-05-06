@@ -25,7 +25,6 @@ public class ExpoCamera {
     public float startZoom;
     public float zoomDelta;
     public boolean doZoomAnimation;
-    private final float ZOOM_SPEED = 5.0f;
 
     public ExpoCamera() {
         float w = Gdx.graphics.getWidth();
@@ -33,7 +32,7 @@ public class ExpoCamera {
 
         camera = new OrthographicCamera(100, 100 * (h / w));
 
-        camera.zoom = 1f / 3f;
+        camera.zoom = 0.5f;
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
@@ -71,6 +70,7 @@ public class ExpoCamera {
         if(p == null) return;
 
         if(doZoomAnimation) {
+            float ZOOM_SPEED = 5.0f;
             zoomDelta += RenderContext.get().delta * ZOOM_SPEED;
 
             if(zoomDelta >= 1.0f) {
