@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.InputUtils;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -32,7 +33,7 @@ public class ExpoCamera {
 
         camera = new OrthographicCamera(100, 100 * (h / w));
 
-        camera.zoom = 0.5f;
+        camera.zoom = ClientStatic.DEFAULT_CAMERA_ZOOM;
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
