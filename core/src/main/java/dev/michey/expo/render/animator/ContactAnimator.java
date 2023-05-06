@@ -1,5 +1,6 @@
 package dev.michey.expo.render.animator;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.audio.AudioEngine;
@@ -25,6 +26,9 @@ public class ContactAnimator {
 
     // Export value
     public float value;
+    public float squish = 1.0f;
+    public float squishDelta;
+    public boolean doSquish = false;
 
     public ContactAnimator(ClientEntity parent, List<ClientEntityType> contactList) {
         this.parent = parent;
@@ -50,9 +54,25 @@ public class ContactAnimator {
                         parent.playEntitySound("leaves_rustle");
                         contactDelta = STEPS * 0.5f;
                         contactDir = entity.serverDirX == 0 ? (entity.drawRootX < parent.drawRootX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
+
+                        doSquish = true;
+                        squishDelta = 0.0f;
                     }
                 }
             }
+        }
+
+        if(doSquish) {
+            float MIN_SQUISH = 0.3334f;
+            float SQUISH_SPEED = 1.2f;
+            squishDelta += delta * SQUISH_SPEED;
+
+            if(squishDelta >= 1.0f) {
+                squishDelta = 1.0f;
+                doSquish = false;
+            }
+
+            squish = MIN_SQUISH + Interpolation.bounceOut.apply(squishDelta) * (1.0f - MIN_SQUISH);
         }
 
         if(contactDelta != 0) {

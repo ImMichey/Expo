@@ -34,42 +34,27 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         grass = ExpoAssets.get().texture("foliage/entity_grass/entity_grass_" + variant + ".png");
         grassShadow = new TextureRegion(t("foliage/entity_grass/entity_grass_" + variant + "_shadow.png"));
 
-        float x = 0, y = 0, w = 0, h = 0;
+        float w = 0, h = 0;
 
         if(variant == 1) {
-            x = 2;
-            y = 3;
             w = 11;
             h = 9;
         } else if(variant == 2) {
-            x = 2;
-            y = 3;
             w = 12;
             h = 10;
         } else if(variant == 3) {
-            x = 2;
-            y = 4;
             w = 13;
             h = 8;
         } else if(variant == 4) {
-            x = 1;
-            y = 3;
             w = 13;
             h = 10;
         } else if(variant == 5) {
-            x = 2;
-            y = 2;
             w = 13;
             h = 12;
         }
 
-        updateTexture(x, y, w, h);
-        interactionPointArray = new float[] {
-                (clientPosX + drawOffsetX + 3), (clientPosY + drawOffsetY + 3),
-                (clientPosX + drawOffsetX - 3 + drawWidth), (clientPosY + drawOffsetY + 3),
-                (clientPosX + drawOffsetX - 3 + drawWidth), (clientPosY + drawOffsetY - 3 + drawHeight),
-                (clientPosX + drawOffsetX + 3), (clientPosY + drawOffsetY - 3 + drawHeight),
-        };
+        updateTexture(0, 0, w, h);
+        interactionPointArray = generateInteractionArray(2);
     }
 
     @Override
@@ -125,7 +110,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
         rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-        rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setColor(Color.WHITE);
     }
@@ -141,7 +126,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-            rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
@@ -156,7 +141,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         if(drawGrass) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight(), shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 

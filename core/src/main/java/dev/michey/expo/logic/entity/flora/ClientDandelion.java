@@ -84,7 +84,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
         foliageAnimator.calculateWindOnDemand();
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX, clientPosY, dandelion.getWidth(), dandelion.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
     }
 
@@ -98,7 +98,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX, clientPosY, dandelion.getWidth(), dandelion.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 
@@ -112,7 +112,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
         if(drawGrass) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradientCustomVertices(this.shadow, this.shadow.getRegionWidth(), this.shadow.getRegionHeight(), shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawGradientCustomVertices(this.shadow, this.shadow.getRegionWidth(), this.shadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 
