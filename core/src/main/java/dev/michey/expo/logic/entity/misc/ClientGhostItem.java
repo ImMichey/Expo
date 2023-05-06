@@ -7,14 +7,11 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ClientGhostItem extends ClientEntity {
 
     public TextureRegion texture;
     public int amount;
 
-    private final float SCALE_X = 0.75f, SCALE_Y = 0.75f;
     public float floatingPos;
     public float floatingPosAnimation;
     private float useAlpha = 1.0f;
@@ -49,6 +46,9 @@ public class ClientGhostItem extends ClientEntity {
         updateDepth();
         rc.useArrayBatch();
         rc.useRegularArrayShader();
+
+        float SCALE_X = 0.75f;
+        float SCALE_Y = 0.75f;
 
         float textureX = clientPosX - texture.getRegionWidth() * 0.5f * SCALE_X;
         float textureY = clientPosY + floatingPos + floatingPosAnimation;

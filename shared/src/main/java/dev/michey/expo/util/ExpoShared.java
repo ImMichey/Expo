@@ -14,6 +14,8 @@ public class ExpoShared {
     public static final int CLIENT_TIMEOUT_THRESHOLD = 5000;
     public static final long UNLOAD_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.seconds(5); // 5 seconds
     public static final long SAVE_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.minutes(3); // 3 minutes
+    public static final int DEFAULT_WRITE_BUFFER_SIZE = 32768;
+    public static final int DEFAULT_OBJECT_BUFFER_SIZE = 32768;
 
     /** Dimension constants */
     public static final String DIMENSION_OVERWORLD = "overworld";

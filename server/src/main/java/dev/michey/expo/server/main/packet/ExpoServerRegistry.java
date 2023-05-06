@@ -41,9 +41,7 @@ public class ExpoServerRegistry {
                 ToolType.class,
                 EntityRemovalReason.class,
                 EntityRemovalReason[].class,
-                WorldGenSettings.class,
                 WorldGenNoiseSettings.class,
-                EntityPopulator.class,
 
                 // Packets
                 P0_Auth_Req.class,

@@ -54,7 +54,7 @@ public class ExpoClientPacketReader {
             } else {
                 if(!local) {
                     ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
-                    ExpoClientContainer.get().getClientWorld().setGenSettings(p.genSettings);
+                    ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDataMap);
                 }
                 ExpoClientContainer.get().setServerTickRate(p.serverTps);
             }

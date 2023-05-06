@@ -25,7 +25,8 @@ public class ServerPackets {
         p.message = message;
         p.serverTps = serverTps;
         p.worldSeed = worldSeed;
-        p.genSettings = genSettings;
+        p.noiseSettings = genSettings.getNoiseSettings();
+        p.biomeDataMap = genSettings.getBiomeDataMap();
         tcp(p, receiver);
     }
 

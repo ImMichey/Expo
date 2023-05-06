@@ -169,10 +169,6 @@ public class ClientWorld {
         clientChunkGrid.riverNoise.setSeed(seed);
     }
 
-    public void setGenSettings(WorldGenSettings genSettings) {
-        clientChunkGrid.applyGenSettings(genSettings);
-    }
-
     private void calculateWorldTime(float delta) {
         worldTime += delta;
         if(worldTime >= ExpoTime.WORLD_CYCLE_DURATION) worldTime %= ExpoTime.WORLD_CYCLE_DURATION;

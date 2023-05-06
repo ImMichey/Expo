@@ -220,6 +220,7 @@ public class ExpoServerPacketReader {
             ExpoServerBase.get().getCommandResolver().resolveCommand(p.message, serverPlayer);
         } else {
             if(!local) {
+                log("[Chat] " + p.sender + ": " + p.message);
                 ServerPackets.p25ChatMessage(p.sender, p.message, PacketReceiver.allExcept(connection));
             }
         }

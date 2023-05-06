@@ -27,7 +27,7 @@ public class ExpoClient {
     }
 
     public Exception connect(String address, int port) {
-        kryoClient = new Client();
+        kryoClient = new Client(ExpoShared.DEFAULT_WRITE_BUFFER_SIZE, ExpoShared.DEFAULT_OBJECT_BUFFER_SIZE);
         kryoClient.start();
 
         try {

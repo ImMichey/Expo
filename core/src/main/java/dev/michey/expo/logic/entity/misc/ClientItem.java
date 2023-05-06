@@ -12,8 +12,6 @@ import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.util.EntityRemovalReason;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ClientItem extends ClientEntity {
 
     public int itemId;

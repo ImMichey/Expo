@@ -1,6 +1,5 @@
 package dev.michey.expo.server.config;
 
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONException;
@@ -10,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Random;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -25,7 +23,7 @@ public class ExpoServerConfiguration {
     private int maxPlayers = 10;
     private int serverPort = ExpoShared.DEFAULT_EXPO_SERVER_PORT;
     private int writeBufferSize = 32768;
-    private int objectBufferSize = 8192;
+    private int objectBufferSize = 32768;
     private int serverTps = ExpoShared.DEFAULT_SERVER_TICK_RATE;
     private boolean enableWhitelist = false;
     private String worldName = "default-world";
