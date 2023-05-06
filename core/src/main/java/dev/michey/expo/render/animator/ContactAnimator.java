@@ -2,15 +2,11 @@ package dev.michey.expo.render.animator;
 
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ContactAnimator {
 

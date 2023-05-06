@@ -724,6 +724,8 @@ public class PlayerUI {
         float MAX_LINE_LIFETIME = 1.25f;
 
         // Draw pickup lines
+        BitmapFont useFont = m5x7_border_use;
+
         for(PickupLine line : pickupLines) {
             line.lifetime += r.delta;
             if(line.lifetime >= MAX_LINE_LIFETIME) continue;
@@ -732,7 +734,7 @@ public class PlayerUI {
 
             ItemMapping mapping = ItemMapper.get().getMapping(line.itemId);
             String displayText = line.itemAmount + "x " + mapping.displayName;
-            glyphLayout.setText(m5x7_shadow_use, displayText);
+            glyphLayout.setText(useFont, displayText);
 
             float itemW = mapping.uiRender.textureRegion.getRegionWidth() * uiScale;
             float itemH = mapping.uiRender.textureRegion.getRegionHeight() * uiScale;
@@ -741,14 +743,14 @@ public class PlayerUI {
             float startY = startHudPos.y + alpha * 48;
 
             r.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
-            m5x7_use.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
+            useFont.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
 
             r.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
-            m5x7_use.draw(r.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
+            useFont.draw(r.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
         }
 
         r.hudBatch.setColor(Color.WHITE);
-        m5x7_use.setColor(Color.WHITE);
+        useFont.setColor(Color.WHITE);
         pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
 
         if(inventoryOpenState) {
