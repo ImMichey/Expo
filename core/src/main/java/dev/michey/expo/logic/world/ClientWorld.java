@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -23,10 +24,7 @@ import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
-import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.ExpoTime;
-import dev.michey.expo.util.InputUtils;
-import dev.michey.expo.util.Pair;
+import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
 import java.util.ConcurrentModificationException;
@@ -494,6 +492,19 @@ public class ClientWorld {
                                     }
                                 }
                             }
+                        }
+
+                        if(Expo.get().getImGuiExpo().renderEntityId.get()) {
+                            r.chunkRenderer.end();
+
+                            r.hudBatch.begin();
+                            for(ClientEntity e : ExpoClientContainer.get().getClientWorld().clientEntityManager.allEntities()) {
+                                Vector2 p = ClientUtils.entityPosToHudPos(e.clientPosX, e.clientPosY);
+                                r.m5x7_border_all[0].draw(r.hudBatch, String.valueOf(e.entityId), p.x, p.y);
+                            }
+                            r.hudBatch.end();
+
+                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
                         }
 
                         if(Expo.get().getImGuiExpo().renderJBump.get()) {

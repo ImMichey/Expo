@@ -22,8 +22,8 @@ public class ExpoServerConfiguration {
     private boolean consoleInput = true;
     private int maxPlayers = 10;
     private int serverPort = ExpoShared.DEFAULT_EXPO_SERVER_PORT;
-    private int writeBufferSize = 32768;
-    private int objectBufferSize = 32768;
+    private int writeBufferSize = ExpoShared.DEFAULT_WRITE_BUFFER_SIZE;
+    private int objectBufferSize = ExpoShared.DEFAULT_OBJECT_BUFFER_SIZE;
     private int serverTps = ExpoShared.DEFAULT_SERVER_TICK_RATE;
     private boolean enableWhitelist = false;
     private String worldName = "default-world";

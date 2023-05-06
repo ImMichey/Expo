@@ -80,7 +80,10 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P8_EntityDeleteStack p) {
             for(int i = 0; i < p.entityList.length; i++) {
                 ClientEntity entity = entityFromId(p.entityList[i]);
-                if(entity == null) continue;
+                if(entity == null) {
+                    log("Cannot delete " + p.entityList[i]);
+                    continue;
+                }
 
                 entity.removalReason = p.reasons[i];
                 ClientEntityManager.get().removeEntity(p.entityList[i]);

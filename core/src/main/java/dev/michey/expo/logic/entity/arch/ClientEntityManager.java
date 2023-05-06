@@ -16,6 +16,8 @@ import dev.michey.expo.util.ExpoShared;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ClientEntityManager {
 
     /** Singleton */
@@ -172,7 +174,7 @@ public class ClientEntityManager {
     }
 
     public void updateSelectionShader(ClientEntity entity, RenderContext rc) {
-        if (entity.entityId != lastEntityId) {
+        if(entity.entityId != lastEntityId) {
             lastEntityId = entity.entityId;
             plus = false;
             pDelta = 1.0f;
@@ -180,17 +182,17 @@ public class ClientEntityManager {
 
         float speed = 3.0f;
 
-        if (plus) {
+        if(plus) {
             pDelta += rc.delta * speed;
 
-            if (pDelta >= 1f) {
+            if(pDelta >= 1f) {
                 pDelta = 1f;
                 plus = false;
             }
         } else {
             pDelta -= rc.delta * speed;
 
-            if (pDelta <= 0f) {
+            if(pDelta <= 0f) {
                 pDelta = 0f;
                 plus = true;
             }
