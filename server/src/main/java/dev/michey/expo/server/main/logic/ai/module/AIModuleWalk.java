@@ -5,8 +5,7 @@ import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.AIState;
-
-import static dev.michey.expo.log.ExpoLogger.log;
+import dev.michey.expo.util.ExpoShared;
 
 public class AIModuleWalk extends AIModule {
 
@@ -22,9 +21,18 @@ public class AIModuleWalk extends AIModule {
     @Override
     public void tickModule(float delta) {
         var e = getBrain().getEntity();
-        e.posX += dir.x * delta * speed;
-        e.posY += dir.y * delta * speed;
-        ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, PacketReceiver.whoCanSee(e));
+        float dstX = e.posX + dir.x * delta * speed;
+        float dstY = e.posY + dir.y * delta * speed;
+
+        // Check for loaded chunk
+        int chunkX = ExpoShared.posToChunk(dstX);
+        int chunkY = ExpoShared.posToChunk(dstY);
+
+        if(e.getChunkGrid().isActiveChunk(chunkX, chunkY)) {
+            e.posX = dstX;
+            e.posY = dstY;
+            ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, PacketReceiver.whoCanSee(e));
+        }
     }
 
     @Override

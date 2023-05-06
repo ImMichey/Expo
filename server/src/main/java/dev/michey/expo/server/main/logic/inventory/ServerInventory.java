@@ -32,14 +32,15 @@ public class ServerInventory {
         return true;
     }
 
-    public Pair<Boolean, List<Integer>> containsItem(int id, int amount) {
-        Pair<Boolean, List<Integer>> pair = new Pair<>(true, new LinkedList<>());
+    public Pair<Boolean, List<Pair<Integer, Integer>>> containsItem(int id, int amount) {
+        Pair<Boolean, List<Pair<Integer, Integer>>> pair = new Pair<>(true, null);
         int required = amount;
 
         for(ServerInventorySlot slot : slots) {
             if(slot.item.itemId == id) {
                 required -= slot.item.itemAmount;
-                pair.value.add(slot.slotIndex);
+                if(pair.value == null) pair.value = new LinkedList<>();
+                pair.value.add(new Pair<>(slot.slotIndex, slot.item.itemAmount));
                 if(required <= 0) return pair;
             }
         }

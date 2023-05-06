@@ -29,7 +29,8 @@ public class ExpoShared {
 
     public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_ONE_DIR * 0.5f * CHUNK_SIZE;
 
-    public static final int PLAYER_INVENTORY_SLOTS = 36 + 5;
+    public static final int PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT = 36;
+    public static final int PLAYER_INVENTORY_SLOTS = PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT + 5;
     public static final int PLAYER_INVENTORY_SLOT_HEAD = 36;
     public static final int PLAYER_INVENTORY_SLOT_CHEST = 37;
     public static final int PLAYER_INVENTORY_SLOT_GLOVES = 38;
