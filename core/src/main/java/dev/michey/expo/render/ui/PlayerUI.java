@@ -75,6 +75,7 @@ public class PlayerUI {
     public boolean craftingOpen = false;
 
     public List<PickupLine> pickupLines;
+    public final Object PICKUP_LOCK = new Object();
 
     /** Fade in */
     public float fadeInDelta;
@@ -328,7 +329,9 @@ public class PlayerUI {
     }
 
     public void addPickupLine(int itemId, int itemAmount) {
-        pickupLines.add(new PickupLine(itemId, itemAmount));
+        synchronized(PICKUP_LOCK) {
+            pickupLines.add(new PickupLine(itemId, itemAmount));
+        }
     }
 
     public void showCraftingRecipes(InteractableUIElement button, int category) {
@@ -726,32 +729,34 @@ public class PlayerUI {
         // Draw pickup lines
         BitmapFont useFont = m5x7_border_use;
 
-        for(PickupLine line : pickupLines) {
-            line.lifetime += r.delta;
-            if(line.lifetime >= MAX_LINE_LIFETIME) continue;
+        synchronized(PICKUP_LOCK) {
+            for(PickupLine line : pickupLines) {
+                line.lifetime += r.delta;
+                if(line.lifetime >= MAX_LINE_LIFETIME) continue;
 
-            float alpha = Interpolation.circleOut.apply(line.lifetime / MAX_LINE_LIFETIME);
+                float alpha = Interpolation.circleOut.apply(line.lifetime / MAX_LINE_LIFETIME);
 
-            ItemMapping mapping = ItemMapper.get().getMapping(line.itemId);
-            String displayText = line.itemAmount + "x " + mapping.displayName;
-            glyphLayout.setText(useFont, displayText);
+                ItemMapping mapping = ItemMapper.get().getMapping(line.itemId);
+                String displayText = line.itemAmount + "x " + mapping.displayName;
+                glyphLayout.setText(useFont, displayText);
 
-            float itemW = mapping.uiRender.textureRegion.getRegionWidth() * uiScale;
-            float itemH = mapping.uiRender.textureRegion.getRegionHeight() * uiScale;
-            float fullWidth = itemW + 4 * uiScale + glyphLayout.width;
-            float startX = startHudPos.x - fullWidth * 0.5f;
-            float startY = startHudPos.y + alpha * 48;
+                float itemW = mapping.uiRender.textureRegion.getRegionWidth() * uiScale;
+                float itemH = mapping.uiRender.textureRegion.getRegionHeight() * uiScale;
+                float fullWidth = itemW + 4 * uiScale + glyphLayout.width;
+                float startX = startHudPos.x - fullWidth * 0.5f;
+                float startY = startHudPos.y + alpha * 48;
 
-            r.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
-            useFont.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
+                r.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
+                useFont.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
 
-            r.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
-            useFont.draw(r.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
+                r.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
+                useFont.draw(r.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
+            }
+
+            r.hudBatch.setColor(Color.WHITE);
+            useFont.setColor(Color.WHITE);
+            pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
         }
-
-        r.hudBatch.setColor(Color.WHITE);
-        useFont.setColor(Color.WHITE);
-        pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
 
         if(inventoryOpenState) {
             // Draw square pattern background

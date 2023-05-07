@@ -56,7 +56,7 @@ public class ExpoServerListener implements Listener {
 
             for(var p : players) {
                 if(p.entityId == pc.player.entityId) continue;
-                p.entityVisibilityController.removeTrackedPlayer(pc.player.entityId);
+                p.entityVisibilityController.removeTrackedEntity(pc.player.entityId);
             }
 
             // async save player file

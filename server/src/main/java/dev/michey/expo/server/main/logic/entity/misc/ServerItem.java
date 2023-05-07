@@ -81,7 +81,7 @@ public class ServerItem extends ServerEntity {
                     } else {
                         itemContainer.itemAmount = result.remainingAmount;
                         ServerPackets.p36PlayerReceiveItem(new int[] {itemContainer.itemId}, new int[] {total - result.remainingAmount}, PacketReceiver.player(closestPlayer));
-                        ServerPackets.p30EntityDataUpdate(entityId, new Object[] {5555, true}, PacketReceiver.whoCanSee(this));
+                        ServerPackets.p30EntityDataUpdate(entityId, new Object[] {itemContainer.itemAmount, true}, PacketReceiver.whoCanSee(this));
                     }
 
                     if(lastId != closestPlayer.getCurrentItemId()) {
@@ -100,6 +100,13 @@ public class ServerItem extends ServerEntity {
                         if(checked != null) {
                             findNewMergeItem = false;
                             mergeEntity = (ServerItem) checked;
+
+                            int max = ItemMapper.get().getMapping(itemContainer.itemId).logic.maxStackSize;
+
+                            if(itemContainer.itemAmount == max || mergeEntity.itemContainer.itemAmount == max) {
+                                mergeEntity = null;
+                                mergeEntityId = -1;
+                            }
                         } else {
                             mergeEntityId = -1;
                         }
@@ -172,6 +179,7 @@ public class ServerItem extends ServerEntity {
             if(se.entityId == entityId) continue;
             ServerItem item = (ServerItem) se;
             if(item.pickupImmunity > 0) continue;
+            if(item.itemContainer.itemId != itemContainer.itemId) continue;
 
             // If found item is already fully stacked, ignore
             if(item.itemContainer.itemAmount == mapping.logic.maxStackSize) continue;
@@ -217,6 +225,11 @@ public class ServerItem extends ServerEntity {
     @Override
     public Object[] getPacketPayload() {
         return new Object[] {itemContainer.itemId, itemContainer.itemAmount};
+    }
+
+    @Override
+    public String toString() {
+        return "[" + itemContainer.itemAmount + "x " + itemContainer.itemId + "]";
     }
 
 }

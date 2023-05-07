@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
@@ -169,15 +170,17 @@ public abstract class ServerEntity {
     }
 
     public void killEntityWithPacket() {
-        onDie();
-        getDimension().getEntityManager().removeEntitySafely(this);
-        ServerPackets.p4EntityDelete(entityId, EntityRemovalReason.DEATH, PacketReceiver.whoCanSee(this));
+        killEntityWithPacket(EntityRemovalReason.DEATH);
     }
 
     public void killEntityWithPacket(EntityRemovalReason reason) {
         onDie();
         getDimension().getEntityManager().removeEntitySafely(this);
         ServerPackets.p4EntityDelete(entityId, reason, PacketReceiver.whoCanSee(this));
+        // untrack entity
+        for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
+            player.entityVisibilityController.removeTrackedEntity(entityId);
+        }
     }
 
 }

@@ -84,7 +84,7 @@ public class EntityVisibilityController {
         }
     }
 
-    public void removeTrackedPlayer(int entityId) {
+    public void removeTrackedEntity(int entityId) {
         visibleEntities.remove(entityId);
     }
 

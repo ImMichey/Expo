@@ -55,7 +55,7 @@ public class ClientGhostItem extends ClientEntity {
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
         rc.arraySpriteBatch.draw(texture, textureX, textureY, texture.getRegionWidth() * SCALE_X, texture.getRegionHeight() * SCALE_Y);
 
-        String numberAsString = amount + "";
+        String numberAsString = String.valueOf(amount);
 
         float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
         float vx = clientPosX + drawOffsetX;
@@ -68,7 +68,7 @@ public class ClientGhostItem extends ClientEntity {
         int add = 0;
 
         for(char c : numberAsString.toCharArray()) {
-            TextureRegion indiNumber = rc.getNumber(Integer.parseInt(c + ""));
+            TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
             rc.arraySpriteBatch.draw(indiNumber, ex + add, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
             add += 6 * fontScale;
         }
