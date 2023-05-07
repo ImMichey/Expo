@@ -301,7 +301,7 @@ public class ImGuiExpo {
                     ImGui.text("Ping: " + ExpoClientContainer.get().getClient().getKryoClient().getReturnTripTime());
                     ImGui.text("Incoming packets queued: " + ExpoClientContainer.get().getClient().getPacketListener().getQueuedPacketAmount());
                 }
-                if(ImGui.treeNode(300, "Visible entities: " + ClientEntityManager.get().entityCount())) {
+                if(ImGui.treeNode(300, "Client entities: " + ClientEntityManager.get().entityCount())) {
                     ClientEntityManager m = ClientEntityManager.get();
 
                     for(ClientEntityType type : m.getExistingEntityTypes()) {

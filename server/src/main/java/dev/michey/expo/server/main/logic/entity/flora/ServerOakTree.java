@@ -28,6 +28,7 @@ public class ServerOakTree extends ServerEntity {
     @Override
     public void onCreation() {
         // add physics body of player to world
+        if(variant == 0) variant = 1;
         float[] b = TREE_BODIES[variant - 1];
         physicsBody = new BoundingBox(this, b[0], b[1], b[2], b[3]);
         damageableWith = ToolType.AXE;

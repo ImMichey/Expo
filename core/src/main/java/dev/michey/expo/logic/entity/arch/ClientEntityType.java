@@ -5,6 +5,7 @@ import dev.michey.expo.logic.entity.flora.*;
 import dev.michey.expo.logic.entity.misc.*;
 import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
+import dev.michey.expo.logic.entity.particle.ClientParticleOakLeaf;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
@@ -33,6 +34,7 @@ public enum ClientEntityType {
     PARTICLE_HIT(-3, "ParticleHit", null),
     PARTICLE_FOOD(-4, "ParticleFood", null),
     GHOST_ITEM(-5, "GhostItem", null),
+    PARTICLE_OAK_LEAF(-6, "ParticleOakLeaf", null),
 
     ;
 
@@ -53,6 +55,7 @@ public enum ClientEntityType {
             case -3 -> new ClientParticleHit();
             case -4 -> new ClientParticleFood();
             case -5 -> new ClientGhostItem();
+            case -6 -> new ClientParticleOakLeaf();
             case 0 -> new ClientPlayer();
             case 1 -> new ClientDummy();
             case 2 -> new ClientGrass();

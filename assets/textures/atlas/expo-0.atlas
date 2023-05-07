@@ -382,6 +382,27 @@ eot_trunk_5
   orig: 18, 95
   offset: 0, 0
   index: -1
+eotp_1
+  rotate: false
+  xy: 497, 1790
+  size: 3, 4
+  orig: 3, 4
+  offset: 0, 0
+  index: -1
+eotp_2
+  rotate: false
+  xy: 536, 1852
+  size: 4, 4
+  orig: 4, 4
+  offset: 0, 0
+  index: -1
+eotp_3
+  rotate: false
+  xy: 523, 1828
+  size: 5, 5
+  orig: 5, 5
+  offset: 0, 0
+  index: -1
 hotbar_base
   rotate: false
   xy: 1069, 1991

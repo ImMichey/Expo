@@ -10,7 +10,7 @@ public abstract class ClientParticle extends ClientEntity {
     public TextureRegion particleTexture;
     public int particleRangeStart, particleRangeEnd;
 
-    public float r, g, b, a;
+    public float r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
     public float lifetime;
     public float lifetimeStatic;
     public float rotation;
@@ -21,6 +21,8 @@ public abstract class ClientParticle extends ClientEntity {
     public float fadeOutDuration;
     public float useAlpha;
     public float rotationSpeed;
+    public boolean dynamicDepth;
+    public float startDepth;
 
     //private float pox, poy; // Particle origin values
     public float pvx;
@@ -55,8 +57,14 @@ public abstract class ClientParticle extends ClientEntity {
             }
         }
 
+        float addY = pvy * delta;
+
         if(pvx != 0) clientPosX += pvx * delta;
-        if(pvy != 0) clientPosY += pvy * delta;
+        if(pvy != 0) clientPosY += addY;
+
+        if(dynamicDepth) {
+            depth += addY;
+        }
     }
 
     public void setParticleLifetime(float lifetime) {
@@ -114,6 +122,11 @@ public abstract class ClientParticle extends ClientEntity {
 
     public void setParticleConstantRotation(float speed) {
         rotationSpeed = speed;
+    }
+
+    public void setParticleDynamicDepth() {
+        dynamicDepth = true;
+        startDepth = depth;
     }
 
 }

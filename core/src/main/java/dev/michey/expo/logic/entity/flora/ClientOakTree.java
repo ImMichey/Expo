@@ -12,10 +12,13 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.util.ParticleBuilder;
+import dev.michey.expo.util.ParticleEmitter;
 
 public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
     private final FoliageAnimator foliageAnimator = new FoliageAnimator(0.5f, 1.2f, 0.03f, 0.05f, 0.06f, 0.07f, 2.0f, 5.0f, 0.5f, 1.5f);
+    private ParticleEmitter leafParticleEmitter;
 
     private int variant;
     private TextureRegion trunk;
@@ -23,6 +26,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private TextureRegion trunkShadowMask;
     private TextureRegion leavesShadowMask;
     private float[] interactionPointArray;
+    private int leavesWidth;
+    private int leavesHeight;
 
     private final float leavesDisplacement = -MathUtils.random(0, 4);
     private final float colorMix = MathUtils.random(0.1f);
@@ -47,6 +52,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         leaves = t("foliage/entity_oak_tree/eot_leaves" + large + ".png");
         leavesShadowMask = tr("eot_leaves" + large + "_sm");
 
+        leavesWidth = variant == 5 ? 75 : 57;
+        leavesHeight = variant == 5 ? 95 : 76;
+
         updateTexture(TREE_MATRIX[variant - 1][1], 0, variant == 5 ? 75 : 57, TREE_MATRIX[variant - 1][0] + leavesDisplacement);
         interactionPointArray = new float[] {
                 clientPosX + 2, clientPosY + 3,
@@ -54,6 +62,22 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
                 clientPosX + 9, clientPosY + 8,
                 clientPosX + 2, clientPosY + 8,
         };
+        updateDepth(5);
+
+        leafParticleEmitter = new ParticleEmitter(
+                new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
+                .amount(2)
+                .scale(0.6f, 1.1f)
+                .lifetime(3.0f, 6.0f)
+                .position(clientPosX + drawOffsetX + leavesWidth * 0.1f, clientPosY + drawHeight - leavesHeight - leavesHeight * 0.1f)
+                .offset(leavesWidth * 0.8f, leavesHeight * 0.6f)
+                .velocity(-24, 24, -6, -20)
+                .fadein(0.5f)
+                .fadeout(0.5f)
+                .randomRotation()
+                .rotateWithVelocity()
+                .depth(depth - 0.01f)
+                .dynamicDepth(), 0.5f, 4.0f, 5.0f);
     }
 
     @Override
@@ -70,20 +94,18 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     public void tick(float delta) {
         syncPositionWithServer();
         foliageAnimator.resetWind();
+        leafParticleEmitter.tick(delta);
 
         ClientPlayer local = ClientPlayer.getLocalPlayer();
         boolean playerBehind;
 
         if(local != null) {
-            int LEAVES_WIDTH = variant == 5 ? 75 : 57;
-            int LEAVES_HEIGHT = variant == 5 ? 95 : 76;
-
             playerBehind = RenderContext.get().entityVerticesIntersecting(new float[] {
                 local.clientPosX, local.clientPosY,
                 local.clientPosX + local.drawWidth, local.clientPosY + local.drawHeight
             }, new float[] {
                     clientPosX + TREE_MATRIX[variant - 1][1] + foliageAnimator.value, clientPosY + TREE_MATRIX[variant - 1][2] + leavesDisplacement,
-                    clientPosX + TREE_MATRIX[variant - 1][1] + LEAVES_WIDTH + foliageAnimator.value, clientPosY + TREE_MATRIX[variant - 1][2] + leavesDisplacement + LEAVES_HEIGHT
+                    clientPosX + TREE_MATRIX[variant - 1][1] + leavesWidth + foliageAnimator.value, clientPosY + TREE_MATRIX[variant - 1][2] + leavesDisplacement + leavesHeight
             });
         } else {
             playerBehind = false;
