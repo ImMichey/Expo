@@ -7,6 +7,7 @@ import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
 public class ServerOakTree extends ServerEntity {
@@ -22,7 +23,7 @@ public class ServerOakTree extends ServerEntity {
         new float[] {2.0f, 4.0f, 13.0f, 4.5f},
         new float[] {2.0f, 4.0f, 13.0f, 4.5f},
         new float[] {2.0f, 4.0f, 15.0f, 4.5f},
-        new float[] {2.0f, 4.0f, 15.0f, 4.5f}
+        new float[] {2.0f, 4.0f, 17.0f, 4.5f}
     };
 
     @Override
@@ -46,7 +47,10 @@ public class ServerOakTree extends ServerEntity {
             max += 3;
         }
 
-        spawnEntitiesAround(min, max, 8.5f, 6.0f, "item_oak_log", 14.0f, 18.0f);
+        spawnEntitiesAround(8.5f, 6.0f, 14.0f, 18.0f,
+                new SpawnItem("item_oak_log", min, max),
+                new SpawnItem("item_acorn", 1, 2)
+        );
     }
 
     @Override

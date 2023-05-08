@@ -17,6 +17,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
+import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
@@ -647,6 +648,8 @@ public class PlayerUI {
         inventoryOpenState = playerPresent() && ClientPlayer.getLocalPlayer().inventoryOpen;
         craftingOpenState = inventoryOpenState && craftingOpen;
 
+        r.blurActive = inventoryOpenState;
+
         if(previousInventoryOpenState != inventoryOpenState) {
             // Update hotbar position.
             updateHotbarPosition();
@@ -759,6 +762,7 @@ public class PlayerUI {
         }
 
         if(inventoryOpenState) {
+            /*
             // Draw square pattern background
             float baseWH = darkenSquarePattern.getRegionWidth();
             int timesX = (int) (uiWidth / baseWH) + 1;
@@ -769,6 +773,7 @@ public class PlayerUI {
                     r.hudBatch.draw(darkenSquarePattern, x * baseWH, y * baseWH, baseWH, baseWH);
                 }
             }
+            */
 
             // Draw inventory background
             r.hudBatch.draw(craftingOpen ? invBackgroundCrafting : invBackground, invX, invY, invW, invH);

@@ -17,16 +17,14 @@ public class EntityPopulator {
     public ServerEntityType[] spreadBetweenEntities;
     public boolean spreadAsStaticEntity;
     public float[] spreadOffsets;
-
-    public EntityPopulator() {
-        // For KryoNet
-    }
+    public int priority;
 
     public EntityPopulator(JSONObject singlePopulatorObject) {
         type = ServerEntityType.valueOf(singlePopulatorObject.getString("type"));
         spawnChance = singlePopulatorObject.getFloat("chance");
         asStaticEntity = singlePopulatorObject.getBoolean("static");
         poissonDiskSamplerDistance = singlePopulatorObject.getDouble("pds");
+        if(singlePopulatorObject.has("priority")) priority = singlePopulatorObject.getInt("priority");
 
         // optional
         if(singlePopulatorObject.has("spreadData")) {

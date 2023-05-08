@@ -7,6 +7,8 @@ import dev.michey.expo.util.ExpoShared;
 
 import java.io.IOException;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ExpoClient {
 
     /** Kryo layer */
@@ -14,12 +16,17 @@ public class ExpoClient {
     private ExpoClientPacketReader packetReader;
     private ExpoClientListener packetListener;
 
+    /** Packet tracking */
+    public int bytesTcp;
+    public int bytesUdp;
+    public long lastBytesUpdate;
+
     public void sendPacketTcp(Packet packet) {
-        kryoClient.sendTCP(packet);
+        bytesTcp += kryoClient.sendTCP(packet);
     }
 
     public void sendPacketUdp(Packet packet) {
-        kryoClient.sendUDP(packet);
+        bytesUdp += kryoClient.sendUDP(packet);
     }
 
     public void disconnect() {
@@ -36,6 +43,7 @@ public class ExpoClient {
             return e;
         }
 
+        lastBytesUpdate = System.currentTimeMillis();
         ExpoServerRegistry.registerPackets(kryoClient.getKryo());
         packetReader = new ExpoClientPacketReader();
         packetListener = new ExpoClientListener(packetReader);

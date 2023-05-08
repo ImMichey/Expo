@@ -6,6 +6,7 @@ import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
@@ -17,9 +18,15 @@ import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.server.util.SpawnItem;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -117,6 +124,37 @@ public abstract class ServerEntity {
 
             ItemMapping r = ItemMapper.get().getMapping(itemName);
             item.itemContainer = new ServerInventoryItem(r.id, 1);
+
+            item.posX = posX + xOff;
+            item.posY = posY + yOff;
+            item.dstX = positions[i].x;
+            item.dstY = positions[i].y;
+            ServerWorld.get().registerServerEntity(entityDimension, item);
+        }
+    }
+
+    public void spawnEntitiesAround(float xOff, float yOff, float radiusMin, float radiusMax, SpawnItem... spawnItems) {
+        int total = 0;
+
+        for(SpawnItem item : spawnItems) {
+            total += item.amount;
+        }
+
+        List<ServerInventoryItem> items = new ArrayList<>(total);
+
+        for(SpawnItem item : spawnItems) {
+            for(int i = 0; i < item.amount; i++) {
+                items.add(new ServerInventoryItem(item.id, 1));
+            }
+        }
+
+        Collections.shuffle(items);
+
+        Vector2[] positions = GenerationUtils.positions(total, MathUtils.random(radiusMin, radiusMax));
+
+        for(int i = 0; i < total; i++) {
+            ServerItem item = new ServerItem();
+            item.itemContainer = items.get(i);
 
             item.posX = posX + xOff;
             item.posY = posY + yOff;

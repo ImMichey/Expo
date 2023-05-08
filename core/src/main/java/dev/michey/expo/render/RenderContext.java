@@ -83,6 +83,7 @@ public class RenderContext {
     public ShaderProgram selectionShader;
     public ShaderProgram selectionArrayShader;
     public ShaderProgram itemShineShader;
+    public ShaderProgram blurShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -112,6 +113,8 @@ public class RenderContext {
     public FrameBuffer waterReflectionFbo;
     public FrameBuffer waterTilesFbo;
     public FrameBuffer entityFbo;
+    public FrameBuffer blurTargetAFbo;
+    public FrameBuffer blurTargetBFbo;
 
     /** Debug helpers */
     public boolean drawTileInfo = false;
@@ -137,6 +140,11 @@ public class RenderContext {
 
     /** Game camera */
     public ExpoCamera expoCamera;
+
+    /** Blur */
+    public float blurStrength = 0.0f;
+    public float blurDelta = 0.0f;
+    public boolean blurActive = false;
 
     public RenderContext() {
         batch = new SpriteBatch();
@@ -236,6 +244,7 @@ public class RenderContext {
         selectionShader = compileShader("gl3/selection");
         selectionArrayShader = compileShader("gl3/selection_array");
         itemShineShader = compileShader("gl3/itemshine");
+        blurShader = compileShader("gl3/blur");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         // createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -324,6 +333,8 @@ public class RenderContext {
         waterReflectionFbo = createFBO(w, h);
         waterTilesFbo = createFBO(w, h);
         entityFbo = createFBO(w, h);
+        blurTargetAFbo = createFBO(w, h);
+        blurTargetBFbo = createFBO(w, h);
     }
 
     public boolean inDrawBounds(ClientEntity entity) {
@@ -413,6 +424,8 @@ public class RenderContext {
         waterReflectionFbo.dispose();
         waterTilesFbo.dispose();
         entityFbo.dispose();
+        blurTargetAFbo.dispose();
+        blurTargetBFbo.dispose();
     }
 
     public void onResize(int width, int height) {

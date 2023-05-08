@@ -64,6 +64,7 @@ public class WorldGenSettings {
                     list.add(new EntityPopulator(singlePopulatorObject));
                 }
 
+                list.sort(Comparator.comparingInt(o -> -o.priority));
                 biomePopulatorMap.put(b, list);
             }
         }

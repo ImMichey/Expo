@@ -456,6 +456,31 @@
                 "toolType": "ITEM",
                 "range": 25
             }
+        },
+        {
+            "identifier": "item_acorn",
+            "id": 18,
+            "displayName": "Acorn",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_acorn"
+                },
+                "held": {
+                    "texture": "item_acorn",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "range": 25
+            }
         }
     ]
 }

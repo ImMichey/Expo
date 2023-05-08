@@ -46,6 +46,7 @@ public class ImGuiExpo {
     private final int[] uiScale = new int[3];
     private final float[] playerHealth = new float[1];
     private final float[] playerHunger = new float[1];
+    private final float[] blurStrength = new float[1];
     public final ImBoolean renderInteractionPoints = new ImBoolean(false);
     public final ImBoolean renderClientPos = new ImBoolean(false);
     public final ImBoolean renderServerPos = new ImBoolean(false);
@@ -130,6 +131,8 @@ public class ImGuiExpo {
                 playerHealth[0] = player.playerHealth;
                 playerHunger[0] = player.playerHunger;
             }
+
+            blurStrength[0] = r.blurStrength;
 
             uiScale[0] = (int) ExpoClientContainer.get().getPlayerUI().uiScale;
 
@@ -362,6 +365,10 @@ public class ImGuiExpo {
                 }
 
                 if(player != null) {
+                    if(ImGui.sliderFloat("Blur strength", blurStrength, 0.0f, 16.0f)) {
+                        r.blurStrength = blurStrength[0];
+                    }
+
                     if(ImGui.sliderFloat("playerHealth", playerHealth, 0f, 100f)) {
                         player.playerHealth = playerHealth[0];
                     }

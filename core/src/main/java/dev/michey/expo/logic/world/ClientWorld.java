@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
@@ -22,6 +24,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.util.*;
@@ -342,8 +345,25 @@ public class ClientWorld {
         }
 
         {
+            boolean displayBlur = r.blurActive || r.blurStrength > 0;
+            float BLUR_SPEED = 4.0f;
+            float MAX_BLUR = 2.0f;
+            float blurSign = r.blurActive ? 1.0f : -1.0f;
+
+            if(displayBlur) {
+                r.blurDelta += r.delta * BLUR_SPEED * blurSign;
+                r.blurDelta = MathUtils.clamp(r.blurDelta, 0.0f, 1.0f);
+
+                r.blurStrength = Interpolation.smooth2.apply(r.blurDelta) * MAX_BLUR;
+            }
+
             // Draw final FBO with vignette shader.
-            drawFboTexture(r.mainFbo, r.vignetteShader);
+            if(displayBlur) {
+                blurPass();
+                drawFboTexture(r.blurTargetBFbo, r.vignetteShader);
+            } else {
+                drawFboTexture(r.mainFbo, r.vignetteShader);
+            }
         }
 
         {
@@ -402,7 +422,7 @@ public class ClientWorld {
                     float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
                     float tileY = r.mouseY + 50 - lines * (tileSize + space);
 
-                    r.m5x7_border_all[1].draw(r.hudBatch, "" + i, tileX + 2, tileY + 14 + 9);
+                    r.m5x7_border_all[1].draw(r.hudBatch, String.valueOf(i), tileX + 2, tileY + 14 + 9);
 
                     breakLine++;
 
@@ -563,6 +583,42 @@ public class ClientWorld {
         }
     }
 
+    private void blurPass() {
+        RenderContext r = RenderContext.get();
+
+        r.blurShader.bind();
+        r.blurShader.setUniformf("u_radius", r.blurStrength);
+
+        r.blurShader.setUniformf("u_dir", 1.0f, 0.0f);
+        r.blurShader.setUniformf("u_resolution", Gdx.graphics.getWidth());
+
+        r.batch.setShader(r.blurShader);
+
+        {
+            r.blurTargetAFbo.begin();
+            r.batch.begin();
+            drawFboTexture(r.mainFbo.getColorBufferTexture());
+            r.batch.end();
+            r.blurTargetAFbo.end();
+        }
+
+        r.blurShader.bind();
+
+        r.blurShader.setUniformf("u_dir", 0.0f, 1.0f);
+        r.blurShader.setUniformf("u_resolution", Gdx.graphics.getHeight());
+
+        {
+            r.blurTargetBFbo.begin();
+            r.batch.begin();
+            drawFboTexture(r.blurTargetAFbo.getColorBufferTexture());
+            r.batch.end();
+            r.blurTargetBFbo.end();
+        }
+
+        // Reset
+        r.batch.setShader(r.DEFAULT_GLES3_SHADER);
+    }
+
     private void transparentScreen() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
@@ -576,12 +632,12 @@ public class ClientWorld {
         }
     }
 
-    private void drawFboTexture(FrameBuffer fbo, ShaderProgram shader) {
+    private void drawFboTexture(Texture texture, ShaderProgram shader) {
         RenderContext r = RenderContext.get();
 
         float x = r.expoCamera.camera.position.x - Gdx.graphics.getWidth() * 0.5f;
         float y = r.expoCamera.camera.position.y - Gdx.graphics.getHeight() * 0.5f;
-        TextureRegion fboTex = new TextureRegion(fbo.getColorBufferTexture());
+        TextureRegion fboTex = new TextureRegion(texture);
         fboTex.flip(false, true);
 
         float newWidth = fboTex.getRegionWidth() * r.expoCamera.camera.zoom;
@@ -595,6 +651,27 @@ public class ClientWorld {
         r.batch.draw(fboTex, x + diffWidth, y + diffHeight, newWidth, newHeight);
         r.batch.setShader(r.DEFAULT_GLES3_SHADER);
         r.batch.end();
+    }
+
+    private void drawFboTexture(Texture texture) {
+        RenderContext r = RenderContext.get();
+
+        float x = r.expoCamera.camera.position.x - Gdx.graphics.getWidth() * 0.5f;
+        float y = r.expoCamera.camera.position.y - Gdx.graphics.getHeight() * 0.5f;
+        TextureRegion fboTex = new TextureRegion(texture);
+        fboTex.flip(false, true);
+
+        float newWidth = fboTex.getRegionWidth() * r.expoCamera.camera.zoom;
+        float newHeight = fboTex.getRegionHeight() * r.expoCamera.camera.zoom;
+
+        float diffWidth = (fboTex.getRegionWidth() - newWidth) * 0.5f;
+        float diffHeight = (fboTex.getRegionHeight() - newHeight) * 0.5f;
+
+        r.batch.draw(fboTex, x + diffWidth, y + diffHeight, newWidth, newHeight);
+    }
+
+    private void drawFboTexture(FrameBuffer fbo, ShaderProgram shader) {
+        drawFboTexture(fbo.getColorBufferTexture(), shader);
     }
 
     private int offset = 0;

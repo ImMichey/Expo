@@ -34,13 +34,13 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
     private float playerBehindDelta = 1.0f;
 
-    // Format: {TotalHeight, xOffset, yOffset}
+    // Format: {TotalHeight, xOffset, yOffset, ixOffset, iyOffset, trunkWidth, trunkHeight}
     public static final float[][] TREE_MATRIX = new float[][] {
-        new float[] {109, -22, 33},
-        new float[] {113, -21, 37},
-        new float[] {113, -21, 37},
-        new float[] {138, -20, 62},
-        new float[] {185, -30, 90},
+        new float[] {109, -22, 33, 2, 1, 11, 8},
+        new float[] {113, -21, 37, 3, 1, 10, 8},
+        new float[] {113, -21, 37, 3, 1, 10, 8},
+        new float[] {138, -20, 62, 4, 1, 12, 8},
+        new float[] {183, -30, 90, 3, 1, 16, 8},
     };
 
     @Override
@@ -57,16 +57,16 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
         updateTexture(TREE_MATRIX[variant - 1][1], 0, variant == 5 ? 75 : 57, TREE_MATRIX[variant - 1][0] + leavesDisplacement);
         interactionPointArray = new float[] {
-                clientPosX + 2, clientPosY + 3,
-                clientPosX + 9, clientPosY + 3,
-                clientPosX + 9, clientPosY + 8,
-                clientPosX + 2, clientPosY + 8,
+                clientPosX + TREE_MATRIX[variant - 1][3], clientPosY + TREE_MATRIX[variant - 1][4],
+                clientPosX + TREE_MATRIX[variant - 1][3] + TREE_MATRIX[variant - 1][5], clientPosY + TREE_MATRIX[variant - 1][4],
+                clientPosX + TREE_MATRIX[variant - 1][3], clientPosY + TREE_MATRIX[variant - 1][4] + TREE_MATRIX[variant - 1][6],
+                clientPosX + TREE_MATRIX[variant - 1][3] + TREE_MATRIX[variant - 1][5], clientPosY + TREE_MATRIX[variant - 1][4] + TREE_MATRIX[variant - 1][6],
         };
         updateDepth(5);
 
         leafParticleEmitter = new ParticleEmitter(
                 new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
-                .amount(2)
+                .amount(1)
                 .scale(0.6f, 1.1f)
                 .lifetime(3.0f, 6.0f)
                 .position(clientPosX + drawOffsetX + leavesWidth * 0.1f, clientPosY + drawHeight - leavesHeight - leavesHeight * 0.1f)

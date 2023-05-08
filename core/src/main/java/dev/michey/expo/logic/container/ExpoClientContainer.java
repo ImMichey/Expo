@@ -9,6 +9,7 @@ import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
 
@@ -82,12 +83,26 @@ public class ExpoClientContainer {
         }
     }
 
+    private int inTraffic = 0;
+    private int outTraffic = 0;
+
     public void render() {
         float d = RenderContext.get().delta;
         float serverDelta = 1f / (float) serverTickRate;
         clientWorld.tickWorld(d, serverDelta);
         clientWorld.renderWorld();
         playerUI.update();
+
+        if(client != null) {
+            long now = System.currentTimeMillis();
+
+            if(now - client.lastBytesUpdate >= 1000) {
+                client.lastBytesUpdate = now;
+                outTraffic = client.bytesTcp + client.bytesUdp;
+                client.bytesUdp = 0;
+                client.bytesTcp = 0;
+            }
+        }
 
         if(RenderContext.get().drawHUD) {
             playerUI.render();
@@ -103,12 +118,19 @@ public class ExpoClientContainer {
             playerUI.glyphLayout.setText(useFont, fps);
             float w2 = playerUI.glyphLayout.width;
 
+            String inOut = "In/Out bytes/s: " + inTraffic + "/" + outTraffic;
+            playerUI.glyphLayout.setText(useFont, inOut);
+            float w3 = playerUI.glyphLayout.width;
+
             float h = playerUI.glyphLayout.height;
             float spacing = 4;
 
             r.hudBatch.begin();
             useFont.draw(r.hudBatch, version, Gdx.graphics.getWidth() - w - spacing, Gdx.graphics.getHeight() - spacing);
             useFont.draw(r.hudBatch, fps, Gdx.graphics.getWidth() - w2 - spacing, Gdx.graphics.getHeight() - h - spacing * 2);
+            if(ExpoServerBase.get() == null) {
+                useFont.draw(r.hudBatch, inOut, Gdx.graphics.getWidth() - w3 - spacing, Gdx.graphics.getHeight() - h * 2 - spacing * 3);
+            }
             r.hudBatch.end();
         }
 
