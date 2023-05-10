@@ -53,7 +53,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         leavesShadowMask = tr("eot_leaves" + large + "_sm");
 
         leavesWidth = variant == 5 ? 75 : 57;
-        leavesHeight = variant == 5 ? 95 : 76;
+        leavesHeight = variant == 5 ? 101 : 76;
 
         updateTexture(TREE_MATRIX[variant - 1][1], 0, variant == 5 ? 75 : 57, TREE_MATRIX[variant - 1][0] + leavesDisplacement);
         interactionPointArray = new float[] {

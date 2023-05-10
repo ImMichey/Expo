@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
@@ -24,15 +23,16 @@ import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.zip.Deflater;
 
+import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -347,7 +347,7 @@ public class ClientWorld {
         {
             boolean displayBlur = r.blurActive || r.blurStrength > 0;
             float BLUR_SPEED = 4.0f;
-            float MAX_BLUR = 2.0f;
+            float MAX_BLUR = 1.0f;
             float blurSign = r.blurActive ? 1.0f : -1.0f;
 
             if(displayBlur) {
@@ -577,6 +577,7 @@ public class ClientWorld {
 
                 if(chunk != null) {
                     drawChunks[c] = chunk;
+                    drawChunks[c].updateVisibility();
                     c++;
                 }
             }
@@ -695,57 +696,52 @@ public class ClientWorld {
         return worldTime >= ExpoTime.DAY && worldTime < ExpoTime.SUNSET;
     }
 
-    private void renderWater() {
-        ClientPlayer p = ClientPlayer.getLocalPlayer();
-        if(p == null) return;
-
+    private void drawWater() {
         RenderContext r = RenderContext.get();
-        int[] viewport = p.clientViewport;
 
-        r.batch.setColor(Color.WHITE);
+        r.batch.end();
 
-        r.waterTileShader.bind();
-        r.waterTileShader.setUniformf("u_time", r.deltaTotal * r.waterSpeed);
+        r.waterDelta += r.delta * r.waterSpeed;
 
-        r.batch.setShader(r.waterTileShader);
+        r.waterShader.bind();
+        r.waterShader.setUniformf("u_time", r.waterDelta);
+
+        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE1);
+        r.displacementTexture.bind(1);
+        r.waterShader.setUniformi("u_displacement", 1);
+
+        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE0);
+
         r.batch.begin();
-        r.batch.setColor(r.waterColor[0], r.waterColor[1], r.waterColor[2], 1.0f);
+        r.batch.setShader(r.waterShader);
+        r.batch.setColor(r.waterColor[0], r.waterColor[1], r.waterColor[2], r.waterAlpha);
 
-        // Draw water
-        int c = 0;
+        float textureSize = r.waterNoiseTexture.getWidth();
 
-        for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE; i++) {
-            for(int j = 0; j < PLAYER_CHUNK_VIEW_RANGE; j++) {
-                int cx = viewport[0] + i; // CHUNK X
-                int cy = viewport[2] + j; // CHUNK Y
-                int px = ExpoShared.chunkToPos(cx); // CHUNK WORLD X
-                int py = ExpoShared.chunkToPos(cy); // CHUNK WORLD Y
+        for(ClientChunk chunk : drawChunks) {
+            if(chunk != null && chunk.visible) {
+                for(int k = 0; k < chunk.biomes.length; k++) {
+                    boolean isWaterTile = ServerTile.isWaterTile(chunk.layer1[k][0]);
 
-                ClientChunk chunk = clientChunkGrid.getChunk(cx, cy);
+                    if(isWaterTile) {
+                        int tx = k % 8;
+                        int ty = k / 8;
+                        float wx = chunk.chunkDrawBeginX + ExpoShared.tileToPos(tx);
+                        float wy = chunk.chunkDrawBeginY + ExpoShared.tileToPos(ty);
 
-                if(chunk != null) {
-                    if(chunk.chunkContainsWater) {
-                        if(r.inDrawBounds(chunk)) {
-                            for(int k = 0; k < chunk.biomes.length; k++) {
-                                if(BiomeType.isWater(chunk.biomes[k])) {
-                                    int tx = k % 8;
-                                    int ty = k / 8;
-                                    float wx = px + ExpoShared.tileToPos(tx);
-                                    float wy = py + ExpoShared.tileToPos(ty);
-                                    r.batch.draw(r.waterTexture, wx, wy);
-                                }
-                            }
-                        }
+                        float normX = (wx % textureSize) / textureSize;
+                        float normY = (wy % textureSize) / textureSize;
+
+                        float uv = 16.0f / textureSize;
+                        r.batch.draw(r.waterNoiseTexture, wx, wy, TILE_SIZE, TILE_SIZE, normX, normY, normX + uv, normY + uv);
                     }
-
-                    drawChunks[c] = chunk;
-                    c++;
                 }
             }
         }
 
-        r.batch.setColor(Color.WHITE);
         r.batch.end();
+        r.batch.setShader(r.DEFAULT_GLES3_SHADER);
+        r.batch.setColor(Color.WHITE);
     }
 
     private void drawLayer(int k, TextureRegion[] layer, RenderContext rc, float wx, float wy, Pair[][] displacementPairs) {
@@ -778,33 +774,29 @@ public class ClientWorld {
             rc.batch.begin();
 
             for(ClientChunk chunk : drawChunks) {
-                if(chunk != null) {
-                    if(rc.inDrawBounds(chunk)) {
-                        int px = ExpoShared.chunkToPos(chunk.chunkX); // CHUNK WORLD X
-                        int py = ExpoShared.chunkToPos(chunk.chunkY); // CHUNK WORLD Y
+                if(chunk != null && chunk.visible) {
+                    for(int k = 0; k < chunk.biomes.length; k++) {
+                        int tx = k % 8;
+                        int ty = k / 8;
+                        float wx = chunk.chunkDrawBeginX + ExpoShared.tileToPos(tx);
+                        float wy = chunk.chunkDrawBeginY + ExpoShared.tileToPos(ty);
 
-                        for(int k = 0; k < chunk.biomes.length; k++) {
-                            int tx = k % 8;
-                            int ty = k / 8;
-                            float wx = px + ExpoShared.tileToPos(tx);
-                            float wy = py + ExpoShared.tileToPos(ty);
-
-                            if(chunk.layer1Tex[k].length == 1) {
-                                // check if full tile or not.
-                                if(!ExpoAssets.get().getTileSheet().isFullTile(chunk.layer1[k][0])) {
-                                    drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
-                                }
-                            } else {
+                        if(chunk.layer1Tex[k].length == 1) {
+                            // check if full tile or not.
+                            if(!ExpoAssets.get().getTileSheet().isFullTile(chunk.layer1[k][0])) {
                                 drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
                             }
-                            drawLayer(k, chunk.layer1Tex[k], rc, wx, wy, chunk.layer1Displacement);
-                            drawLayer(k, chunk.layer2Tex[k], rc, wx, wy, null);
+                        } else {
+                            drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
                         }
+                        drawLayer(k, chunk.layer1Tex[k], rc, wx, wy, chunk.layer1Displacement);
+                        drawLayer(k, chunk.layer2Tex[k], rc, wx, wy, null);
                     }
                 }
             }
 
-            rc.batch.end();
+            // Draw water here (debug)
+            drawWater();
         }
     }
 

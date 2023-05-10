@@ -262,6 +262,10 @@ public class ServerTile {
         return id == -1;
     }
 
+    public static boolean isWaterTile(int id) {
+        return (id >= 46 && id <= 89);
+    }
+
     public boolean layerIsEmpty(int layer) {
         int fe = (layer == 0 ? layer0[0] : (layer == 1 ? layer1[0] : layer2[0]));
         return fe == -1;

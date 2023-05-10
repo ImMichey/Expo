@@ -21,8 +21,9 @@ public class AIModuleWalk extends AIModule {
     @Override
     public void tickModule(float delta) {
         var e = getBrain().getEntity();
-        float dstX = e.posX + dir.x * delta * speed;
-        float dstY = e.posY + dir.y * delta * speed;
+        float water = e.isInWater() ? 0.5f : 1.0f;
+        float dstX = e.posX + dir.x * delta * speed * water;
+        float dstY = e.posY + dir.y * delta * speed * water;
 
         // Check for loaded chunk
         int chunkX = ExpoShared.posToChunk(dstX);

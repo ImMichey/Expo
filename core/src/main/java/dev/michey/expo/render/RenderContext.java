@@ -69,21 +69,23 @@ public class RenderContext {
 
     /** Water data */
     public Texture waterNoiseTexture;
-    public Texture waterTexture;
-    public float waterSpeed = 0.125f;
-    public float[] waterColor = new float[] {1.0f, 1.0f, 1.0f};
+    public Texture displacementTexture;
+    public float waterSpeed = 0.4f;
+    public float brightness = 0.5f;
+    public float contrast = 0.5f;
+    public float[] waterColor = new float[] {0.0f, 194f / 255f, 1.0f};
+    public float waterDelta;
+    public float waterAlpha = 0.17f;
 
     /** Shaders */
     public ShaderProgram DEFAULT_GLES3_SHADER;          // Should be used by all regular batches.
     public ShaderProgram DEFAULT_GLES3_ARRAY_SHADER;    // Should be used by all array batches.
-    public ShaderProgram waterShader;
     public ShaderProgram vignetteShader;
-    public ShaderProgram waterTileShader;
-    public ShaderProgram waterFboShader;
     public ShaderProgram selectionShader;
     public ShaderProgram selectionArrayShader;
     public ShaderProgram itemShineShader;
     public ShaderProgram blurShader;
+    public ShaderProgram waterShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -222,11 +224,11 @@ public class RenderContext {
             generator.dispose();
         }
 
-        waterNoiseTexture = ExpoAssets.get().texture("water/waternoise.png");
+        waterNoiseTexture = ExpoAssets.get().texture("water/waternoise512.png");
         waterNoiseTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
-        waterTexture = ExpoAssets.get().texture("water/watertile_single.png");
-        waterTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        displacementTexture = ExpoAssets.get().texture("water/displacementmap.png");
+        displacementTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         numbers = new TextureRegion[10];
         TextureRegion baseTexture = ExpoAssets.get().textureRegion("numbers");
@@ -237,14 +239,12 @@ public class RenderContext {
 
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
-        waterShader = compileShader("gl3/water");
         vignetteShader = compileShader("gl3/vignette");
-        waterTileShader = compileShader("gl3/water_tile");
-        waterFboShader = compileShader("gl3/water_fbo");
         selectionShader = compileShader("gl3/selection");
         selectionArrayShader = compileShader("gl3/selection_array");
         itemShineShader = compileShader("gl3/itemshine");
         blurShader = compileShader("gl3/blur");
+        waterShader = compileShader("gl3/water");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         // createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

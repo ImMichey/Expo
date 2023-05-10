@@ -66,6 +66,24 @@
                 ]
             },
             "biomePopulators": {
+                "BEACH": {
+                    "entities": [
+                        {
+                            "type": "CRAB",
+                            "static": false,
+                            "chance": 0.01,
+                            "pds": 20,
+                            "spreadData": {
+                                "spread": [1, 3],
+                                "spreadChance": 0.5,
+                                "spreadDis": [16.0, 24.0],
+                                "spreadType": ["CRAB"],
+                                "spreadStatic": false,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        }
+                    ]
+                },
                 "PLAINS": {
                     "entities": [
                         {

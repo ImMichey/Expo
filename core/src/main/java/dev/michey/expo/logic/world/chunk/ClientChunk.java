@@ -4,12 +4,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
 
-import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
 
 public class ClientChunk {
@@ -33,6 +33,11 @@ public class ClientChunk {
     public int chunkDrawBeginY;
     public int chunkDrawEndX;
     public int chunkDrawEndY;
+    public boolean visible;
+
+    public void updateVisibility() {
+        visible = RenderContext.get().inDrawBounds(this);
+    }
 
     private void updateLayer0Tex(int[][] newLayer0, boolean skipCheck) {
         if(!skipCheck) {

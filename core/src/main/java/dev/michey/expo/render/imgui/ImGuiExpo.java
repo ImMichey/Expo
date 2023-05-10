@@ -42,7 +42,10 @@ public class ImGuiExpo {
     private final ImBoolean checkPrecisePositionData = new ImBoolean(false);
     private final ImBoolean checkSlotIndices = new ImBoolean(false);
     private final float[] waterSpeed = new float[1];
-    private final float[] waterColor = new float[3];
+    private final float[] waterAlpha = new float[1];
+    private final float[] contrast = new float[1];
+    private final float[] brightness = new float[1];
+    private final float[] waterColor = new float[4];
     private final int[] uiScale = new int[3];
     private final float[] playerHealth = new float[1];
     private final float[] playerHunger = new float[1];
@@ -103,8 +106,11 @@ public class ImGuiExpo {
             waterColor[0] = r.waterColor[0];
             waterColor[1] = r.waterColor[1];
             waterColor[2] = r.waterColor[2];
+            waterAlpha[0] = r.waterAlpha;
 
             waterSpeed[0] = r.waterSpeed;
+            brightness[0] = r.brightness;
+            contrast[0] = r.contrast;
 
             currentColor[0] = w.ambientLightingR;
             currentColor[1] = w.ambientLightingG;
@@ -342,8 +348,10 @@ public class ImGuiExpo {
             ImGui.separator();
 
             if(ImGui.treeNode("Water")) {
-                ImGui.text("Disabled for now");
-                /*
+                if(ImGui.sliderFloat("Water Alpha", waterAlpha, 0.0f, 1.0f)) {
+                    r.waterAlpha = waterAlpha[0];
+                }
+
                 if(ImGui.sliderFloat("Flow speed", waterSpeed, 0.0f, 2.0f)) {
                     r.waterSpeed = waterSpeed[0];
                 }
@@ -351,7 +359,14 @@ public class ImGuiExpo {
                 if(ImGui.colorPicker3("Color", waterColor)) {
                     r.waterColor = waterColor;
                 }
-                */
+
+                if(ImGui.sliderFloat("Contrast", contrast, 0.0f, 2.0f)) {
+                    r.contrast = contrast[0];
+                }
+
+                if(ImGui.sliderFloat("Brightness", brightness, 0.0f, 2.0f)) {
+                    r.brightness = brightness[0];
+                }
 
                 ImGui.treePop();
             }

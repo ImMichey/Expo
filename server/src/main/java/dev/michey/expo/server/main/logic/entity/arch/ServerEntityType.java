@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
+import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.flora.*;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDummy;
@@ -25,6 +26,7 @@ public enum ServerEntityType {
     BLUEBERRY_BUSH(12, "BlueberryBush", true),
     WORM(13, "Worm", false),
     ROCK(14, "Rock", true),
+    CRAB(15, "Crab", false),
     ;
 
     public final int ENTITY_ID;
@@ -54,6 +56,7 @@ public enum ServerEntityType {
             case 12 -> new ServerBlueberryBush();
             case 13 -> new ServerWorm();
             case 14 -> new ServerRock();
+            case 15 -> new ServerCrab();
             default -> null;
         };
     }

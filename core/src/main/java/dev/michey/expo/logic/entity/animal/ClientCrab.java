@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.animal;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -9,14 +10,17 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.shadow.ShadowUtils;
 
-public class ClientWorm extends ClientEntity {
+public class ClientCrab extends ClientEntity {
 
     private final ExpoAnimationHandler animationHandler;
+    private TextureRegion debugTex;
 
     private boolean cachedMoving;
     private boolean flipped;
 
-    public ClientWorm() {
+    private float delta;
+
+    public ClientCrab() {
         animationHandler = new ExpoAnimationHandler();
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_wormS_idle", 3, 0.25f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_wormS_walk", 5, 0.15f));
@@ -24,7 +28,7 @@ public class ClientWorm extends ClientEntity {
 
     @Override
     public void onCreation() {
-
+        debugTex = tr("entity_crab");
     }
 
     @Override
@@ -40,6 +44,13 @@ public class ClientWorm extends ClientEntity {
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
+
+        this.delta += delta;
+
+        if(this.delta >= 6.0f) {
+            this.delta = MathUtils.random(1.0f, 3.0f);
+            playEntitySound("crab");
+        }
 
         if(cachedMoving != isMoving()) {
             cachedMoving = !cachedMoving;
@@ -61,7 +72,7 @@ public class ClientWorm extends ClientEntity {
                 flipped = !flipped;
             }
 
-            TextureRegion f = animationHandler.getActiveFrame();
+            TextureRegion f = debugTex;
             updateTexture(0, 0, f.getRegionWidth(), f.getRegionHeight());
 
             updateDepth();
@@ -74,19 +85,19 @@ public class ClientWorm extends ClientEntity {
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
-        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(animationHandler.getActiveFrame(), shadow);
+        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(debugTex, shadow);
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 
         if(drawMushroom) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(animationHandler.getActiveFrame(), drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(debugTex, drawWidth, drawHeight, shadow);
         }
     }
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.WORM;
+        return ClientEntityType.CRAB;
     }
 
 }

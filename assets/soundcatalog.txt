@@ -106,3 +106,6 @@ player_death_1.wav
 pop_1.wav
 pop_2.wav
 pop_3.wav
+
+#crab;true;1.0-1.0;SFX;1.0
+crab.wav

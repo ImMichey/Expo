@@ -32,17 +32,19 @@ public class CommandNoise extends AbstractConsoleCommand {
 
     @Override
     public void executeCommand(String[] args) {
-        final int[] modes = new int[] {Noise.FOAM_FRACTAL};
-        final float[] freq = new float[] {384f};
-        final int[] octa = new int[] {5};
+        final int[] modes = new int[] {Noise.HONEY_FRACTAL};
+        final float[] freq = new float[] {32f, 48f, 64f};
+        final int[] octa = new int[] {4, 6};
+        final float[] level = new float[] {0.55f, 0.6f, 0.7f, 0.8f};
 
-        int attempts = 5;
+        int attempts = 1;
         final int[] seeds = new int[attempts];
+
         for(int i = 0; i < seeds.length; i++) {
             seeds[i] = MathUtils.random.nextInt();
         }
 
-        final int size = 900;
+        final int size = 1024;
         final long start = TimeUtils.millis();
         String basePath = "noiseTests/" + start + "/";
 
@@ -53,42 +55,39 @@ public class CommandNoise extends AbstractConsoleCommand {
             for(int a = 0; a < freq.length; a++) {
                 for(int b = 0; b < octa.length; b++) {
                     for(int c = 0; c < modes.length; c++) {
-                        int finalA = a;
-                        int finalB = b;
-                        int finalC = c;
-                        int finalAtt = att;
+                        for(int d = 0; d < level.length; d++) {
+                            int finalA = a;
+                            int finalB = b;
+                            int finalC = c;
+                            int finalAtt = att;
+                            int finalLevel = d;
 
-                        service.execute(() -> {
-                            Noise noise = new Noise(seeds[finalAtt], 1f/freq[finalA], modes[finalC], octa[finalB]);
+                            service.execute(() -> {
+                                Noise noise = new Noise(seeds[finalAtt], 1f/freq[finalA], modes[finalC], octa[finalB]);
 
-                            Noise riverNoise = new Noise(seeds[finalAtt], 1f/384f, Noise.SIMPLEX_FRACTAL, 1);
-                            //Noise riverNoise = new Noise(seeds[finalAtt], 1f/384f, Noise.SIMPLEX_FRACTAL, 1);
-                            riverNoise.setFractalType(Noise.RIDGED_MULTI);
+                                Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
 
-                            Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+                                for(int i = 0; i < size; i++) {
+                                    for(int j = 0; j < size; j++) {
+                                        float value = noise.getConfiguredNoise(i, j);
+                                        float normalized = (value + 1) / 2f;
 
-                            for(int i = 0; i < size; i++) {
-                                for(int j = 0; j < size; j++) {
-                                    float value = noise.getConfiguredNoise(i, j);
-                                    float normalized = (value + 1) / 2f;
-
-                                    float riverValue = riverNoise.getConfiguredNoise(i, j);
-                                    float riverNormalized = (riverValue + 1) / 2f;
-
-                                    BiomeType type = BiomeType.PLAINS;// BiomeType.convertNoise(normalized, riverNormalized);
-                                    float[] color = type.BIOME_COLOR;
-
-                                    pixmap.drawPixel(i, j, Color.rgba8888(color[0], color[1], color[2], color[3]));
+                                        if(normalized > level[finalLevel]) {
+                                            pixmap.drawPixel(i, j, Color.rgba8888(normalized, normalized, normalized, 1));
+                                        } else {
+                                            pixmap.drawPixel(i, j, Color.rgba8888(0, 0, 0, 1));
+                                        }
+                                    }
                                 }
-                            }
 
-                            String str = basePath + "mode_" + modes[finalC] + "-" + "freq_" + freq[finalA] + "-octa_" + octa[finalB] + "-" + finalAtt + ".png";
-                            FileHandle fh = Gdx.files.local(str);
-                            PixmapIO.writePNG(fh, pixmap);
-                            pixmap.dispose();
+                                String str = basePath + "mode_" + modes[finalC] + "-" + "freq_" + freq[finalA] + "-octa_" + octa[finalB] + "-" + finalAtt + "_l" + level[finalLevel] + ".png";
+                                FileHandle fh = Gdx.files.local(str);
+                                PixmapIO.writePNG(fh, pixmap);
+                                pixmap.dispose();
 
-                            success("Written noise image to " + fh.path());
-                        });
+                                success("Written noise image to " + fh.path());
+                            });
+                        }
                     }
                 }
             }
