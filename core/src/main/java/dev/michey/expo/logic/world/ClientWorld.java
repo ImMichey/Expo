@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
@@ -21,18 +22,18 @@ import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
-import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.*;
+import dev.michey.expo.util.visualizer.Visualizer;
+import dev.michey.expo.util.visualizer.Visualizer2;
 import dev.michey.expo.weather.Weather;
 
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.ConcurrentModificationException;
 import java.util.zip.Deflater;
 
-import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -589,48 +590,29 @@ public class ClientWorld {
 
         r.blurShader.bind();
         r.blurShader.setUniformf("u_radius", r.blurStrength);
-
         r.blurShader.setUniformf("u_dir", 1.0f, 0.0f);
         r.blurShader.setUniformf("u_resolution", Gdx.graphics.getWidth());
 
-        r.batch.setShader(r.blurShader);
-
         {
             r.blurTargetAFbo.begin();
-            r.batch.begin();
-            drawFboTexture(r.mainFbo.getColorBufferTexture());
-            r.batch.end();
+            drawFboTexture(r.mainFbo, r.blurShader);
             r.blurTargetAFbo.end();
         }
 
         r.blurShader.bind();
-
         r.blurShader.setUniformf("u_dir", 0.0f, 1.0f);
         r.blurShader.setUniformf("u_resolution", Gdx.graphics.getHeight());
 
         {
             r.blurTargetBFbo.begin();
-            r.batch.begin();
-            drawFboTexture(r.blurTargetAFbo.getColorBufferTexture());
-            r.batch.end();
+            drawFboTexture(r.blurTargetAFbo, r.blurShader);
             r.blurTargetBFbo.end();
         }
-
-        // Reset
-        r.batch.setShader(r.DEFAULT_GLES3_SHADER);
     }
 
     private void transparentScreen() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
-    }
-
-    private void screencap(String name) {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.T) && DEV_MODE) {
-            Pixmap pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
-            PixmapIO.writePNG(Gdx.files.external("TEST/" + System.currentTimeMillis() + "_" + name + ".png"), pixmap, Deflater.DEFAULT_COMPRESSION, true);
-            pixmap.dispose();
-        }
     }
 
     private void drawFboTexture(Texture texture, ShaderProgram shader) {
@@ -652,23 +634,6 @@ public class ClientWorld {
         r.batch.draw(fboTex, x + diffWidth, y + diffHeight, newWidth, newHeight);
         r.batch.setShader(r.DEFAULT_GLES3_SHADER);
         r.batch.end();
-    }
-
-    private void drawFboTexture(Texture texture) {
-        RenderContext r = RenderContext.get();
-
-        float x = r.expoCamera.camera.position.x - Gdx.graphics.getWidth() * 0.5f;
-        float y = r.expoCamera.camera.position.y - Gdx.graphics.getHeight() * 0.5f;
-        TextureRegion fboTex = new TextureRegion(texture);
-        fboTex.flip(false, true);
-
-        float newWidth = fboTex.getRegionWidth() * r.expoCamera.camera.zoom;
-        float newHeight = fboTex.getRegionHeight() * r.expoCamera.camera.zoom;
-
-        float diffWidth = (fboTex.getRegionWidth() - newWidth) * 0.5f;
-        float diffHeight = (fboTex.getRegionHeight() - newHeight) * 0.5f;
-
-        r.batch.draw(fboTex, x + diffWidth, y + diffHeight, newWidth, newHeight);
     }
 
     private void drawFboTexture(FrameBuffer fbo, ShaderProgram shader) {
@@ -715,6 +680,8 @@ public class ClientWorld {
         r.batch.begin();
         r.batch.setShader(r.waterShader);
         r.batch.setColor(r.waterColor[0], r.waterColor[1], r.waterColor[2], r.waterAlpha);
+
+        r.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         float textureSize = r.waterNoiseTexture.getWidth();
 

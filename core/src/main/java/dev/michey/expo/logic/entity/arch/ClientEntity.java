@@ -142,6 +142,14 @@ public abstract class ClientEntity {
         updateCenterAndRoot();
     }
 
+    public void updateTexture(float drawWidth, float drawHeight) {
+        updateTexture(-drawWidth * 0.5f, 0, drawWidth, drawHeight);
+    }
+
+    public void updateTexture(TextureRegion texture) {
+        updateTexture(texture.getRegionWidth(), texture.getRegionHeight());
+    }
+
     public void updateCenterAndRoot() {
         drawCenterX = clientPosX + drawOffsetX + drawWidth * 0.5f;
         drawCenterY = clientPosY + drawOffsetY + drawHeight * 0.5f;

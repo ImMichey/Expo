@@ -27,7 +27,7 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
         bush = t("foliage/entity_blueberrybush/ebbb_crown.png");
         bushFruits = t("foliage/entity_blueberrybush/ebbb_crown_fruits.png");
 
-        updateTexture(0, 0, shadowMask.getRegionWidth(), shadowMask.getRegionHeight());
+        updateTexture(shadowMask);
         interactionPointArray = generateInteractionArray(2);
     }
 
@@ -50,8 +50,8 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(stem, clientPosX + 1, clientPosY);
-        rc.arraySpriteBatch.draw(hasBerries ? bushFruits : bush, clientPosX, clientPosY + 1);
+        rc.arraySpriteBatch.draw(stem, clientPosX + 1 + drawOffsetX, clientPosY);
+        rc.arraySpriteBatch.draw(hasBerries ? bushFruits : bush, clientPosX + drawOffsetX, clientPosY + 1);
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
         rc.arraySpriteBatch.begin();
@@ -71,14 +71,14 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.draw(stem, clientPosX + 1, clientPosY);
-            rc.arraySpriteBatch.draw(hasBerries ? bushFruits : bush, clientPosX, clientPosY + 1);
+            rc.arraySpriteBatch.draw(stem, clientPosX + 1 + drawOffsetX, clientPosY);
+            rc.arraySpriteBatch.draw(hasBerries ? bushFruits : bush, clientPosX + drawOffsetX, clientPosY + 1);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY);
         float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 

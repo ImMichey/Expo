@@ -23,9 +23,9 @@ public class ServerRock extends ServerEntity {
     public int variant;
 
     public static final float[][] ROCK_BODIES = new float[][] {
-            new float[] {1.5f, 3.5f, 21.0f, 10.0f},
-            new float[] {1.5f, 3.0f, 11.5f, 4.5f},
-            new float[] {1.0f, 2.0f, 8.5f, 3.0f},
+            new float[] {-10.0f, 3.5f, 21.0f, 10.0f},
+            new float[] {-5.5f, 3.0f, 11.5f, 4.5f},
+            new float[] {-4.0f, 2.0f, 8.5f, 3.0f},
     };
 
     public ServerRock() {

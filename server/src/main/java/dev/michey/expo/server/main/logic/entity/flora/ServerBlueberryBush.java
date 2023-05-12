@@ -36,7 +36,7 @@ public class ServerBlueberryBush extends ServerEntity {
 
     @Override
     public void onCreation() {
-        physicsBody = new BoundingBox(this, 0, 3, 15, 3.5f);
+        physicsBody = new BoundingBox(this, -7.5f, 3, 15, 3.5f);
     }
 
     @Override

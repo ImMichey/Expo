@@ -51,9 +51,12 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         } else if(variant == 5) {
             w = 13;
             h = 12;
+        } else if(variant == 6) {
+            w = 9;
+            h = 5;
         }
 
-        updateTexture(0, 0, w, h);
+        updateTexture(w, h);
         interactionPointArray = generateInteractionArray(2);
     }
 
@@ -110,7 +113,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
         rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-        rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX + drawOffsetX, clientPosY, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setColor(Color.WHITE);
     }
@@ -126,7 +129,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-            rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX, clientPosY, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(grass, clientPosX + drawOffsetX, clientPosY, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }

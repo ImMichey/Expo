@@ -12,12 +12,12 @@
                     "temperature": {
                         "octaves": 4,
                         "type": 9,
-                        "frequency": 0.031
+                        "frequency": 0.021
                     },
                     "moisture": {
                         "octaves": 4,
                         "type": 9,
-                        "frequency": 0.031
+                        "frequency": 0.021
                     }
                 },
                 "rivers": {

@@ -25,7 +25,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
     @Override
     public void onCreation() {
         texture = ExpoAssets.get().textureRegion("mushroom_brown_var2");
-        updateTexture(0, 0, texture.getRegionWidth(), texture.getRegionHeight());
+        updateTexture(texture);
         interactionPointArray = generateInteractionArray();
     }
 
@@ -76,7 +76,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);
+        rc.arraySpriteBatch.draw(texture, clientPosX + drawOffsetX, clientPosY);
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
@@ -91,13 +91,13 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
             updateDepth(drawOffsetY);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);
+            rc.arraySpriteBatch.draw(texture, clientPosX + drawOffsetX, clientPosY);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY);
         float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 

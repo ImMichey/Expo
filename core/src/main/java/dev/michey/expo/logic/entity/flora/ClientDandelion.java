@@ -28,7 +28,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
     public void onCreation() {
         dandelion = t("foliage/entity_dandelion/entity_dandelion.png");
         shadow = tr("entity_dandelion_shadow_mask");
-        updateTexture(0, 0, 11, 9);
+        updateTexture(11, 9);
         interactionPointArray = generateInteractionArray();
     }
 
@@ -84,7 +84,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
         foliageAnimator.calculateWindOnDemand();
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX + drawOffsetX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
     }
 
@@ -98,7 +98,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX + drawOffsetX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 
