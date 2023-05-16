@@ -17,7 +17,8 @@ public class ClientParticleOakLeaf extends ClientParticle {
 
         float sx = leaf.getRegionWidth() * scaleX;
         float sy = leaf.getRegionHeight() * scaleY;
-        updateTexture(-sx, -sy, sx * 2, sy * 2);
+
+        updateTextureBounds(sx * 2, sy * 2, 0, 0, -sx, -sy);
     }
 
     @Override
@@ -37,6 +38,7 @@ public class ClientParticleOakLeaf extends ClientParticle {
 
     @Override
     public void render(RenderContext rc, float delta) {
+        updateTexturePositionData();
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {

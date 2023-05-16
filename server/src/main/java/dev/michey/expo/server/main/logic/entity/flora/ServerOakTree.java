@@ -19,11 +19,11 @@ public class ServerOakTree extends ServerEntity {
     public int variant;
 
     public static final float[][] TREE_BODIES = new float[][] {
-        new float[] {2.0f, 4.0f, 13.0f, 4.5f},
-        new float[] {2.0f, 4.0f, 13.0f, 4.5f},
-        new float[] {2.0f, 4.0f, 13.0f, 4.5f},
-        new float[] {2.0f, 4.0f, 15.0f, 4.5f},
-        new float[] {2.0f, 4.0f, 17.0f, 4.5f}
+        new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
+        new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
+        new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
+        new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
+        new float[] {-6.0f, 4.0f, 17.0f, 4.5f}
     };
 
     @Override
@@ -47,7 +47,7 @@ public class ServerOakTree extends ServerEntity {
             max += 3;
         }
 
-        spawnEntitiesAround(8.5f, 6.0f, 14.0f, 18.0f,
+        spawnEntitiesAround(0.0f, 6.0f, 14.0f, 18.0f,
                 new SpawnItem("item_oak_log", min, max),
                 new SpawnItem("item_acorn", 1, 2)
         );

@@ -12,6 +12,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
 public class ServerGrass extends ServerEntity {
@@ -29,21 +30,16 @@ public class ServerGrass extends ServerEntity {
 
     @Override
     public void onDie() {
-        int grassSpawned = MathUtils.random(1, 2);
-        Vector2[] positions = GenerationUtils.positions(grassSpawned, 8.0f);
+        float yOff = 10.5f;
+        float h = 0;
 
-        for(int i = 0; i < grassSpawned; i++) {
-            ServerItem item = new ServerItem();
+        if(variant == 1) h = 9;
+        if(variant == 2) h = 10;
+        if(variant == 3) h = 8;
+        if(variant == 4) h = 10;
+        if(variant == 5) h = 12;
 
-            ItemMapping r = ItemMapper.get().getMapping("item_grassfiber");
-            item.itemContainer = new ServerInventoryItem(r.id, 1);
-
-            item.posX = posX + 8f;
-            item.posY = posY + 4f;
-            item.dstX = positions[i].x;
-            item.dstY = positions[i].y;
-            ServerWorld.get().registerServerEntity(entityDimension, item);
-        }
+        spawnEntitiesAround(1, 2, 0, (h - yOff) * 0.5f, "item_grassfiber", 8);
     }
 
     @Override

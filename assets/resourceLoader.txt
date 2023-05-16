@@ -1,8 +1,3 @@
-[TextureAtlas]
-atlas/expo-0.atlas
-
-[!LOAD]
-
 [Texture]
 water/waternoise512.png
 water/displacementmap.png
@@ -25,10 +20,7 @@ foliage/entity_oak_tree/eot_leaves.png
 foliage/entity_oak_tree/eot_leaves_big.png
 foliage/entity_ancient_tree/entity_ancient_tree_leaves.png
 water/square16x16.png
-foliage/entity_blueberrybush/ebbb_crown.png
-foliage/entity_blueberrybush/ebbb_crown_fruits.png
-
-#[Sound]
-#sounds/player_death_1.wav
+foliage/entity_blueberrybush/ebbb.png
+foliage/entity_blueberrybush/ebbb_fruits.png
 
 [!LOAD]

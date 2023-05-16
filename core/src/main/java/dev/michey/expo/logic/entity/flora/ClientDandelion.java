@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -28,8 +29,9 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
     public void onCreation() {
         dandelion = t("foliage/entity_dandelion/entity_dandelion.png");
         shadow = tr("entity_dandelion_shadow_mask");
-        updateTexture(11, 9);
-        interactionPointArray = generateInteractionArray();
+
+        updateTextureBounds(11, 9, 1, 1);
+        interactionPointArray = generateInteractionArray(2);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
             p.setParticleTextureRange(3, 7);
             p.setParticleColor(MathUtils.randomBoolean() ? ParticleColorMap.COLOR_PARTICLE_GRASS_1 : ParticleColorMap.COLOR_PARTICLE_GRASS_2);
             p.setParticleLifetime(0.3f);
-            p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
+            p.setParticleOriginAndVelocity(finalTextureCenterX, finalTextureCenterY, velocityX, velocityY);
             float scale = MathUtils.random(0.6f, 0.9f);
             p.setParticleScale(scale, scale);
             p.setParticleFadeout(0.1f);
@@ -82,9 +84,9 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK);
 
-        rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX + drawOffsetX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawCustomVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
     }
 
@@ -94,18 +96,18 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
 
         if(visibleToRenderEngine) {
             foliageAnimator.calculateWindOnDemand();
-            updateDepth(drawOffsetY);
+            updateDepth(textureOffsetY);
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawCustomVertices(dandelion, clientPosX + drawOffsetX, clientPosY, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
         float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(this.shadow, shadow);
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 

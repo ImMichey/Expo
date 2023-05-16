@@ -9,6 +9,8 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.shadow.ShadowUtils;
 
+import static dev.michey.expo.log.ExpoLogger.log;
+
 public class ClientWorm extends ClientEntity {
 
     private final ExpoAnimationHandler animationHandler;
@@ -24,7 +26,7 @@ public class ClientWorm extends ClientEntity {
 
     @Override
     public void onCreation() {
-
+        updateTextureBounds(animationHandler.getActiveFrame());
     }
 
     @Override
@@ -62,25 +64,25 @@ public class ClientWorm extends ClientEntity {
             }
 
             TextureRegion f = animationHandler.getActiveFrame();
-            updateTexture(0, 0, f.getRegionWidth(), f.getRegionHeight());
+            updateTextureBounds(f);
 
             updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(f, clientPosX, clientPosY, drawWidth, drawHeight);
+            rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
         float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(animationHandler.getActiveFrame(), shadow);
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 
         if(drawMushroom) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(animationHandler.getActiveFrame(), drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(animationHandler.getActiveFrame(), textureWidth, textureHeight, shadow);
         }
     }
 

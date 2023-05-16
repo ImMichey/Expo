@@ -31,7 +31,6 @@ public class ClientPoppy extends ClientEntity implements SelectableEntity {
     public void onCreation() {
         poppy = t("foliage/entity_poppy/entity_poppy.png");
         shadow = tr("entity_poppy_shadow_mask");
-        updateTexture(0, 0, 8, 12);
         interactionPointArray = generateInteractionArray();
     }
 
@@ -51,7 +50,7 @@ public class ClientPoppy extends ClientEntity implements SelectableEntity {
             p.setParticleTextureRange(3, 7);
             p.setParticleColor(MathUtils.randomBoolean() ? ParticleColorMap.COLOR_PARTICLE_GRASS_1 : ParticleColorMap.COLOR_PARTICLE_GRASS_2);
             p.setParticleLifetime(0.3f);
-            p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
+            //p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
             float scale = MathUtils.random(0.6f, 0.9f);
             p.setParticleScale(scale, scale);
             p.setParticleFadeout(0.1f);
@@ -99,7 +98,7 @@ public class ClientPoppy extends ClientEntity implements SelectableEntity {
 
         if(visibleToRenderEngine) {
             foliageAnimator.calculateWindOnDemand();
-            updateDepth(drawOffsetY);
+            //updateDepth(drawOffsetY);
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
@@ -112,7 +111,7 @@ public class ClientPoppy extends ClientEntity implements SelectableEntity {
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY + drawOffsetY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalDrawPosX, finalDrawPosY);
         float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(this.shadow, shadow);
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 

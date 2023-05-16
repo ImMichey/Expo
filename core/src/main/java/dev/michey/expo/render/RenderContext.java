@@ -81,11 +81,12 @@ public class RenderContext {
     public ShaderProgram DEFAULT_GLES3_SHADER;          // Should be used by all regular batches.
     public ShaderProgram DEFAULT_GLES3_ARRAY_SHADER;    // Should be used by all array batches.
     public ShaderProgram vignetteShader;
-    public ShaderProgram selectionShader;
-    public ShaderProgram selectionArrayShader;
+    //public ShaderProgram selectionShader;
+    //public ShaderProgram selectionArrayShader;
     public ShaderProgram itemShineShader;
     public ShaderProgram blurShader;
     public ShaderProgram waterShader;
+    public ShaderProgram outlineShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -240,11 +241,12 @@ public class RenderContext {
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
         vignetteShader = compileShader("gl3/vignette");
-        selectionShader = compileShader("gl3/selection");
-        selectionArrayShader = compileShader("gl3/selection_array");
+        //selectionShader = compileShader("gl3/selection");
+        //selectionArrayShader = compileShader("gl3/selection_array");
         itemShineShader = compileShader("gl3/itemshine");
         blurShader = compileShader("gl3/blur");
         waterShader = compileShader("gl3/water");
+        outlineShader = compileShader("gl3/outline");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         // createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -317,8 +319,8 @@ public class RenderContext {
 
         mouseDirection = mouseX < (Gdx.graphics.getWidth() * 0.5f) ? 0 : 1;
 
-        selectionShader.bind();
-        selectionShader.setUniformf("u_time", deltaTotal);
+        //selectionShader.bind();
+        //selectionShader.setUniformf("u_time", deltaTotal);
     }
 
     public void reset() {
@@ -338,12 +340,12 @@ public class RenderContext {
     }
 
     public boolean inDrawBounds(ClientEntity entity) {
-        float x = entity.clientPosX + entity.drawOffsetX;
-        float y = entity.clientPosY + entity.drawOffsetY;
+        float x = entity.finalTextureStartX;
+        float y = entity.finalTextureStartY;
 
-        return drawStartX <= (x + entity.drawWidth)
+        return drawStartX <= (x + entity.textureWidth)
                 && drawEndX >= x
-                && drawStartY <= (y + entity.drawHeight)
+                && drawStartY <= (y + entity.textureHeight)
                 && drawEndY >= y;
     }
 
@@ -393,14 +395,24 @@ public class RenderContext {
     }
 
     public void bindAndSetSelection(Batch useBatch) {
-        ShaderProgram useShader = useBatch == batch ? selectionShader : selectionArrayShader;
+        bindAndSetSelection(useBatch, 2048, Color.WHITE);
+    }
 
-        useShader.bind();
-        useShader.setUniformf("u_progress", ClientEntityManager.get().pulseProgress);
-        useShader.setUniformf("u_pulseStrength", 1.25f);
-        useShader.setUniformf("u_pulseMin", 1.05f);
+    public void bindAndSetSelection(Batch useBatch, float textureSize, Color c) {
+        float n = textureSize / expoCamera.camera.zoom;
 
-        useBatch.setShader(useShader);
+        outlineShader.bind();
+        outlineShader.setUniformf("u_progress", ClientEntityManager.get().pulseProgress);
+        outlineShader.setUniformf("u_pulseStrength", 1.2f);
+        outlineShader.setUniformf("u_pulseMin", 1.0f);
+
+        outlineShader.setUniformf("u_pulseMin", 1.0f);
+        outlineShader.setUniformf("u_pulseMin", 1.0f);
+
+        outlineShader.setUniformf("u_textureSize", n, n);
+        outlineShader.setUniformf("u_outlineColor", c.r, c.g, c.b, ClientEntityManager.get().pulseProgress * 0.75f * c.a);
+
+        useBatch.setShader(outlineShader);
         useBatch.begin();
     }
 

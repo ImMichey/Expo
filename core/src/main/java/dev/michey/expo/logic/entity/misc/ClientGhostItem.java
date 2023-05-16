@@ -2,10 +2,12 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.shadow.ShadowUtils;
 
 public class ClientGhostItem extends ClientEntity {
 
@@ -50,16 +52,14 @@ public class ClientGhostItem extends ClientEntity {
         float SCALE_X = 0.75f;
         float SCALE_Y = 0.75f;
 
-        float textureX = clientPosX - texture.getRegionWidth() * 0.5f * SCALE_X;
-        float textureY = clientPosY + floatingPos + floatingPosAnimation;
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
-        rc.arraySpriteBatch.draw(texture, textureX, textureY, texture.getRegionWidth() * SCALE_X, texture.getRegionHeight() * SCALE_Y);
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY + floatingPos + floatingPosAnimation, texture.getRegionWidth() * SCALE_X, texture.getRegionHeight() * SCALE_Y);
 
         String numberAsString = String.valueOf(amount);
 
         float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
-        float vx = clientPosX + drawOffsetX;
-        float vy = clientPosY + drawOffsetY;
+        float vx = finalTextureStartX;
+        float vy = finalTextureStartY;
         float fontScale = 0.5f;
 
         float ex = (slotW - texture.getRegionWidth()) * 0.5f * SCALE_X + texture.getRegionWidth() * SCALE_X + vx - (numberAsString.length() * 6 * fontScale) - 1 * SCALE_X;
@@ -78,7 +78,16 @@ public class ClientGhostItem extends ClientEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, floatingPos + floatingPosAnimation);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
+        boolean draw = rc.verticesInBounds(vertices);
 
+        if(draw) {
+            float t = new Color(0.0f, 0.0f, 0.0f, 0.0f).toFloatBits();
+            float b = new Color(0.0f, 0.0f, 0.0f, useAlpha).toFloatBits();
+
+            rc.arraySpriteBatch.drawGradientCustomColor(texture, textureWidth, textureHeight, shadow, t, b);
+        }
     }
 
     @Override

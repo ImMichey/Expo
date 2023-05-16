@@ -42,7 +42,7 @@ public class ClientAncientTree extends ClientEntity implements SelectableEntity 
         trunkShadowMask = tr("entity_ancient_tree_trunk_shadow_mask");
         leavesShadowMask = tr("entity_ancient_tree_leaves_shadow_mask");
 
-        updateTexture(-32, 0, 88, 207);
+        updateTextureBounds(88, 207, -32, 0);
         interactionPointArray = new float[] {
                 clientPosX + 2, clientPosY + 3,
                 clientPosX + 20, clientPosY + 3,
@@ -72,10 +72,10 @@ public class ClientAncientTree extends ClientEntity implements SelectableEntity 
         if(local != null) {
             playerBehind = RenderContext.get().entityVerticesIntersecting(new float[] {
                 local.clientPosX, local.clientPosY,
-                local.clientPosX + local.drawWidth, local.clientPosY + local.drawHeight
+                local.clientPosX + local.textureWidth, local.clientPosY + local.textureHeight
             }, new float[] {
-                    clientPosX + drawOffsetX + wind, clientPosY + 84,
-                    clientPosX + drawOffsetX + 88 + wind, clientPosY + 84 + 124
+                    finalTextureStartX + wind, clientPosY + 84,
+                    finalTextureStartX + 88 + wind, clientPosY + 84 + 124
             });
         } else {
             playerBehind = false;
@@ -95,7 +95,7 @@ public class ClientAncientTree extends ClientEntity implements SelectableEntity 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         calculateWindOnDemand(rc.deltaTotal);
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK);
 
         rc.arraySpriteBatch.draw(trunk, clientPosX, clientPosY);
         rc.arraySpriteBatch.end();

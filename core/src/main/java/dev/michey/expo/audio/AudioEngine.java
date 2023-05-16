@@ -285,7 +285,7 @@ public class AudioEngine {
         ClientPlayer p = ClientPlayer.getLocalPlayer();
         if(p == null) return 0f;
 
-        Vector2 c = new Vector2(p.drawRootX, p.drawRootY);
+        Vector2 c = new Vector2(p.finalTextureCenterX, p.finalTextureRootY);
         return Vector2.dst(v.x, v.y, c.x, c.y);
     }
 
@@ -300,7 +300,7 @@ public class AudioEngine {
         ClientPlayer p = ClientPlayer.getLocalPlayer();
         if(p == null) return 0f;
 
-        float px = p.drawRootX;
+        float px = p.finalTextureCenterX;
         float dx = v.x - px;
         return dx / maxAudibleRange;
     }

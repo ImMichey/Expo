@@ -72,13 +72,12 @@ public class ClientCrab extends ClientEntity {
                 flipped = !flipped;
             }
 
-            TextureRegion f = debugTex;
-            updateTexture(0, 0, f.getRegionWidth(), f.getRegionHeight());
+            updateTextureBounds(debugTex);
 
             updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(f, clientPosX, clientPosY, drawWidth, drawHeight);
+            rc.arraySpriteBatch.draw(debugTex, clientPosX, clientPosY, textureWidth, textureHeight);
         }
     }
 
@@ -91,7 +90,7 @@ public class ClientCrab extends ClientEntity {
         if(drawMushroom) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(debugTex, drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(debugTex, textureWidth, textureHeight, shadow);
         }
     }
 

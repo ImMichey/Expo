@@ -49,16 +49,20 @@ public abstract class ClientEntity {
 
     /** ClientEntity render fields */
     public float depth;
-    public float drawOffsetX;
-    public float drawOffsetY;
-    public float drawWidth;
-    public float drawHeight;
     public boolean flipped;
-    public float drawCenterX;
-    public float drawCenterY;
-    public float drawRootX;
-    public float drawRootY;
     public boolean visibleToRenderEngine;
+    public boolean disableTextureCentering;
+    public float textureOffsetX;    // The required offset within the texture to the draw start position
+    public float textureOffsetY;    // The required offset within the texture to the draw start position
+    public float textureWidth;      // Actual width of the texture you want to draw
+    public float textureHeight;     // Actual height of the texture you want to draw
+    public float positionOffsetX;   // Position offset to sync server->client positions
+    public float positionOffsetY;   // Position offset to sync server->client positions
+    public float finalDrawPosX, finalDrawPosY;                  // The world position where to draw the texture at
+    public float finalTextureCenterX, finalTextureCenterY;      // The world position where the texture is at center visually
+    public float finalTextureStartX, finalTextureStartY;        // The world position where the texture is starting visually
+    public float finalTextureRootX, finalTextureRootY;          // The world position where the texture has its root visually (feet)
+    public float finalSelectionDrawPosX, finalSelectionDrawPosY;// The world position where to draw the selection texture at
 
     /** ClientEntity base methods */
     public abstract void onCreation();
@@ -134,43 +138,54 @@ public abstract class ClientEntity {
         depth = clientPosY + offset;
     }
 
-    public void updateTexture(float drawOffsetX, float drawOffsetY, float drawWidth, float drawHeight) {
-        this.drawOffsetX = drawOffsetX;
-        this.drawOffsetY = drawOffsetY;
-        this.drawWidth = drawWidth;
-        this.drawHeight = drawHeight;
-        updateCenterAndRoot();
+    public void updateTextureBounds(float textureWidth, float textureHeight, float textureOffsetX, float textureOffsetY) {
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
+        this.textureOffsetX = textureOffsetX;
+        this.textureOffsetY = textureOffsetY;
+        if(!disableTextureCentering) {
+            positionOffsetX = textureWidth * -0.5f;
+            positionOffsetY = 0;
+        }
+        updateTexturePositionData();
     }
 
-    public void updateTexture(float drawWidth, float drawHeight) {
-        updateTexture(-drawWidth * 0.5f, 0, drawWidth, drawHeight);
+    public void updateTextureBounds(float textureWidth, float textureHeight, float textureOffsetX, float textureOffsetY, float positionOffsetX, float positionOffsetY) {
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
+        this.textureOffsetX = textureOffsetX;
+        this.textureOffsetY = textureOffsetY;
+        this.positionOffsetX = positionOffsetX;
+        this.positionOffsetY = positionOffsetY;
+        updateTexturePositionData();
     }
 
-    public void updateTexture(TextureRegion texture) {
-        updateTexture(texture.getRegionWidth(), texture.getRegionHeight());
+    public void updateTexturePositionData() {
+        finalDrawPosX = clientPosX - textureOffsetX + positionOffsetX;
+        finalDrawPosY = clientPosY - textureOffsetY + positionOffsetY;
+        finalSelectionDrawPosX = finalDrawPosX - 1; // Avoid when using Texture classes
+        finalSelectionDrawPosY = finalDrawPosY - 1; // Avoid when using Texture classes
+
+        finalTextureStartX = finalDrawPosX + textureOffsetX;
+        finalTextureStartY = finalDrawPosY + textureOffsetY;
+
+        finalTextureCenterX = finalTextureStartX + textureWidth * 0.5f;
+        finalTextureCenterY = finalTextureStartY + textureHeight * 0.5f;
+
+        finalTextureRootX = finalTextureStartX + textureWidth * 0.5f;
+        finalTextureRootY = finalTextureStartY;
     }
 
-    public void updateCenterAndRoot() {
-        drawCenterX = clientPosX + drawOffsetX + drawWidth * 0.5f;
-        drawCenterY = clientPosY + drawOffsetY + drawHeight * 0.5f;
-        drawRootX = clientPosX + drawOffsetX + drawWidth * 0.5f;
-        drawRootY = clientPosY + drawOffsetY;
+    public void updateTextureBounds(TextureRegion region) {
+        updateTextureBounds(region.getRegionWidth(), region.getRegionHeight(), 0, 0);
     }
 
     public float dstRootX(ClientEntity otherEntity) {
-        return Math.abs(drawRootX - otherEntity.drawRootX);
+        return Math.abs(finalTextureCenterX - otherEntity.finalTextureCenterX);
     }
 
     public float dstRootY(ClientEntity otherEntity) {
-        return Math.abs(drawRootY - otherEntity.drawRootY);
-    }
-
-    public float toVisualCenterX() {
-        return clientPosX + drawOffsetX + drawWidth * 0.5f;
-    }
-
-    public float toVisualCenterY() {
-        return clientPosY + drawOffsetY + drawHeight * 0.5f;
+        return Math.abs(finalTextureRootY - otherEntity.finalTextureRootY);
     }
 
     public Texture t(String name) {
@@ -185,10 +200,6 @@ public abstract class ClientEntity {
         return ExpoAssets.get().textureRegionFresh(name);
     }
 
-    public Array<TextureRegion> ta(String name, int frames) {
-        return ExpoAssets.get().textureArray(name, frames);
-    }
-
     public TextureRegion[] trArrayFromSheet(TextureRegion base, int x, int y, int width, int height, int frames, int cellWidth) {
         TextureRegion[] array = new TextureRegion[frames];
 
@@ -201,19 +212,19 @@ public abstract class ClientEntity {
 
     public float[] generateInteractionArray() {
         return new float[] {
-                clientPosX, clientPosY,
-                clientPosX + drawWidth, clientPosY,
-                clientPosX + drawWidth, clientPosY + drawHeight,
-                clientPosX, clientPosY + drawHeight,
+                finalTextureStartX, finalTextureStartY,
+                finalTextureStartX + textureWidth, finalTextureStartY,
+                finalTextureStartX + textureWidth, finalTextureStartY + textureHeight,
+                finalTextureStartX, finalTextureStartY + textureHeight,
         };
     }
 
     public float[] generateInteractionArray(float offset) {
         return new float[] {
-                clientPosX + offset, clientPosY + offset,
-                clientPosX + drawWidth - offset, clientPosY + offset,
-                clientPosX + drawWidth - offset, clientPosY + drawHeight - offset,
-                clientPosX + offset, clientPosY + drawHeight - offset,
+                finalTextureStartX + offset, finalTextureStartY + offset,
+                finalTextureStartX + textureWidth - offset, finalTextureStartY + offset,
+                finalTextureStartX + textureWidth - offset, finalTextureStartY + textureHeight - offset,
+                finalTextureStartX + offset, finalTextureStartY + textureHeight - offset,
         };
     }
 
@@ -258,8 +269,27 @@ public abstract class ClientEntity {
         return isRaining() ? "step_mud" : "step_dirt";
     }
 
+    public TextureRegion generateSelectionTexture(TextureRegion original) {
+        return new TextureRegion(original, -1, -1, original.getRegionWidth() + 2, original.getRegionHeight() + 2);
+    }
+
     public boolean isRaining() {
         return ExpoClientContainer.get().getClientWorld().worldWeather == Weather.RAIN.WEATHER_ID;
+    }
+
+    public void stealTextureData(ClientEntity other) {
+        textureOffsetX = other.textureOffsetX;
+        textureOffsetY = other.textureOffsetY;
+        finalDrawPosX = other.finalDrawPosX;
+        finalDrawPosY = other.finalDrawPosY;
+        textureWidth = other.textureWidth;
+        textureHeight = other.textureHeight;
+        finalTextureRootX = other.finalTextureRootX;
+        finalTextureRootY = other.finalTextureRootY;
+        finalTextureStartX = other.finalTextureStartX;
+        finalTextureStartY = other.finalTextureStartY;
+        finalTextureCenterX = other.finalTextureCenterX;
+        finalTextureCenterY = other.finalTextureCenterY;
     }
 
     public void readEntityDataUpdate(Object[] payload) {
@@ -267,7 +297,7 @@ public abstract class ClientEntity {
     }
 
     public void playEntitySound(String group) {
-        AudioEngine.get().playSoundGroupManaged(group, new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
+        AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
     }
 
 }

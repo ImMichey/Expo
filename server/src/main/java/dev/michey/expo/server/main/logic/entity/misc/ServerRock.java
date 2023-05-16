@@ -62,33 +62,31 @@ public class ServerRock extends ServerEntity {
         }
     }
 
-    private int variantToAmount() {
-        return switch (variant) {
-            case 2 -> MathUtils.random(2, 5);
-            case 3 -> MathUtils.random(1, 2);
-            default -> 1;
-        };
-    }
-
     @Override
     public void onDie() {
-        int rocksSpawned = variantToAmount();
-        Vector2[] positions = GenerationUtils.positions(rocksSpawned, 8.0f);
-        float dspx = variant == 2 ? (11.5f) : (variant == 3 ? 5.5f : 5.0f);
-        float dspy = variant == 2 ? (9.5f) : (variant == 3 ? 5.0f : 3.5f);
+        float[] data = itemData();
+        spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_rock", 8);
+    }
 
-        for(int i = 0; i < rocksSpawned; i++) {
-            ServerItem item = new ServerItem();
+    private float[] itemData() {
+        int min, max;
+        float dspX = 0.0f, dspY;
 
-            ItemMapping r = ItemMapper.get().getMapping("item_rock");
-            item.itemContainer = new ServerInventoryItem(r.id, 1);
-
-            item.posX = posX + dspx;
-            item.posY = posY + dspy;
-            item.dstX = positions[i].x;
-            item.dstY = positions[i].y;
-            ServerWorld.get().registerServerEntity(entityDimension, item);
+        if(variant == 2) {
+            min = 2;
+            max = 5;
+            dspY = 5.75f;
+        } else if(variant == 3) {
+            min = 1;
+            max = 2;
+            dspY = 1.25f;
+        } else {
+            min = 1;
+            max = 1;
+            dspY = -0.5f;
         }
+
+        return new float[] {min, max, dspX, dspY};
     }
 
     @Override

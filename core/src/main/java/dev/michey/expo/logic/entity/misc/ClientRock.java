@@ -16,18 +16,15 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
     private TextureRegion texture;
     private TextureRegion shadowMask;
     private float[] interactionPointArray;
+    private TextureRegion selectionTexture;
 
     @Override
     public void onCreation() {
         texture = ExpoAssets.get().textureRegion("entity_rock_" + variant);
         shadowMask = ExpoAssets.get().textureRegion("entity_rock_" + variant);
-        updateTexture(texture);
-        interactionPointArray = new float[] {
-                clientPosX + 2, clientPosY + 2,
-                clientPosX + drawWidth - 2, clientPosY + 2,
-                clientPosX + drawWidth - 2, clientPosY + drawHeight - 2,
-                clientPosX + 2, clientPosY + drawHeight - 2,
-        };
+        selectionTexture = generateSelectionTexture(texture);
+        updateTextureBounds(texture);
+        interactionPointArray = generateInteractionArray(2);
     }
 
     @Override
@@ -63,7 +60,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(texture, clientPosX + drawOffsetX, clientPosY);
+        rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
@@ -78,20 +75,20 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
             updateDepth(2);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(texture, clientPosX + drawOffsetX, clientPosY);
+            rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
         float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(shadowMask, drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
     }
 

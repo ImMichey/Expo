@@ -14,7 +14,10 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.flora.ClientDandelion;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -442,25 +445,24 @@ public class ClientWorld {
 
                 for(ClientEntity all : clientEntityManager.allEntities()) {
                     if(all.visibleToRenderEngine) {
-                        float x = all.clientPosX;
-                        float y = all.clientPosY;
+                        float dpx = all.finalDrawPosX;
+                        float dpy = all.finalDrawPosY;
 
-                        float vx = x + all.drawOffsetX;
-                        float vy = y + all.drawOffsetY;
+                        float tpx = all.finalTextureStartX;
+                        float tpy = all.finalTextureStartY;
 
                         if(Expo.get().getImGuiExpo().renderDrawPos.get()) {
                             r.chunkRenderer.setColor(Color.GREEN);
-                            r.chunkRenderer.circle(vx, vy, 0.33f, 8);
+                            r.chunkRenderer.circle(dpx, dpy, 0.4f, 8);
+                            r.chunkRenderer.setColor(Color.BLACK);
+                            r.chunkRenderer.circle(tpx, tpy, 0.3f, 8);
 
-                            if(all.drawWidth != 0 || all.drawHeight != 0) {
+                            if(all.textureWidth != 0 || all.textureHeight != 0) {
                                 r.chunkRenderer.end();
+
                                 r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
                                 r.chunkRenderer.setColor(Color.WHITE);
-
-                                r.chunkRenderer.rect(vx, vy, all.drawWidth, all.drawHeight);
-                                if(!(x == vx && y == vy)) {
-                                    r.chunkRenderer.line(x, y, vx, vy);
-                                }
+                                r.chunkRenderer.rect(tpx, tpy, all.textureWidth, all.textureHeight);
 
                                 r.chunkRenderer.end();
                                 r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -469,22 +471,22 @@ public class ClientWorld {
 
                         if(Expo.get().getImGuiExpo().renderClientPos.get()) {
                             r.chunkRenderer.setColor(Color.CYAN);
-                            r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 1.0f, 8);
+                            r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 0.8f, 8);
                         }
 
                         if(Expo.get().getImGuiExpo().renderServerPos.get()) {
                             r.chunkRenderer.setColor(Color.CORAL);
-                            r.chunkRenderer.circle(all.serverPosX, all.serverPosY, 0.65f, 8);
+                            r.chunkRenderer.circle(all.serverPosX, all.serverPosY, 0.6f, 8);
                         }
 
                         if(Expo.get().getImGuiExpo().renderDrawRoot.get()) {
                             r.chunkRenderer.setColor(Color.RED);
-                            r.chunkRenderer.circle(all.drawRootX, all.drawRootY, 0.33f, 8);
+                            r.chunkRenderer.circle(all.finalTextureCenterX, all.finalTextureRootY, 0.33f, 8);
                         }
 
                         if(Expo.get().getImGuiExpo().renderVisualCenter.get()) {
                             r.chunkRenderer.setColor(Color.YELLOW);
-                            r.chunkRenderer.circle(all.toVisualCenterX(), all.toVisualCenterY(), 0.33f, 8);
+                            r.chunkRenderer.circle(all.finalTextureCenterX, all.finalTextureCenterY, 0.33f, 8);
                         }
 
                         if(Expo.get().getImGuiExpo().renderInteractionPoints.get()) {

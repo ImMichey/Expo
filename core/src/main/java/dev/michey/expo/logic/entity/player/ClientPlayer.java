@@ -155,6 +155,7 @@ public class ClientPlayer extends ClientEntity {
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
+        disableTextureCentering = true;
 
         if(player) {
             RenderContext.get().expoCamera.center(clientPosX, clientPosY);
@@ -234,7 +235,7 @@ public class ClientPlayer extends ClientEntity {
     public void tick(float delta) {
         syncPositionWithServer();
         updateChunkAndTile();
-        updateCenterAndRoot();
+        updateTexturePositionData();
 
         float now = RenderContext.get().deltaTotal;
 
@@ -411,7 +412,7 @@ public class ClientPlayer extends ClientEntity {
                         }
                     }
                 } else {
-                    AudioEngine.get().playSoundGroupManaged("punch", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
+                    AudioEngine.get().playSoundGroupManaged("punch", new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
                 }
             } else {
                 if(lastPunchValue > interpolationValue) {
@@ -432,7 +433,7 @@ public class ClientPlayer extends ClientEntity {
                 // Don't need dynamic volume + panning
                 AudioEngine.get().playSoundGroup(group);
             } else {
-                AudioEngine.get().playSoundGroupManaged(group, new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
+                AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
             }
         }
 
@@ -529,8 +530,9 @@ public class ClientPlayer extends ClientEntity {
             playerWalkIndex = 0;
         }
 
-        updateTexture(0, 0, draw_tex_base.getRegionWidth(), draw_tex_base.getRegionHeight());
-        playerReachCenterX = drawCenterX;
+        updateTextureBounds(draw_tex_base);
+
+        playerReachCenterX = finalTextureCenterX;
         playerReachCenterY = clientPosY + 7;
 
         draw_tex_arm_left = tex_arm_left;

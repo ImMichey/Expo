@@ -15,7 +15,9 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public class ExpoAssets {
 
     private final AssetManager assetManager;
-    private TextureAtlas mainAtlas;
+    private TextureAtlas expo0Atlas;
+    private TextureAtlas tilesAtlas;
+    //private TextureAtlas mainAtlas;
 
     private TileSheet tileSheet;
     private ParticleSheet particleSheet;
@@ -38,15 +40,8 @@ public class ExpoAssets {
                 String type = line.substring(1, line.length() - 1);
 
                 switch (type) {
-                    case "TextureAtlas" -> currentMode = TextureAtlas.class;
                     case "Texture" -> currentMode = Texture.class;
-                    case "!LOAD" -> {
-                        assetManager.finishLoading();
-
-                        if(mainAtlas == null) {
-                            mainAtlas = assetManager.get("textures/atlas/expo-0.atlas", TextureAtlas.class);
-                        }
-                    }
+                    case "!LOAD" -> assetManager.finishLoading();
                 }
             } else {
                 if(currentMode == null) {
@@ -57,6 +52,12 @@ public class ExpoAssets {
                 assetManager.load("textures/" + line, currentMode);
             }
         }
+
+        assetManager.load("textures/atlas/expo-0.atlas", TextureAtlas.class);
+        assetManager.load("textures/atlas/tiles.atlas", TextureAtlas.class);
+        assetManager.finishLoading();
+        expo0Atlas = assetManager.get("textures/atlas/expo-0.atlas", TextureAtlas.class);
+        tilesAtlas = assetManager.get("textures/atlas/tiles.atlas", TextureAtlas.class);
 
         tileSheet = new TileSheet(this);
         particleSheet = new ParticleSheet(textureRegion("particlesheet"));
@@ -139,8 +140,12 @@ public class ExpoAssets {
         }
     }
 
+    public TextureRegion findTile(String name) {
+        return tilesAtlas.findRegion(name);
+    }
+
     public TextureRegion textureRegion(String name) {
-        return mainAtlas.findRegion(name);
+        return expo0Atlas.findRegion(name);
     }
 
     public TextureRegion textureRegionFresh(String name) {

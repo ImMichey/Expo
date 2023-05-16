@@ -20,12 +20,14 @@ import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 public class ClientMushroomBrown extends ClientEntity implements SelectableEntity {
 
     private TextureRegion texture;
+    private TextureRegion selectionTexture;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        texture = ExpoAssets.get().textureRegion("mushroom_brown_var2");
-        updateTexture(texture);
+        texture = tr("mushroom_brown_var2");
+        selectionTexture = generateSelectionTexture(texture);
+        updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
     }
 
@@ -43,7 +45,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
             p.setParticleColor(MathUtils.randomBoolean() ? ParticleColorMap.COLOR_PARTICLE_MUSHROOM_1 : ParticleColorMap.COLOR_PARTICLE_MUSHROOM_2);
             p.setParticleLifetime(0.3f);
-            p.setParticleOriginAndVelocity(drawCenterX, drawCenterY, velocityX, velocityY);
+            p.setParticleOriginAndVelocity(finalTextureCenterX, finalTextureCenterY, velocityX, velocityY);
             float scale = MathUtils.random(0.5f, 1.0f);
             p.setParticleScale(scale, scale);
             p.setParticleFadeout(0.1f);
@@ -58,7 +60,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
     @Override
     public void onDeletion() {
         if(removalReason == EntityRemovalReason.DEATH) {
-            AudioEngine.get().playSoundGroupManaged("harvest", new Vector2(drawRootX, drawRootY), PLAYER_AUDIO_RANGE, false);
+            playEntitySound("harvest");
         }
     }
 
@@ -76,7 +78,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(texture, clientPosX + drawOffsetX, clientPosY);
+        rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
@@ -88,23 +90,23 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth(drawOffsetY);
+            updateDepth(textureOffsetY);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(texture, clientPosX + drawOffsetX, clientPosY);
+            rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX + drawOffsetX, clientPosY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
         float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 
         if(drawMushroom) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(texture, drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
         }
     }
 

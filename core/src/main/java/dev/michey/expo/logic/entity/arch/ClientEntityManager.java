@@ -369,11 +369,11 @@ public class ClientEntityManager {
         double entityPlayerAngle = GenerationUtils.angleBetween360(player.playerReachCenterX, player.playerReachCenterY, shortestDistanceX, shortestDistanceY);
         if(!ExpoShared.inAngleProximity(r.mousePlayerAngle, entityPlayerAngle, 225)) return null;
 
-        float sx = entity.clientPosX + entity.drawOffsetX;
-        float sy = entity.clientPosY + entity.drawOffsetY;
+        float sx = entity.finalTextureStartX;
+        float sy = entity.finalTextureStartY;
 
         float distanceMouseEntity = Vector2.dst(r.mouseWorldX, r.mouseWorldY, shortestDistanceX, shortestDistanceY);
-        boolean directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + entity.drawWidth) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + entity.drawHeight);
+        boolean directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + entity.textureWidth) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + entity.textureHeight);
 
         return new Object[] {directMouseContact, distanceMouseEntity};
     }

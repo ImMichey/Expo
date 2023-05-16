@@ -40,12 +40,12 @@ public class TileSheet {
 
     private void variationEntry(String name, int forId, int amount) {
         TextureRegion[] array = new TextureRegion[amount];
-        for(int i = 0; i < amount; i++) array[i] = assets.textureRegion(name + "_variation_" + i);
+        for(int i = 0; i < amount; i++) array[i] = assets.findTile(name + "_variation_" + i);
         tilesetVariationTextureMap.put(forId, array);
     }
 
     private TextureRegion singleEntry(String name) {
-        TextureRegion tex = assets.textureRegion(name);
+        TextureRegion tex = assets.findTile(name);
         tilesetTextureMap.put(currentId, tex);
         currentId++;
         return tex;
@@ -53,7 +53,7 @@ public class TileSheet {
 
     private void multiEntry(String name, int amount) {
         log("TileSheet entry: " + name + " " + currentId + " - " + (currentId + amount - 1));
-        for(int i = 0; i < amount; i++) tilesetTextureMap.put(currentId + i, assets.textureRegion(name + "_" + i));
+        for(int i = 0; i < amount; i++) tilesetTextureMap.put(currentId + i, assets.findTile(name + "_" + i));
         currentId += amount;
     }
 

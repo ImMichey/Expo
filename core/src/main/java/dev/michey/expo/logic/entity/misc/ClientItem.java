@@ -36,7 +36,8 @@ public class ClientItem extends ClientEntity {
         texture = ItemMapper.get().getMapping(itemId).uiRender.textureRegion;
         currentScaleX = 0.75f;
         currentScaleY = 0.75f;
-        updateTexture(-texture.getRegionWidth() * 0.5f * currentScaleX, 0, texture.getRegionWidth() * currentScaleX, texture.getRegionHeight() * currentScaleY);
+
+        updateTextureBounds(texture.getRegionWidth() * currentScaleX, texture.getRegionHeight() * currentScaleY, 0, 0);
     }
 
     @Override
@@ -54,6 +55,7 @@ public class ClientItem extends ClientEntity {
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
+        updateTexturePositionData();
         lifetime += delta;
 
         if(lifetime <= 0.25f) {
@@ -103,19 +105,16 @@ public class ClientItem extends ClientEntity {
             rc.itemShineShader.bind();
             rc.itemShineShader.setUniformf("u_delta", rc.deltaTotal * SHIMMER_SPEED + shimmerOffset * SHIMMER_SPEED);
 
-            float textureX = clientPosX - texture.getRegionWidth() * 0.5f * currentScaleX;
-            float textureY = clientPosY + floatingPos;
-
-            float dsp = drawWidth - drawWidth * stackX;
+            float dsp = textureWidth - textureWidth * stackX;
 
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
-            rc.arraySpriteBatch.draw(texture, textureX + dsp * 0.5f, textureY, drawWidth * stackX, drawHeight * stackY);
+            rc.arraySpriteBatch.draw(texture, finalDrawPosX + dsp * 0.5f, finalDrawPosY + floatingPos, textureWidth * stackX, textureHeight * stackY);
 
-            String numberAsString = itemAmount + "";
+            String numberAsString = String.valueOf(itemAmount);
 
             float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
-            float vx = clientPosX + drawOffsetX;
-            float vy = clientPosY + drawOffsetY;
+            float vx = finalTextureStartX;
+            float vy = finalTextureStartY;
             float fontScale = 0.5f;
 
             float ex = (slotW - texture.getRegionWidth()) * 0.5f * currentScaleX + texture.getRegionWidth() * currentScaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * currentScaleX;
@@ -140,8 +139,7 @@ public class ClientItem extends ClientEntity {
         ghostItem.clientPosX = clientPosX;
         ghostItem.clientPosY = clientPosY;
         ghostItem.floatingPos = floatingPos;
-        ghostItem.drawOffsetX = drawOffsetX;
-        ghostItem.drawOffsetY = drawOffsetY;
+        ghostItem.stealTextureData(this);
         entityManager().addClientSideEntity(ghostItem);
     }
 
@@ -156,12 +154,12 @@ public class ClientItem extends ClientEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX + drawOffsetX, clientPosY, 0, floatingPos);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, floatingPos);
         float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
-            rc.arraySpriteBatch.drawGradient(texture, drawWidth, drawHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
         }
     }
 

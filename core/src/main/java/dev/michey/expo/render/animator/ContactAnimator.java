@@ -25,6 +25,7 @@ public class ContactAnimator {
     public float squish = 1.0f;
     public float squishDelta;
     public boolean doSquish = false;
+    public float squishAdjustment = 0.0f;
 
     public ContactAnimator(ClientEntity parent, List<ClientEntityType> contactList) {
         this.parent = parent;
@@ -49,7 +50,7 @@ public class ContactAnimator {
                         // Contact.
                         parent.playEntitySound("leaves_rustle");
                         contactDelta = STEPS * 0.5f;
-                        contactDir = entity.serverDirX == 0 ? (entity.drawRootX < parent.drawRootX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
+                        contactDir = entity.serverDirX == 0 ? (entity.finalTextureCenterX < parent.finalTextureCenterX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
 
                         doSquish = true;
                         squishDelta = 0.0f;
@@ -69,6 +70,7 @@ public class ContactAnimator {
             }
 
             squish = MIN_SQUISH + Interpolation.bounceOut.apply(squishDelta) * (1.0f - MIN_SQUISH);
+            squishAdjustment = squish != 1.0f ? (1f - squish) : 0f;
         }
 
         if(contactDelta != 0) {

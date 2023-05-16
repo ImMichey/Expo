@@ -17,8 +17,8 @@ public class ClientBush extends ClientEntity implements SelectableEntity {
     public void onCreation() {
         texture = tr("entity_bush");
 
-        updateTexture(0, 0, texture.getRegionWidth(), texture.getRegionHeight());
-        interactionPointArray = new float[] {drawRootX, clientPosY + 3.0f};
+        updateTextureBounds(texture);
+        interactionPointArray = new float[] {finalTextureCenterX, clientPosY + 3.0f};
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ClientBush extends ClientEntity implements SelectableEntity {
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         rc.useArrayBatch();
-        if(rc.arraySpriteBatch.getShader() != rc.selectionShader) rc.arraySpriteBatch.setShader(rc.selectionShader);
+        //if(rc.arraySpriteBatch.getShader() != rc.selectionShader) rc.arraySpriteBatch.setShader(rc.selectionShader);
 
         rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);
 

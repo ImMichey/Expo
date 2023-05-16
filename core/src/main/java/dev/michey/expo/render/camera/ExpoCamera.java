@@ -84,7 +84,7 @@ public class ExpoCamera {
             RenderContext.get().expoCamera.camera.zoom = newZoom;
         }
 
-        cameraLerpTowards(p.drawCenterX, p.clientPosY + p.drawOffsetY + 13);
+        cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
         cameraLerpMouse();
 
         if(Float.isNaN(camera.position.x)) {
@@ -95,7 +95,7 @@ public class ExpoCamera {
     }
 
     public void centerToEntity(ClientEntity entity) {
-        center(entity.toVisualCenterX(), entity.toVisualCenterY());
+        center(entity.finalTextureCenterX, entity.finalTextureCenterY);
     }
 
     public void center(float x, float y) {

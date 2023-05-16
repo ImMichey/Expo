@@ -1,12 +1,8 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.Expo;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -14,23 +10,19 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 
 public class ClientRaindrop extends ClientEntity {
 
-    private float scale;
     private float rotation;
     private float groundY;
     private float velocityX, velocityY;
     private boolean splash;
 
-    private Sprite raindropSprite;
+    private TextureRegion raindropTexture;
     private float animationAlpha = 1.0f;
 
     private ExpoAnimation splashAnimation;
 
     @Override
     public void onCreation() {
-        raindropSprite = new Sprite(ExpoAssets.get().textureRegion("raindrop"));
-        raindropSprite.setPosition(clientPosX, clientPosY);
-        raindropSprite.setScale(scale);
-        raindropSprite.setRotation(rotation);
+        raindropTexture = tr("raindrop");
 
         splashAnimation = new ExpoAnimation("rainsplash", 4, 0.15f);
     }
@@ -50,15 +42,15 @@ public class ClientRaindrop extends ClientEntity {
         if(!splash) {
             float x = velocityX * delta;
             float y = velocityY * delta;
-
-            raindropSprite.translate(x, y);
             clientPosX += x;
             clientPosY += y;
 
             if(clientPosY <= groundY) {
                 splash = true;
                 clientPosX -= 3;
-                updateTexture(0, 0, 3.5f, 2.5f);
+                updateTextureBounds(3.5f, 2.5f, 0, 0);
+            } else {
+                updateTexturePositionData();
             }
         }
     }
@@ -80,10 +72,10 @@ public class ClientRaindrop extends ClientEntity {
 
                     if(animationAlpha < 1.0f) {
                         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
-                        rc.arraySpriteBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                        rc.arraySpriteBatch.draw(anim, finalDrawPosX, finalDrawPosY, textureWidth, textureHeight);
                         rc.arraySpriteBatch.setColor(Color.WHITE);
                     } else {
-                        rc.arraySpriteBatch.draw(anim, clientPosX, clientPosY, anim.getRegionWidth() * 0.5f, anim.getRegionHeight() * 0.5f);
+                        rc.arraySpriteBatch.draw(anim, finalDrawPosX, finalDrawPosY, textureWidth, textureHeight);
                     }
                 }
 
@@ -95,7 +87,7 @@ public class ClientRaindrop extends ClientEntity {
         } else {
             if(visibleToRenderEngine) {
                 rc.useArrayBatch();
-                raindropSprite.draw(rc.arraySpriteBatch);
+                rc.arraySpriteBatch.draw(raindropTexture, finalDrawPosX, finalDrawPosY, 0, 0, textureWidth, textureHeight, 1.0f, 1.0f, rotation);
             }
         }
     }
@@ -113,12 +105,12 @@ public class ClientRaindrop extends ClientEntity {
     public void initRaindrop(float x, float y, float groundY, float rotation, float velocityX, float velocityY) {
         clientPosX = x;
         clientPosY = y;
-        scale = 0.4f + MathUtils.random(0.1f);
+        float scale = 0.4f + MathUtils.random(0.1f);
         this.groundY = groundY;
         this.rotation = rotation;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
-        updateTexture(0, 0, scale, 4f * scale);
+        updateTextureBounds(scale, 4f * scale, 0, 0);
     }
 
 }

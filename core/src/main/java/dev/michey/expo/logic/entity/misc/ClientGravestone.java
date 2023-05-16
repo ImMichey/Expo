@@ -13,13 +13,15 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity {
 
     private TextureRegion texture;
     private TextureRegion shadowMask;
+    private TextureRegion selectionTexture;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        texture = ExpoAssets.get().textureRegion("entity_gravestone");
-        shadowMask = ExpoAssets.get().textureRegion("entity_gravestone_shadow_mask");
-        updateTexture(0, 0, texture.getRegionWidth(), texture.getRegionHeight());
+        texture = tr("entity_gravestone");
+        shadowMask = tr("entity_gravestone_shadow_mask");
+        selectionTexture = generateSelectionTexture(texture);
+        updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
     }
 
@@ -47,7 +49,7 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity {
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
 
-        rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);
+        rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
@@ -59,23 +61,23 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth(drawOffsetY);
+            updateDepth(textureOffsetY);
             rc.useArrayBatch();
-            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-            rc.arraySpriteBatch.draw(texture, clientPosX, clientPosY);
+            rc.useRegularArrayShader();
+            rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY + 1);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
         float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
             rc.useArrayBatch();
-            if(rc.arraySpriteBatch.getShader() != rc.DEFAULT_GLES3_ARRAY_SHADER) rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-            rc.arraySpriteBatch.drawGradient(shadowMask, drawWidth, drawHeight, shadow);
+            rc.useRegularArrayShader();
+            rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
     }
 
