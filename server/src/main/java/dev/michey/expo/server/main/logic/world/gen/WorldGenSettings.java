@@ -23,6 +23,10 @@ public class WorldGenSettings {
     public void parseNoiseSettings(JSONObject object) {
         noiseSettings = new WorldGenNoiseSettings();
 
+        if(object.has("postProcessors")) {
+            noiseSettings.parsePostProcessors(object.getJSONArray("postProcessors"));
+        }
+
         if(object.has("terrain")) {
             noiseSettings.parseTerrain(object.getJSONObject("terrain"));
         }

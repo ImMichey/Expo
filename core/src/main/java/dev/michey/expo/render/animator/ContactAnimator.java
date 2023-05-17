@@ -26,6 +26,7 @@ public class ContactAnimator {
     public float squishDelta;
     public boolean doSquish = false;
     public float squishAdjustment = 0.0f;
+    public boolean small = true;
 
     public ContactAnimator(ClientEntity parent, List<ClientEntityType> contactList) {
         this.parent = parent;
@@ -39,38 +40,40 @@ public class ContactAnimator {
     }
 
     public void tick(float delta) {
-        if(contactDelta == 0 && parent.visibleToRenderEngine) {
-            for(List<ClientEntity> list : parent.entityManager().getEntitiesByType(contactList)) {
-                for(ClientEntity entity : list) {
-                    if(!entity.isMoving()) continue;
-                    float xDst = parent.dstRootX(entity);
-                    float yDst = parent.dstRootY(entity);
+        if(small) {
+            if(contactDelta == 0 && parent.visibleToRenderEngine) {
+                for(List<ClientEntity> list : parent.entityManager().getEntitiesByType(contactList)) {
+                    for(ClientEntity entity : list) {
+                        if(!entity.isMoving()) continue;
+                        float xDst = parent.dstRootX(entity);
+                        float yDst = parent.dstRootY(entity);
 
-                    if(xDst < 6.0f && yDst < 5.0f) {
-                        // Contact.
-                        parent.playEntitySound("leaves_rustle");
-                        contactDelta = STEPS * 0.5f;
-                        contactDir = entity.serverDirX == 0 ? (entity.finalTextureCenterX < parent.finalTextureCenterX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
+                        if(xDst < 6.0f && yDst < 5.0f) {
+                            // Contact.
+                            parent.playEntitySound("leaves_rustle");
+                            contactDelta = STEPS * 0.5f;
+                            contactDir = entity.serverDirX == 0 ? (entity.finalTextureCenterX < parent.finalTextureCenterX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
 
-                        doSquish = true;
-                        squishDelta = 0.0f;
+                            doSquish = true;
+                            squishDelta = 0.0f;
+                        }
                     }
                 }
             }
-        }
 
-        if(doSquish) {
-            float MIN_SQUISH = 0.3334f;
-            float SQUISH_SPEED = 1.2f;
-            squishDelta += delta * SQUISH_SPEED;
+            if(doSquish) {
+                float MIN_SQUISH = 0.3334f;
+                float SQUISH_SPEED = 1.2f;
+                squishDelta += delta * SQUISH_SPEED;
 
-            if(squishDelta >= 1.0f) {
-                squishDelta = 1.0f;
-                doSquish = false;
+                if(squishDelta >= 1.0f) {
+                    squishDelta = 1.0f;
+                    doSquish = false;
+                }
+
+                squish = MIN_SQUISH + Interpolation.bounceOut.apply(squishDelta) * (1.0f - MIN_SQUISH);
+                squishAdjustment = squish != 1.0f ? (1f - squish) : 0f;
             }
-
-            squish = MIN_SQUISH + Interpolation.bounceOut.apply(squishDelta) * (1.0f - MIN_SQUISH);
-            squishAdjustment = squish != 1.0f ? (1f - squish) : 0f;
         }
 
         if(contactDelta != 0) {

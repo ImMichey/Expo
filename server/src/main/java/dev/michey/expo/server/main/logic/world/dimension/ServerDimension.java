@@ -13,6 +13,7 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.Pair;
 import dev.michey.expo.weather.Weather;
+import make.some.noise.Noise;
 
 import java.util.concurrent.Callable;
 
@@ -89,6 +90,7 @@ public abstract class ServerDimension {
         chunkHandler.getTerrainNoiseTemperature().setSeed(seed + 1);
         chunkHandler.getTerrainNoiseMoisture().setSeed(seed + 2);
         chunkHandler.getRiverNoise().setSeed(seed);
+        for(Noise noise : chunkHandler.getNoisePostProcessorMap().values()) noise.setSeed(seed);
     }
 
     private boolean isBiome(int tx, int ty, BiomeType... types) {

@@ -194,6 +194,10 @@ public class WorldSaveFile {
         return full;
     }
 
+    public String getWorldName() {
+        return worldName;
+    }
+
     public PlayerSaveHandler getPlayerSaveHandler() {
         return playerSaveHandler;
     }

@@ -15,6 +15,7 @@ import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientGrass extends ClientEntity implements SelectableEntity {
@@ -65,27 +66,19 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         playEntitySound("grass_hit");
         contactAnimator.onContact();
 
-        int particles = MathUtils.random(4, 7);
-
-        for(int i = 0; i < particles; i++) {
-            ClientParticleHit p = new ClientParticleHit();
-
-            float velocityX = MathUtils.random(-24, 24);
-            float velocityY = MathUtils.random(-24, 24);
-
-            p.setParticleTextureRange(3, 7);
-            p.setParticleColor(MathUtils.randomBoolean() ? ParticleColorMap.COLOR_PARTICLE_GRASS_1 : ParticleColorMap.COLOR_PARTICLE_GRASS_2);
-            p.setParticleLifetime(0.3f);
-            p.setParticleOriginAndVelocity(finalTextureCenterX, finalTextureCenterY, velocityX, velocityY);
-            float scale = MathUtils.random(0.6f, 0.9f);
-            p.setParticleScale(scale, scale);
-            p.setParticleFadeout(0.1f);
-            p.setParticleRotation(MathUtils.random(360f));
-            p.setParticleConstantRotation((Math.abs(velocityX) + Math.abs(velocityY)) * 0.5f / 24f * 360f);
-            p.depth = depth - 0.0001f;
-
-            entityManager().addClientSideEntity(p);
-        }
+        new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                .amount(4, 7)
+                .scale(0.6f, 0.9f)
+                .lifetime(0.3f, 0.35f)
+                .color(ParticleColorMap.random(1))
+                .position(finalTextureCenterX, finalTextureCenterY)
+                .velocity(-24, 24, -24, 24)
+                .fadeout(0.10f)
+                .textureRange(3, 7)
+                .randomRotation()
+                .rotateWithVelocity()
+                .depth(depth - 0.0001f)
+                .spawn();
     }
 
     @Override

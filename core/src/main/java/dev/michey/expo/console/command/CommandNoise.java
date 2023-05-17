@@ -32,10 +32,9 @@ public class CommandNoise extends AbstractConsoleCommand {
 
     @Override
     public void executeCommand(String[] args) {
-        final int[] modes = new int[] {Noise.HONEY_FRACTAL};
-        final float[] freq = new float[] {32f, 48f, 64f};
-        final int[] octa = new int[] {4, 6};
-        final float[] level = new float[] {0.55f, 0.6f, 0.7f, 0.8f};
+        final int[] modes = new int[] {Noise.SIMPLEX_FRACTAL};
+        final float[] freq = new float[] {0.0075f, 0.01f};
+        final int[] octa = new int[] {5};
 
         int attempts = 1;
         final int[] seeds = new int[attempts];
@@ -55,39 +54,36 @@ public class CommandNoise extends AbstractConsoleCommand {
             for(int a = 0; a < freq.length; a++) {
                 for(int b = 0; b < octa.length; b++) {
                     for(int c = 0; c < modes.length; c++) {
-                        for(int d = 0; d < level.length; d++) {
-                            int finalA = a;
-                            int finalB = b;
-                            int finalC = c;
-                            int finalAtt = att;
-                            int finalLevel = d;
+                        int finalA = a;
+                        int finalB = b;
+                        int finalC = c;
+                        int finalAtt = att;
 
-                            service.execute(() -> {
-                                Noise noise = new Noise(seeds[finalAtt], 1f/freq[finalA], modes[finalC], octa[finalB]);
+                        service.execute(() -> {
+                            Noise noise = new Noise(seeds[finalAtt], freq[finalA], modes[finalC], octa[finalB]);
 
-                                Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+                            Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
 
-                                for(int i = 0; i < size; i++) {
-                                    for(int j = 0; j < size; j++) {
-                                        float value = noise.getConfiguredNoise(i, j);
-                                        float normalized = (value + 1) / 2f;
+                            for(int i = 0; i < size; i++) {
+                                for(int j = 0; j < size; j++) {
+                                    float value = noise.getConfiguredNoise(i, j);
+                                    float normalized = (value + 1) / 2f;
 
-                                        if(normalized > level[finalLevel]) {
-                                            pixmap.drawPixel(i, j, Color.rgba8888(normalized, normalized, normalized, 1));
-                                        } else {
-                                            pixmap.drawPixel(i, j, Color.rgba8888(0, 0, 0, 1));
-                                        }
+                                    if(normalized > 0.85) {
+                                        pixmap.drawPixel(i, j, Color.rgba8888(150/255f,75f/255f,0,1));
+                                    } else {
+                                        pixmap.drawPixel(i, j, Color.rgba8888(normalized, normalized, normalized, 1));
                                     }
                                 }
+                            }
 
-                                String str = basePath + "mode_" + modes[finalC] + "-" + "freq_" + freq[finalA] + "-octa_" + octa[finalB] + "-" + finalAtt + "_l" + level[finalLevel] + ".png";
-                                FileHandle fh = Gdx.files.local(str);
-                                PixmapIO.writePNG(fh, pixmap);
-                                pixmap.dispose();
+                            String str = basePath + "mode_" + modes[finalC] + "-" + "freq_" + freq[finalA] + "-octa_" + octa[finalB] + "-" + finalAtt + ".png";
+                            FileHandle fh = Gdx.files.local(str);
+                            PixmapIO.writePNG(fh, pixmap);
+                            pixmap.dispose();
 
-                                success("Written noise image to " + fh.path());
-                            });
-                        }
+                            success("Written noise image to " + fh.path());
+                        });
                     }
                 }
             }

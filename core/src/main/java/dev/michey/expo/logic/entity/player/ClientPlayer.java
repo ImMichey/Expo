@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.console.ConsoleMessage;
+import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
@@ -20,6 +22,8 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
@@ -203,6 +207,8 @@ public class ClientPlayer extends ClientEntity {
 
             proximityLight = new ExpoLight(64.0f, 32, 1f, 0.0f);
             proximityLight.color(0.75f, 0.75f, 0.75f, 1.0f);
+
+            finishedWorldEnterAnimation = ExpoServerBase.get() != null && ExpoServerBase.get().getWorldSaveHandler().getWorldName().startsWith("dev-world-");
         }
     }
 

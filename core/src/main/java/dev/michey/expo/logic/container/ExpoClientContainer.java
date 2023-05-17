@@ -1,19 +1,25 @@
 package dev.michey.expo.logic.container;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.ExpoClientPacketReader;
+import dev.michey.expo.console.ConsoleMessage;
+import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class ExpoClientContainer {
 
@@ -136,6 +142,11 @@ public class ExpoClientContainer {
 
         if(client != null) {
             client.getPacketListener().evaluatePackets();
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F9) && DEV_MODE && ExpoServerContainer.get() != null) {
+            GameConsole.get().addConsoleMessage(new ConsoleMessage("/quit", true));
+            GameConsole.get().addConsoleMessage(new ConsoleMessage("/world dev-world-" + System.currentTimeMillis(), true));
         }
     }
 

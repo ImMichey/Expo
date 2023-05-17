@@ -32,6 +32,7 @@ import dev.michey.expo.util.*;
 import dev.michey.expo.util.visualizer.Visualizer;
 import dev.michey.expo.util.visualizer.Visualizer2;
 import dev.michey.expo.weather.Weather;
+import make.some.noise.Noise;
 
 import java.io.IOException;
 import java.util.ConcurrentModificationException;
@@ -172,6 +173,7 @@ public class ClientWorld {
         clientChunkGrid.terrainNoiseTemperature.setSeed(seed + 1);
         clientChunkGrid.terrainNoiseMoisture.setSeed(seed + 2);
         clientChunkGrid.riverNoise.setSeed(seed);
+        for(var x : clientChunkGrid.noisePostProcessorMap.values()) x.value.setSeed(seed);
     }
 
     private void calculateWorldTime(float delta) {

@@ -1,99 +1,97 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class WorldGenNoiseSettings {
 
     /** Noise TERRAIN */
-    public int terrainElevationOctaves;
-    public int terrainElevationType;
-    public int terrainElevationFractalType = -1;
-    public float terrainElevationFrequency;
-
-    public int terrainTemperatureOctaves;
-    public int terrainTemperatureType;
-    public int terrainTemperatureFractalType = -1;
-    public float terrainTemperatureFrequency;
-
-    public int terrainMoistureOctaves;
-    public int terrainMoistureType;
-    public int terrainMoistureFractalType = -1;
-    public float terrainMoistureFrequency;
-
-    private boolean terrainElevation;
+    public NoiseWrapper terrainElevation;
+    public NoiseWrapper terrainTemperature;
+    public NoiseWrapper terrainMoisture;
 
     /** Noise RIVERS */
-    public int noiseRiversOctaves;
-    public int noiseRiversType;
-    public int noiseRiversFractalType = -1;
-    public float noiseRiversFrequency;
-    private boolean noiseRivers;
+    public NoiseWrapper river;
+
+    /** Noise POST PROCESS */
+    public HashMap<String, NoisePostProcessor> postProcessList;
 
     public boolean isTerrainGenerator() {
-        return terrainElevation;
+        return terrainElevation != null;
     }
 
     public boolean isRiversGenerator() {
-        return noiseRivers;
+        return river != null;
+    }
+
+    public boolean isPostProcessorGenerator() {
+        return postProcessList != null;
+    }
+
+    public void parsePostProcessors(JSONArray array) {
+        if(array.length() == 0) return;
+        postProcessList = new HashMap<>();
+
+        for(int i = 0; i < array.length(); i++) {
+            JSONObject o = array.getJSONObject(i);
+
+            postProcessList.put(o.getString("name"), new NoisePostProcessor(new NoiseWrapper(o.getString("name"),
+                    o.getInt("octaves"),
+                    o.getInt("type"),
+                    o.has("fractalType") ? o.getInt("fractalType") : -1,
+                    o.getFloat("frequency")), o.getFloat("level")));
+        }
     }
 
     public void parseTerrain(JSONObject o) {
-        terrainElevation = true;
-
         {
             JSONObject elevation = o.getJSONObject("elevation");
-            terrainElevationOctaves = elevation.getInt("octaves");
-            terrainElevationType = elevation.getInt("type");
-            terrainElevationFrequency = elevation.getFloat("frequency");
-            if(elevation.has("fractalType")) terrainElevationFractalType = elevation.getInt("fractalType");
+            terrainElevation = new NoiseWrapper("terrainElevation",
+                    elevation.getInt("octaves"),
+                    elevation.getInt("type"),
+                    elevation.has("fractalType") ? elevation.getInt("fractalType") : -1,
+                    elevation.getFloat("frequency"));
         }
 
         {
             JSONObject temperature = o.getJSONObject("temperature");
-            terrainTemperatureOctaves = temperature.getInt("octaves");
-            terrainTemperatureType = temperature.getInt("type");
-            terrainTemperatureFrequency = temperature.getFloat("frequency");
-            if(temperature.has("fractalType")) terrainTemperatureFractalType = temperature.getInt("fractalType");
+            terrainTemperature = new NoiseWrapper("terrainElevation",
+                    temperature.getInt("octaves"),
+                    temperature.getInt("type"),
+                    temperature.has("fractalType") ? temperature.getInt("fractalType") : -1,
+                    temperature.getFloat("frequency"));
         }
 
         {
             JSONObject moisture = o.getJSONObject("moisture");
-            terrainMoistureOctaves = moisture.getInt("octaves");
-            terrainMoistureType = moisture.getInt("type");
-            terrainMoistureFrequency = moisture.getFloat("frequency");
-            if(moisture.has("fractalType")) terrainMoistureFractalType = moisture.getInt("fractalType");
+            terrainMoisture = new NoiseWrapper("terrainElevation",
+                    moisture.getInt("octaves"),
+                    moisture.getInt("type"),
+                    moisture.has("fractalType") ? moisture.getInt("fractalType") : -1,
+                    moisture.getFloat("frequency"));
         }
     }
 
     public void parseRivers(JSONObject o) {
-        noiseRivers = true;
-        noiseRiversOctaves = o.getInt("octaves");
-        noiseRiversType = o.getInt("type");
-        noiseRiversFrequency = o.getFloat("frequency");
-        if(o.has("fractalType")) noiseRiversFractalType = o.getInt("fractalType");
+        river = new NoiseWrapper("terrainElevation",
+                o.getInt("octaves"),
+                o.getInt("type"),
+                o.has("fractalType") ? o.getInt("fractalType") : -1,
+                o.getFloat("frequency"));
     }
 
     @Override
     public String toString() {
         return "WorldGenNoiseSettings{" +
-                "terrainElevationOctaves=" + terrainElevationOctaves +
-                ", terrainElevationType=" + terrainElevationType +
-                ", terrainElevationFractalType=" + terrainElevationFractalType +
-                ", terrainElevationFrequency=" + terrainElevationFrequency +
-                ", terrainTemperatureOctaves=" + terrainTemperatureOctaves +
-                ", terrainTemperatureType=" + terrainTemperatureType +
-                ", terrainTemperatureFractalType=" + terrainTemperatureFractalType +
-                ", terrainTemperatureFrequency=" + terrainTemperatureFrequency +
-                ", terrainMoistureOctaves=" + terrainMoistureOctaves +
-                ", terrainMoistureType=" + terrainMoistureType +
-                ", terrainMoistureFractalType=" + terrainMoistureFractalType +
-                ", terrainMoistureFrequency=" + terrainMoistureFrequency +
-                ", terrainElevation=" + terrainElevation +
-                ", noiseRiversOctaves=" + noiseRiversOctaves +
-                ", noiseRiversType=" + noiseRiversType +
-                ", noiseRiversFractalType=" + noiseRiversFractalType +
-                ", noiseRiversFrequency=" + noiseRiversFrequency +
-                ", noiseRivers=" + noiseRivers +
+                "terrainElevation=" + terrainElevation +
+                ", terrainTemperature=" + terrainTemperature +
+                ", terrainMoisture=" + terrainMoisture +
+                ", river=" + river +
+                ", postProcessList=" + postProcessList +
                 '}';
     }
 

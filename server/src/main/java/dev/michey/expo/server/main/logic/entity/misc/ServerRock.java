@@ -26,10 +26,11 @@ public class ServerRock extends ServerEntity {
             new float[] {-10.0f, 3.5f, 21.0f, 10.0f},
             new float[] {-5.5f, 3.0f, 11.5f, 4.5f},
             new float[] {-4.0f, 2.0f, 8.5f, 3.0f},
+            new float[] {-4.0f, 2.0f, 8.5f, 3.0f},
     };
 
     public ServerRock() {
-        variant = MathUtils.random(2, 4);
+        variant = MathUtils.random(2, 5);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class ServerRock extends ServerEntity {
         if(spread) {
             variant = MathUtils.random(3, 4);
         } else {
-            variant = MathUtils.random(2, 4);
+            variant = MathUtils.random(2, 5);
         }
 
         if(variant == 2) {
@@ -59,13 +60,19 @@ public class ServerRock extends ServerEntity {
             health = 20.0f;
         } else if(variant == 4) {
             health = 10.0f;
+        } else {
+            health = 10.0f;
         }
     }
 
     @Override
     public void onDie() {
         float[] data = itemData();
-        spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_rock", 8);
+        if(variant == 5) {
+            spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_flint", 8);
+        } else {
+            spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_rock", 8);
+        }
     }
 
     private float[] itemData() {
@@ -82,7 +89,7 @@ public class ServerRock extends ServerEntity {
             dspY = 1.25f;
         } else {
             min = 1;
-            max = 1;
+            max = 2;
             dspY = -0.5f;
         }
 

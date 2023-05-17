@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.flora;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.util.SpawnItem;
 
 public class ServerBush extends ServerEntity {
 
@@ -13,6 +14,13 @@ public class ServerBush extends ServerEntity {
     @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.BUSH;
+    }
+
+    @Override
+    public void onDie() {
+        spawnEntitiesAround(0, 3.25f, 10, 14,
+                new SpawnItem("item_stick", 2, 3),
+                new SpawnItem("item_grassfiber", 2, 3));
     }
 
     @Override

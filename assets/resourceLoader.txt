@@ -22,5 +22,6 @@ foliage/entity_ancient_tree/entity_ancient_tree_leaves.png
 water/square16x16.png
 foliage/entity_blueberrybush/ebbb.png
 foliage/entity_blueberrybush/ebbb_fruits.png
+foliage/entity_bush/entity_bush.png
 
 [!LOAD]

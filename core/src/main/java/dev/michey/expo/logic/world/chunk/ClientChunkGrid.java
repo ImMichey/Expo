@@ -3,8 +3,11 @@ package dev.michey.expo.logic.world.chunk;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
+import dev.michey.expo.server.main.logic.world.gen.NoiseWrapper;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
+import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
 import java.util.HashMap;
@@ -27,6 +30,7 @@ public class ClientChunkGrid {
     public HashMap<BiomeType, float[]> biomeDataMap;
 
     private HashMap<String, BiomeType> noiseCacheMap;
+    public HashMap<String, Pair<NoisePostProcessor, Noise>> noisePostProcessorMap;
 
     /** Water wave logic */
     private float waveDelta;
@@ -43,6 +47,7 @@ public class ClientChunkGrid {
             terrainNoiseMoisture = new Noise();
             riverNoise = new Noise();
             noiseCacheMap = new HashMap<>();
+            noisePostProcessorMap = new HashMap<>();
         }
 
         INSTANCE = this;
@@ -54,27 +59,22 @@ public class ClientChunkGrid {
         log("Applying world gen mapping " + noiseSettings);
 
         if(noiseSettings.isTerrainGenerator()) {
-            terrainNoiseHeight.setFrequency(noiseSettings.terrainElevationFrequency);
-            terrainNoiseHeight.setNoiseType(noiseSettings.terrainElevationType);
-            terrainNoiseHeight.setFractalOctaves(noiseSettings.terrainElevationOctaves);
-            if(noiseSettings.terrainElevationFractalType != -1) terrainNoiseHeight.setFractalType(noiseSettings.terrainElevationFractalType);
-
-            terrainNoiseTemperature.setFrequency(noiseSettings.terrainTemperatureFrequency);
-            terrainNoiseTemperature.setNoiseType(noiseSettings.terrainTemperatureType);
-            terrainNoiseTemperature.setFractalOctaves(noiseSettings.terrainTemperatureOctaves);
-            if(noiseSettings.terrainTemperatureFractalType != -1) terrainNoiseTemperature.setFractalType(noiseSettings.terrainTemperatureFractalType);
-
-            terrainNoiseMoisture.setFrequency(noiseSettings.terrainMoistureFrequency);
-            terrainNoiseMoisture.setNoiseType(noiseSettings.terrainMoistureType);
-            terrainNoiseMoisture.setFractalOctaves(noiseSettings.terrainMoistureOctaves);
-            if(noiseSettings.terrainMoistureFractalType != -1) terrainNoiseMoisture.setFractalType(noiseSettings.terrainMoistureFractalType);
+            noiseSettings.terrainElevation.applyTo(terrainNoiseHeight);
+            noiseSettings.terrainTemperature.applyTo(terrainNoiseTemperature);
+            noiseSettings.terrainMoisture.applyTo(terrainNoiseMoisture);
         }
 
         if(noiseSettings.isRiversGenerator()) {
-            riverNoise.setFrequency(noiseSettings.noiseRiversFrequency);
-            riverNoise.setNoiseType(noiseSettings.noiseRiversType);
-            riverNoise.setFractalOctaves(noiseSettings.noiseRiversOctaves);
-            if(noiseSettings.noiseRiversFractalType != -1) riverNoise.setFractalType(noiseSettings.noiseRiversFractalType);
+            noiseSettings.river.applyTo(riverNoise);
+        }
+
+        if(noiseSettings.isPostProcessorGenerator()) {
+            for(String key : noiseSettings.postProcessList.keySet()) {
+                NoisePostProcessor npp = noiseSettings.postProcessList.get(key);
+                Noise noise = new Noise();
+                npp.noiseWrapper.applyTo(noise);
+                noisePostProcessorMap.put(key, new Pair<>(npp, noise));
+            }
         }
     }
 
@@ -124,20 +124,19 @@ public class ClientChunkGrid {
         BiomeType type = noiseCacheMap.get(key);
 
         if(type == null) {
-            float normalizedHeight = noiseSettings.isTerrainGenerator() ? ((terrainNoiseHeight.getConfiguredNoise(x, y) + 1) / 2f) : -1;
-            float normalizedTemperature = noiseSettings.isTerrainGenerator() ? ((terrainNoiseTemperature.getConfiguredNoise(x, y) + 1) / 2f) : -1;
-            float normalizedMoisture = noiseSettings.isTerrainGenerator() ? ((terrainNoiseMoisture.getConfiguredNoise(x, y) + 1) / 2f) : -1;
-            float normalizedRiver = noiseSettings.isRiversGenerator() ? ((riverNoise.getConfiguredNoise(x, y) + 1) / 2f) : -1;
-
-            type = convertNoise(normalizedHeight, normalizedTemperature, normalizedMoisture, normalizedRiver);
+            type = convertNoise(x, y);
             noiseCacheMap.put(key, type);
         }
 
         return type;
     }
 
-    private BiomeType convertNoise(float height, float temperature, float moisture, float river) {
-        if(height == -1) return BiomeType.VOID;
+    private float normalized(Noise noise, int x, int y) {
+        return (noise.getConfiguredNoise(x, y) + 1) * 0.5f;
+    }
+
+    private BiomeType convertNoise(int x, int y) {
+        if(terrainNoiseHeight == null) return BiomeType.VOID;
         // riverNoise is ignored for now.
 
         for(BiomeType toCheck : biomeDataMap.keySet()) {
@@ -152,9 +151,22 @@ public class ClientChunkGrid {
             float moistureMin = values[4];
             float moistureMax = values[5];
 
-            if(height >= elevationMin && height <= elevationMax
-                    && temperature >= temperatureMin && temperature <= temperatureMax
-                    && moisture >= moistureMin && moisture <= moistureMax) {
+            float height = normalized(terrainNoiseHeight, x, y);
+            float temperature = normalized(terrainNoiseTemperature, x, y);
+            float moisture = normalized(terrainNoiseMoisture, x, y);
+
+            if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
+                // hook post processors
+                var processor = noisePostProcessorMap.get("lakes");
+
+                if(processor != null) {
+                    boolean isLake = normalized(processor.value, x, y) >= processor.key.threshold;
+
+                    if(isLake && !BiomeType.isWater(toCheck)) {
+                        return BiomeType.LAKE;
+                    }
+                }
+
                 return toCheck;
             }
         }

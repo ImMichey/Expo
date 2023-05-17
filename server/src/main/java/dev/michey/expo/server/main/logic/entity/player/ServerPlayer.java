@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.entity.player;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
@@ -495,7 +496,9 @@ public class ServerPlayer extends ServerEntity {
                     } else if(sand) {
                         identifier = "item_floor_sand";
                     } else {
-                        spawnWorm = MathUtils.random() <= 1.0f;
+                        if(tile.biome == BiomeType.PLAINS || tile.biome == BiomeType.FOREST) {
+                            spawnWorm = MathUtils.random() <= 0.05f;
+                        }
                     }
 
                     ServerItem drop = new ServerItem();

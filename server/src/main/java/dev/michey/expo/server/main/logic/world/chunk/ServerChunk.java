@@ -705,6 +705,9 @@ public class ServerChunk {
     /** Called when the chunk has been inactive before and is now commanded to save. */
     public void onSave() {
         // log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
+        String worldName = ExpoServerBase.get().getWorldSaveHandler().getWorldName();
+        if(worldName.startsWith("dev-world-")) return;
+
         for(ServerTile tile : tiles) dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
         save();
     }

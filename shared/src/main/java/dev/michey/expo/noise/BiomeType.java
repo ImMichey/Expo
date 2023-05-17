@@ -9,8 +9,9 @@ public enum BiomeType {
     LAKE(4, "Lake", new int[] {0, 46, 67}, new float[] {65f/255f, 105f/255f, 225f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
     VOID(5, "Void", null, new float[] {0f, 0f, 0f, 1.0f}, new String[] {"VOID"}),
     OCEAN_DEEP(6, "Deep Ocean", new int[] {46, 68, 89}, new float[] {73f/255f, 135f/255f, 211f/255f, 1.0f}, new String[] {"OCEAN_DEEP"}),
-    FOREST(7, "Forest", new int[] {0, 112, 133}, new float[] {87f/255f, 143f/255f, 65f/255f, 1.0f}, new String[] {"FOREST"}),
+    FOREST(7, "Forest", new int[] {0, 112, 133}, new float[] {87f/255f, 143f/255f, 65f/255f, 1.0f}, new String[] {"FOREST", "DENSE_FOREST"}),
     DESERT(8, "Desert", new int[] {0, 134, 155}, new float[] {243f/255f, 232f/255f, 212f/255f, 1.0f}, new String[] {"DESERT"}),
+    DENSE_FOREST(9, "Dense Forest", new int[] {0, 112, 133}, new float[] {57f/255f, 113f/255f, 35f/255f, 1.0f}, new String[] {"DENSE_FOREST", "FOREST"});
     ;
 
     public final int BIOME_ID;
@@ -37,6 +38,7 @@ public enum BiomeType {
             case 6 -> OCEAN_DEEP;
             case 7 -> FOREST;
             case 8 -> DESERT;
+            case 9 -> DENSE_FOREST;
             default -> OCEAN;
         };
     }
