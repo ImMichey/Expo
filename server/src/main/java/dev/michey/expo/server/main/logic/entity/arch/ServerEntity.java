@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -124,13 +125,28 @@ public abstract class ServerEntity {
 
             ItemMapping r = ItemMapper.get().getMapping(itemName);
             item.itemContainer = new ServerInventoryItem(r.id, 1);
-
             item.posX = posX + xOff;
             item.posY = posY + yOff;
             item.dstX = positions[i].x;
             item.dstY = positions[i].y;
             ServerWorld.get().registerServerEntity(entityDimension, item);
         }
+    }
+
+    public void spawnItemSingle(float originX, float originY, float originOffsetRadius, String itemName, float moveToRadius) {
+        Vector2 position = GenerationUtils.circularRandom(moveToRadius);
+        Vector2 offset = GenerationUtils.circularRandom(originOffsetRadius);
+
+        ServerItem item = new ServerItem();
+
+        ItemMapping r = ItemMapper.get().getMapping(itemName);
+        item.itemContainer = new ServerInventoryItem(r.id, 1);
+        item.posX = originX + offset.x;
+        item.posY = originY + offset.y;
+        item.dstX = position.x;
+        item.dstY = position.y;
+
+        ServerWorld.get().registerServerEntity(entityDimension, item);
     }
 
     public void spawnEntitiesAround(float xOff, float yOff, float radiusMin, float radiusMax, SpawnItem... spawnItems) {

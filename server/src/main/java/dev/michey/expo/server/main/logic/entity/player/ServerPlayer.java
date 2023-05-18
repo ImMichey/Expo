@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
@@ -214,6 +215,7 @@ public class ServerPlayer extends ServerEntity {
                         if(item != -1) {
                             if(selected.damageableWith == ItemMapper.get().getMapping(item).logic.toolType) {
                                 selected.applyDamageWithPacket(this, dmg);
+                                useItem(getCurrentItem());
                             }
                         }
                     } else {
@@ -415,11 +417,11 @@ public class ServerPlayer extends ServerEntity {
             chunk.lastTileUpdate = System.currentTimeMillis();
 
             { // Update tile data
-                tile.layer0 = new int[] {p.floorType.TILE_TEXTURE_ID};
+                tile.updateLayer0(p.floorType.TILE_LAYER_TYPE);
                 ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 0, tile.tileArray, tile.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
 
                 for(ServerTile st : tile.getNeighbouringTiles()) {
-                    st.updateLayer0(false);
+                    st.updateLayer0Adjacent();
                     ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 0, st.tileArray, st.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
                 }
             }
@@ -440,12 +442,11 @@ public class ServerPlayer extends ServerEntity {
             chunk.lastTileUpdate = System.currentTimeMillis();
 
             { // Update tile data
-                tile.layer1 = new int[] {p.floorType.TILE_TEXTURE_ID};
-                tile.updateLayer1();
+                tile.updateLayer1(p.floorType.TILE_LAYER_TYPE);
                 ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 1, tile.tileArray, tile.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
 
                 for(ServerTile st : tile.getNeighbouringTiles()) {
-                    st.updateLayer1();
+                    st.updateLayer1Adjacent();
                     ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 1, st.tileArray, st.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
                 }
             }
@@ -464,6 +465,17 @@ public class ServerPlayer extends ServerEntity {
         }
     }
 
+    private int digLayer(ServerTile tile) {
+        TileLayerType t1 = tile.layerTypes[1];
+        if(t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST) return 1;
+        if(t1 == TileLayerType.SAND) return 1;
+
+        TileLayerType t0 = tile.layerTypes[0];
+        if(t0 == TileLayerType.SOIL) return 0;
+
+        return -1;
+    }
+
     public void digAt(int chunkX, int chunkY, int tileArray) {
         ServerInventoryItem item = getCurrentItem();
         if(item.itemMetadata == null || item.itemMetadata.toolType != ToolType.SHOVEL) return; // to combat de-sync server<->client, double check current item
@@ -472,72 +484,68 @@ public class ServerPlayer extends ServerEntity {
         var tile = chunk.tiles[tileArray];
         int pColor = tile.toParticleColorId();
 
-        boolean grass = tile.isGrassTile() || tile.isForestTile();
-        boolean sand = tile.isSandTile() || tile.isDesertTile();
-        boolean fullSoil = tile.isSoilTile() && tile.layerIsEmpty(1);
+        int digLayer = digLayer(tile);
 
-        if(grass || sand || fullSoil) {
+        if(digLayer != -1) {
             ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
             boolean dugUp = tile.dig(mapping.logic.attackDamage);
 
             if(dugUp) {
                 // Update tile health
                 tile.digHealth = 20.0f;
-
                 // Update tile timestamp
                 chunk.lastTileUpdate = System.currentTimeMillis();
 
-                { // Drop layer 1 tile as item.
-                    String identifier = "item_dirt";
-                    boolean spawnWorm = false;
+                { // Play dig up sound.
+                    String sound = TileLayerType.typeToHitSound(tile.layerTypes[digLayer]);
 
-                    if(grass) {
-                        identifier = "item_floor_grass";
-                    } else if(sand) {
-                        identifier = "item_floor_sand";
-                    } else {
-                        if(tile.biome == BiomeType.PLAINS || tile.biome == BiomeType.FOREST) {
-                            spawnWorm = MathUtils.random() <= 0.05f;
+                    if(sound != null) {
+                        ServerPackets.p24PositionalSound(sound,
+                                ExpoShared.tileToPos(tile.tileX) + 8f, ExpoShared.tileToPos(tile.tileY) + 8f,
+                                ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                    }
+                }
+
+                {
+                    if(digLayer == 0 && (tile.biome == BiomeType.PLAINS || tile.biome == BiomeType.FOREST || tile.biome == BiomeType.DENSE_FOREST)) {
+                        // SPAWN THE WORM!
+                        if(MathUtils.random() <= 0.05f) {
+                            ServerWorm worm = new ServerWorm();
+                            worm.posX = ExpoShared.tileToPos(tile.tileX) + 0.5f;
+                            worm.posY = ExpoShared.tileToPos(tile.tileY) + 3f;
+                            ServerWorld.get().registerServerEntity(entityDimension, worm);
+                            ServerPackets.p24PositionalSound("pop", worm.posX, worm.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
                         }
                     }
 
-                    ServerItem drop = new ServerItem();
-                    drop.itemContainer = new ServerInventoryItem(ItemMapper.get().getMapping(identifier).id, 1);
-                    drop.posX = ExpoShared.tileToPos(tile.tileX) + 8f;
-                    drop.posY = ExpoShared.tileToPos(tile.tileY) + 8f;
-                    Vector2 dst = GenerationUtils.circularRandom(3.0f);
-                    drop.dstX = dst.x;
-                    drop.dstY = dst.y;
-                    ServerWorld.get().registerServerEntity(entityDimension, drop);
+                    // Drop layer as item.
+                    String identifier = TileLayerType.typeToItemDrop(tile.layerTypes[digLayer]);
 
-                    // Spawn worm if needed
-                    if(spawnWorm) {
-                        ServerWorm worm = new ServerWorm();
-                        worm.posX = ExpoShared.tileToPos(tile.tileX) + 0.5f;
-                        worm.posY = ExpoShared.tileToPos(tile.tileY) + 3f;
-                        ServerWorld.get().registerServerEntity(entityDimension, worm);
-                        ServerPackets.p24PositionalSound("pop", worm.posX, worm.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                    if(identifier != null) {
+                        spawnItemSingle(ExpoShared.tileToPos(tile.tileX) + 8.0f,
+                                ExpoShared.tileToPos(tile.tileY) + 8.0f, 2.0f, identifier, 3.0f);
                     }
                 }
 
                 { // Update tile data
-                    if(fullSoil) {
-                        tile.updateLayer0(true);
-                        ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 0, tile.tileArray, tile.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                    if(digLayer == 0 && tile.layerTypes[digLayer] == TileLayerType.SOIL) {
+                        tile.updateLayer0(TileLayerType.SOIL_HOLE);
+                        ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, digLayer, tile.tileArray, tile.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
 
-                        for(ServerTile st : tile.getNeighbouringTiles()) {
-                            st.updateLayer0(false);
-                            ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 0, st.tileArray, st.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                        for(ServerTile neighbour : tile.getNeighbouringTiles()) {
+                            neighbour.updateLayer0Adjacent();
+                            ServerPackets.p32ChunkDataSingle(neighbour.chunk.chunkX, neighbour.chunk.chunkY, digLayer, neighbour.tileArray, neighbour.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
                         }
-                    } else {
-                        tile.layer1 = new int[] {-1};
-                        ServerPackets.p32ChunkDataSingle(chunkX, chunkY, 1, tile.tileArray, new int[] {-1}, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                    } else if(digLayer == 1) {
+                        tile.updateLayer1(TileLayerType.EMPTY);
+                        ServerPackets.p32ChunkDataSingle(chunkX, chunkY, digLayer, tile.tileArray, tile.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
 
-                        for(ServerTile st : tile.getNeighbouringTiles()) {
-                            st.updateLayer1();
-                            ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 1, st.tileArray, st.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                        for(ServerTile neighbour : tile.getNeighbouringTiles()) {
+                            neighbour.updateLayer1Adjacent();
+                            ServerPackets.p32ChunkDataSingle(neighbour.chunk.chunkX, neighbour.chunk.chunkY, digLayer, neighbour.tileArray, neighbour.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
                         }
                     }
+
                 }
             }
 
@@ -545,32 +553,22 @@ public class ServerPlayer extends ServerEntity {
                 ServerPackets.p33TileDig(tile.tileX, tile.tileY, pColor, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
             }
 
-            { // Play dig up sound.
-                String digSound = "grass_hit";
-
-                if(sand) {
-                    digSound = "dig_sand";
-                } else if(fullSoil) {
-                    digSound = "step_water";
-                }
-
-                ServerPackets.p24PositionalSound(digSound,
-                        ExpoShared.tileToPos(tile.tileX) + 8f, ExpoShared.tileToPos(tile.tileY) + 8f,
-                        ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
-            }
-
             { // Update player inventory/item.
-                item.itemMetadata.durability -= 1;
-                boolean itemNowBroken = item.itemMetadata.durability <= 0;
-
-                if(itemNowBroken) {
-                    playerInventory.slots[selectedInventorySlot].item.setEmpty();
-                    heldItemPacket(PacketReceiver.whoCanSee(this));
-                }
-
-                ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
+                useItem(item);
             }
         }
+    }
+
+    private void useItem(ServerInventoryItem item) {
+        item.itemMetadata.durability -= 1;
+        boolean itemNowBroken = item.itemMetadata.durability <= 0;
+
+        if(itemNowBroken) {
+            playerInventory.slots[selectedInventorySlot].item.setEmpty();
+            heldItemPacket(PacketReceiver.whoCanSee(this));
+        }
+
+        ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
     }
 
     public float toFeetCenterX() {

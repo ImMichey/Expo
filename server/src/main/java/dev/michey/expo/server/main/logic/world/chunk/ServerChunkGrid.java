@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -129,6 +130,18 @@ public class ServerChunkGrid {
         tileMap.put(key, tile);
     }
 
+    public TileLayerType getTileLayerType(int x, int y, int layer) {
+        String k = x + "," + y;
+        ServerTile existingTile = tileMap.get(k);
+
+        if(existingTile != null && existingTile.layer0 != null) {
+            return existingTile.layerTypes[layer];
+        }
+
+        BiomeType b = getBiome(x, y);
+        return TileLayerType.biomeToLayer(b, layer);
+    }
+
     private BiomeType convertNoise(int x, int y) {
         if(!genSettings.getNoiseSettings().isTerrainGenerator()) return BiomeType.VOID;
         // riverNoise is ignored for now.
@@ -154,10 +167,17 @@ public class ServerChunkGrid {
                 NoisePostProcessor processor = genSettings.getNoiseSettings().postProcessList.get("lakes");
 
                 if(processor != null) {
-                    boolean isLake = normalized(noisePostProcessorMap.get("lakes"), x, y) >= processor.threshold;
+                    float lakeValue = normalized(noisePostProcessorMap.get("lakes"), x, y);
+                    boolean isLake = lakeValue >= processor.threshold;
 
                     if(isLake && !BiomeType.isWater(toCheck)) {
-                        return BiomeType.LAKE;
+                        float deepValue = processor.threshold + (1.0f - processor.threshold) * 0.3f;
+
+                        if(lakeValue >= deepValue) {
+                            return BiomeType.OCEAN_DEEP;
+                        } else {
+                            return BiomeType.LAKE;
+                        }
                     }
                 }
 

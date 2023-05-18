@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.world.chunk;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -81,7 +82,7 @@ public class ServerChunk {
         return chunkKey;
     }
 
-    private BiomeType biomeAt(int x, int y) {
+    public BiomeType biomeAt(int x, int y) {
         return dimension.getChunkHandler().getBiome(x, y);
     }
 
@@ -194,12 +195,6 @@ public class ServerChunk {
         int btx = ExpoShared.posToTile(wx);
         int bty = ExpoShared.posToTile(wy);
 
-        for(ServerTile st : tiles) {
-            st.layer0 = new int[] {-1};
-            st.layer1 = new int[] {-1};
-            st.layer2 = new int[] {-1};
-        }
-
         for(int i = 0; i < tiles.length; i++) {
             ServerTile tile = tiles[i];
             int x = btx + i % 8;
@@ -207,138 +202,14 @@ public class ServerChunk {
 
             // Assign biome.
             tile.biome = dimension.getChunkHandler().getBiome(x, y);
-            BiomeType b = tile.biome;
 
-            int[] tileBounds = b.BIOME_LAYER_TEXTURES;
-
-            if(tileBounds != null) {
-                int minTile = tileBounds[1];
-
-                // LAYER 0
-                int layer0Id = tileBounds[0];
-                tile.layer0 = new int[] {layer0Id};
-
-                // LAYER 1
-                int[] indices = indexStraightDiagonal(b.BIOME_NEIGHBOURS, x, y);
-                int tis = indices[0];
-                int tid = indices[1];
-
-                if(tis == 0 && tid == 0) {
-                    // Special case, no neighbour
-                    tile.layer1 = new int[] {minTile + 1};
-                } else if(tis == 15 && tid == 15) {
-                    // Special case, every 8 neighbours are same tile
-                    tile.layer1 = new int[] {minTile};
-                } else if(tis == 15) {
-                    // N E S W all valid neighbours (straight)
-                    if(tid == 0) {
-                        // No diagonal neighbours
-                        tile.layer1 = new int[] {minTile + 20, minTile + 21, minTile + 18, minTile + 19};
-                    } else {
-                        // tig between [1-14]
-                        boolean northWest = tid / NORTH_WEST == 1;
-                        boolean southWest = (tid % NORTH_WEST) / SOUTH_WEST == 1;
-                        boolean southEast = (tid % NORTH_WEST % SOUTH_WEST) / SOUTH_EAST == 1;
-                        boolean northEast = (tid % NORTH_WEST % SOUTH_WEST % SOUTH_EAST) / NORTH_EAST == 1;
-
-                        tile.layer1 = new int[] {
-                                southWest ? minTile + 8 : minTile + 20,
-                                southEast ? minTile + 5 : minTile + 21,
-                                northWest ? minTile + 14 : minTile + 18,
-                                northEast ? minTile + 11 : minTile + 19
-                        };
-                    }
-                } else {
-                    // N E S W not all valid neighbours
-                    boolean west = tis / WEST == 1;
-                    boolean south = (tis % WEST) / SOUTH == 1;
-                    boolean east = (tis % WEST % SOUTH) / EAST == 1;
-                    boolean north = (tis % WEST % SOUTH % EAST) / NORTH == 1;
-
-                    boolean northWest = tid / NORTH_WEST == 1;
-                    boolean southWest = (tid % NORTH_WEST) / SOUTH_WEST == 1;
-                    boolean southEast = (tid % NORTH_WEST % SOUTH_WEST) / SOUTH_EAST == 1;
-                    boolean northEast = (tid % NORTH_WEST % SOUTH_WEST % SOUTH_EAST) / NORTH_EAST == 1;
-
-                    int c1, c2, c3, c4;
-
-                    { // Corner Bottom Left
-                        if(west && south && southWest) {
-                            c1 = minTile + 8;
-                        } else if(west && south) {
-                            c1 = minTile + 20;
-                        } else if(west && southWest) {
-                            c1 = minTile + 16;
-                        } else if(south && southWest) {
-                            c1 = minTile + 4;
-                        } else if(west) {
-                            c1 = minTile + 16;
-                        } else if(south) {
-                            c1 = minTile + 4;
-                        } else {
-                            c1 = minTile + 12;
-                        }
-                    }
-
-                    { // Corner Bottom Right
-                        if(east && south && southEast) {
-                            c2 = minTile + 5;
-                        } else if(east && south) {
-                            c2 = minTile + 21;
-                        } else if(east && southEast) {
-                            c2 = minTile + 13;
-                        } else if(south && southEast) {
-                            c2 = minTile + 9;
-                        } else if(east) {
-                            c2 = minTile + 13;
-                        } else if(south) {
-                            c2 = minTile + 9;
-                        } else {
-                            c2 = minTile + 17;
-                        }
-                    }
-
-                    { // Corner Top Left
-                        if(west && north && northWest) {
-                            c3 = minTile + 14;
-                        } else if(west && north) {
-                            c3 = minTile + 18;
-                        } else if(west && northWest) {
-                            c3 = minTile + 6;
-                        } else if(north && northWest) {
-                            c3 = minTile + 10;
-                        } else if(west) {
-                            c3 = minTile + 6;
-                        } else if(north) {
-                            c3 = minTile + 10;
-                        } else {
-                            c3 = minTile + 2;
-                        }
-                    }
-
-                    { // Corner Top Right
-                        if(east && north && northEast) {
-                            c4 = minTile + 11;
-                        } else if(east && north) {
-                            c4 = minTile + 19;
-                        } else if(east && northEast) {
-                            c4 = minTile + 3;
-                        } else if(north && northEast) {
-                            c4 = minTile + 15;
-                        } else if(east) {
-                            c4 = minTile + 3;
-                        } else if(north) {
-                            c4 = minTile + 15;
-                        } else {
-                            c4 = minTile + 7;
-                        }
-                    }
-
-                    tile.layer1 = new int[] {c1, c2, c3, c4};
-                }
-            }
+            tile.layerTypes = new TileLayerType[3];
+            tile.updateLayer0(null);
+            tile.updateLayer1(null);
+            tile.updateLayer2(null);
         }
 
+        /*
         boolean generateGroundDetail = MathUtils.random() <= 0.075f;
 
         if(generateGroundDetail) {
@@ -377,6 +248,7 @@ public class ServerChunk {
                 }
             }
         }
+        */
 
         if(populate) populate();
     }
@@ -476,198 +348,6 @@ public class ServerChunk {
                     3, 2
             }
     };
-
-    public static final int NORTH = 1;
-    public static final int EAST = 2;
-    public static final int SOUTH = 4;
-    public static final int WEST = 8;
-
-    public static final int NORTH_EAST = 1;
-    public static final int SOUTH_EAST = 2;
-    public static final int SOUTH_WEST = 4;
-    public static final int NORTH_WEST = 8;
-
-    private int[] indexStraightDiagonal(String[] acceptedNeighbours, int x, int y) {
-        BiomeType[] biomes = new BiomeType[acceptedNeighbours.length];
-        for(int i = 0; i < acceptedNeighbours.length; i++) {
-            biomes[i] = BiomeType.valueOf(acceptedNeighbours[i]);
-        }
-        int tis = 0, tid = 0;
-
-        BiomeType n = biomeAt(x, y + 1);
-        BiomeType e = biomeAt(x + 1, y);
-        BiomeType s = biomeAt(x, y - 1);
-        BiomeType w = biomeAt(x - 1, y);
-
-        BiomeType ne = biomeAt(x + 1, y + 1);
-        BiomeType se = biomeAt(x + 1, y - 1);
-        BiomeType sw = biomeAt(x - 1, y - 1);
-        BiomeType nw = biomeAt(x - 1, y + 1);
-
-        for(BiomeType b : biomes) {
-            if(n == b) {
-                tis += NORTH; break;
-            }
-        }
-        for(BiomeType b : biomes) {
-            if(e == b) {
-                tis += EAST; break;
-            }
-        }
-        for(BiomeType b : biomes) {
-            if(s == b) {
-                tis += SOUTH; break;
-            }
-        }
-        for(BiomeType b : biomes) {
-            if(w == b) {
-                tis += WEST; break;
-            }
-        }
-
-        for(BiomeType b : biomes) {
-            if(ne == b) {
-                tid += NORTH_EAST; break;
-            }
-        }
-        for(BiomeType b : biomes) {
-            if(se == b) {
-                tid += SOUTH_EAST; break;
-            }
-        }
-        for(BiomeType b : biomes) {
-            if(sw == b) {
-                tid += SOUTH_WEST; break;
-            }
-        }
-        for(BiomeType b : biomes) {
-            if(nw == b) {
-                tid += NORTH_WEST; break;
-            }
-        }
-
-        return new int[] {tis, tid};
-    }
-
-    public int[] tileIndexToIds(int tis, int tid, int minTile) {
-        int[] ids;
-
-        if(tis == 0 && tid == 0) {
-            // Special case, no neighbour
-            ids = new int[] {minTile + 1};
-        } else if(tis == 15 && tid == 15) {
-            // Special case, every 8 neighbours are same tile
-            ids = new int[] {minTile};
-        } else if(tis == 15) {
-            // N E S W all valid neighbours (straight)
-            if(tid == 0) {
-                // No diagonal neighbours
-                ids = new int[] {minTile + 20, minTile + 21, minTile + 18, minTile + 19};
-            } else {
-                // tig between [1-14]
-                boolean northWest = tid / NORTH_WEST == 1;
-                boolean southWest = (tid % NORTH_WEST) / SOUTH_WEST == 1;
-                boolean southEast = (tid % NORTH_WEST % SOUTH_WEST) / SOUTH_EAST == 1;
-                boolean northEast = (tid % NORTH_WEST % SOUTH_WEST % SOUTH_EAST) / NORTH_EAST == 1;
-
-                ids = new int[] {
-                        southWest ? minTile + 8 : minTile + 20,
-                        southEast ? minTile + 5 : minTile + 21,
-                        northWest ? minTile + 14 : minTile + 18,
-                        northEast ? minTile + 11 : minTile + 19
-                };
-            }
-        } else {
-            // N E S W not all valid neighbours
-            boolean west = tis / WEST == 1;
-            boolean south = (tis % WEST) / SOUTH == 1;
-            boolean east = (tis % WEST % SOUTH) / EAST == 1;
-            boolean north = (tis % WEST % SOUTH % EAST) / NORTH == 1;
-
-            boolean northWest = tid / NORTH_WEST == 1;
-            boolean southWest = (tid % NORTH_WEST) / SOUTH_WEST == 1;
-            boolean southEast = (tid % NORTH_WEST % SOUTH_WEST) / SOUTH_EAST == 1;
-            boolean northEast = (tid % NORTH_WEST % SOUTH_WEST % SOUTH_EAST) / NORTH_EAST == 1;
-
-            int c1, c2, c3, c4;
-
-            { // Corner Bottom Left
-                if (west && south && southWest) {
-                    c1 = minTile + 8;
-                } else if (west && south) {
-                    c1 = minTile + 20;
-                } else if (west && southWest) {
-                    c1 = minTile + 16;
-                } else if (south && southWest) {
-                    c1 = minTile + 4;
-                } else if (west) {
-                    c1 = minTile + 16;
-                } else if (south) {
-                    c1 = minTile + 4;
-                } else {
-                    c1 = minTile + 12;
-                }
-            }
-
-            { // Corner Bottom Right
-                if (east && south && southEast) {
-                    c2 = minTile + 5;
-                } else if (east && south) {
-                    c2 = minTile + 21;
-                } else if (east && southEast) {
-                    c2 = minTile + 13;
-                } else if (south && southEast) {
-                    c2 = minTile + 9;
-                } else if (east) {
-                    c2 = minTile + 13;
-                } else if (south) {
-                    c2 = minTile + 9;
-                } else {
-                    c2 = minTile + 17;
-                }
-            }
-
-            { // Corner Top Left
-                if (west && north && northWest) {
-                    c3 = minTile + 14;
-                } else if (west && north) {
-                    c3 = minTile + 18;
-                } else if (west && northWest) {
-                    c3 = minTile + 6;
-                } else if (north && northWest) {
-                    c3 = minTile + 10;
-                } else if (west) {
-                    c3 = minTile + 6;
-                } else if (north) {
-                    c3 = minTile + 10;
-                } else {
-                    c3 = minTile + 2;
-                }
-            }
-
-            { // Corner Top Right
-                if (east && north && northEast) {
-                    c4 = minTile + 11;
-                } else if (east && north) {
-                    c4 = minTile + 19;
-                } else if (east && northEast) {
-                    c4 = minTile + 3;
-                } else if (north && northEast) {
-                    c4 = minTile + 15;
-                } else if (east) {
-                    c4 = minTile + 3;
-                } else if (north) {
-                    c4 = minTile + 15;
-                } else {
-                    c4 = minTile + 7;
-                }
-            }
-
-            ids = new int[] {c1, c2, c3, c4};
-        }
-
-        return ids;
-    }
 
     /** Called when the chunk has been inactive before and is now marked as active again. */
     public void onActive() {

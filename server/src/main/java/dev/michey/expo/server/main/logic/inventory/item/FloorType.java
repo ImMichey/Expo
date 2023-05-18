@@ -1,16 +1,18 @@
 package dev.michey.expo.server.main.logic.inventory.item;
 
+import dev.michey.expo.noise.TileLayerType;
+
 public enum FloorType {
 
-    GRASS(1),
-    SAND(23),
-    DIRT(0),
+    GRASS(TileLayerType.GRASS),
+    SAND(TileLayerType.SAND),
+    DIRT(TileLayerType.SOIL),
     ;
 
-    public final int TILE_TEXTURE_ID;
+    public final TileLayerType TILE_LAYER_TYPE;
 
-    FloorType(int TILE_TEXTURE_ID) {
-        this.TILE_TEXTURE_ID = TILE_TEXTURE_ID;
+    FloorType(TileLayerType TILE_LAYER_TYPE) {
+        this.TILE_LAYER_TYPE = TILE_LAYER_TYPE;
     }
 
 }
