@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.ai.module;
 
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -21,7 +22,14 @@ public class AIModuleWalk extends AIModule {
     @Override
     public void tickModule(float delta) {
         var e = getBrain().getEntity();
-        float water = e.isInWater() ? 0.5f : 1.0f;
+        float water = 1.0f;
+
+        if(e.getTileBiome() == BiomeType.OCEAN_DEEP) {
+            water = 0.3f;
+        } else if(e.isInWater()) {
+            water = 0.5f;
+        }
+
         float dstX = e.posX + dir.x * delta * speed * water;
         float dstY = e.posY + dir.y * delta * speed * water;
 

@@ -8,8 +8,8 @@
                         "name": "lakes",
                         "octaves": 5,
                         "type": 5,
-                        "frequency": 0.008,
-                        "level": 0.785
+                        "frequency": 0.009,
+                        "level": 0.77
                     },
                     {
                         "name": "dirt",
