@@ -237,7 +237,7 @@ public class ServerChunk {
                         if(neighbours == null) continue;
 
                         if(neighbours.updateLayer1Adjacent()) {
-                            ServerPackets.p32ChunkDataSingle(neighbours.chunk.chunkX, neighbours.chunk.chunkY, 1, neighbours.tileArray, neighbours.layer1, PacketReceiver.whoCanSee(getDimension(), neighbours.chunk.chunkX, neighbours.chunk.chunkY));
+                            ServerPackets.p32ChunkDataSingle(neighbours, 1);
                         }
                     }
                 }
@@ -335,6 +335,15 @@ public class ServerChunk {
                         JSONArray biomesArray = biomeData.getJSONArray("biomes");
                         for(int i = 0; i < tiles.length; i++) tiles[i].biome = BiomeType.idToBiome(biomesArray.getInt(i));
 
+                        JSONArray tileTypesArray = biomeData.getJSONArray("layerTypes");
+                        for(int i = 0; i < tiles.length; i++) {
+                            tiles[i].layerTypes = new TileLayerType[3];
+                            JSONArray _a = tileTypesArray.getJSONArray(i);
+                            for(int j = 0; j < _a.length(); j++) {
+                                tiles[i].layerTypes[j] = TileLayerType.values()[_a.getInt(j)];
+                            }
+                        }
+
                         arrayToLayer(0, biomeData.getJSONArray("layer0"));
                         arrayToLayer(1, biomeData.getJSONArray("layer1"));
                         arrayToLayer(2, biomeData.getJSONArray("layer2"));
@@ -377,6 +386,14 @@ public class ServerChunk {
                 JSONArray biomesArray = new JSONArray();
                 for(ServerTile tile : tiles) biomesArray.put(tile.biome.BIOME_ID);
                 biomeData.put("biomes", biomesArray);
+
+                JSONArray layerTypesArray = new JSONArray();
+                for(ServerTile tile : tiles) {
+                    JSONArray _a = new JSONArray();
+                    for(TileLayerType tlt : tile.layerTypes) _a.put(tlt.SERIALIZATION_ID);
+                    layerTypesArray.put(_a);
+                }
+                biomeData.put("layerTypes", layerTypesArray);
 
                 biomeData.put("layer0", layerToArray(0));
                 biomeData.put("layer1", layerToArray(1));

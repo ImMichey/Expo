@@ -2,6 +2,7 @@ package dev.michey.expo.server.util;
 
 import com.esotericsoftware.kryonet.Connection;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
@@ -10,6 +11,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.server.packet.*;
@@ -119,11 +121,13 @@ public class ServerPackets {
         p.chunkX = chunkX;
         p.chunkY = chunkY;
         p.biomes = new BiomeType[tiles.length];
+        p.layerTypes = new TileLayerType[tiles.length][];
         p.layer0 = new int[tiles.length][];
         p.layer1 = new int[tiles.length][];
         p.layer2 = new int[tiles.length][];
         for(int i = 0; i < tiles.length; i++) {
             p.biomes[i] = tiles[i].biome;
+            p.layerTypes[i] = tiles[i].layerTypes;
             p.layer0[i] = tiles[i].layer0;
             p.layer1[i] = tiles[i].layer1;
             p.layer2[i] = tiles[i].layer2;
@@ -304,14 +308,43 @@ public class ServerPackets {
     }
 
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
-    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, int[] data, PacketReceiver receiver) {
+    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, int[] data, TileLayerType[] layerTypes, PacketReceiver receiver) {
         P32_ChunkDataSingle p = new P32_ChunkDataSingle();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
         p.layer = layer;
         p.tileArray = tileArray;
         p.data = data;
+        p.layerTypes = layerTypes;
         udp(p, receiver);
+    }
+
+    public static void p32ChunkDataSingle(ServerChunk chunk, int layer, int tileArray) {
+        int[] data;
+
+        if(layer == 0) {
+            data = chunk.tiles[tileArray].layer0;
+        } else if(layer == 1) {
+            data = chunk.tiles[tileArray].layer1;
+        } else {
+            data = chunk.tiles[tileArray].layer2;
+        }
+
+        p32ChunkDataSingle(chunk.chunkX, chunk.chunkY, layer, tileArray, data, chunk.tiles[tileArray].layerTypes, PacketReceiver.whoCanSee(chunk.getDimension(), chunk.chunkX, chunk.chunkY));
+    }
+
+    public static void p32ChunkDataSingle(ServerTile tile, int layer) {
+        int[] data;
+
+        if(layer == 0) {
+            data = tile.layer0;
+        } else if(layer == 1) {
+            data = tile.layer1;
+        } else {
+            data = tile.layer2;
+        }
+
+        p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, layer, tile.tileArray, data, tile.layerTypes, PacketReceiver.whoCanSee(tile.chunk.getDimension(), tile.chunk.chunkX, tile.chunk.chunkY));
     }
 
     /** Sends the P33_TileDig packet via UDP protocol. */

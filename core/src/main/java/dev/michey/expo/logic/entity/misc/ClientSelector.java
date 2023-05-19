@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
@@ -89,16 +90,16 @@ public class ClientSelector extends ClientEntity {
                     int mouseRelativeTileY = svTileY - startTileY;
                     svTileArray = mouseRelativeTileY * 8 + mouseRelativeTileX;
 
-                    var l0 = chunk.layer0[svTileArray][0];
-                    var l1 = chunk.layer1[svTileArray][0];
+                    TileLayerType t0 = chunk.layerTypes[svTileArray][0];
+                    TileLayerType t1 = chunk.layerTypes[svTileArray][1];
 
                     if(selectionType == 0) {
                         // Check to dig.
-                        boolean grass = ServerTile.isGrassTile(l1) || ServerTile.isForestTile(l1);
-                        boolean sand = ServerTile.isSandTile(l1) || ServerTile.isDesertTile(l1);
-                        boolean soil = ServerTile.isSoilTile(l0);
+                        boolean grass = t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST;
+                        boolean sand = t1 == TileLayerType.SAND || t1 == TileLayerType.DESERT;
+                        boolean soil = t0 == TileLayerType.SOIL;
 
-                        canDig = grass || sand || (soil && l1 == -1);
+                        canDig = grass || sand || (soil && t1 == TileLayerType.EMPTY);
                     } else if(selectionType == 1) {
                         // Check to place.
                         ClientPlayer p = ClientPlayer.getLocalPlayer();
@@ -108,9 +109,9 @@ public class ClientSelector extends ClientEntity {
 
                             if(d != null) {
                                 if(d.type == PlaceType.FLOOR_0) {
-                                    canPlace = ServerTile.isEmptyTile(l1) && ServerTile.isHoleSoilTile(l0);
+                                    canPlace = t1 == TileLayerType.EMPTY && t0 == TileLayerType.SOIL_HOLE;
                                 } else if(d.type == PlaceType.FLOOR_1) {
-                                    canPlace = ServerTile.isSoilTile(l0) && ServerTile.isEmptyTile(l1);
+                                    canPlace = t1 == TileLayerType.EMPTY && t0 == TileLayerType.SOIL;
                                 }
                             }
                         }

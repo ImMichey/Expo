@@ -160,7 +160,7 @@ public class ServerPlayer extends ServerEntity {
 
         int tileX = ExpoShared.posToTile(posX);
         int tileY = ExpoShared.posToTile(posY);
-        boolean hole = getChunkGrid().getTile(tileX, tileY).isHoleSoilTile();
+        boolean hole = getChunkGrid().getTile(tileX, tileY).layerTypes[0] == TileLayerType.SOIL_HOLE;
         if(hole) return 0.75f;
 
         return 1.0f;
@@ -215,7 +215,7 @@ public class ServerPlayer extends ServerEntity {
                         if(item != -1) {
                             if(selected.damageableWith == ItemMapper.get().getMapping(item).logic.toolType) {
                                 selected.applyDamageWithPacket(this, dmg);
-                                useItem(getCurrentItem());
+                                useItemDurability(getCurrentItem());
                             }
                         }
                     } else {
@@ -418,16 +418,17 @@ public class ServerPlayer extends ServerEntity {
 
             { // Update tile data
                 tile.updateLayer0(p.floorType.TILE_LAYER_TYPE);
-                ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 0, tile.tileArray, tile.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                ServerPackets.p32ChunkDataSingle(tile, 0);
 
                 for(ServerTile st : tile.getNeighbouringTiles()) {
-                    st.updateLayer0Adjacent();
-                    ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 0, st.tileArray, st.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                    if(st.updateLayer0Adjacent()) {
+                        ServerPackets.p32ChunkDataSingle(st, 0);
+                    }
                 }
             }
 
             { // Update inventory
-                useItem(item);
+                useItemAmount(item);
             }
         } else if(p.type == PlaceType.FLOOR_1) {
             // Update tile timestamp
@@ -435,17 +436,17 @@ public class ServerPlayer extends ServerEntity {
 
             { // Update tile data
                 tile.updateLayer1(p.floorType.TILE_LAYER_TYPE);
-                ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, 1, tile.tileArray, tile.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                ServerPackets.p32ChunkDataSingle(tile, 1);
 
                 for(ServerTile st : tile.getNeighbouringTiles()) {
                     if(st.updateLayer1Adjacent()) {
-                        ServerPackets.p32ChunkDataSingle(st.chunk.chunkX, st.chunk.chunkY, 1, st.tileArray, st.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                        ServerPackets.p32ChunkDataSingle(st, 1);
                     }
                 }
             }
 
             { // Update inventory
-                useItem(item);
+                useItemAmount(item);
             }
         }
     }
@@ -515,19 +516,20 @@ public class ServerPlayer extends ServerEntity {
                 { // Update tile data
                     if(digLayer == 0 && tile.layerTypes[digLayer] == TileLayerType.SOIL) {
                         tile.updateLayer0(TileLayerType.SOIL_HOLE);
-                        ServerPackets.p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, digLayer, tile.tileArray, tile.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                        ServerPackets.p32ChunkDataSingle(tile, 0);
 
                         for(ServerTile neighbour : tile.getNeighbouringTiles()) {
-                            neighbour.updateLayer0Adjacent();
-                            ServerPackets.p32ChunkDataSingle(neighbour.chunk.chunkX, neighbour.chunk.chunkY, digLayer, neighbour.tileArray, neighbour.layer0, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                            if(neighbour.updateLayer0Adjacent()) {
+                                ServerPackets.p32ChunkDataSingle(neighbour, 0);
+                            }
                         }
                     } else if(digLayer == 1) {
                         tile.updateLayer1(TileLayerType.EMPTY);
-                        ServerPackets.p32ChunkDataSingle(chunkX, chunkY, digLayer, tile.tileArray, tile.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                        ServerPackets.p32ChunkDataSingle(tile, 1);
 
                         for(ServerTile neighbour : tile.getNeighbouringTiles()) {
                             if(neighbour.updateLayer1Adjacent()) {
-                                ServerPackets.p32ChunkDataSingle(neighbour.chunk.chunkX, neighbour.chunk.chunkY, digLayer, neighbour.tileArray, neighbour.layer1, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                                ServerPackets.p32ChunkDataSingle(neighbour, 1);
                             }
                         }
                     }
@@ -540,12 +542,24 @@ public class ServerPlayer extends ServerEntity {
             }
 
             { // Update player inventory/item.
-                useItem(item);
+                useItemDurability(item);
             }
         }
     }
 
-    private void useItem(ServerInventoryItem item) {
+    private void useItemAmount(ServerInventoryItem item) {
+        item.itemAmount -= 1;
+        boolean itemNowUsedUp = item.itemAmount <= 0;
+
+        if(itemNowUsedUp) {
+            playerInventory.slots[selectedInventorySlot].item.setEmpty();
+            heldItemPacket(PacketReceiver.whoCanSee(this));
+        }
+
+        ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
+    }
+
+    private void useItemDurability(ServerInventoryItem item) {
         item.itemMetadata.durability -= 1;
         boolean itemNowBroken = item.itemMetadata.durability <= 0;
 

@@ -25,6 +25,7 @@ import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
@@ -692,7 +693,7 @@ public class ClientWorld {
         for(ClientChunk chunk : drawChunks) {
             if(chunk != null && chunk.visible) {
                 for(int k = 0; k < chunk.biomes.length; k++) {
-                    boolean isWaterTile = ServerTile.isWaterTile(chunk.layer1[k][0]);
+                    boolean isWaterTile = TileLayerType.isWater(chunk.layerTypes[k][1]);
 
                     if(isWaterTile) {
                         int tx = k % 8;

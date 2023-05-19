@@ -1,14 +1,10 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.util.ExpoShared;
-import make.some.noise.Noise;
 
 import java.util.Arrays;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerTile {
 
@@ -72,11 +68,13 @@ public class ServerTile {
     }
 
     /** This method is called when an adjacent layer 0 tile has been updated and this tile potentially needs to adjust its texture. */
-    public void updateLayer0Adjacent() {
+    public boolean updateLayer0Adjacent() {
         int[] textures = TileLayerType.typeToTextures(layerTypes[0]);
-        if(textures == null) return;
-        if(textures.length < 2) return;
+        if(textures == null) return false;
+        if(textures.length < 2) return false;
+        int[] old = layer0;
         layer0 = runTextureGrab(textures[0], 0);
+        return !Arrays.equals(old, layer0);
     }
 
     /** This method is called when an adjacent layer 1 tile has been updated and this tile potentially needs to adjust its texture.
@@ -329,72 +327,14 @@ public class ServerTile {
     }
 
     public int toParticleColorId() {
-        if(isGrassTile() || isForestTile()) return 1;
-        if(isSandTile() || isDesertTile()) return 2;
-        if(isSoilTile()) return 0;
+        if(isType(TileLayerType.GRASS, 1) || isType(TileLayerType.FOREST, 1)) return 1;
+        if(isType(TileLayerType.SAND, 1) || isType(TileLayerType.DESERT, 1)) return 2;
+        if(isType(TileLayerType.SOIL, 0)) return 0;
         return -1;
     }
 
-    /** Layer utility methods below */
-    public boolean isSandTile() {
-        return isSandTile(layer1[0]);
-    }
-
-    public boolean isGrassTile() {
-        return isGrassTile(layer1[0]);
-    }
-
-    public boolean isSoilTile() {
-        return isSoilTile(layer0[0]);
-    }
-
-    public boolean isHoleSoilTile() {
-        return isHoleSoilTile(layer0[0]);
-    }
-
-    public boolean isForestTile() {
-        return isForestTile(layer1[0]);
-    }
-
-    public boolean isDesertTile() {
-        return isDesertTile(layer1[0]);
-    }
-
-    public static boolean isSandTile(int id) {
-        return id >= 23 && id <= 44;
-    }
-
-    public static boolean isGrassTile(int id) {
-        return id >= 1 && id <= 22;
-    }
-
-    public static boolean isSoilTile(int id) {
-        return id == 0;
-    }
-
-    public static boolean isHoleSoilTile(int id) {
-        return id >= 90 && id <= 111;
-    }
-
-    public static boolean isForestTile(int id) {
-        return id >= 112 && id <= 133;
-    }
-
-    public static boolean isDesertTile(int id) {
-        return id >= 134 && id <= 155;
-    }
-
-    public static boolean isEmptyTile(int id) {
-        return id == -1;
-    }
-
-    public static boolean isWaterTile(int id) {
-        return (id >= 46 && id <= 89);
-    }
-
-    public boolean layerIsEmpty(int layer) {
-        int fe = (layer == 0 ? layer0[0] : (layer == 1 ? layer1[0] : layer2[0]));
-        return fe == -1;
+    public boolean isType(TileLayerType type, int layer) {
+        return layerTypes[layer] == type;
     }
 
 }

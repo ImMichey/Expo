@@ -4,13 +4,19 @@ import java.util.HashMap;
 
 public enum TileLayerType {
 
-    EMPTY,
-    SOIL, SOIL_HOLE,                                    // Layer 0
-    SAND, DESERT, GRASS, FOREST, WATER, WATER_DEEP,     // Layer 1
+    EMPTY(0),
+    SOIL(1), SOIL_HOLE(2),                                                  // Layer 0
+    SAND(3), DESERT(4), GRASS(5), FOREST(6), WATER(7), WATER_DEEP(8),       // Layer 1
     ;
 
     public static final HashMap<TileLayerType, int[]> TEXTURE_MAP;
     public static final HashMap<TileLayerType, TileLayerType[]> CONNECTION_MAP;
+
+    public final int SERIALIZATION_ID;
+
+    TileLayerType(int SERIALIZATION_ID) {
+        this.SERIALIZATION_ID = SERIALIZATION_ID;
+    }
 
     static {
         TEXTURE_MAP = new HashMap<>();
@@ -42,6 +48,13 @@ public enum TileLayerType {
             case SOIL -> "step_water";
             case GRASS, FOREST -> "grass_hit";
             default -> null;
+        };
+    }
+
+    public static boolean isWater(TileLayerType type) {
+        return switch (type) {
+            case WATER, WATER_DEEP -> true;
+            default -> false;
         };
     }
 

@@ -11,6 +11,7 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -247,18 +248,18 @@ public abstract class ClientEntity {
         int relativeTileY = tileY - startTileY;
         int tileArray = relativeTileY * 8 + relativeTileX;
 
-        int l0 = c.layer0[tileArray][0];
-        int l1 = c.layer1[tileArray][0];
+        TileLayerType t0 = c.layerTypes[tileArray][0];
+        TileLayerType t1 = c.layerTypes[tileArray][1];
 
-        if(ServerTile.isHoleSoilTile(l0)) {
+        if(t0 == TileLayerType.SOIL_HOLE) {
             return isRaining() ? "step_mud" : "step_dirt";
         }
 
-        if(ServerTile.isGrassTile(l1) || ServerTile.isForestTile(l1)) {
+        if(t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST) {
             return "step_forest";
         }
 
-        if(ServerTile.isSandTile(l1) || ServerTile.isDesertTile(l1)) {
+        if(t1 == TileLayerType.SAND || t1 == TileLayerType.DESERT) {
             return "step_sand";
         }
 

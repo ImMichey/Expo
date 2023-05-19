@@ -116,7 +116,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P10_PlayerQuit p) {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
-            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.biomes, p.layer0, p.layer1, p.layer2);
+            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.biomes, p.layerTypes, p.layer0, p.layer1, p.layer2);
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);
 
@@ -239,6 +239,8 @@ public class ExpoClientPacketReader {
             if(grid == null) return;
             var chunk = grid.getChunk(p.chunkX, p.chunkY);
             if(chunk == null) return;
+
+            chunk.layerTypes[p.tileArray] = p.layerTypes;
 
             if(p.layer == 0) {
                 chunk.layer0[p.tileArray] = p.data;

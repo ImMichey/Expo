@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.packet;
 
 import com.esotericsoftware.kryo.Kryo;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
@@ -42,6 +43,9 @@ public class ExpoServerRegistry {
                 WorldGenNoiseSettings.class,
                 NoiseWrapper.class,
                 NoisePostProcessor.class,
+                TileLayerType.class,
+                TileLayerType[].class,
+                TileLayerType[][].class,
 
                 // Packets
                 P0_Auth_Req.class,

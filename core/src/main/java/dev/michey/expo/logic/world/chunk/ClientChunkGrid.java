@@ -3,10 +3,9 @@ package dev.michey.expo.logic.world.chunk;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
-import dev.michey.expo.server.main.logic.world.gen.NoiseWrapper;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
-import dev.michey.expo.server.main.logic.world.gen.WorldGenSettings;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
@@ -103,14 +102,14 @@ public class ClientChunkGrid {
         interpolation = Interpolation.smooth2.apply(waveDelta) * WAVE_STRENGTH;
     }
 
-    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
+    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, TileLayerType[][] layerTypes, int[][] layer0, int[][] layer1, int[][] layer2) {
         String key = chunkX + "," + chunkY;
         ClientChunk existing = clientChunkMap.get(key);
 
         if(existing == null) {
-            clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, layer0, layer1, layer2));
+            clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, layerTypes, layer0, layer1, layer2));
         } else {
-            existing.update(biomes, layer0, layer1, layer2);
+            existing.update(biomes, layerTypes, layer0, layer1, layer2);
         }
     }
 
@@ -159,10 +158,17 @@ public class ClientChunkGrid {
                 var processor = noisePostProcessorMap.get("lakes");
 
                 if(processor != null) {
-                    boolean isLake = normalized(processor.value, x, y) >= processor.key.threshold;
+                    float lakeValue = normalized(processor.value, x, y);
+                    boolean isLake = lakeValue >= processor.key.threshold;
 
                     if(isLake && !BiomeType.isWater(toCheck)) {
-                        return BiomeType.LAKE;
+                        float deepValue = processor.key.threshold + (1.0f - processor.key.threshold) * 0.3f;
+
+                        if(lakeValue >= deepValue) {
+                            return BiomeType.OCEAN_DEEP;
+                        } else {
+                            return BiomeType.LAKE;
+                        }
                     }
                 }
 

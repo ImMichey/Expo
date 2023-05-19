@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
@@ -18,6 +19,7 @@ public class ClientChunk {
     public int chunkX;
     public int chunkY;
     public BiomeType[] biomes;
+    public TileLayerType[][] layerTypes;
     public int[][] layer0;
     public int[][] layer1;
     public int[][] layer2;
@@ -122,10 +124,11 @@ public class ClientChunk {
         }
     }
 
-    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
+    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, TileLayerType[][] layerTypes, int[][] layer0, int[][] layer1, int[][] layer2) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
         this.biomes = biomes;
+        this.layerTypes = layerTypes;
         this.layer0 = layer0;
         this.layer1 = layer1;
         this.layer2 = layer2;
@@ -168,8 +171,9 @@ public class ClientChunk {
         }
     }
 
-    public void update(BiomeType[] biomes, int[][] layer0, int[][] layer1, int[][] layer2) {
+    public void update(BiomeType[] biomes, TileLayerType[][] layerTypes, int[][] layer0, int[][] layer1, int[][] layer2) {
         this.biomes = biomes;
+        this.layerTypes = layerTypes;
         if(!Arrays.deepEquals(layer0, this.layer0)) updateLayer0Tex(layer0, false);
         if(!Arrays.deepEquals(layer1, this.layer1)) updateLayer1Tex(layer1, false);
         if(!Arrays.deepEquals(layer2, this.layer2)) updateLayer2Tex(layer2, false);
