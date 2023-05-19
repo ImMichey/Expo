@@ -137,7 +137,6 @@ public class ClientChunkGrid {
 
     private BiomeType convertNoise(int x, int y) {
         if(terrainNoiseHeight == null) return BiomeType.VOID;
-        // riverNoise is ignored for now.
 
         for(BiomeType toCheck : biomeDataMap.keySet()) {
             float[] values = biomeDataMap.get(toCheck);
@@ -165,6 +164,11 @@ public class ClientChunkGrid {
                     if(isLake && !BiomeType.isWater(toCheck)) {
                         return BiomeType.LAKE;
                     }
+                }
+
+                if(toCheck != BiomeType.OCEAN_DEEP) {
+                    float river = normalized(riverNoise, x, y);
+                    if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
                 return toCheck;

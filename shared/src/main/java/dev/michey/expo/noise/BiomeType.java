@@ -5,7 +5,7 @@ public enum BiomeType {
     OCEAN(0, "Ocean", new int[] {0, 46, 67}, new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
     PLAINS(1, "Plains", new int[] {0, 1, 22}, new float[] {108f/255f, 173f/255f, 76f/255f, 1.0f}, new String[] {"PLAINS"}),
     BEACH(2, "Beach", new int[] {0, 23, 44}, new float[] {245f/255f, 241f/255f, 219f/255f, 1.0f}, new String[] {"BEACH"}),
-    RIVER(3, "River", new int[] {0, 46, 67}, new float[] {65f/255f, 105f/255f, 225f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
+    RIVER(3, "River", new int[] {0, 46, 67}, new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
     LAKE(4, "Lake", new int[] {0, 46, 67}, new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
     VOID(5, "Void", null, new float[] {0f, 0f, 0f, 1.0f}, new String[] {"VOID"}),
     OCEAN_DEEP(6, "Deep Ocean", new int[] {46, 68, 89}, new float[] {73f/255f, 135f/255f, 211f/255f, 1.0f}, new String[] {"OCEAN_DEEP"}),

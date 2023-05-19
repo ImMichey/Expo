@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -111,7 +112,7 @@ public class ServerChunkGrid {
         return type;
     }
 
-    private float normalized(Noise noise, int x, int y) {
+    public float normalized(Noise noise, int x, int y) {
         return (noise.getConfiguredNoise(x, y) + 1) * 0.5f;
     }
 
@@ -144,7 +145,6 @@ public class ServerChunkGrid {
 
     private BiomeType convertNoise(int x, int y) {
         if(!genSettings.getNoiseSettings().isTerrainGenerator()) return BiomeType.VOID;
-        // riverNoise is ignored for now.
 
         for(BiomeType toCheck : genSettings.getBiomeDataMap().keySet()) {
             float[] values = genSettings.getBiomeDataMap().get(toCheck);
@@ -179,6 +179,11 @@ public class ServerChunkGrid {
                             return BiomeType.LAKE;
                         }
                     }
+                }
+
+                if(toCheck != BiomeType.OCEAN_DEEP) {
+                    float river = normalized(riverNoise, x, y);
+                    if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
                 return toCheck;

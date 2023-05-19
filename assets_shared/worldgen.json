@@ -15,8 +15,8 @@
                         "name": "dirt",
                         "octaves": 5,
                         "type": 5,
-                        "frequency": 0.01,
-                        "level": 0.83
+                        "frequency": 0.035,
+                        "level": 0.79
                     }
                 ],
                 "terrain": {
@@ -39,7 +39,7 @@
                 "rivers": {
                     "octaves": 1,
                     "type": 5,
-                    "frequency": 0.0026041666666667,
+                    "frequency": 0.003,
                     "fractalType": 2
                 },
                 "biomes": [

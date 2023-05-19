@@ -32,9 +32,9 @@ public class CommandNoise extends AbstractConsoleCommand {
 
     @Override
     public void executeCommand(String[] args) {
-        final int[] modes = new int[] {Noise.SIMPLEX_FRACTAL};
-        final float[] freq = new float[] {0.0075f, 0.01f};
-        final int[] octa = new int[] {5};
+        final int[] modes = new int[] {Noise.PERLIN_FRACTAL};
+        final float[] freq = new float[] {0.005f, 0.0025f};
+        final int[] octa = new int[] {1, 2, 3};
 
         int attempts = 1;
         final int[] seeds = new int[attempts];
@@ -61,6 +61,7 @@ public class CommandNoise extends AbstractConsoleCommand {
 
                         service.execute(() -> {
                             Noise noise = new Noise(seeds[finalAtt], freq[finalA], modes[finalC], octa[finalB]);
+                            noise.setFractalType(Noise.RIDGED_MULTI);
 
                             Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
 
@@ -69,8 +70,10 @@ public class CommandNoise extends AbstractConsoleCommand {
                                     float value = noise.getConfiguredNoise(i, j);
                                     float normalized = (value + 1) / 2f;
 
-                                    if(normalized > 0.85) {
-                                        pixmap.drawPixel(i, j, Color.rgba8888(150/255f,75f/255f,0,1));
+                                    //normalized = MathUtils.clamp(normalized * 1.15f, 0.0f, 1.0f);
+
+                                    if(normalized > 0.9f) {
+                                        pixmap.drawPixel(i, j, Color.rgba8888(0,0.5f,1,1));
                                     } else {
                                         pixmap.drawPixel(i, j, Color.rgba8888(normalized, normalized, normalized, 1));
                                     }

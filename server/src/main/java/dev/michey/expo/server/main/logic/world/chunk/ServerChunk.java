@@ -10,13 +10,13 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
-import dev.michey.expo.server.main.logic.world.gen.EntityPopulator;
-import dev.michey.expo.server.main.logic.world.gen.GenerationTile;
-import dev.michey.expo.server.main.logic.world.gen.Point;
-import dev.michey.expo.server.main.logic.world.gen.PoissonDiskSampler;
+import dev.michey.expo.server.main.logic.world.gen.*;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.server.util.PacketReceiver;
+import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
+import make.some.noise.Noise;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -209,145 +209,43 @@ public class ServerChunk {
             tile.updateLayer2(null);
         }
 
-        /*
-        boolean generateGroundDetail = MathUtils.random() <= 0.075f;
+        // Dirt
+        Noise p = dimension.getChunkHandler().getNoisePostProcessorMap().get("dirt");
 
-        if(generateGroundDetail) {
-            int minX = 1;
-            int minY = 1;
-            int pop = MathUtils.random(0, DETAIL_LAYERS.length - 1);
-            int[] detail = DETAIL_LAYERS[pop];
-            int maxX = 7 - detail[0];
-            int maxY = 7 - detail[1];
-            int startX = MathUtils.random(minX, maxX);
-            int startY = MathUtils.random(minY, maxY);
-            ServerTile startTile = tiles[tta(startX, startY)];
+        if(p != null) {
+            NoisePostProcessor processor = dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.get("dirt");
+            List<ServerTile> adjust = null;
 
-            if(startTile.biome == BiomeType.PLAINS || startTile.biome == BiomeType.FOREST) {
-                List<ServerTile> visitedTiles = new LinkedList<>();
+            for(int i = 0; i < tiles.length; i++) {
+                ServerTile tile = tiles[i];
+                int x = btx + i % 8;
+                int y = bty + i / 8;
 
-                for(int i = 2; i < detail.length; i += 2) {
-                    int xOffset = detail[i    ];
-                    int yOffset = detail[i + 1];
+                float normalized = dimension.getChunkHandler().normalized(p, x, y);
+                boolean isDirt = normalized >= processor.threshold && (tile.layerTypes[1] == TileLayerType.FOREST || tile.layerTypes[1] == TileLayerType.GRASS);
 
-                    int targetX = startX + xOffset;
-                    int targetY = startY + yOffset;
-
-                    ServerTile nextTile = tiles[tta(targetX, targetY)];
-
-                    if(nextTile.biome == BiomeType.PLAINS || nextTile.biome == BiomeType.FOREST) {
-                        nextTile.layer1 = new int[] {-1};
-                        visitedTiles.add(nextTile);
-                    }
+                if(isDirt) {
+                    tile.updateLayer1(TileLayerType.EMPTY);
+                    if(adjust == null) adjust = new LinkedList<>();
+                    adjust.add(tile);
                 }
+            }
 
-                for(ServerTile visited : visitedTiles) {
-                    for(ServerTile n : visited.getNeighbouringTiles()) {
-                        n.updateLayer1();
+            if(adjust != null) {
+                for(ServerTile tile : adjust) {
+                    for(ServerTile neighbours : tile.getNeighbouringTiles()) {
+                        if(neighbours == null) continue;
+
+                        if(neighbours.updateLayer1Adjacent()) {
+                            ServerPackets.p32ChunkDataSingle(neighbours.chunk.chunkX, neighbours.chunk.chunkY, 1, neighbours.tileArray, neighbours.layer1, PacketReceiver.whoCanSee(getDimension(), neighbours.chunk.chunkX, neighbours.chunk.chunkY));
+                        }
                     }
                 }
             }
         }
-        */
 
         if(populate) populate();
     }
-
-    /** To tileArray index. */
-    private int tta(int x, int y) {
-        return y * 8 + x;
-    }
-
-    /** Structure: [0] = SIZE_X, [1] = SIZE_Y, [2-n] = COORDS */
-    public static final int[][] DETAIL_LAYERS = new int[][] {
-            new int[] {4, 4,
-                    0, 0,
-                    1, 0,
-                    2, 0,
-                    1, 1,
-                    2, 1,
-                    3, 1,
-                    1, 2,
-                    2, 2,
-                    2, 3
-            },
-            new int[] {4, 4,
-                    1, 0,
-                    2, 0,
-                    0, 1,
-                    1, 1,
-                    2, 1,
-                    3, 1,
-                    1, 2,
-                    2, 2,
-                    3, 2,
-                    1, 3
-            },
-            new int[] {5, 3,
-                    3, 0,
-                    0, 1,
-                    1, 1,
-                    2, 1,
-                    3, 1,
-                    4, 1,
-                    2, 2,
-                    3, 2,
-            },
-            new int[] {4, 5,
-                    3, 0,
-                    2, 1,
-                    0, 2,
-                    1, 2,
-                    2, 2,
-                    3, 2,
-                    0, 3,
-                    1, 3,
-                    3, 3,
-                    0, 4,
-            },
-            new int[] {3, 4,
-                    0, 0,
-                    2, 0,
-                    0, 1,
-                    1, 2,
-                    2, 2,
-                    1, 3
-            },
-            new int[] {5, 3,
-                    0, 0,
-                    0, 1,
-                    1, 1,
-                    2, 2,
-                    3, 2,
-                    4, 1
-            },
-            new int[] {5, 4,
-                    0, 2,
-                    1, 0,
-                    1, 1,
-                    1, 2,
-                    1, 3,
-                    2, 0,
-                    2, 1,
-                    3, 1,
-                    4, 1,
-                    4, 0
-            },
-            new int[] {5, 4,
-                    4, 0,
-                    0, 1,
-                    1, 1,
-                    1, 2,
-                    3, 2,
-                    4, 3
-            },
-            new int[] {4, 3,
-                    1, 0,
-                    2, 0,
-                    0, 1,
-                    3, 2
-            }
-    };
 
     /** Called when the chunk has been inactive before and is now marked as active again. */
     public void onActive() {

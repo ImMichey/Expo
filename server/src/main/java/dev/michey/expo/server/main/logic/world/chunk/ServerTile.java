@@ -4,8 +4,11 @@ import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.util.ExpoShared;
+import make.some.noise.Noise;
 
 import java.util.Arrays;
+
+import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerTile {
 
@@ -76,12 +79,15 @@ public class ServerTile {
         layer0 = runTextureGrab(textures[0], 0);
     }
 
-    /** This method is called when an adjacent layer 1 tile has been updated and this tile potentially needs to adjust its texture. */
-    public void updateLayer1Adjacent() {
+    /** This method is called when an adjacent layer 1 tile has been updated and this tile potentially needs to adjust its texture.
+     * Returns whether an update packet is needed or not. */
+    public boolean updateLayer1Adjacent() {
         int[] textures = TileLayerType.typeToTextures(layerTypes[1]);
-        if(textures == null) return;
-        if(textures.length < 2) return;
+        if(textures == null) return false;
+        if(textures.length < 2) return false;
+        int[] old = layer1;
         layer1 = runTextureGrab(textures[0], 1);
+        return !Arrays.equals(old, layer1);
     }
 
     /** This method is called when an adjacent layer 2 tile has been updated and this tile potentially needs to adjust its texture. */
@@ -213,6 +219,7 @@ public class ServerTile {
     public void updateLayer1(TileLayerType type) {
         if(type == null) {
             layerTypes[1] = TileLayerType.biomeToLayer1(biome);
+
             int minTile = biome.BIOME_LAYER_TEXTURES[1];
             layer1 = runTextureGrab(minTile, 1);
         } else {
