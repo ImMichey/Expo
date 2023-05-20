@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import dev.michey.expo.server.ServerLauncher;
 import org.json.JSONArray;
 import org.json.JSONObject;

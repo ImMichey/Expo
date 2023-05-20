@@ -152,6 +152,19 @@ public class ExpoShared {
         return m || p;
     }
 
+    public static boolean overlap(float[] vertices1, float[] vertices2) {
+        float drawStartX = vertices2[0];
+        float drawStartY = vertices2[1];
+
+        float drawEndX = vertices2[2];
+        float drawEndY = vertices2[3];
+
+        return vertices1[0] < drawEndX
+                && vertices1[2] > drawStartX
+                && vertices1[1] < drawEndY
+                && vertices1[3] > drawStartY;
+    }
+
     public static Location[] getNeighbourTiles(String dimension, float x, float y) {
         Location[] array = new Location[8];
 

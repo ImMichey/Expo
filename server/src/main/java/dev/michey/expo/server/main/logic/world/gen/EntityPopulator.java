@@ -18,6 +18,7 @@ public class EntityPopulator {
     public boolean spreadAsStaticEntity;
     public float[] spreadOffsets;
     public int priority;
+    public EntityBoundsEntry dimensionBounds = null;
 
     public EntityPopulator(JSONObject singlePopulatorObject) {
         type = ServerEntityType.valueOf(singlePopulatorObject.getString("type"));

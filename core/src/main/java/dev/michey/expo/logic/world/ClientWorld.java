@@ -29,6 +29,7 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
+import dev.michey.expo.server.main.logic.world.gen.EntityPopulationBounds;
 import dev.michey.expo.util.*;
 import dev.michey.expo.util.visualizer.Visualizer;
 import dev.michey.expo.util.visualizer.Visualizer2;
@@ -531,6 +532,20 @@ public class ClientWorld {
                             r.hudBatch.end();
 
                             r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                        }
+
+                        if(Expo.get().getImGuiExpo().renderEntityBbox.get()) {
+                            if(ServerWorld.get() != null) {
+                                var type = EntityPopulationBounds.get().getFor(all.getEntityType().ENTITY_SERVER_TYPE);
+
+                                if(type != null) {
+                                    float[] pos = type.toWorld(all.serverPosX, all.serverPosY);
+                                    r.chunkRenderer.end();
+                                    r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                                    r.chunkRenderer.setColor(Color.PURPLE);
+                                    r.chunkRenderer.rect(pos[0], pos[1], pos[2] - pos[0], pos[3] - pos[1]);
+                                }
+                            }
                         }
 
                         if(Expo.get().getImGuiExpo().renderJBump.get()) {

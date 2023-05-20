@@ -172,4 +172,9 @@ public class ServerDimensionEntityManager {
         return idEntityMap.values();
     }
 
+    /** Returns the entity operation queue in the current dimension. */
+    public ConcurrentLinkedQueue<EntityOperation> getEntityOperationQueue() {
+        return entityOperationQueue;
+    }
+
 }

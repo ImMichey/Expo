@@ -65,7 +65,9 @@ public class WorldGenSettings {
 
                 for(int i = 0; i < entityArray.length(); i++) {
                     JSONObject singlePopulatorObject = entityArray.getJSONObject(i);
-                    list.add(new EntityPopulator(singlePopulatorObject));
+                    EntityPopulator populator = new EntityPopulator(singlePopulatorObject);
+                    populator.dimensionBounds = EntityPopulationBounds.get().getFor(populator.type);
+                    list.add(populator);
                 }
 
                 list.sort(Comparator.comparingInt(o -> -o.priority));

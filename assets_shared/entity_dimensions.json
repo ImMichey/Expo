@@ -1,0 +1,26 @@
+{
+    "OAK_TREE": {
+        "bbox": [-10.0, -1, 21, 14]
+    },
+    "GRASS": {
+        "bbox": [-4.0, 0, 8, 7]
+    },
+    "MUSHROOM_RED": {
+        "bbox": [-4.0, 0, 8, 7]
+    },
+    "MUSHROOM_BROWN": {
+        "bbox": [-4.0, 0, 8, 7]
+    },
+    "BUSH": {
+        "bbox": [-8.0, 0, 16, 12]
+    },
+    "DANDELION": {
+        "bbox": [-4.5, 0, 9, 7]
+    },
+    "BLUEBERRY_BUSH": {
+        "bbox": [-7.5, 0, 15, 13]
+    },
+    "ROCK": {
+        "bbox": [-10.0, 0, 20, 15]
+    }
+}

@@ -59,6 +59,7 @@ public class ImGuiExpo {
     public final ImBoolean renderJBump = new ImBoolean(false);
     public final ImBoolean renderChunkBorders = new ImBoolean(false);
     public final ImBoolean renderEntityId = new ImBoolean(false);
+    public final ImBoolean renderEntityBbox = new ImBoolean(false);
     private final float[] speed = new float[1];
     private final float[] minStrength = new float[1];
     private final float[] maxStrength = new float[1];
@@ -419,6 +420,7 @@ public class ImGuiExpo {
                 ImGui.checkbox("J Bump", renderJBump);
                 ImGui.checkbox("Chunk Borders", renderChunkBorders);
                 ImGui.checkbox("Entity Id", renderEntityId);
+                ImGui.checkbox("Entity Generation Box", renderEntityBbox);
 
                 if(ImGui.sliderFloat("speed", speed, 0.0f, 10.0f)) r.speed = speed[0];
                 if(ImGui.sliderFloat("minStrength", minStrength, 0.0f, 1.0f)) r.minStrength = minStrength[0];

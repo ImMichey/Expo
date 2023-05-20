@@ -318,9 +318,6 @@ public class RenderContext {
         drawEndY = InputUtils.getMouseWorldY(Gdx.graphics.getHeight());
 
         mouseDirection = mouseX < (Gdx.graphics.getWidth() * 0.5f) ? 0 : 1;
-
-        //selectionShader.bind();
-        //selectionShader.setUniformf("u_time", deltaTotal);
     }
 
     public void reset() {
