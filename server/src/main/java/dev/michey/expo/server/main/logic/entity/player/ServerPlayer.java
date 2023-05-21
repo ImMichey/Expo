@@ -476,21 +476,21 @@ public class ServerPlayer extends ServerEntity {
             ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
             boolean dugUp = tile.dig(mapping.logic.attackDamage);
 
+            { // Play dig up sound.
+                String sound = TileLayerType.typeToHitSound(tile.layerTypes[digLayer]);
+
+                if(sound != null) {
+                    ServerPackets.p24PositionalSound(sound,
+                            ExpoShared.tileToPos(tile.tileX) + 8f, ExpoShared.tileToPos(tile.tileY) + 8f,
+                            ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
+                }
+            }
+
             if(dugUp) {
                 // Update tile health
                 tile.digHealth = 20.0f;
                 // Update tile timestamp
                 chunk.lastTileUpdate = System.currentTimeMillis();
-
-                { // Play dig up sound.
-                    String sound = TileLayerType.typeToHitSound(tile.layerTypes[digLayer]);
-
-                    if(sound != null) {
-                        ServerPackets.p24PositionalSound(sound,
-                                ExpoShared.tileToPos(tile.tileX) + 8f, ExpoShared.tileToPos(tile.tileY) + 8f,
-                                ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
-                    }
-                }
 
                 {
                     if(digLayer == 0 && (tile.biome == BiomeType.PLAINS || tile.biome == BiomeType.FOREST || tile.biome == BiomeType.DENSE_FOREST)) {

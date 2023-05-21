@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.world;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -10,14 +9,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.logic.entity.arch.ClientEntityType;
-import dev.michey.expo.logic.entity.flora.ClientDandelion;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -28,19 +23,12 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.gen.EntityPopulationBounds;
 import dev.michey.expo.util.*;
-import dev.michey.expo.util.visualizer.Visualizer;
-import dev.michey.expo.util.visualizer.Visualizer2;
 import dev.michey.expo.weather.Weather;
-import make.some.noise.Noise;
 
-import java.io.IOException;
 import java.util.ConcurrentModificationException;
-import java.util.zip.Deflater;
 
-import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 import static dev.michey.expo.util.ExpoShared.*;
 
 public class ClientWorld {
@@ -525,10 +513,8 @@ public class ClientWorld {
                             r.chunkRenderer.end();
 
                             r.hudBatch.begin();
-                            for(ClientEntity e : ExpoClientContainer.get().getClientWorld().clientEntityManager.allEntities()) {
-                                Vector2 p = ClientUtils.entityPosToHudPos(e.clientPosX, e.clientPosY);
-                                r.m5x7_border_all[0].draw(r.hudBatch, String.valueOf(e.entityId), p.x, p.y);
-                            }
+                            Vector2 p = ClientUtils.entityPosToHudPos(all.clientPosX, all.clientPosY);
+                            r.m5x7_border_all[0].draw(r.hudBatch, String.valueOf(all.entityId), p.x, p.y);
                             r.hudBatch.end();
 
                             r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);

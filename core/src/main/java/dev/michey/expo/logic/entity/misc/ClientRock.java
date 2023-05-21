@@ -20,13 +20,8 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onCreation() {
-        if(variant == 5) {
-            texture = ExpoAssets.get().textureRegion("entity_flint_rock");
-            shadowMask = ExpoAssets.get().textureRegion("entity_flint_rock");
-        } else {
-            texture = ExpoAssets.get().textureRegion("entity_rock_" + variant);
-            shadowMask = ExpoAssets.get().textureRegion("entity_rock_" + variant);
-        }
+        texture = tr("entity_small_rock_" + variant);
+        shadowMask = texture;
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray(2);

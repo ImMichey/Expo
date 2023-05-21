@@ -17,7 +17,6 @@ import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
-import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.*;
@@ -80,6 +79,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P8_EntityDeleteStack p) {
             for(int i = 0; i < p.entityList.length; i++) {
                 ClientEntity entity = entityFromId(p.entityList[i]);
+
                 if(entity == null) {
                     log("Cannot delete " + p.entityList[i]);
                     continue;
@@ -164,8 +164,6 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P21_PlayerGearUpdate p) {
             ClientEntity entity = entityFromId(p.entityId);
             ClientPlayer player = ClientPlayer.getLocalPlayer();
-
-            log("-> " + Arrays.toString(p.heldItemIds));
 
             if(entity != null) {
                 ClientPlayer c = (ClientPlayer) entity;

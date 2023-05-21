@@ -25,7 +25,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     @Override
     public void onCreation() {
-        texture = tr("mushroom_brown_var2");
+        texture = tr("entity_mushroom_brown");
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();

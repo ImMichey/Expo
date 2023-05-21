@@ -16,6 +16,11 @@ public class ServerMushroomBrown extends ServerEntity {
     }
 
     @Override
+    public void onDie() {
+        spawnItemSingle(posX, posY, 0, "item_mushroom_brown", 8);
+    }
+
+    @Override
     public SavableEntity onSave() {
         return new SavableEntity(this).pack();
     }

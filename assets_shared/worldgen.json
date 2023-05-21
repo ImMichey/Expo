@@ -88,9 +88,40 @@
                 ]
             },
             "biomePopulators": {
+                "DESERT": {
+                    "entities": [
+                        {
+                            "type": "ROCK",
+                            "static": true,
+                            "chance": 0.01,
+                            "pds": 20,
+                            "spreadData": {
+                                "spread": [1, 3],
+                                "spreadChance": 0.5,
+                                "spreadDis": [16.0, 24.0],
+                                "spreadType": ["ROCK"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        }
+                    ]
+                },
                 "BEACH": {
                     "entities": [
-
+                        {
+                            "type": "ROCK",
+                            "static": true,
+                            "chance": 0.01,
+                            "pds": 20,
+                            "spreadData": {
+                                "spread": [1, 3],
+                                "spreadChance": 0.5,
+                                "spreadDis": [16.0, 24.0],
+                                "spreadType": ["ROCK"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        }
                     ]
                 },
                 "PLAINS": {
