@@ -85,7 +85,7 @@ public class ServerItem extends ServerEntity {
                     }
 
                     if(lastId != closestPlayer.getCurrentItemId()) {
-                        closestPlayer.heldItemPacket(PacketReceiver.whoCanSee(this));
+                        closestPlayer.heldItemPacket(PacketReceiver.whoCanSee(closestPlayer));
                     }
                 }
             } else {

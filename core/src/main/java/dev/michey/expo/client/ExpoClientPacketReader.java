@@ -165,6 +165,8 @@ public class ExpoClientPacketReader {
             ClientEntity entity = entityFromId(p.entityId);
             ClientPlayer player = ClientPlayer.getLocalPlayer();
 
+            log("-> " + Arrays.toString(p.heldItemIds));
+
             if(entity != null) {
                 ClientPlayer c = (ClientPlayer) entity;
                 applyHeldItemIds(c, p.heldItemIds);
