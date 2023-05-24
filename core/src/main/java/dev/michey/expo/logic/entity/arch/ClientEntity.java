@@ -247,6 +247,9 @@ public abstract class ClientEntity {
         int relativeTileX = tileX - startTileX;
         int relativeTileY = tileY - startTileY;
         int tileArray = relativeTileY * 8 + relativeTileX;
+        if(tileArray >= 64) {
+            ExpoLogger.log("error " + tileArray + " " + startTileX + " " + startTileY);
+        }
 
         TileLayerType t0 = c.layerTypes[tileArray][0];
         TileLayerType t1 = c.layerTypes[tileArray][1];

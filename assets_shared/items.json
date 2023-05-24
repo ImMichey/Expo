@@ -537,6 +537,30 @@
                     "hungerCooldownRestore": 40.0
                 }
             }
+        },
+        {
+            "identifier": "item_oak_plank",
+            "id": 21,
+            "displayName": "Oak Wood Plank",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_oak_plank"
+                },
+                "held": {
+                    "texture": "item_oak_plank",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotations": [67.5, -22.5]
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "toolType": "ITEM",
+                "durability": -1
+            }
         }
     ]
 }

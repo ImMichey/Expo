@@ -17,7 +17,6 @@ public class ExpoAssets {
     private final AssetManager assetManager;
     private TextureAtlas expo0Atlas;
     private TextureAtlas tilesAtlas;
-    //private TextureAtlas mainAtlas;
 
     private TileSheet tileSheet;
     private ParticleSheet particleSheet;
@@ -76,7 +75,7 @@ public class ExpoAssets {
         return itemSheet;
     }
 
-    public void slice(String tileName, boolean singleTile, int startX, int startY) {
+    public void slice(String tileName, boolean singleTile, int startX, int startY, int yTileHeight) {
         TextureRegion tiles = textureRegion("tileset");
         Texture tex = tiles.getTexture();
         if(!tex.getTextureData().isPrepared()) tex.getTextureData().prepare();
@@ -84,50 +83,51 @@ public class ExpoAssets {
         Gdx.files.external("convertedTiles").mkdirs();
 
         if(singleTile) {
-            TextureRegion tileSingle = new TextureRegion(tiles, startX, startY, 16, 16);
-            Pixmap localPixmap = new Pixmap(16, 16, pixmap.getFormat());
-            localPixmap.drawPixmap(pixmap, 0, 0, tileSingle.getRegionX(), tileSingle.getRegionY(), 16, 16);
+            TextureRegion tileSingle = new TextureRegion(tiles, startX, startY, 16, yTileHeight);
+            Pixmap localPixmap = new Pixmap(16, yTileHeight, pixmap.getFormat());
+            localPixmap.drawPixmap(pixmap, 0, 0, tileSingle.getRegionX(), tileSingle.getRegionY(), 16, yTileHeight);
             FileHandle fh = Gdx.files.external("convertedTiles/" + tileName + ".png");
             PixmapIO.writePNG(fh, localPixmap);
             localPixmap.dispose();
         } else {
             TextureRegion[] slices = new TextureRegion[22];
+            int half = yTileHeight / 2;
 
             // Full all sides texture
-            slices[0] = new TextureRegion(tiles, startX, startY, 16, 16);
+            slices[0] = new TextureRegion(tiles, startX, startY, 16, yTileHeight);
 
             // Single texture
-            slices[1] = new TextureRegion(tiles, startX + 16, startY, 16, 16);
+            slices[1] = new TextureRegion(tiles, startX + 16, startY, 16, yTileHeight);
 
             // Top Left Corner 2x2
-            slices[2] = new TextureRegion(tiles, startX + 32, startY, 8, 8);
-            slices[3] = new TextureRegion(tiles, startX + 40, startY, 8, 8);
-            slices[4] = new TextureRegion(tiles, startX + 32, startY + 8, 8, 8);
-            slices[5] = new TextureRegion(tiles, startX + 40, startY + 8, 8, 8);
+            slices[2] = new TextureRegion(tiles, startX + 32, startY, 8, half);
+            slices[3] = new TextureRegion(tiles, startX + 40, startY, 8, half);
+            slices[4] = new TextureRegion(tiles, startX + 32, startY + half, 8, half);
+            slices[5] = new TextureRegion(tiles, startX + 40, startY + half, 8, half);
 
             // Top Right Corner 2x2
-            slices[6] = new TextureRegion(tiles, startX + 48, startY, 8, 8);
-            slices[7] = new TextureRegion(tiles, startX + 56, startY, 8, 8);
-            slices[8] = new TextureRegion(tiles, startX + 48, startY + 8, 8, 8);
-            slices[9] = new TextureRegion(tiles, startX + 56, startY + 8, 8, 8);
+            slices[6] = new TextureRegion(tiles, startX + 48, startY, 8, half);
+            slices[7] = new TextureRegion(tiles, startX + 56, startY, 8, half);
+            slices[8] = new TextureRegion(tiles, startX + 48, startY + half, 8, half);
+            slices[9] = new TextureRegion(tiles, startX + 56, startY + half, 8, half);
 
             // Bottom Left Corner 2x2
-            slices[10] = new TextureRegion(tiles, startX + 32, startY + 16, 8, 8);
-            slices[11] = new TextureRegion(tiles, startX + 40, startY + 16, 8, 8);
-            slices[12] = new TextureRegion(tiles, startX + 32, startY + 24, 8, 8);
-            slices[13] = new TextureRegion(tiles, startX + 40, startY + 24, 8, 8);
+            slices[10] = new TextureRegion(tiles, startX + 32, startY + yTileHeight, 8, half);
+            slices[11] = new TextureRegion(tiles, startX + 40, startY + yTileHeight, 8, half);
+            slices[12] = new TextureRegion(tiles, startX + 32, startY + yTileHeight + half, 8, half);
+            slices[13] = new TextureRegion(tiles, startX + 40, startY + yTileHeight + half, 8, half);
 
             // Bottom Right Corner 2x2
-            slices[14] = new TextureRegion(tiles, startX + 48, startY + 16, 8, 8);
-            slices[15] = new TextureRegion(tiles, startX + 56, startY + 16, 8, 8);
-            slices[16] = new TextureRegion(tiles, startX + 48, startY + 24, 8, 8);
-            slices[17] = new TextureRegion(tiles, startX + 56, startY + 24, 8, 8);
+            slices[14] = new TextureRegion(tiles, startX + 48, startY + yTileHeight, 8, half);
+            slices[15] = new TextureRegion(tiles, startX + 56, startY + yTileHeight, 8, half);
+            slices[16] = new TextureRegion(tiles, startX + 48, startY + yTileHeight + half, 8, half);
+            slices[17] = new TextureRegion(tiles, startX + 56, startY + yTileHeight + half, 8, half);
 
             // Transition corners 2x2
-            slices[18] = new TextureRegion(tiles, startX + 16, startY + 16, 8, 8);
-            slices[19] = new TextureRegion(tiles, startX + 24, startY + 16, 8, 8);
-            slices[20] = new TextureRegion(tiles, startX + 16, startY + 24, 8, 8);
-            slices[21] = new TextureRegion(tiles, startX + 24, startY + 24, 8, 8);
+            slices[18] = new TextureRegion(tiles, startX + 16, startY + yTileHeight, 8, half);
+            slices[19] = new TextureRegion(tiles, startX + 24, startY + yTileHeight, 8, half);
+            slices[20] = new TextureRegion(tiles, startX + 16, startY + yTileHeight + half, 8, half);
+            slices[21] = new TextureRegion(tiles, startX + 24, startY + yTileHeight + half, 8, half);
 
             for(int i = 0; i < slices.length; i++) {
                 TextureRegion toConsume = slices[i];
@@ -138,6 +138,10 @@ public class ExpoAssets {
                 localPixmap.dispose();
             }
         }
+    }
+
+    public void slice(String tileName, boolean singleTile, int startX, int startY) {
+        slice(tileName, singleTile, startX, startY, 16);
     }
 
     public TextureRegion findTile(String name) {

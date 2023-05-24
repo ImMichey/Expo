@@ -32,6 +32,7 @@ public class TileSheet {
         multiEntry("tile_soil_hole", 22);
         multiEntry("tile_forest", 22);
         multiEntry("tile_desert", 22);
+        multiEntry("tile_rock", 22);
 
         // Variations
         variationEntry("tile_grass", 1, 7);
@@ -72,7 +73,7 @@ public class TileSheet {
 
     public boolean isFullTile(int tileId) {
         return switch (tileId) {
-            case 1, 23, 112, 133 -> true;
+            case 1, 23, 112, 133, 156 -> true;
             default -> false;
         };
     }

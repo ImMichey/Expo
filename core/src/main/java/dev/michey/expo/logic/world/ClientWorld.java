@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -748,7 +747,7 @@ public class ClientWorld {
 
             for(ClientChunk chunk : drawChunks) {
                 if(chunk != null && chunk.visible) {
-                    for(int k = 0; k < chunk.biomes.length; k++) {
+                    for(int k = 63; k >= 0; k--) {
                         int tx = k % 8;
                         int ty = k / 8;
                         float wx = chunk.chunkDrawBeginX + ExpoShared.tileToPos(tx);

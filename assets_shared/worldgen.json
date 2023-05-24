@@ -44,6 +44,12 @@
                 },
                 "biomes": [
                     {
+                        "type": "ROCK",
+                        "elevation": [0.68, 1.0],
+                        "temperature": [0.0, 1.0],
+                        "moisture": [0.0, 0.5]
+                    },
+                    {
                         "type": "OCEAN_DEEP",
                         "elevation": [0.0, 0.425],
                         "temperature": [0.0, 1.0],
@@ -64,26 +70,20 @@
                     {
                         "type": "PLAINS",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.0, 0.58],
+                        "temperature": [0.0, 0.5],
                         "moisture": [0.0, 0.5]
                     },
                     {
                         "type": "FOREST",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.0, 0.52],
-                        "moisture": [0.5, 1.0]
+                        "temperature": [0.5, 1.0],
+                        "moisture": [0.0, 0.5]
                     },
                     {
                         "type": "DENSE_FOREST",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.52, 1.0],
+                        "temperature": [0.0, 1.0],
                         "moisture": [0.5, 1.0]
-                    },
-                    {
-                        "type": "DESERT",
-                        "elevation": [0.5, 1.0],
-                        "temperature": [0.58, 1.0],
-                        "moisture": [0.0, 0.5]
                     }
                 ]
             },

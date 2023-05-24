@@ -2,30 +2,27 @@ package dev.michey.expo.noise;
 
 public enum BiomeType {
 
-    OCEAN(0, "Ocean", new int[] {0, 46, 67}, new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
-    PLAINS(1, "Plains", new int[] {0, 1, 22}, new float[] {108f/255f, 173f/255f, 76f/255f, 1.0f}, new String[] {"PLAINS"}),
-    BEACH(2, "Beach", new int[] {0, 23, 44}, new float[] {245f/255f, 241f/255f, 219f/255f, 1.0f}, new String[] {"BEACH", "DESERT"}),
-    RIVER(3, "River", new int[] {0, 46, 67}, new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
-    LAKE(4, "Lake", new int[] {0, 46, 67}, new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}, new String[] {"OCEAN", "RIVER", "LAKE", "OCEAN_DEEP"}),
-    VOID(5, "Void", null, new float[] {0f, 0f, 0f, 1.0f}, new String[] {"VOID"}),
-    OCEAN_DEEP(6, "Deep Ocean", new int[] {46, 68, 89}, new float[] {73f/255f, 135f/255f, 211f/255f, 1.0f}, new String[] {"OCEAN_DEEP"}),
-    FOREST(7, "Forest", new int[] {0, 112, 133}, new float[] {87f/255f, 143f/255f, 65f/255f, 1.0f}, new String[] {"FOREST", "DENSE_FOREST"}),
-    DESERT(8, "Desert", new int[] {0, 23, 44}, new float[] {243f/255f, 232f/255f, 212f/255f, 1.0f}, new String[] {"DESERT", "BEACH"}),
-    DENSE_FOREST(9, "Dense Forest", new int[] {0, 112, 133}, new float[] {57f/255f, 113f/255f, 35f/255f, 1.0f}, new String[] {"DENSE_FOREST", "FOREST"});
+    OCEAN(0, "Ocean", new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}),
+    PLAINS(1, "Plains", new float[] {108f/255f, 173f/255f, 76f/255f, 1.0f}),
+    BEACH(2, "Beach", new float[] {245f/255f, 241f/255f, 219f/255f, 1.0f}),
+    RIVER(3, "River", new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}),
+    LAKE(4, "Lake", new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}),
+    VOID(5, "Void", new float[] {0f, 0f, 0f, 1.0f}),
+    OCEAN_DEEP(6, "Deep Ocean", new float[] {73f/255f, 135f/255f, 211f/255f, 1.0f}),
+    FOREST(7, "Forest", new float[] {87f/255f, 143f/255f, 65f/255f, 1.0f}),
+    DESERT(8, "Desert", new float[] {243f/255f, 232f/255f, 212f/255f, 1.0f}),
+    DENSE_FOREST(9, "Dense Forest", new float[] {57f/255f, 113f/255f, 35f/255f, 1.0f}),
+    ROCK(10, "Rock", new float[] {71f/255f, 71f/255f, 76f/255f, 1.0f}),
     ;
 
     public final int BIOME_ID;
     public final String BIOME_NAME;
-    public final int[] BIOME_LAYER_TEXTURES;
     public final float[] BIOME_COLOR;
-    public final String[] BIOME_NEIGHBOURS;
 
-    BiomeType(int BIOME_ID, String BIOME_NAME, int[] BIOME_LAYER_TEXTURES, float[] BIOME_COLOR, String[] BIOME_NEIGHBOURS) {
+    BiomeType(int BIOME_ID, String BIOME_NAME, float[] BIOME_COLOR) {
         this.BIOME_ID = BIOME_ID;
         this.BIOME_NAME = BIOME_NAME;
-        this.BIOME_LAYER_TEXTURES = BIOME_LAYER_TEXTURES;
         this.BIOME_COLOR = BIOME_COLOR;
-        this.BIOME_NEIGHBOURS = BIOME_NEIGHBOURS;
     }
 
     public static BiomeType idToBiome(int id) {
@@ -39,6 +36,7 @@ public enum BiomeType {
             case 7 -> FOREST;
             case 8 -> DESERT;
             case 9 -> DENSE_FOREST;
+            case 10 -> ROCK;
             default -> OCEAN;
         };
     }

@@ -1,36 +1,27 @@
 package dev.michey.expo.noise;
 
-import java.util.HashMap;
-
 public enum TileLayerType {
 
-    EMPTY(0),
-    SOIL(1), SOIL_HOLE(2),                                                  // Layer 0
-    SAND(3), DESERT(4), GRASS(5), FOREST(6), WATER(7), WATER_DEEP(8),       // Layer 1
+    EMPTY(0, new int[] {-1}, new String[] {"EMPTY"}),
+    SOIL(1, new int[] {0}, new String[] {"SOIL"}),
+    SOIL_HOLE(2, new int[] {90, 111}, new String[] {"SOIL_HOLE"}),
+    SAND(3, new int[] {23, 44}, new String[] {"SAND", "DESERT"}),
+    DESERT(4, new int[] {23, 44}, new String[] {"DESERT", "SAND"}),
+    GRASS(5, new int[] {1, 22}, new String[] {"GRASS", "FOREST"}),
+    FOREST(6, new int[] {112, 133}, new String[] {"FOREST", "GRASS"}),
+    WATER(7, new int[] {46, 67}, new String[] {"WATER"}),
+    WATER_DEEP(8, new int[] {68, 89}, new String[] {"WATER_DEEP", "WATER"}),
+    ROCK(9, new int[] {156, 177}, new String[] {"DEEP"}),
     ;
 
-    public static final HashMap<TileLayerType, int[]> TEXTURE_MAP;
-    public static final HashMap<TileLayerType, TileLayerType[]> CONNECTION_MAP;
-
     public final int SERIALIZATION_ID;
+    public final int[] TILE_ID_DATA;
+    public final String[] TILE_CONNECTION_DATA;
 
-    TileLayerType(int SERIALIZATION_ID) {
+    TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA) {
         this.SERIALIZATION_ID = SERIALIZATION_ID;
-    }
-
-    static {
-        TEXTURE_MAP = new HashMap<>();
-        TEXTURE_MAP.put(TileLayerType.SOIL, new int[] {0});
-        TEXTURE_MAP.put(TileLayerType.SOIL_HOLE, new int[] {90, 111});
-        TEXTURE_MAP.put(TileLayerType.GRASS, new int[] {1, 22});
-        TEXTURE_MAP.put(TileLayerType.SAND, new int[] {23, 44});
-        TEXTURE_MAP.put(TileLayerType.WATER, new int[] {46, 67});
-        TEXTURE_MAP.put(TileLayerType.WATER_DEEP, new int[] {68, 89});
-        TEXTURE_MAP.put(TileLayerType.DESERT, new int[] {134, 155});
-        TEXTURE_MAP.put(TileLayerType.FOREST, new int[] {112, 133});
-
-        CONNECTION_MAP = new HashMap<>();
-        CONNECTION_MAP.put(WATER_DEEP, new TileLayerType[] {WATER, WATER_DEEP});
+        this.TILE_ID_DATA = TILE_ID_DATA;
+        this.TILE_CONNECTION_DATA = TILE_CONNECTION_DATA;
     }
 
     public static String typeToItemDrop(TileLayerType type) {
@@ -59,21 +50,18 @@ public enum TileLayerType {
     }
 
     public static boolean isConnected(TileLayerType t0, TileLayerType t1) {
-        TileLayerType[] check = CONNECTION_MAP.get(t0);
+        String[] check = t0.TILE_CONNECTION_DATA;
         if(check == null) return t0 == t1;
 
-        for(TileLayerType c : check) {
-            if(c == t0) return true;
+        for(String c : check) {
+            if(TileLayerType.valueOf(c) == t1) return true;
         }
 
         return false;
     }
 
     public static TileLayerType biomeToLayer0(BiomeType type) {
-        return switch (type) {
-            case OCEAN_DEEP -> WATER;
-            default -> SOIL;
-        };
+        return SOIL;
     }
 
     public static TileLayerType biomeToLayer1(BiomeType type) {
@@ -100,10 +88,6 @@ public enum TileLayerType {
         } else {
             return biomeToLayer2(type);
         }
-    }
-
-    public static int[] typeToTextures(TileLayerType type) {
-        return TEXTURE_MAP.get(type);
     }
 
 }

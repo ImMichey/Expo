@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.HashMap;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ItemSheet {
 
     private final HashMap<String, TextureRegion> itemTextureMap;
@@ -39,6 +37,7 @@ public class ItemSheet {
         add("item_acorn", 20, 12, 12);
         add("item_mushroom_red", 21, 8, 9);
         add("item_mushroom_brown", 22, 8, 9);
+        add("item_oak_plank", 23, 14, 11);
     }
 
     public TextureRegion get(String name) {

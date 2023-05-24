@@ -29,15 +29,13 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth) {
-        if(variant == 2) {
-            playEntitySound("stone_hit");
-        }
+        playEntitySound("stone_hit");
     }
 
     @Override
     public void onDeletion() {
         if(removalReason == EntityRemovalReason.DEATH) {
-            if(variant == 2) playEntitySound("stone_break");
+            playEntitySound("stone_break");
         }
     }
 

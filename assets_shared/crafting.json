@@ -1,7 +1,8 @@
 {
     "categories": {
         "misc": [
-            "recipe_cord"
+            "recipe_cord",
+            "recipe_oak_plank"
         ],
         "tools": [
             "recipe_flint_pickaxe",
@@ -13,6 +14,19 @@
         ]
     },
     "recipes": [
+        {
+            "identifier": "recipe_oak_plank",
+            "output": {
+                "id": 21,
+                "amount": 2
+            },
+            "input": [
+                {
+                    "id": 17,
+                    "amount": 1
+                }
+            ]
+        },
         {
             "identifier": "recipe_cord",
             "output": {

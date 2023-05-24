@@ -62,7 +62,7 @@ public class ServerPlayerInventory extends ServerInventory {
                 continue;
             }
 
-            if(MathUtils.randomBoolean()) {
+            if(MathUtils.random() <= 0.8f) {
                 ItemMapping mapping = mapper.randomMapping();
 
                 slot.item.itemId = mapping.id;

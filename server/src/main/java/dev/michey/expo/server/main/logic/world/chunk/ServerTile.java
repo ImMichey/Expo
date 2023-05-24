@@ -1,10 +1,13 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.Arrays;
+
+import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerTile {
 
@@ -18,6 +21,7 @@ public class ServerTile {
     public int[] layer0;
     public int[] layer1;
     public int[] layer2;
+    public DynamicTilePart dynamicTile;
 
     public float digHealth;
     public long digTimestamp;
@@ -40,51 +44,68 @@ public class ServerTile {
     public static final int SOUTH_WEST = 4;
     public static final int NORTH_WEST = 8;
 
-    /** Updates the first layer (0). If TileLayerType is null, the biome is used. */
     public void updateLayer0(TileLayerType type) {
-        if(type == null) {
-            layerTypes[0] = TileLayerType.biomeToLayer0(biome);
-            int minTile = biome.BIOME_LAYER_TEXTURES[0];
+        TileLayerType use = type == null ? TileLayerType.biomeToLayer0(biome) : type;
+        layerTypes[0] = use;
+        int[] td = layerTypes[0].TILE_ID_DATA;
 
-            if(biome == BiomeType.OCEAN_DEEP) {
-                layer0 = new int[] {minTile};
-            } else {
-                layer0 = runTextureGrab(minTile, 0);
-            }
+        if(td.length == 1) {
+            layer0 = new int[] {td[0]};
         } else {
-            layerTypes[0] = type;
-            int[] minTile = TileLayerType.typeToTextures(type);
+            layer0 = runTextureGrab(td[0], 0);
+        }
+    }
 
-            if(minTile == null) {
-                layer0 = new int[] {-1};
-            } else {
-                if(minTile.length < 2) {
-                    layer0 = new int[] {minTile[0]};
-                } else {
-                    layer0 = runTextureGrab(minTile[0], 0);
-                }
-            }
+    public void updateLayer1(TileLayerType type) {
+        TileLayerType use = type == null ? TileLayerType.biomeToLayer1(biome) : type;
+        layerTypes[1] = use;
+        int[] td = layerTypes[1].TILE_ID_DATA;
+
+        if(td.length == 1) {
+            layer1 = new int[] {td[0]};
+        } else {
+            layer1 = runTextureGrab(td[0], 1);
+        }
+    }
+
+    public void updateLayer2(TileLayerType type) {
+        TileLayerType use = type == null ? TileLayerType.biomeToLayer2(biome) : type;
+        layerTypes[2] = use;
+        int[] td = layerTypes[2].TILE_ID_DATA;
+
+        if(td.length == 1) {
+            layer2 = new int[] {td[0]};
+        } else {
+            layer2 = runTextureGrab(td[0], 2);
         }
     }
 
     /** This method is called when an adjacent layer 0 tile has been updated and this tile potentially needs to adjust its texture. */
     public boolean updateLayer0Adjacent() {
-        int[] textures = TileLayerType.typeToTextures(layerTypes[0]);
-        if(textures == null) return false;
-        if(textures.length < 2) return false;
+        int[] td = layerTypes[0].TILE_ID_DATA;
         int[] old = layer0;
-        layer0 = runTextureGrab(textures[0], 0);
+
+        if(td.length == 1) {
+            layer0 = new int[] {td[0]};
+        } else {
+            layer0 = runTextureGrab(td[0], 0);
+        }
+
         return !Arrays.equals(old, layer0);
     }
 
     /** This method is called when an adjacent layer 1 tile has been updated and this tile potentially needs to adjust its texture.
      * Returns whether an update packet is needed or not. */
     public boolean updateLayer1Adjacent() {
-        int[] textures = TileLayerType.typeToTextures(layerTypes[1]);
-        if(textures == null) return false;
-        if(textures.length < 2) return false;
+        int[] td = layerTypes[1].TILE_ID_DATA;
         int[] old = layer1;
-        layer1 = runTextureGrab(textures[0], 1);
+
+        if(td.length == 1) {
+            layer1 = new int[] {td[0]};
+        } else {
+            layer1 = runTextureGrab(td[0], 1);
+        }
+
         return !Arrays.equals(old, layer1);
     }
 
@@ -211,34 +232,6 @@ public class ServerTile {
 
             return new int[] {c1, c2, c3, c4};
         }
-    }
-
-    /** Updates the second layer (1). If TileLayerType is null, the biome is used. */
-    public void updateLayer1(TileLayerType type) {
-        if(type == null) {
-            layerTypes[1] = TileLayerType.biomeToLayer1(biome);
-
-            int minTile = biome.BIOME_LAYER_TEXTURES[1];
-            layer1 = runTextureGrab(minTile, 1);
-        } else {
-            layerTypes[1] = type;
-            int[] minTile = TileLayerType.typeToTextures(type);
-
-            if(minTile == null) {
-                layer1 = new int[] {-1};
-            } else {
-                if(minTile.length < 2) {
-                    layer1 = new int[] {minTile[0]};
-                } else {
-                    layer1 = runTextureGrab(minTile[0], 1);
-                }
-            }
-        }
-    }
-
-    public void updateLayer2(TileLayerType type) {
-        layerTypes[2] = TileLayerType.EMPTY;
-        layer2 = new int[] {-1};
     }
 
     private int[] indexStraightDiagonal(int checkLayer, int x, int y) {
