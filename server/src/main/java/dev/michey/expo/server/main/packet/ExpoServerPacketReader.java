@@ -89,7 +89,7 @@ public class ExpoServerPacketReader {
             ServerPlayer sp = ServerPlayer.getLocalPlayer();
             if(sp == null) return;
 
-            sp.playerInventory.craft(CraftingRecipeMapping.get().getRecipeMap().get(p.recipeIdentifier));
+            sp.playerInventory.craft(CraftingRecipeMapping.get().getRecipeMap().get(p.recipeIdentifier), p.all);
         }
     }
 
@@ -210,7 +210,7 @@ public class ExpoServerPacketReader {
 
             if(player != null) {
                 CraftingRecipe recipe = CraftingRecipeMapping.get().getRecipeMap().get(p.recipeIdentifier);
-                player.playerInventory.craft(recipe);
+                player.playerInventory.craft(recipe, p.all);
             }
         }
     }

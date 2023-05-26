@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.util.Pair;
@@ -102,14 +103,14 @@ public class ClientChunkGrid {
         interpolation = Interpolation.smooth2.apply(waveDelta) * WAVE_STRENGTH;
     }
 
-    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, TileLayerType[][] layerTypes, int[][] layer0, int[][] layer1, int[][] layer2) {
+    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] individualTileData) {
         String key = chunkX + "," + chunkY;
         ClientChunk existing = clientChunkMap.get(key);
 
         if(existing == null) {
-            clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, layerTypes, layer0, layer1, layer2));
+            clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, individualTileData));
         } else {
-            existing.update(biomes, layerTypes, layer0, layer1, layer2);
+            existing.update(biomes, individualTileData);
         }
     }
 

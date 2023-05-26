@@ -7,6 +7,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.gen.*;
 import dev.michey.expo.server.packet.*;
@@ -46,6 +47,9 @@ public class ExpoServerRegistry {
                 TileLayerType.class,
                 TileLayerType[].class,
                 TileLayerType[][].class,
+                DynamicTilePart.class,
+                DynamicTilePart[].class,
+                DynamicTilePart[][].class,
 
                 // Packets
                 P0_Auth_Req.class,

@@ -160,7 +160,7 @@ public class ServerPlayer extends ServerEntity {
 
         int tileX = ExpoShared.posToTile(posX);
         int tileY = ExpoShared.posToTile(posY);
-        boolean hole = getChunkGrid().getTile(tileX, tileY).layerTypes[0] == TileLayerType.SOIL_HOLE;
+        boolean hole = getChunkGrid().getTile(tileX, tileY).dynamicTileParts[0].emulatingType == TileLayerType.SOIL_HOLE;
         if(hole) return 0.75f;
 
         return 1.0f;
@@ -409,7 +409,6 @@ public class ServerPlayer extends ServerEntity {
 
         var chunk = getChunkGrid().getChunk(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
-
         PlaceData p = m.logic.placeData;
 
         if(p.type == PlaceType.FLOOR_0) {
@@ -452,11 +451,11 @@ public class ServerPlayer extends ServerEntity {
     }
 
     private int digLayer(ServerTile tile) {
-        TileLayerType t1 = tile.layerTypes[1];
+        TileLayerType t1 = tile.dynamicTileParts[1].emulatingType;
         if(t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST) return 1;
         if(t1 == TileLayerType.SAND) return 1;
 
-        TileLayerType t0 = tile.layerTypes[0];
+        TileLayerType t0 = tile.dynamicTileParts[0].emulatingType;
         if(t0 == TileLayerType.SOIL) return 0;
 
         return -1;
@@ -464,48 +463,37 @@ public class ServerPlayer extends ServerEntity {
 
     public void digAt(int chunkX, int chunkY, int tileArray) {
         ServerInventoryItem item = getCurrentItem();
-        if(item.itemMetadata == null || item.itemMetadata.toolType != ToolType.SHOVEL) return; // to combat de-sync server<->client, double check current item
+        if(!item.isTool(ToolType.SHOVEL)) return; // to combat de-sync server<->client, double check current item
 
         var chunk = getChunkGrid().getChunk(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
         int pColor = tile.toParticleColorId();
-
         int digLayer = digLayer(tile);
 
         if(digLayer != -1) {
-            ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
-            boolean dugUp = tile.dig(mapping.logic.attackDamage);
+            ItemMapping mapping = item.toMapping();
+            boolean dugUp = tile.dig(digLayer, mapping.logic.attackDamage);
 
             { // Play dig up sound.
-                String sound = TileLayerType.typeToHitSound(tile.layerTypes[digLayer]);
-
-                if(sound != null) {
-                    ServerPackets.p24PositionalSound(sound,
-                            ExpoShared.tileToPos(tile.tileX) + 8f, ExpoShared.tileToPos(tile.tileY) + 8f,
-                            ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
-                }
+                String sound = TileLayerType.typeToHitSound(tile.dynamicTileParts[digLayer].emulatingType);
+                tile.playTileSound(sound);
             }
 
             if(dugUp) {
-                // Update tile health
-                tile.digHealth = 20.0f;
-                // Update tile timestamp
-                chunk.lastTileUpdate = System.currentTimeMillis();
-
                 {
                     if(digLayer == 0 && (tile.biome == BiomeType.PLAINS || tile.biome == BiomeType.FOREST || tile.biome == BiomeType.DENSE_FOREST)) {
                         // SPAWN THE WORM!
                         if(MathUtils.random() <= 0.05f) {
                             ServerWorm worm = new ServerWorm();
-                            worm.posX = ExpoShared.tileToPos(tile.tileX) + 0.5f;
-                            worm.posY = ExpoShared.tileToPos(tile.tileY) + 3f;
+                            worm.posX = ExpoShared.tileToPos(tile.tileX) + 8f;
+                            worm.posY = ExpoShared.tileToPos(tile.tileY) + 4f;
                             ServerWorld.get().registerServerEntity(entityDimension, worm);
                             ServerPackets.p24PositionalSound("pop", worm.posX, worm.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(getDimension(), chunkX, chunkY));
                         }
                     }
 
                     // Drop layer as item.
-                    String identifier = TileLayerType.typeToItemDrop(tile.layerTypes[digLayer]);
+                    String identifier = TileLayerType.typeToItemDrop(tile.dynamicTileParts[digLayer].emulatingType);
 
                     if(identifier != null) {
                         spawnItemSingle(ExpoShared.tileToPos(tile.tileX) + 8.0f,
@@ -514,7 +502,7 @@ public class ServerPlayer extends ServerEntity {
                 }
 
                 { // Update tile data
-                    if(digLayer == 0 && tile.layerTypes[digLayer] == TileLayerType.SOIL) {
+                    if(digLayer == 0 && tile.dynamicTileParts[digLayer].emulatingType == TileLayerType.SOIL) {
                         tile.updateLayer0(TileLayerType.SOIL_HOLE);
                         ServerPackets.p32ChunkDataSingle(tile, 0);
 

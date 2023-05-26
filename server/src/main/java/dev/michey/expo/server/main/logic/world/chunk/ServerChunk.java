@@ -13,7 +13,6 @@ import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.*;
 import dev.michey.expo.server.util.GenerationUtils;
-import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
@@ -37,7 +36,7 @@ import static dev.michey.expo.util.ExpoShared.*;
 public class ServerChunk {
 
     /** Chunk belongs to this dimension */
-    private ServerDimension dimension;
+    private final ServerDimension dimension;
 
     /** Chunk data */
     public final int chunkX;
@@ -181,7 +180,7 @@ public class ServerChunk {
                             int yi = (int) p.y;
                             int tIndex = yi / TILE_SIZE * 8 + xi / TILE_SIZE;
 
-                            if(tiles[tIndex].layer1.length == 1 && tiles[tIndex].layer1[0] != -1) {
+                            if(tiles[tIndex].dynamicTileParts[1].layerIds.length == 1 && tiles[tIndex].dynamicTileParts[1].layerIds[0] != -1) {
                                 ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
                                 generatedEntity.posX = (int) p.absoluteX;
                                 generatedEntity.posY = (int) p.absoluteY;
@@ -249,7 +248,7 @@ public class ServerChunk {
             // Assign biome.
             tile.biome = dimension.getChunkHandler().getBiome(x, y);
 
-            tile.layerTypes = new TileLayerType[3];
+            tile.dynamicTileParts = new DynamicTilePart[] {new DynamicTilePart(), new DynamicTilePart(), new DynamicTilePart()};
             tile.updateLayer0(null);
             tile.updateLayer1(null);
             tile.updateLayer2(null);
@@ -268,7 +267,7 @@ public class ServerChunk {
                 int y = bty + i / 8;
 
                 float normalized = dimension.getChunkHandler().normalized(p, x, y);
-                boolean isDirt = normalized >= processor.threshold && (tile.layerTypes[1] == TileLayerType.FOREST || tile.layerTypes[1] == TileLayerType.GRASS);
+                boolean isDirt = normalized >= processor.threshold && (tile.dynamicTileParts[1].emulatingType == TileLayerType.FOREST || tile.dynamicTileParts[1].emulatingType == TileLayerType.GRASS);
 
                 if(isDirt) {
                     tile.updateLayer1(TileLayerType.EMPTY);
@@ -383,10 +382,10 @@ public class ServerChunk {
 
                         JSONArray tileTypesArray = biomeData.getJSONArray("layerTypes");
                         for(int i = 0; i < tiles.length; i++) {
-                            tiles[i].layerTypes = new TileLayerType[3];
+                            tiles[i].dynamicTileParts = new DynamicTilePart[] {new DynamicTilePart(), new DynamicTilePart(), new DynamicTilePart()};
                             JSONArray _a = tileTypesArray.getJSONArray(i);
                             for(int j = 0; j < _a.length(); j++) {
-                                tiles[i].layerTypes[j] = TileLayerType.values()[_a.getInt(j)];
+                                tiles[i].dynamicTileParts[j].update(TileLayerType.values()[_a.getInt(j)]);
                             }
                         }
 
@@ -436,7 +435,7 @@ public class ServerChunk {
                 JSONArray layerTypesArray = new JSONArray();
                 for(ServerTile tile : tiles) {
                     JSONArray _a = new JSONArray();
-                    for(TileLayerType tlt : tile.layerTypes) _a.put(tlt.SERIALIZATION_ID);
+                    for(DynamicTilePart tlt : tile.dynamicTileParts) _a.put(tlt.emulatingType.SERIALIZATION_ID);
                     layerTypesArray.put(_a);
                 }
                 biomeData.put("layerTypes", layerTypesArray);
@@ -473,19 +472,19 @@ public class ServerChunk {
         if(layer == 0) {
             for(ServerTile st : tiles) {
                 JSONArray ia = new JSONArray();
-                for(int i : st.layer0) ia.put(i);
+                for(int i : st.dynamicTileParts[0].layerIds) ia.put(i);
                 layerArray.put(ia);
             }
         } else if(layer == 1) {
             for(ServerTile st : tiles) {
                 JSONArray ia = new JSONArray();
-                for(int i : st.layer1) ia.put(i);
+                for(int i : st.dynamicTileParts[1].layerIds) ia.put(i);
                 layerArray.put(ia);
             }
         } else if(layer == 2) {
             for(ServerTile st : tiles) {
                 JSONArray ia = new JSONArray();
-                for(int i : st.layer2) ia.put(i);
+                for(int i : st.dynamicTileParts[2].layerIds) ia.put(i);
                 layerArray.put(ia);
             }
         }
@@ -504,11 +503,11 @@ public class ServerChunk {
             }
 
             if(layer == 0) {
-                tiles[i].layer0 = insert;
+                tiles[i].dynamicTileParts[0].setTileIds(insert);
             } else if(layer == 1) {
-                tiles[i].layer1 = insert;
+                tiles[i].dynamicTileParts[1].setTileIds(insert);
             } else if(layer == 2) {
-                tiles[i].layer2 = insert;
+                tiles[i].dynamicTileParts[2].setTileIds(insert);
             }
         }
     }

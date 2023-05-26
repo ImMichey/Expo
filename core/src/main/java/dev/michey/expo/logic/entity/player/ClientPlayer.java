@@ -253,7 +253,7 @@ public class ClientPlayer extends ClientEntity {
             if(holdingItemId != -1) {
                 ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
 
-                boolean shovel = mapping.logic.isTool() && mapping.logic.toolType == ToolType.SHOVEL;
+                boolean shovel = mapping.logic.isSpecialType() && mapping.logic.toolType == ToolType.SHOVEL;
                 boolean placeable = holdingItemId >= 9 && holdingItemId <= 11;
 
                 if(entityManager().selectedEntity == null && (shovel || placeable)) {

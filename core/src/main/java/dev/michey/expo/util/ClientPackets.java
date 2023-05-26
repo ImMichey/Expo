@@ -98,9 +98,10 @@ public class ClientPackets {
     }
 
     /** Sends the P35_PlayerCraft packet via UDP protocol. */
-    public static void p35PlayerCraft(String recipeIdentifier) {
+    public static void p35PlayerCraft(String recipeIdentifier, boolean all) {
         P35_PlayerCraft p = new P35_PlayerCraft();
         p.recipeIdentifier = recipeIdentifier;
+        p.all = all;
         udp(p);
     }
 

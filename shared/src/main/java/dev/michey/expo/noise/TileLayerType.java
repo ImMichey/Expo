@@ -1,5 +1,7 @@
 package dev.michey.expo.noise;
 
+import java.util.HashMap;
+
 public enum TileLayerType {
 
     EMPTY(0, new int[] {-1}, new String[] {"EMPTY"}),
@@ -18,10 +20,23 @@ public enum TileLayerType {
     public final int[] TILE_ID_DATA;
     public final String[] TILE_CONNECTION_DATA;
 
+    public static final HashMap<TileLayerType, int[]> BLENDING_MAP;
+
+    static {
+        BLENDING_MAP = new HashMap<>();
+
+        BLENDING_MAP.put(GRASS, new int[] {255, 0, 0, 255});
+    }
+
     TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA) {
         this.SERIALIZATION_ID = SERIALIZATION_ID;
         this.TILE_ID_DATA = TILE_ID_DATA;
         this.TILE_CONNECTION_DATA = TILE_CONNECTION_DATA;
+    }
+
+    public static float color255Packed(int r, int g, int b, int a) {
+        int color = (a << 24) | (b << 16) | (g << 8) | r;
+        return Float.intBitsToFloat(color & 0xfeffffff);
     }
 
     public static String typeToItemDrop(TileLayerType type) {

@@ -135,8 +135,8 @@ public class ServerChunkGrid {
         String k = x + "," + y;
         ServerTile existingTile = tileMap.get(k);
 
-        if(existingTile != null && existingTile.layer0 != null) {
-            return existingTile.layerTypes[layer];
+        if(existingTile != null && existingTile.dynamicTileParts != null) {
+            return existingTile.dynamicTileParts[layer].emulatingType;
         }
 
         BiomeType b = getBiome(x, y);

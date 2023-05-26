@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.inventory.item;
 
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemLogic;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 
 public class ServerInventoryItem {
 
@@ -34,7 +35,7 @@ public class ServerInventoryItem {
 
         ItemLogic logic = ItemMapper.get().getMapping(itemId).logic;
 
-        if(logic.isTool()) {
+        if(logic.isSpecialType()) {
             itemMetadata = new ItemMetadata();
             itemMetadata.toolType = logic.toolType;
             itemMetadata.durability = logic.durability;
@@ -56,6 +57,15 @@ public class ServerInventoryItem {
         }
 
         return this;
+    }
+
+    public boolean isTool(ToolType type) {
+        if(itemMetadata == null) return false;
+        return itemMetadata.toolType == type;
+    }
+
+    public ItemMapping toMapping() {
+        return ItemMapper.get().getMapping(itemId);
     }
 
 }

@@ -251,8 +251,8 @@ public abstract class ClientEntity {
             ExpoLogger.log("error " + tileArray + " " + startTileX + " " + startTileY);
         }
 
-        TileLayerType t0 = c.layerTypes[tileArray][0];
-        TileLayerType t1 = c.layerTypes[tileArray][1];
+        TileLayerType t0 = c.dynamicTiles[tileArray][0].emulatingType;
+        TileLayerType t1 = c.dynamicTiles[tileArray][1].emulatingType;
 
         if(t0 == TileLayerType.SOIL_HOLE) {
             return isRaining() ? "step_mud" : "step_dirt";

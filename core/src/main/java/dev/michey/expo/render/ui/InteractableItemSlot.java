@@ -135,8 +135,15 @@ public class InteractableItemSlot extends InteractableUIElement {
                 float[] rgb = parent.percentageToColor(percentage);
                 String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();
 
-                parent.drawTooltipColored(mapping.displayName, mapping.color,
-                        parent.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + slot.item.itemMetadata.durability + "/" + mapping.logic.durability);
+                //String range = "  " + parent.COLOR_DESCRIPTOR2_HEX + "Range: " + (slot.item.toMapping().logic.range / 16.0f) + "m";
+                //String attackSpeed = "  " + parent.COLOR_DESCRIPTOR2_HEX + "Attack Speed: " + slot.item.toMapping().logic.attackSpeed + "s";
+                //String attackDamage = "  " + parent.COLOR_DESCRIPTOR2_HEX + "Attack/Harvest Damage: " + slot.item.toMapping().logic.attackDamage + ", " + slot.item.toMapping().logic.harvestDamage;
+
+                String[] lines = new String[] {
+                        parent.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + slot.item.itemMetadata.durability + "/" + mapping.logic.durability
+                };
+
+                parent.drawTooltipColored(mapping.displayName, mapping.color, lines);
             } else if(mapping.logic.isFood()) {
                 int seconds = (int) mapping.logic.foodData.hungerCooldownRestore;
 

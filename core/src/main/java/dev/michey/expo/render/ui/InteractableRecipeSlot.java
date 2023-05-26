@@ -1,5 +1,7 @@
 package dev.michey.expo.render.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
@@ -29,7 +31,7 @@ public class InteractableRecipeSlot extends InteractableUIElement {
     @Override
     public void onLeftClick() {
         // Try crafting
-        if(holdingRecipe != null) ClientPackets.p35PlayerCraft(holdingRecipe.recipeIdentifier);
+        if(holdingRecipe != null) ClientPackets.p35PlayerCraft(holdingRecipe.recipeIdentifier, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
     }
 
     @Override

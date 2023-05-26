@@ -235,16 +235,16 @@ public class ImGuiExpo {
 
                 if(chunk != null) {
                     BiomeType t = chunk.biomes[r.mouseTileArray];
-                    int[] l0 = chunk.layer0[r.mouseTileArray];
-                    int[] l1 = chunk.layer1[r.mouseTileArray];
-                    int[] l2 = chunk.layer2[r.mouseTileArray];
+                    int[] l0 = chunk.dynamicTiles[r.mouseTileArray][0].layerIds;
+                    int[] l1 = chunk.dynamicTiles[r.mouseTileArray][1].layerIds;
+                    int[] l2 = chunk.dynamicTiles[r.mouseTileArray][2].layerIds;
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Mouse Biome: " + t.name());
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0: " + Arrays.toString(l0));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1: " + Arrays.toString(l1));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2: " + Arrays.toString(l2));
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0Tex: " + Arrays.toString(chunk.layer0Tex[r.mouseTileArray]));
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1Tex: " + Arrays.toString(chunk.layer1Tex[r.mouseTileArray]));
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.layer2Tex[r.mouseTileArray]));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][0].textures));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][1].textures));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][2].textures));
                 }
 
                 ImGui.treePop();

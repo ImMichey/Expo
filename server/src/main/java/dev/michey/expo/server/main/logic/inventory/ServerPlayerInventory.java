@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT;
 
 public class ServerPlayerInventory extends ServerInventory {
@@ -363,7 +362,9 @@ public class ServerPlayerInventory extends ServerInventory {
         return result;
     }
 
-    public void craft(CraftingRecipe recipe) {
+    public void craft(CraftingRecipe recipe, boolean tryCraftAll) {
+        int[] oldIds = getOwner().getEquippedItemIds();
+
         // ================================================================================== Checking for existing input
         boolean hasAllIngredients = true;
         List<Pair<Integer, Integer>> slotsVisited = null;
@@ -432,7 +433,6 @@ public class ServerPlayerInventory extends ServerInventory {
         if(!hasSpaceForOutput) return;
 
         // ================================================================================== Actual adding/removing + packets
-        int[] oldIds = getOwner().getEquippedItemIds();
         InventoryChangeResult result = new InventoryChangeResult();
 
         // Do inventory stuff here

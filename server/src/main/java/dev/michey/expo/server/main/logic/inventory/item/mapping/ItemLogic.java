@@ -15,6 +15,7 @@ public class ItemLogic {
     public float range;
     public float attackSpeed;
     public float attackDamage;
+    public float harvestDamage;
     public PlaceData placeData; // can be null
 
     public ItemLogic(JSONObject object) {
@@ -49,12 +50,22 @@ public class ItemLogic {
             attackDamage = ExpoShared.PLAYER_DEFAULT_ATTACK_DAMAGE;
         }
 
+        if(object.has("harvestDamage")) {
+            harvestDamage = object.getFloat("harvestDamage");
+        } else {
+            harvestDamage = ExpoShared.PLAYER_DEFAULT_HARVEST_SPEED;
+        }
+
         if(object.has("placeData")) {
             placeData = new PlaceData(object.getJSONObject("placeData"));
         }
     }
 
     public boolean isTool() {
+        return isSpecialType() && (toolType == ToolType.PICKAXE || toolType == ToolType.AXE || toolType == ToolType.SHOVEL || toolType == ToolType.HOE);
+    }
+
+    public boolean isSpecialType() {
         return toolType != null;
     }
 

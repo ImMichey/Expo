@@ -59,6 +59,7 @@ public class PlayerUI {
     private final Color COLOR_YELLOW  = new Color(251f / 255f, 242f / 255f, 54f / 255f, 1.0f);
     private final Color COLOR_RED = new Color(210f / 255f, 27f / 255f, 27f / 255f, 1.0f);
     public final String COLOR_DESCRIPTOR_HEX = "[#5875b0]";
+    public final String COLOR_DESCRIPTOR2_HEX = "[#bdc4d4]";
     private final float[] COLOR_GRADIENTS = new float[] {100f, 80f, 60f, 40f, 20f, 0f};
     public InteractableItemSlot[] hotbarSlots;
     public InteractableUIElement hoveredSlot = null;

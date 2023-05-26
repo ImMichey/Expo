@@ -90,8 +90,8 @@ public class ClientSelector extends ClientEntity {
                     int mouseRelativeTileY = svTileY - startTileY;
                     svTileArray = mouseRelativeTileY * 8 + mouseRelativeTileX;
 
-                    TileLayerType t0 = chunk.layerTypes[svTileArray][0];
-                    TileLayerType t1 = chunk.layerTypes[svTileArray][1];
+                    TileLayerType t0 = chunk.dynamicTiles[svTileArray][0].emulatingType;
+                    TileLayerType t1 = chunk.dynamicTiles[svTileArray][1].emulatingType;
 
                     if(selectionType == 0) {
                         // Check to dig.

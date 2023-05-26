@@ -73,9 +73,12 @@
             },
             "logic": {
                 "stackSize": 1,
-                "durability": 100,
+                "durability": 130,
                 "toolType": "PICKAXE",
-                "attackSpeed": 0.8
+                "range": 24,
+                "attackSpeed": 0.4,
+                "attackDamage": 14.0,
+                "harvestDamage": 10.0
             }
         },
         {
@@ -98,10 +101,12 @@
             },
             "logic": {
                 "stackSize": 1,
-                "durability": 100,
+                "durability": 130,
                 "toolType": "AXE",
-                "range": 50,
-                "attackSpeed": 0.1
+                "range": 24,
+                "attackSpeed": 0.4,
+                "attackDamage": 16.0,
+                "harvestDamage": 10.0
             }
         },
         {
@@ -228,9 +233,12 @@
             },
             "logic": {
                 "stackSize": 1,
-                "durability": 100,
+                "durability": 130,
                 "toolType": "SHOVEL",
-                "range": 25
+                "range": 24,
+                "attackSpeed": 0.4,
+                "attackDamage": 12.0,
+                "harvestDamage": 10.0
             }
         },
         {

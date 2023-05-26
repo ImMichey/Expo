@@ -114,6 +114,14 @@ public class ServerOakTree extends ServerEntity {
                 age = 2;
             }
         }
+
+        if(age == 0) {
+            health = 60.0f;
+        } else if(age == 1) {
+            health = 80.0f;
+        } else {
+            health = 100.0f;
+        }
     }
 
     public void generateVariant() {

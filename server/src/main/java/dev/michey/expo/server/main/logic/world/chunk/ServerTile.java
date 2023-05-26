@@ -1,13 +1,13 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.server.util.PacketReceiver;
+import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerTile {
 
@@ -17,14 +17,10 @@ public class ServerTile {
     public int tileArray;
 
     public BiomeType biome;
-    public TileLayerType[] layerTypes;
-    public int[] layer0;
-    public int[] layer1;
-    public int[] layer2;
-    public DynamicTilePart dynamicTile;
-
-    public float digHealth;
-    public long digTimestamp;
+    public DynamicTilePart[] dynamicTileParts;
+    //public int[] layer0;
+    //public int[] layer1;
+    //public int[] layer2;
 
     public ServerTile(ServerChunk chunk, int tileX, int tileY, int tileArray) {
         this.chunk = chunk;
@@ -46,67 +42,67 @@ public class ServerTile {
 
     public void updateLayer0(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer0(biome) : type;
-        layerTypes[0] = use;
-        int[] td = layerTypes[0].TILE_ID_DATA;
+        dynamicTileParts[0].update(use);
+        int[] td = dynamicTileParts[0].emulatingType.TILE_ID_DATA;
 
         if(td.length == 1) {
-            layer0 = new int[] {td[0]};
+            dynamicTileParts[0].setTileIds(new int[] {td[0]});
         } else {
-            layer0 = runTextureGrab(td[0], 0);
+            dynamicTileParts[0].setTileIds(runTextureGrab(td[0], 0));
         }
     }
 
     public void updateLayer1(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer1(biome) : type;
-        layerTypes[1] = use;
-        int[] td = layerTypes[1].TILE_ID_DATA;
+        dynamicTileParts[1].update(use);
+        int[] td = dynamicTileParts[1].emulatingType.TILE_ID_DATA;
 
         if(td.length == 1) {
-            layer1 = new int[] {td[0]};
+            dynamicTileParts[1].setTileIds(new int[] {td[0]});
         } else {
-            layer1 = runTextureGrab(td[0], 1);
+            dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
         }
     }
 
     public void updateLayer2(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer2(biome) : type;
-        layerTypes[2] = use;
-        int[] td = layerTypes[2].TILE_ID_DATA;
+        dynamicTileParts[2].update(use);
+        int[] td = dynamicTileParts[2].emulatingType.TILE_ID_DATA;
 
         if(td.length == 1) {
-            layer2 = new int[] {td[0]};
+            dynamicTileParts[2].setTileIds(new int[] {td[0]});
         } else {
-            layer2 = runTextureGrab(td[0], 2);
+            dynamicTileParts[2].setTileIds(runTextureGrab(td[0], 2));
         }
     }
 
     /** This method is called when an adjacent layer 0 tile has been updated and this tile potentially needs to adjust its texture. */
     public boolean updateLayer0Adjacent() {
-        int[] td = layerTypes[0].TILE_ID_DATA;
-        int[] old = layer0;
+        int[] td = dynamicTileParts[0].emulatingType.TILE_ID_DATA;
+        int[] old = dynamicTileParts[0].layerIds;
 
         if(td.length == 1) {
-            layer0 = new int[] {td[0]};
+            dynamicTileParts[0].setTileIds(new int[] {td[0]});
         } else {
-            layer0 = runTextureGrab(td[0], 0);
+            dynamicTileParts[0].setTileIds(runTextureGrab(td[0], 0));
         }
 
-        return !Arrays.equals(old, layer0);
+        return !Arrays.equals(old, dynamicTileParts[0].layerIds);
     }
 
     /** This method is called when an adjacent layer 1 tile has been updated and this tile potentially needs to adjust its texture.
      * Returns whether an update packet is needed or not. */
     public boolean updateLayer1Adjacent() {
-        int[] td = layerTypes[1].TILE_ID_DATA;
-        int[] old = layer1;
+        int[] td = dynamicTileParts[1].emulatingType.TILE_ID_DATA;
+        int[] old = dynamicTileParts[1].layerIds;
 
         if(td.length == 1) {
-            layer1 = new int[] {td[0]};
+            dynamicTileParts[1].setTileIds(new int[] {td[0]});
         } else {
-            layer1 = runTextureGrab(td[0], 1);
+            dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
         }
 
-        return !Arrays.equals(old, layer1);
+        return !Arrays.equals(old, dynamicTileParts[1].layerIds);
     }
 
     /** This method is called when an adjacent layer 2 tile has been updated and this tile potentially needs to adjust its texture. */
@@ -114,8 +110,7 @@ public class ServerTile {
 
     }
 
-    private int[] runTextureGrab(int minTile, int layer) {
-        int[] indices = indexStraightDiagonal(layer, tileX, tileY);
+    private int[] runTextureGrab(int minTile, int[] indices) {
         int tis = indices[0];
         int tid = indices[1];
 
@@ -234,7 +229,15 @@ public class ServerTile {
         }
     }
 
-    private int[] indexStraightDiagonal(int checkLayer, int x, int y) {
+    private int[] runTextureGrab(int minTile, int layer, TileLayerType type) {
+        return runTextureGrab(minTile, indexStraightDiagonal(layer, tileX, tileY, type));
+    }
+
+    private int[] runTextureGrab(int minTile, int layer) {
+        return runTextureGrab(minTile, layer, dynamicTileParts[layer].emulatingType);
+    }
+
+    private int[] indexStraightDiagonal(int checkLayer, int x, int y, TileLayerType b) {
         ServerChunkGrid g = chunk.getDimension().getChunkHandler();
 
         TileLayerType n = g.getTileLayerType(x, y + 1, checkLayer);
@@ -246,7 +249,6 @@ public class ServerTile {
         TileLayerType sw = g.getTileLayerType(x - 1, y - 1, checkLayer);
         TileLayerType nw = g.getTileLayerType(x - 1, y + 1, checkLayer);
 
-        TileLayerType b = layerTypes[checkLayer];
         int tis = 0, tid = 0;
 
         if(TileLayerType.isConnected(n, b)) tis += NORTH;
@@ -261,21 +263,45 @@ public class ServerTile {
         return new int[] {tis, tid};
     }
 
-    public boolean dig(float hp) {
-        long now = System.currentTimeMillis();
-        long diff = now - digTimestamp;
+    private Pair<int[], TileLayerType[]> indexStraightDiagonalPrecise(int checkLayer, int x, int y, TileLayerType b) {
+        ServerChunkGrid g = chunk.getDimension().getChunkHandler();
 
-        if(diff >= ExpoShared.RESET_TILE_DIG_HEALTH_AFTER_MILLIS) {
-            digHealth = 20.0f - hp;
-            digTimestamp = now;
-            return false;
-        }
+        TileLayerType n = g.getTileLayerType(x, y + 1, checkLayer);
+        TileLayerType e = g.getTileLayerType(x + 1, y, checkLayer);
+        TileLayerType s = g.getTileLayerType(x, y - 1, checkLayer);
+        TileLayerType w = g.getTileLayerType(x - 1, y, checkLayer);
+        TileLayerType ne = g.getTileLayerType(x + 1, y + 1, checkLayer);
+        TileLayerType se = g.getTileLayerType(x + 1, y - 1, checkLayer);
+        TileLayerType sw = g.getTileLayerType(x - 1, y - 1, checkLayer);
+        TileLayerType nw = g.getTileLayerType(x - 1, y + 1, checkLayer);
 
-        digHealth -= hp;
-        digTimestamp = now;
-        return digHealth <= 0;
+        int tis = 0, tid = 0;
+
+        if(n == b) tis += NORTH;
+        if(e == b) tis += EAST;
+        if(s == b) tis += SOUTH;
+        if(w == b) tis += WEST;
+        if(ne == b) tid += NORTH_EAST;
+        if(se == b) tid += SOUTH_EAST;
+        if(sw == b) tid += SOUTH_WEST;
+        if(nw == b) tid += NORTH_WEST;
+
+        return new Pair<>(new int[] {tis, tid}, new TileLayerType[] {n, e, s, w, ne, se, sw, nw});
     }
 
+    public boolean dig(int layer, float damage) {
+        return dynamicTileParts[layer].hit(damage);
+    }
+
+    public void playTileSound(String sound) {
+        if(sound != null) {
+            ServerPackets.p24PositionalSound(sound,
+                    ExpoShared.tileToPos(tileX) + 8f, ExpoShared.tileToPos(tileY) + 8f,
+                    ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(chunk.getDimension(), chunk.chunkX, chunk.chunkY));
+        }
+    }
+
+    // Bottom Left -> Bottom Right -> Top Right -> Top Left -> Bottom Left
     public ServerTile[] getNeighbouringTiles() {
         ServerTile[] list = new ServerTile[8];
         ServerChunkGrid grid = chunk.getDimension().getChunkHandler();
@@ -327,7 +353,7 @@ public class ServerTile {
     }
 
     public boolean isType(TileLayerType type, int layer) {
-        return layerTypes[layer] == type;
+        return dynamicTileParts[layer].emulatingType == type;
     }
 
 }

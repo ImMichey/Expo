@@ -94,7 +94,7 @@ public class Expo implements ApplicationListener {
 
 		autoExec();
 
-		boolean slice = false;
+		boolean slice = true;
 
 		if(slice) {
 			ExpoAssets.get().slice("tile_soil", true, 0, 0);
@@ -107,6 +107,7 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_forest", false, 0, 192);
 			ExpoAssets.get().slice("tile_desert", false, 0, 224);
 			ExpoAssets.get().slice("tile_rock", false, 0, 256, 32);
+			ExpoAssets.get().slice("tile_forest_to_grass", false, 0, 320);
 		}
 	}
 

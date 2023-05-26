@@ -693,7 +693,7 @@ public class ClientWorld {
         for(ClientChunk chunk : drawChunks) {
             if(chunk != null && chunk.visible) {
                 for(int k = 0; k < chunk.biomes.length; k++) {
-                    boolean isWaterTile = TileLayerType.isWater(chunk.layerTypes[k][1]);
+                    boolean isWaterTile = TileLayerType.isWater(chunk.dynamicTiles[k][1].emulatingType);
 
                     if(isWaterTile) {
                         int tx = k % 8;
@@ -753,16 +753,16 @@ public class ClientWorld {
                         float wx = chunk.chunkDrawBeginX + ExpoShared.tileToPos(tx);
                         float wy = chunk.chunkDrawBeginY + ExpoShared.tileToPos(ty);
 
-                        if(chunk.layer1Tex[k].length == 1) {
+                        if(chunk.dynamicTiles[k][1].textures.length == 1) {
                             // check if full tile or not.
-                            if(!ExpoAssets.get().getTileSheet().isFullTile(chunk.layer1[k][0])) {
-                                drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
+                            if(!ExpoAssets.get().getTileSheet().isFullTile(chunk.dynamicTiles[k][0].layerIds[0])) {
+                                drawLayer(k, chunk.dynamicTiles[k][0].textures, rc, wx, wy, null);
                             }
                         } else {
-                            drawLayer(k, chunk.layer0Tex[k], rc, wx, wy, null);
+                            drawLayer(k, chunk.dynamicTiles[k][0].textures, rc, wx, wy, null);
                         }
-                        drawLayer(k, chunk.layer1Tex[k], rc, wx, wy, chunk.layer1Displacement);
-                        drawLayer(k, chunk.layer2Tex[k], rc, wx, wy, null);
+                        drawLayer(k, chunk.dynamicTiles[k][1].textures, rc, wx, wy, chunk.layer1Displacement);
+                        drawLayer(k, chunk.dynamicTiles[k][2].textures, rc, wx, wy, null);
                     }
                 }
             }
