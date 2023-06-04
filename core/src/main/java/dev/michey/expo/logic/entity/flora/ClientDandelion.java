@@ -84,7 +84,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK);
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
 
         rc.arraySpriteBatch.drawCustomVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();

@@ -19,6 +19,7 @@ uniform vec4 u_outlineColor;
 uniform float u_progress;
 uniform float u_pulseStrength;
 uniform float u_pulseMin;
+uniform bool u_inverse;
 
 out vec4 fragColor;
 
@@ -33,9 +34,16 @@ void main() {
         vec4 c3 = texture(u_texturearray, vec3(v_texCoords + vec2(0.0, pixelSize.y), v_texture_index));
         vec4 c4 = texture(u_texturearray, vec3(v_texCoords + vec2(0.0, -pixelSize.y), v_texture_index));
 
-        if(c1.a > 0.0 || c2.a > 0.0 || c3.a > 0.0 || c4.a > 0.0) {
-            fragColor = u_outlineColor;
-            return;
+        if(u_inverse) {
+            if(c1.a != 0.0 || c2.a != 0.0 || c3.a != 0.0 || c4.a != 0.0) {
+                fragColor = u_outlineColor;
+                return;
+            }
+        } else {
+            if(c1.a > 0.0 || c2.a > 0.0 || c3.a > 0.0 || c4.a > 0.0) {
+                fragColor = u_outlineColor;
+                return;
+            }
         }
     } else {
         c.rgb = mix(c.rgb * u_pulseMin, c.rgb * u_pulseStrength, u_progress);

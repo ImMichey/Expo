@@ -22,8 +22,11 @@ public class ExpoAssets {
     private ParticleSheet particleSheet;
     private ItemSheet itemSheet;
 
+    private final StringBuilder tileNameBuilder;
+
     public ExpoAssets() {
         assetManager = new AssetManager();
+        tileNameBuilder = new StringBuilder();
     }
 
     public void loadAssets() {
@@ -147,6 +150,32 @@ public class ExpoAssets {
 
     public TextureRegion findTile(String name) {
         return tilesAtlas.findRegion(name);
+    }
+
+    public TextureRegion toTexture(int[] ids, String elevationName, int variation) {
+        tileNameBuilder.setLength(0);
+        tileNameBuilder.append('t');
+
+        for(int i = 0; i < ids.length; i++) {
+            tileNameBuilder.append(ids[i]);
+
+            if(i < (ids.length - 1)) {
+                tileNameBuilder.append(',');
+            }
+        }
+
+        if(elevationName != null) {
+            tileNameBuilder.append(',');
+            tileNameBuilder.append(elevationName);
+        }
+
+        if(variation >= 0) {
+            tileNameBuilder.append(',');
+            tileNameBuilder.append("variation_");
+            tileNameBuilder.append(variation);
+        }
+
+        return tilesAtlas.findRegion(tileNameBuilder.toString());
     }
 
     public TextureRegion textureRegion(String name) {

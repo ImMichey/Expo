@@ -95,7 +95,7 @@ public class ClientAncientTree extends ClientEntity implements SelectableEntity 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         calculateWindOnDemand(rc.deltaTotal);
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK);
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
 
         rc.arraySpriteBatch.draw(trunk, clientPosX, clientPosY);
         rc.arraySpriteBatch.end();

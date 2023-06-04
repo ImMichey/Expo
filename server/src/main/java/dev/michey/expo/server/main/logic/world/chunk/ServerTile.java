@@ -130,7 +130,7 @@ public class ServerTile {
 
     }
 
-    private int[] runTextureGrab(int minTile, int[] indices) {
+    public static int[] runTextureGrab(int minTile, int[] indices) {
         int tis = indices[0];
         int tid = indices[1];
 

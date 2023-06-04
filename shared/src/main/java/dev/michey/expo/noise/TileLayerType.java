@@ -21,11 +21,15 @@ public enum TileLayerType {
     public final String[] TILE_CONNECTION_DATA;
 
     public static final HashMap<TileLayerType, int[]> BLENDING_MAP;
+    public static final HashMap<TileLayerType, String> ELEVATION_TEXTURE_MAP;
 
     static {
         BLENDING_MAP = new HashMap<>();
+        ELEVATION_TEXTURE_MAP = new HashMap<>();
 
         BLENDING_MAP.put(GRASS, new int[] {255, 0, 0, 255});
+
+        ELEVATION_TEXTURE_MAP.put(ROCK, "tile_rock_elevation");
     }
 
     TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA) {

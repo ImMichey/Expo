@@ -1,20 +1,15 @@
 package dev.michey.expo.logic.entity.misc;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.TextureData;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.arraybatch.TileMerger;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -29,7 +24,6 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     private boolean updateTexture = false;
     private TextureRegion created;
-    private TextureRegion selectionTexture;
 
     @Override
     public void onCreation() {
@@ -65,8 +59,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             }
         }
 
-        created = TileMerger.get().getCombinedTile(layerIds, elevationName, -1, false);
-        selectionTexture = generateSelectionTexture(created);
+        created = ExpoAssets.get().toTexture(layerIds, elevationName, -1);
     }
 
     @Override
@@ -173,10 +166,10 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, true);
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, playerBehindDelta);
-        rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
+        rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY);
 
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);

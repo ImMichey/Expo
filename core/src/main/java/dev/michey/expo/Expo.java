@@ -9,7 +9,9 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.assets.TileMergerX;
 import dev.michey.expo.debug.DebugGL;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.console.ConsoleMessage;
@@ -34,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Set;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
@@ -86,7 +89,7 @@ public class Expo implements ApplicationListener {
 			imGuiGlfw.init(pointer, true);
 			imGuiGl3.init("#version 330");
 
-			debugGL = new DebugGL();
+			// debugGL = new DebugGL();
 		}
 
 		AudioEngine.get();
@@ -100,9 +103,9 @@ public class Expo implements ApplicationListener {
 
 		autoExec();
 
-		boolean slice = true;
+		boolean slice = false;
 
-		if(slice) {
+		if(slice && DEV_MODE) {
 			ExpoAssets.get().slice("tile_soil", true, 0, 0);
 			ExpoAssets.get().slice("tile_grass", false, 0, 16);
 			ExpoAssets.get().slice("tile_sand", false, 0, 48);
@@ -113,6 +116,46 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_forest", false, 0, 192);
 			ExpoAssets.get().slice("tile_desert", false, 0, 224);
 			ExpoAssets.get().slice("tile_rock", false, 0, 256);
+		}
+
+		boolean patch = false;
+
+		if(patch && DEV_MODE) {
+			TileMergerX merger = new TileMergerX();
+			merger.prepare();
+			var possibilities = merger.createAllPossibleVariations();
+
+			for(TileLayerType tlt : TileLayerType.values()) {
+				int minTile = tlt.TILE_ID_DATA[0];
+				if(tlt.TILE_ID_DATA[0] == -1) continue;
+				if(tlt.TILE_ID_DATA.length == 1 && tlt.TILE_ID_DATA[0] != 0) continue;
+
+				String elevationName = TileLayerType.ELEVATION_TEXTURE_MAP.get(tlt);
+
+				for(int[] ids : possibilities.values()) {
+					int[] newIds = new int[ids.length];
+
+					for(int i = 0; i < newIds.length; i++) {
+						newIds[i] = ids[i] + minTile;
+					}
+
+					if(elevationName == null) {
+						merger.createFreshTile(newIds, null, -1);
+
+						if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
+							int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
+
+							for(int var = 0; var < variations; var++) {
+								merger.createFreshTile(newIds, null, var);
+							}
+						}
+					} else {
+						for(int ev = 1; ev <= 4; ev++) {
+							merger.createFreshTile(newIds, elevationName + "_" + ev, -1);
+						}
+					}
+				}
+			}
 		}
 	}
 

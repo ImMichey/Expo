@@ -4,10 +4,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.arraybatch.TileMerger;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.Pair;;
@@ -50,9 +50,9 @@ public class ClientDynamicTilePart {
             int potentialVariations = ExpoAssets.get().getTileSheet().getAmountOfVariations(layerIds[0]);
 
             if(potentialVariations > 0) {
-                texture[0] = TileMerger.get().getCombinedTile(layerIds, null, MathUtils.random(0, potentialVariations - 1), false);
+                texture[0] = ExpoAssets.get().toTexture(layerIds, null, MathUtils.random(0, potentialVariations - 1));
             } else {
-                texture[0] = TileMerger.get().getCombinedTile(layerIds, null, -1, false);
+                texture[0] = ExpoAssets.get().toTexture(layerIds, null, -1);
             }
         }
     }

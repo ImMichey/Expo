@@ -14,7 +14,6 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.render.arraybatch.ArrayTextureSpriteBatch;
-import dev.michey.expo.render.arraybatch.TileMerger;
 import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.render.light.ExpoLightEngine;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -231,8 +230,6 @@ public class RenderContext {
             numbers[i] = new TextureRegion(baseTexture, i * 8, 0, 6, 8);
         }
 
-        TileMerger.get().createConnectedTiles();
-
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
         vignetteShader = compileShader("gl3/vignette");
@@ -384,13 +381,14 @@ public class RenderContext {
     }
 
     public void bindAndSetSelection(Batch useBatch) {
-        bindAndSetSelection(useBatch, 2048, Color.WHITE);
+        bindAndSetSelection(useBatch, 2048, Color.WHITE, false);
     }
 
-    public void bindAndSetSelection(Batch useBatch, float textureSize, Color c) {
+    public void bindAndSetSelection(Batch useBatch, float textureSize, Color c, boolean inverse) {
         float n = textureSize / expoCamera.camera.zoom;
 
         outlineShader.bind();
+        outlineShader.setUniformi("u_inverse", inverse ? 1 : 0);
         outlineShader.setUniformf("u_progress", ClientEntityManager.get().pulseProgress);
         outlineShader.setUniformf("u_pulseStrength", 1.2f);
         outlineShader.setUniformf("u_pulseMin", 1.0f);
