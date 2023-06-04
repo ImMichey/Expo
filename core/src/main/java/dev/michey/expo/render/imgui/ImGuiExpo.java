@@ -242,9 +242,9 @@ public class ImGuiExpo {
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0: " + Arrays.toString(l0));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1: " + Arrays.toString(l1));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2: " + Arrays.toString(l2));
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][0].textures));
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][1].textures));
-                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][2].textures));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][0].texture));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][1].texture));
+                    coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][2].texture));
                 }
 
                 ImGui.treePop();

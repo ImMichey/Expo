@@ -78,7 +78,7 @@
                 "range": 24,
                 "attackSpeed": 0.4,
                 "attackDamage": 14.0,
-                "harvestDamage": 10.0
+                "harvestDamage": 50.0
             }
         },
         {

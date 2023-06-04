@@ -61,8 +61,6 @@ public class ExpoShared {
     public static final float PLAYER_DEFAULT_HARVEST_SPEED = 10.0f;
     public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / 60f;
 
-    public static final long RESET_TILE_DIG_HEALTH_AFTER_MILLIS = 5000;
-
     public static final int CRAFTING_CATEGORY_MISC = 0;
     public static final int CRAFTING_CATEGORY_TOOLS = 1;
     public static final int CRAFTING_CATEGORY_FOOD = 2;
@@ -102,17 +100,19 @@ public class ExpoShared {
         return bt[RANDOM.nextInt(bt.length)];
     }
 
-    /** Converts an absolute world position to a chunk position. */
-    public static int posToChunk(float worldPosition) {
-        float bonus = worldPosition < 0 ? CHUNK_SIZE : 0;
-        return (int) ((worldPosition - bonus) / CHUNK_SIZE);
-    }
-
     /** Converts an absolute world position to a tile position. */
     public static int posToTile(float worldPosition) {
-        int cx = posToChunk(worldPosition);
-        int tx = (int) ((worldPosition - (cx * CHUNK_SIZE)) / TILE_SIZE);
-        return cx * ROW_TILES + tx;
+        return floor(worldPosition) >> 4;
+    }
+
+    /** Converts an absolute world position to a chunk position. */
+    public static int posToChunk(float worldPosition) {
+        return floor(worldPosition) >> 7;
+    }
+
+    public static int floor(double num) {
+        int floor = (int) num;
+        return floor == num ? floor : floor - (int) (Double.doubleToRawLongBits(num) >>> 63);
     }
 
     /** Converts a chunk position to an absolute world position. */

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.debug.DebugGL;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.console.ConsoleMessage;
@@ -51,6 +52,9 @@ public class Expo implements ApplicationListener {
 	private ImGuiImplGl3 imGuiGl3;
 	private ImGuiExpo imGuiExpo;
 
+	/** Profiler */
+	private DebugGL debugGL;
+
 	public Expo() {
 		// Enable logging to file + console for debugging
 		if(!DEV_MODE) ExpoLogger.enableDualLogging("clientlogs");
@@ -81,6 +85,8 @@ public class Expo implements ApplicationListener {
 
 			imGuiGlfw.init(pointer, true);
 			imGuiGl3.init("#version 330");
+
+			debugGL = new DebugGL();
 		}
 
 		AudioEngine.get();
@@ -106,8 +112,7 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_soil_hole", false, 0, 160);
 			ExpoAssets.get().slice("tile_forest", false, 0, 192);
 			ExpoAssets.get().slice("tile_desert", false, 0, 224);
-			ExpoAssets.get().slice("tile_rock", false, 0, 256, 32);
-			ExpoAssets.get().slice("tile_forest_to_grass", false, 0, 320);
+			ExpoAssets.get().slice("tile_rock", false, 0, 256);
 		}
 	}
 
@@ -154,7 +159,9 @@ public class Expo implements ApplicationListener {
 			imGuiGl3.renderDrawData(ImGui.getDrawData());
 		}
 
+		if(debugGL != null) debugGL.postRender();
 		r.reset();
+		if(debugGL != null) debugGL.preRender();
 	}
 
 	@Override

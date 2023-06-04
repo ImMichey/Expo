@@ -1,14 +1,8 @@
 package dev.michey.expo.render;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -20,6 +14,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.render.arraybatch.ArrayTextureSpriteBatch;
+import dev.michey.expo.render.arraybatch.TileMerger;
 import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.render.light.ExpoLightEngine;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -81,8 +76,6 @@ public class RenderContext {
     public ShaderProgram DEFAULT_GLES3_SHADER;          // Should be used by all regular batches.
     public ShaderProgram DEFAULT_GLES3_ARRAY_SHADER;    // Should be used by all array batches.
     public ShaderProgram vignetteShader;
-    //public ShaderProgram selectionShader;
-    //public ShaderProgram selectionArrayShader;
     public ShaderProgram itemShineShader;
     public ShaderProgram blurShader;
     public ShaderProgram waterShader;
@@ -139,7 +132,7 @@ public class RenderContext {
     public float skew = 0.0f;
 
     /** Numbers */
-    private TextureRegion[] numbers;
+    private final TextureRegion[] numbers;
 
     /** Game camera */
     public ExpoCamera expoCamera;
@@ -238,18 +231,17 @@ public class RenderContext {
             numbers[i] = new TextureRegion(baseTexture, i * 8, 0, 6, 8);
         }
 
+        TileMerger.get().createConnectedTiles();
+
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
         vignetteShader = compileShader("gl3/vignette");
-        //selectionShader = compileShader("gl3/selection");
-        //selectionArrayShader = compileShader("gl3/selection_array");
         itemShineShader = compileShader("gl3/itemshine");
         blurShader = compileShader("gl3/blur");
         waterShader = compileShader("gl3/water");
         outlineShader = compileShader("gl3/outline");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
-        // createFBOs(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         lightEngine = new ExpoLightEngine();
 
         INSTANCE = this;

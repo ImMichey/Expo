@@ -208,7 +208,7 @@ public class ServerPlayer extends ServerEntity {
                     float dmg = ExpoShared.PLAYER_DEFAULT_ATTACK_DAMAGE;
 
                     if(item != -1) {
-                        dmg = ItemMapper.get().getMapping(item).logic.attackDamage;
+                        dmg = ItemMapper.get().getMapping(item).logic.harvestDamage;
                     }
 
                     if(selected.damageableWith != null) {

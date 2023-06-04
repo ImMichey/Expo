@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
@@ -69,11 +70,15 @@ public class ClientEntityManager {
         while(!additionQueue.isEmpty()) {
             ClientEntity toAdd = additionQueue.poll();
 
-            depthEntityList.add(toAdd);
-            idEntityMap.put(toAdd.entityId, toAdd);
-            typeEntityListMap.get(toAdd.getEntityType()).add(toAdd);
+            if(idEntityMap.containsKey(toAdd.entityId)) {
+                ExpoLogger.log("ILLEGAL ENTITY ID ? " + toAdd.entityId);
+            } else {
+                depthEntityList.add(toAdd);
+                idEntityMap.put(toAdd.entityId, toAdd);
+                typeEntityListMap.get(toAdd.getEntityType()).add(toAdd);
 
-            toAdd.onCreation();
+                toAdd.onCreation();
+            }
         }
 
         // poll removal

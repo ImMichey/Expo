@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -403,6 +404,9 @@ public class ServerChunk {
                         ServerEntity converted = SavableEntity.entityFromSavable(entityObject, this);
                         dimension.getEntityManager().addEntitySafely(converted);
                     }
+
+                    //ExpoLogger.log("Loaded chunk entities for " + chunkKey + ":");
+                   // ExpoLogger.log("Data: " + Arrays.toString(tileBasedEntityIdGrid));
                 }
             } catch (JSONException e) {
                 log("Failed to convert save file of " + chunkIdentifier() + " to json, regenerating instead");
@@ -456,6 +460,7 @@ public class ServerChunk {
             for(ServerEntity inactiveEntity : inactiveEntities) {
                 SavableEntity savableEntity = inactiveEntity.onSave();
                 if(savableEntity == null) continue;
+                //ExpoLogger.log("saving " + chunkKey + ": " + savableEntity.packaged.toString());
                 entityData.put(savableEntity.packaged);
             }
 
@@ -490,6 +495,14 @@ public class ServerChunk {
         }
 
         return layerArray;
+    }
+
+    public int[] getTileBasedEntityIdGrid() {
+        return tileBasedEntityIdGrid;
+    }
+
+    public boolean hasTileBasedEntities() {
+        return hasTileBasedEntities;
     }
 
     private void arrayToLayer(int layer, JSONArray array) {

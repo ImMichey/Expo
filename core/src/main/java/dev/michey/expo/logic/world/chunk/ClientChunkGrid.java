@@ -3,7 +3,6 @@ package dev.michey.expo.logic.world.chunk;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.noise.BiomeType;
-import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;

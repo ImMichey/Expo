@@ -1,7 +1,10 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
@@ -18,9 +21,6 @@ public class ServerTile {
 
     public BiomeType biome;
     public DynamicTilePart[] dynamicTileParts;
-    //public int[] layer0;
-    //public int[] layer1;
-    //public int[] layer2;
 
     public ServerTile(ServerChunk chunk, int tileX, int tileY, int tileArray) {
         this.chunk = chunk;
@@ -62,6 +62,24 @@ public class ServerTile {
         } else {
             dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
         }
+
+        if(use == TileLayerType.ROCK) {
+            int x = tileArray % 8;
+            int y = tileArray / 8;
+
+            ServerDynamic3DTile entity = new ServerDynamic3DTile();
+            entity.posX = ExpoShared.tileToPos(tileX);
+            entity.posY = ExpoShared.tileToPos(tileY);
+            entity.setStaticEntity();
+            entity.layerIds = dynamicTileParts[1].layerIds;
+            entity.emulatingType = TileLayerType.ROCK;
+
+            ServerWorld.get().registerServerEntity(chunk.getDimension().getDimensionName(), entity);
+            entity.attachToTile(chunk, x, y);
+
+            //dynamicTileParts[1].update(TileLayerType.EMPTY);
+            dynamicTileParts[1].setTileIds(new int[] {-1});
+        }
     }
 
     public void updateLayer2(TileLayerType type) {
@@ -96,10 +114,12 @@ public class ServerTile {
         int[] td = dynamicTileParts[1].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[1].layerIds;
 
-        if(td.length == 1) {
-            dynamicTileParts[1].setTileIds(new int[] {td[0]});
-        } else {
-            dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
+        if(dynamicTileParts[1].emulatingType != TileLayerType.ROCK) {
+            if(td.length == 1) {
+                dynamicTileParts[1].setTileIds(new int[] {td[0]});
+            } else {
+                dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
+            }
         }
 
         return !Arrays.equals(old, dynamicTileParts[1].layerIds);
@@ -233,7 +253,7 @@ public class ServerTile {
         return runTextureGrab(minTile, indexStraightDiagonal(layer, tileX, tileY, type));
     }
 
-    private int[] runTextureGrab(int minTile, int layer) {
+    public int[] runTextureGrab(int minTile, int layer) {
         return runTextureGrab(minTile, layer, dynamicTileParts[layer].emulatingType);
     }
 

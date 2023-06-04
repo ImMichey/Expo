@@ -29,6 +29,7 @@ public enum ClientEntityType {
     WORM(13, "Worm", ServerEntityType.WORM),
     ROCK(14, "Rock", ServerEntityType.ROCK),
     CRAB(15, "Crab", ServerEntityType.CRAB),
+    DYNAMIC_3D_TILE(16, "Dynamic3DTile", ServerEntityType.DYNAMIC_3D_TILE),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -75,6 +76,7 @@ public enum ClientEntityType {
             case 13 -> new ClientWorm();
             case 14 -> new ClientRock();
             case 15 -> new ClientCrab();
+            case 16 -> new ClientDynamic3DTile();
             default -> null;
         };
     }

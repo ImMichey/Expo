@@ -59,6 +59,10 @@ public class TileSheet {
         currentId += amount;
     }
 
+    public TextureRegion getVariation(int id, int variation) {
+        return tilesetVariationTextureMap.get(id)[variation];
+    }
+
     public HashMap<Integer, TextureRegion> getTilesetTextureMap() {
         return tilesetTextureMap;
     }
@@ -66,6 +70,12 @@ public class TileSheet {
     public TextureRegion getRandomVariation(int id) {
         TextureRegion[] array = tilesetVariationTextureMap.get(id);
         return array[MathUtils.random(0, array.length - 1)];
+    }
+
+    public int getAmountOfVariations(int id) {
+        TextureRegion[] variations = tilesetVariationTextureMap.get(id);
+        if(variations == null) return 0;
+        return variations.length;
     }
 
     public boolean hasVariation(int id) {

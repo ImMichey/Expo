@@ -3,10 +3,7 @@ package dev.michey.expo.server.main.logic.entity.arch;
 import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.flora.*;
-import dev.michey.expo.server.main.logic.entity.misc.ServerDummy;
-import dev.michey.expo.server.main.logic.entity.misc.ServerGravestone;
-import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
-import dev.michey.expo.server.main.logic.entity.misc.ServerRock;
+import dev.michey.expo.server.main.logic.entity.misc.*;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public enum ServerEntityType {
@@ -27,6 +24,7 @@ public enum ServerEntityType {
     WORM(13, "Worm", false),
     ROCK(14, "Rock", true),
     CRAB(15, "Crab", false),
+    DYNAMIC_3D_TILE(16, "Dynamic3DTile", true),
     ;
 
     public final int ENTITY_ID;
@@ -57,6 +55,7 @@ public enum ServerEntityType {
             case 13 -> new ServerWorm();
             case 14 -> new ServerRock();
             case 15 -> new ServerCrab();
+            case 16 -> new ServerDynamic3DTile();
             default -> null;
         };
     }

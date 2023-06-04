@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.world;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -19,6 +21,7 @@ import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
+import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
@@ -26,6 +29,7 @@ import dev.michey.expo.server.main.logic.world.gen.EntityPopulationBounds;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 
 import static dev.michey.expo.util.ExpoShared.*;
@@ -434,6 +438,26 @@ public class ClientWorld {
             if(Expo.get().getImGuiExpo() != null) {
                 r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+                if(Expo.get().getImGuiExpo().renderJBump.get()) {
+                    if(ServerWorld.get() != null) {
+                        r.chunkRenderer.end();
+                        r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                        r.chunkRenderer.setColor(Color.PINK);
+                        var world = ServerWorld.get().getMainDimension().getPhysicsWorld();
+
+                        try {
+                            for(var o : world.getRects()) {
+                                r.chunkRenderer.rect(o.x, o.y, o.w, o.h);
+                            }
+                        } catch (ConcurrentModificationException e) {
+                            // ignore it because it happens due to different tick rates between client->localserver
+                            // and JBump doesn't offer any ability to get the physic bodies thread-safe
+                        }
+
+                        r.chunkRenderer.setColor(Color.WHITE);
+                    }
+                }
+
                 for(ClientEntity all : clientEntityManager.allEntities()) {
                     if(all.visibleToRenderEngine) {
                         float dpx = all.finalDrawPosX;
@@ -514,6 +538,13 @@ public class ClientWorld {
                             r.hudBatch.begin();
                             Vector2 p = ClientUtils.entityPosToHudPos(all.clientPosX, all.clientPosY);
                             r.m5x7_border_all[0].draw(r.hudBatch, String.valueOf(all.entityId), p.x, p.y);
+                            if(all instanceof ClientDynamic3DTile tile) {
+                                int[] cpy = new int[4];
+                                for(int i = 0; i < tile.layerIds.length; i++) {
+                                    cpy[i] = tile.layerIds[i] - tile.emulatingType.TILE_ID_DATA[0];
+                                }
+                                r.m5x7_border_all[0].draw(r.hudBatch, Arrays.toString(cpy), p.x, p.y + 12);
+                            }
                             r.hudBatch.end();
 
                             r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -529,24 +560,6 @@ public class ClientWorld {
                                     r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
                                     r.chunkRenderer.setColor(Color.PURPLE);
                                     r.chunkRenderer.rect(pos[0], pos[1], pos[2] - pos[0], pos[3] - pos[1]);
-                                }
-                            }
-                        }
-
-                        if(Expo.get().getImGuiExpo().renderJBump.get()) {
-                            if(ServerWorld.get() != null) {
-                                r.chunkRenderer.end();
-                                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
-                                r.chunkRenderer.setColor(Color.PINK);
-                                var world = ServerWorld.get().getMainDimension().getPhysicsWorld();
-
-                                try {
-                                    for(var o : world.getRects()) {
-                                        r.chunkRenderer.rect(o.x, o.y, o.w, o.h);
-                                    }
-                                } catch (ConcurrentModificationException e) {
-                                    // ignore it because it happens due to different tick rates between client->localserver
-                                    // and JBump doesn't offer any ability to get the physic bodies thread-safe
                                 }
                             }
                         }
@@ -716,29 +729,6 @@ public class ClientWorld {
         r.batch.setColor(Color.WHITE);
     }
 
-    private void drawLayer(int k, TextureRegion[] layer, RenderContext rc, float wx, float wy, Pair[][] displacementPairs) {
-        Pair[] displacement = displacementPairs != null ? displacementPairs[k] : null;
-
-        if(layer.length == 1) {
-            TextureRegion t = layer[0];
-            if(t == null) return;
-            rc.batch.draw(t, wx, wy);
-        } else {
-            if(displacement == null) {
-                rc.batch.draw(layer[0], wx, wy);
-                rc.batch.draw(layer[1], wx + 8, wy);
-                rc.batch.draw(layer[2], wx, wy + 8);
-                rc.batch.draw(layer[3], wx + 8, wy + 8);
-            } else {
-                float val = clientChunkGrid.interpolation;
-                rc.batch.draw(layer[0], wx + val * (int) displacement[0].key, wy + val * (int) displacement[0].value);
-                rc.batch.draw(layer[1], wx + 8 + val * (int) displacement[1].key, wy + val * (int) displacement[1].value);
-                rc.batch.draw(layer[2], wx + val * (int) displacement[2].key, wy + 8 + val * (int) displacement[2].value);
-                rc.batch.draw(layer[3], wx + 8 + val * (int) displacement[3].key, wy + 8 + val * (int) displacement[3].value);
-            }
-        }
-    }
-
     private void renderChunkTiles() {
         if(ClientPlayer.getLocalPlayer() != null) {
             RenderContext rc = RenderContext.get();
@@ -747,22 +737,19 @@ public class ClientWorld {
 
             for(ClientChunk chunk : drawChunks) {
                 if(chunk != null && chunk.visible) {
-                    for(int k = 63; k >= 0; k--) {
-                        int tx = k % 8;
-                        int ty = k / 8;
-                        float wx = chunk.chunkDrawBeginX + ExpoShared.tileToPos(tx);
-                        float wy = chunk.chunkDrawBeginY + ExpoShared.tileToPos(ty);
+                    for(int i = 0; i < chunk.dynamicTiles.length; i++) {
+                        ClientDynamicTilePart[] tiles = chunk.dynamicTiles[i];
 
-                        if(chunk.dynamicTiles[k][1].textures.length == 1) {
-                            // check if full tile or not.
-                            if(!ExpoAssets.get().getTileSheet().isFullTile(chunk.dynamicTiles[k][0].layerIds[0])) {
-                                drawLayer(k, chunk.dynamicTiles[k][0].textures, rc, wx, wy, null);
-                            }
-                        } else {
-                            drawLayer(k, chunk.dynamicTiles[k][0].textures, rc, wx, wy, null);
+                        ClientDynamicTilePart l0 = tiles[0];
+                        ClientDynamicTilePart l1 = tiles[1];
+                        ClientDynamicTilePart l2 = tiles[2];
+
+                        if(!ExpoAssets.get().getTileSheet().isFullTile(l0.layerIds[0])) {
+                            l0.draw(rc, null);
                         }
-                        drawLayer(k, chunk.dynamicTiles[k][1].textures, rc, wx, wy, chunk.layer1Displacement);
-                        drawLayer(k, chunk.dynamicTiles[k][2].textures, rc, wx, wy, null);
+
+                        l1.draw(rc, chunk.layer1Displacement == null ? null : chunk.layer1Displacement[i]);
+                        l2.draw(rc, null);
                     }
                 }
             }

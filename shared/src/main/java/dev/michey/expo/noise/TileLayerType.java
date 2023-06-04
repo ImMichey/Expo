@@ -13,7 +13,7 @@ public enum TileLayerType {
     FOREST(6, new int[] {112, 133}, new String[] {"FOREST", "GRASS"}),
     WATER(7, new int[] {46, 67}, new String[] {"WATER"}),
     WATER_DEEP(8, new int[] {68, 89}, new String[] {"WATER_DEEP", "WATER"}),
-    ROCK(9, new int[] {156, 177}, new String[] {"DEEP"}),
+    ROCK(9, new int[] {156, 177}, new String[] {"ROCK"}),
     ;
 
     public final int SERIALIZATION_ID;
@@ -32,6 +32,21 @@ public enum TileLayerType {
         this.SERIALIZATION_ID = SERIALIZATION_ID;
         this.TILE_ID_DATA = TILE_ID_DATA;
         this.TILE_CONNECTION_DATA = TILE_CONNECTION_DATA;
+    }
+
+    public static TileLayerType serialIdToType(int id) {
+        return switch (id) {
+            case 1 -> SOIL;
+            case 2 -> SOIL_HOLE;
+            case 3 -> SAND;
+            case 4 -> DESERT;
+            case 5 -> GRASS;
+            case 6 -> FOREST;
+            case 7 -> WATER;
+            case 8 -> WATER_DEEP;
+            case 9 -> ROCK;
+            default -> EMPTY;
+        };
     }
 
     public static float color255Packed(int r, int g, int b, int a) {
@@ -87,6 +102,7 @@ public enum TileLayerType {
             case BEACH -> SAND;
             case LAKE, RIVER, OCEAN -> WATER;
             case OCEAN_DEEP -> WATER_DEEP;
+            case ROCK -> ROCK;
             default -> EMPTY;
         };
     }

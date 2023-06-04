@@ -235,6 +235,7 @@ public abstract class ClientEntity {
     }
 
     public String getFootstepSound() {
+
         int chunkX = ExpoShared.posToChunk(clientPosX);
         int chunkY = ExpoShared.posToChunk(clientPosY);
         int tileX = ExpoShared.posToTile(clientPosX);
@@ -247,9 +248,6 @@ public abstract class ClientEntity {
         int relativeTileX = tileX - startTileX;
         int relativeTileY = tileY - startTileY;
         int tileArray = relativeTileY * 8 + relativeTileX;
-        if(tileArray >= 64) {
-            ExpoLogger.log("error " + tileArray + " " + startTileX + " " + startTileY);
-        }
 
         TileLayerType t0 = c.dynamicTiles[tileArray][0].emulatingType;
         TileLayerType t1 = c.dynamicTiles[tileArray][1].emulatingType;

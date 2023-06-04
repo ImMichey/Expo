@@ -44,7 +44,6 @@ public class ClientItem extends ClientEntity {
 
     @Override
     public void onDeletion() {
-        log("ClientItem onDeletion() " + entityId);
         if(removalReason == EntityRemovalReason.DEATH) {
             spawnGhostEntity(itemAmount);
         }

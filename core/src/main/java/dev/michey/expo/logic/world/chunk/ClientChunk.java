@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.world.chunk;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
@@ -8,6 +7,7 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
 import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
+import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
 
 public class ClientChunk {
 
@@ -16,6 +16,7 @@ public class ClientChunk {
     public int chunkY;
     public BiomeType[] biomes;
     public ClientDynamicTilePart[][] dynamicTiles;
+
     // SET BY CLIENT
     public Pair[][] layer1Displacement;
 
@@ -58,7 +59,7 @@ public class ClientChunk {
                 for(DynamicTilePart tile : tiles) {
                     int[] ids = tile.layerIds;
 
-                    if (BiomeType.isWater(biomes[i]) && biomes[i] != BiomeType.OCEAN_DEEP && ids.length > 1) {
+                    if(BiomeType.isWater(biomes[i]) && biomes[i] != BiomeType.OCEAN_DEEP && ids.length > 1) {
                         Pair[] array = new Pair[ids.length];
 
                         for(int a = 0; a < ids.length; a++) {
@@ -73,7 +74,7 @@ public class ClientChunk {
     }
 
     public void updateSingle(int layer, int tileArray, DynamicTilePart tile) {
-        dynamicTiles[tileArray][layer].updateFrom(tile, false);
+        dynamicTiles[tileArray][layer].updateFrom(tile);
     }
 
     public void update(BiomeType[] biomes, DynamicTilePart[][] individualTileData) {
@@ -84,7 +85,7 @@ public class ClientChunk {
             ClientDynamicTilePart[] client = this.dynamicTiles[i];
 
             for(int j = 0; j < server.length; j++) {
-                client[j].updateFrom(server[j], false);
+                client[j].updateFrom(server[j]);
             }
         }
     }
@@ -137,14 +138,18 @@ public class ClientChunk {
 
     private ClientDynamicTilePart[][] convertToClient(DynamicTilePart[][] tiles) {
         ClientDynamicTilePart[][] array = new ClientDynamicTilePart[tiles.length][];
+        float startX = ExpoShared.chunkToPos(chunkX);
+        float startY = ExpoShared.chunkToPos(chunkY);
 
         for(int i = 0; i < tiles.length; i++) {
             DynamicTilePart[] server = tiles[i];
+            int x = i % 8;
+            int y = i / 8;
 
             array[i] = new ClientDynamicTilePart[server.length];
 
             for(int j = 0; j < server.length; j++) {
-                array[i][j] = new ClientDynamicTilePart(server[j]);
+                array[i][j] = new ClientDynamicTilePart(this, startX + TILE_SIZE * x, startY + TILE_SIZE * y, server[j]);
             }
         }
 
