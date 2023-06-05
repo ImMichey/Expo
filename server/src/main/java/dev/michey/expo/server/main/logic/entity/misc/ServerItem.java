@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
@@ -35,6 +36,9 @@ public class ServerItem extends ServerEntity {
     private int mergeEntityId = -1;
     private boolean skipStackThisTick = false;
 
+    /** Physics body */
+    private BoundingBox physicsBody;
+
     @Override
     public void tick(float delta) {
         lifetime += delta;
@@ -52,8 +56,13 @@ public class ServerItem extends ServerEntity {
             if(dstDelta > MAX_DELTA) dstDelta = MAX_DELTA;
 
             float alpha = Interpolation.exp10Out.apply(dstDelta);
-            posX = originX + alpha * dstX;
-            posY = originY + alpha * dstY;
+            float toMoveX = originX + alpha * dstX;
+            float toMoveY = originY + alpha * dstY;
+
+            var result = physicsBody.moveAbsolute(toMoveX, toMoveY, BoundingBox.playerCollisionFilter);
+
+            posX = result.goalX - physicsBody.xOffset;
+            posY = result.goalY - physicsBody.yOffset;
 
             ServerPackets.p13EntityMove(entityId, (int) dstX, (int) dstY, posX, posY, PacketReceiver.whoCanSee(this));
         }
@@ -152,8 +161,10 @@ public class ServerItem extends ServerEntity {
                             Vector2 v = new Vector2(mergeEntity.posX, mergeEntity.posY).sub(posX, posY).nor();
                             float mergeSpeed = 12.0f;
 
-                            posX += v.x * delta * mergeSpeed;
-                            posY += v.y * delta * mergeSpeed;
+                            var result = physicsBody.move(v.x * delta * mergeSpeed, v.y * delta * mergeSpeed, BoundingBox.playerCollisionFilter);
+
+                            posX = result.goalX - physicsBody.xOffset;
+                            posY = result.goalY - physicsBody.yOffset;
 
                             ServerPackets.p6EntityPosition(entityId, posX, posY, PacketReceiver.whoCanSee(this));
                         }
@@ -201,6 +212,12 @@ public class ServerItem extends ServerEntity {
     public void onCreation() {
         originX = posX;
         originY = posY;
+        physicsBody = new BoundingBox(this, -2, 0, 4, 4);
+    }
+
+    @Override
+    public void onDeletion() {
+        physicsBody.dispose();
     }
 
     @Override

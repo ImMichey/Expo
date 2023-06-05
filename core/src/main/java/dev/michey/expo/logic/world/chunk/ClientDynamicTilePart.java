@@ -58,7 +58,6 @@ public class ClientDynamicTilePart {
     }
 
     public void draw(RenderContext r, Pair[] displacementPairs) {
-        ClientUtils.log("TEST: " + texture.length + " @  " + texture[0] + " " + (texture[0] == null ? "null" : texture[0].getTexture()), Input.Keys.I);
         if(texture.length == 1) {
             if(texture[0] == null) return;
             r.batch.draw(texture[0], x, y);

@@ -255,35 +255,37 @@ public class ServerChunk {
             tile.updateLayer2(null);
         }
 
-        // Dirt
-        Noise p = dimension.getChunkHandler().getNoisePostProcessorMap().get("dirt");
+        {
+            // Dirt
+            Noise p = dimension.getChunkHandler().getNoisePostProcessorMap().get("dirt");
 
-        if(p != null) {
-            NoisePostProcessor processor = dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.get("dirt");
-            List<ServerTile> adjust = null;
+            if(p != null) {
+                NoisePostProcessor processor = dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.get("dirt");
+                List<ServerTile> adjust = null;
 
-            for(int i = 0; i < tiles.length; i++) {
-                ServerTile tile = tiles[i];
-                int x = btx + i % 8;
-                int y = bty + i / 8;
+                for(int i = 0; i < tiles.length; i++) {
+                    ServerTile tile = tiles[i];
+                    int x = btx + i % 8;
+                    int y = bty + i / 8;
 
-                float normalized = dimension.getChunkHandler().normalized(p, x, y);
-                boolean isDirt = normalized >= processor.threshold && (tile.dynamicTileParts[1].emulatingType == TileLayerType.FOREST || tile.dynamicTileParts[1].emulatingType == TileLayerType.GRASS);
+                    float normalized = dimension.getChunkHandler().normalized(p, x, y);
+                    boolean isDirt = normalized >= processor.threshold && (tile.dynamicTileParts[1].emulatingType == TileLayerType.FOREST || tile.dynamicTileParts[1].emulatingType == TileLayerType.GRASS);
 
-                if(isDirt) {
-                    tile.updateLayer1(TileLayerType.EMPTY);
-                    if(adjust == null) adjust = new LinkedList<>();
-                    adjust.add(tile);
+                    if(isDirt) {
+                        tile.updateLayer1(TileLayerType.EMPTY);
+                        if(adjust == null) adjust = new LinkedList<>();
+                        adjust.add(tile);
+                    }
                 }
-            }
 
-            if(adjust != null) {
-                for(ServerTile tile : adjust) {
-                    for(ServerTile neighbours : tile.getNeighbouringTiles()) {
-                        if(neighbours == null) continue;
+                if(adjust != null) {
+                    for(ServerTile tile : adjust) {
+                        for(ServerTile neighbours : tile.getNeighbouringTiles()) {
+                            if(neighbours == null) continue;
 
-                        if(neighbours.updateLayer1Adjacent()) {
-                            ServerPackets.p32ChunkDataSingle(neighbours, 1);
+                            if(neighbours.updateLayer1Adjacent()) {
+                                ServerPackets.p32ChunkDataSingle(neighbours, 1);
+                            }
                         }
                     }
                 }

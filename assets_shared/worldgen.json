@@ -17,6 +17,13 @@
                         "type": 5,
                         "frequency": 0.035,
                         "level": 0.79
+                    },
+                    {
+                        "name": "rocks",
+                        "octaves": 5,
+                        "type": 5,
+                        "frequency": 0.015,
+                        "level": 0.75
                     }
                 ],
                 "terrain": {
@@ -43,12 +50,6 @@
                     "fractalType": 2
                 },
                 "biomes": [
-                    {
-                        "type": "ROCK",
-                        "elevation": [0.68, 1.0],
-                        "temperature": [0.0, 1.0],
-                        "moisture": [0.0, 0.5]
-                    },
                     {
                         "type": "OCEAN_DEEP",
                         "elevation": [0.0, 0.425],

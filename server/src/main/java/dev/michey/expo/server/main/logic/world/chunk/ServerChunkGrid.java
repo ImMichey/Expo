@@ -186,6 +186,19 @@ public class ServerChunkGrid {
                     if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
+                if(toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
+                    NoisePostProcessor rocks = genSettings.getNoiseSettings().postProcessList.get("rocks");
+
+                    if(rocks != null) {
+                        float rocksValue = normalized(noisePostProcessorMap.get("rocks"), x, y);
+                        boolean isRocks = rocksValue >= rocks.threshold;
+
+                        if(isRocks) {
+                            return BiomeType.ROCK;
+                        }
+                    }
+                }
+
                 return toCheck;
             }
         }

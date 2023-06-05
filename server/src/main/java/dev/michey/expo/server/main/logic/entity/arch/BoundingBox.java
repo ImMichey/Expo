@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.arch;
 import com.dongbat.jbump.CollisionFilter;
 import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Response;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public class BoundingBox {
@@ -41,8 +42,23 @@ public class BoundingBox {
         return parent.getDimension().getPhysicsWorld().move(physicsBody, parent.posX + xOffset + x, parent.posY + yOffset + y, CollisionFilter.defaultFilter);
     }
 
+    public Response.Result moveAbsolute(float x, float y, CollisionFilter filter) {
+        return parent.getDimension().getPhysicsWorld().move(physicsBody, xOffset + x, yOffset + y, filter);
+    }
+
     public static CollisionFilter playerCollisionFilter = (item, other) -> {
-        if(item.userData instanceof ServerPlayer && other.userData instanceof ServerPlayer) {
+        if(other.userData instanceof ServerPlayer) {
+            return Response.cross;
+        }
+        if(other.userData instanceof ServerItem) {
+            return Response.cross;
+        }
+
+        return Response.slide;
+    };
+
+    public static CollisionFilter onlyCrossPlayerFilter = (item, other) -> {
+        if(other.userData instanceof ServerPlayer) {
             return Response.cross;
         }
 
