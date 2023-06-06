@@ -539,11 +539,12 @@ public class ClientWorld {
                             Vector2 p = ClientUtils.entityPosToHudPos(all.clientPosX, all.clientPosY);
                             r.m5x7_border_all[0].draw(r.hudBatch, String.valueOf(all.entityId), p.x, p.y);
                             if(all instanceof ClientDynamic3DTile tile) {
-                                int[] cpy = new int[4];
+                                int[] cpy = new int[tile.layerIds.length];
                                 for(int i = 0; i < tile.layerIds.length; i++) {
                                     cpy[i] = tile.layerIds[i] - tile.emulatingType.TILE_ID_DATA[0];
                                 }
                                 r.m5x7_border_all[0].draw(r.hudBatch, Arrays.toString(cpy), p.x, p.y + 12);
+                                r.m5x7_border_all[0].draw(r.hudBatch, tile.created.toString(), p.x, p.y + 24);
                             }
                             r.hudBatch.end();
 

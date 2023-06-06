@@ -23,7 +23,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     private float playerBehindDelta = 1.0f;
 
     private boolean updateTexture = false;
-    private TextureRegion created;
+    public TextureRegion created;
 
     @Override
     public void onCreation() {
@@ -41,11 +41,15 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     private void createTexture() {
         String elevationName;
+        int ad0 = layerIds[0] - emulatingType.TILE_ID_DATA[0];
 
         if(layerIds.length == 1) {
-            elevationName = "tile_rock_elevation_1";
+            if(ad0 == 0) {
+                elevationName = "tile_rock_elevation_1";
+            } else {
+                elevationName = "tile_rock_elevation_2";
+            }
         } else {
-            int ad0 = layerIds[0] - emulatingType.TILE_ID_DATA[0];
             int ad1 = layerIds[1] - emulatingType.TILE_ID_DATA[0];
 
             if(ad0 == 12 && ad1 == 17) {
