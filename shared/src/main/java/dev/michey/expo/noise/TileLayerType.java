@@ -4,31 +4,31 @@ import java.util.HashMap;
 
 public enum TileLayerType {
 
-    EMPTY(0, new int[] {-1}, new String[] {"EMPTY"}),
-    SOIL(1, new int[] {0}, new String[] {"SOIL"}),
-    SOIL_HOLE(2, new int[] {90, 111}, new String[] {"SOIL_HOLE"}),
-    SAND(3, new int[] {23, 44}, new String[] {"SAND", "DESERT"}),
-    DESERT(4, new int[] {23, 44}, new String[] {"DESERT", "SAND"}),
-    GRASS(5, new int[] {1, 22}, new String[] {"GRASS", "FOREST"}),
-    FOREST(6, new int[] {112, 133}, new String[] {"FOREST", "GRASS"}),
-    WATER(7, new int[] {46, 67}, new String[] {"WATER"}),
-    WATER_DEEP(8, new int[] {68, 89}, new String[] {"WATER_DEEP", "WATER"}),
-    ROCK(9, new int[] {156, 177}, new String[] {"ROCK"}),
+    EMPTY(0,            new int[] {-1},         new String[] {"EMPTY"}),
+    SOIL(1,             new int[] {0},          new String[] {"SOIL"}),
+    SOIL_HOLE(2,        new int[] {90, 111},    new String[] {"SOIL_HOLE"}),
+    SAND(3,             new int[] {23, 44},     new String[] {"SAND", "DESERT"}),
+    DESERT(4,           new int[] {23, 44},     new String[] {"DESERT", "SAND"}),
+    GRASS(5,            new int[] {1, 22},      new String[] {"GRASS", "FOREST"}),
+    FOREST(6,           new int[] {112, 133},   new String[] {"FOREST", "GRASS"}),
+    WATER(7,            new int[] {46, 67},     new String[] {"WATER"}),
+    WATER_DEEP(8,       new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER"}),
+    ROCK(9,             new int[] {156, 177},   new String[] {"ROCK"}),
+    GRASS_TO_FOREST(10, new int[] {178, 199},   new String[] {"GRASS_TO_FOREST"}),
     ;
 
     public final int SERIALIZATION_ID;
     public final int[] TILE_ID_DATA;
     public final String[] TILE_CONNECTION_DATA;
 
-    public static final HashMap<TileLayerType, int[]> BLENDING_MAP;
+    public static final HashMap<TileLayerType, TileLayerType> BLENDING_MAP;
     public static final HashMap<TileLayerType, String> ELEVATION_TEXTURE_MAP;
 
     static {
         BLENDING_MAP = new HashMap<>();
+        BLENDING_MAP.put(GRASS, FOREST);
+
         ELEVATION_TEXTURE_MAP = new HashMap<>();
-
-        BLENDING_MAP.put(GRASS, new int[] {255, 0, 0, 255});
-
         ELEVATION_TEXTURE_MAP.put(ROCK, "tile_rock_elevation");
     }
 
@@ -49,6 +49,7 @@ public enum TileLayerType {
             case 7 -> WATER;
             case 8 -> WATER_DEEP;
             case 9 -> ROCK;
+            case 10 -> GRASS_TO_FOREST;
             default -> EMPTY;
         };
     }

@@ -53,7 +53,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         new float[] {57, 76, 15, 41, 57, 113, 21, 37, 4, 2, 9, 6},
         new float[] {57, 76, 15, 41, 57, 113, 21, 37, 4, 2, 9, 6},
         new float[] {57, 76, 18, 70, 57, 138, 20, 62, 5, 2, 9, 6},
-        new float[] {75, 101, 20, 95, 75, 183, 30, 90, 5, 2, 12, 6},
+        new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
     };
 
     private float totalWidth() {

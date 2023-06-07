@@ -63,6 +63,21 @@ public class ServerTile {
             dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
         }
 
+        /*
+        TileLayerType checkFor = TileLayerType.BLENDING_MAP.get(use);
+
+        if(checkFor != null) {
+            int[] result = indexStraightDiagonalX(1, tileX, tileY, checkFor);
+
+            if(result[0] != 0 && result[1] != 0) {
+                int[] textures = runTextureGrab(TileLayerType.GRASS_TO_FOREST.TILE_ID_DATA[0], result);
+                dynamicTileParts[1].setTileIds(textures);
+
+                ExpoLogger.log("tx, ty: " + tileX + "," + tileY + ": " + Arrays.toString(result) + "=" + Arrays.toString(textures));
+            }
+        }
+        */
+
         if(use == TileLayerType.ROCK) {
             int x = tileArray % 8;
             int y = tileArray / 8;
@@ -77,7 +92,6 @@ public class ServerTile {
             ServerWorld.get().registerServerEntity(chunk.getDimension().getDimensionName(), entity);
             entity.attachToTile(chunk, x, y);
 
-            //dynamicTileParts[1].update(TileLayerType.EMPTY);
             dynamicTileParts[1].setTileIds(new int[] {-1});
         }
     }
@@ -307,6 +321,32 @@ public class ServerTile {
         if(nw == b) tid += NORTH_WEST;
 
         return new Pair<>(new int[] {tis, tid}, new TileLayerType[] {n, e, s, w, ne, se, sw, nw});
+    }
+
+    private int[] indexStraightDiagonalX(int checkLayer, int x, int y, TileLayerType b) {
+        ServerChunkGrid g = chunk.getDimension().getChunkHandler();
+
+        TileLayerType n = g.getTileLayerType(x, y + 1, checkLayer);
+        TileLayerType e = g.getTileLayerType(x + 1, y, checkLayer);
+        TileLayerType s = g.getTileLayerType(x, y - 1, checkLayer);
+        TileLayerType w = g.getTileLayerType(x - 1, y, checkLayer);
+        TileLayerType ne = g.getTileLayerType(x + 1, y + 1, checkLayer);
+        TileLayerType se = g.getTileLayerType(x + 1, y - 1, checkLayer);
+        TileLayerType sw = g.getTileLayerType(x - 1, y - 1, checkLayer);
+        TileLayerType nw = g.getTileLayerType(x - 1, y + 1, checkLayer);
+
+        int tis = 0, tid = 0;
+
+        if(n == b) tis += NORTH;
+        if(e == b) tis += EAST;
+        if(s == b) tis += SOUTH;
+        if(w == b) tis += WEST;
+        if(ne == b) tid += NORTH_EAST;
+        if(se == b) tid += SOUTH_EAST;
+        if(sw == b) tid += SOUTH_WEST;
+        if(nw == b) tid += NORTH_WEST;
+
+        return new int[] {tis, tid};
     }
 
     public boolean dig(int layer, float damage) {

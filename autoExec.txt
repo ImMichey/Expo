@@ -1,4 +1,3 @@
 /delsave dev
 /fps 240
 /world dev
-/speed 20
