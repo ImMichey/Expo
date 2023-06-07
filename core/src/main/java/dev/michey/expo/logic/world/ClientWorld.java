@@ -745,7 +745,7 @@ public class ClientWorld {
                         ClientDynamicTilePart l1 = tiles[1];
                         ClientDynamicTilePart l2 = tiles[2];
 
-                        if(!ExpoAssets.get().getTileSheet().isFullTile(l0.layerIds[0])) {
+                        if(!ExpoAssets.get().getTileSheet().isFullTile(l1.layerIds[0])) {
                             l0.draw(rc, null);
                         }
 
@@ -755,7 +755,6 @@ public class ClientWorld {
                 }
             }
 
-            // Draw water here (debug)
             drawWater();
         }
     }
