@@ -125,8 +125,8 @@ public class PlayerMinimap {
         float worldTime = ExpoClientContainer.get().getClientWorld().worldTime;
 
         String worldTimeAsString = ExpoTime.worldTimeString(worldTime);
-        ui.glyphLayout.setText(ui.m5x7_shadow_use, worldTimeAsString);
-        ui.m5x7_shadow_use.draw(r.hudBatch, worldTimeAsString, startX + 7 * ui.uiScale, startY + ui.glyphLayout.height + 109 * ui.uiScale);
+        ui.glyphLayout.setText(r.m5x7_shadow_use, worldTimeAsString);
+        r.m5x7_shadow_use.draw(r.hudBatch, worldTimeAsString, startX + 7 * ui.uiScale, startY + ui.glyphLayout.height + 109 * ui.uiScale);
 
         // Arrow
         float arrowX;
@@ -164,7 +164,7 @@ public class PlayerMinimap {
 
                 r.hudBatch.draw(minimapPlayer, phx - ((int) (minimapPlayerW * 0.5f)), phy - ((int) (minimapPlayerH * 0.5f)), minimapPlayerW, minimapPlayerH);
 
-                ui.glyphLayout.setText(ui.m5x7_border_use, p.username);
+                ui.glyphLayout.setText(r.m5x7_border_use, p.username);
                 float drawAtX = phx - ui.glyphLayout.width * 0.5f;
                 float drawAtY = phy + ui.glyphLayout.height + minimapPlayerH;
 
@@ -176,7 +176,7 @@ public class PlayerMinimap {
 
         for(ClientPlayer player : drawUsers.keySet()) {
             Pair<Float, Float> pos = drawUsers.get(player);
-            ui.m5x7_border_use.draw(r.hudBatch, player.username, pos.key, pos.value);
+            r.m5x7_border_use.draw(r.hudBatch, player.username, pos.key, pos.value);
         }
     }
 

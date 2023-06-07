@@ -63,11 +63,11 @@ public class InteractableItemSlot extends InteractableUIElement {
                 int amount = inventorySlot.item.itemAmount;
                 String amountAsText = amount + "";
 
-                parent.glyphLayout.setText(parent.m5x7_shadow_use, amountAsText);
+                parent.glyphLayout.setText(r.m5x7_shadow_use, amountAsText);
                 float aw = parent.glyphLayout.width;
                 float ah = parent.glyphLayout.height;
 
-                parent.m5x7_shadow_use.draw(r.hudBatch, amountAsText, this.ex - aw - 1 * parent.uiScale, this.y + ah + 1 * parent.uiScale);
+                r.m5x7_shadow_use.draw(r.hudBatch, amountAsText, this.ex - aw - 1 * parent.uiScale, this.y + ah + 1 * parent.uiScale);
             }
 
             if(mapping.logic.durability != -1) {
@@ -103,13 +103,13 @@ public class InteractableItemSlot extends InteractableUIElement {
 
     public void drawSlotIndices() {
         RenderContext r = RenderContext.get();
-        String text = inventorySlotId + "";
+        String text = String.valueOf(inventorySlotId);
 
-        parent.glyphLayout.setText(parent.m5x7_use, text);
+        parent.glyphLayout.setText(r.m5x7_use, text);
         float w = parent.glyphLayout.width;
         float h = parent.glyphLayout.height;
 
-        parent.m5x7_use.draw(r.hudBatch, text, x + (parent.slotW - w) * 0.5f, y + h + (parent.slotH - h) * 0.5f);
+        r.m5x7_use.draw(r.hudBatch, text, x + (parent.slotW - w) * 0.5f, y + h + (parent.slotH - h) * 0.5f);
     }
 
     @Override

@@ -1,3 +1,2 @@
 /delsave dev
-/fps 240
-/world dev
+#/world dev

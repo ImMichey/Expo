@@ -18,6 +18,7 @@ import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.render.light.ExpoLightEngine;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.InputUtils;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -102,6 +103,8 @@ public class RenderContext {
     public BitmapFont[] m6x11_border_all;
     public BitmapFont m6x11_bordered;
 
+    public BitmapFont m5x7_use, m6x11_use, m5x7_border_use, m6x11_border_use, m5x7_shadow_use;
+
     /** Frame buffers */
     public FrameBuffer mainFbo;
     public FrameBuffer shadowFbo;
@@ -141,12 +144,18 @@ public class RenderContext {
     public float blurDelta = 0.0f;
     public boolean blurActive = false;
 
+    /** Menu textures */
+    public TextureRegion[] buttonParts;
+    public TextureRegion[] buttonPartsSelected;
+    public GlyphLayout globalGlyph;
+
     public RenderContext() {
         batch = new SpriteBatch();
         hudBatch = new SpriteBatch();
         chunkRenderer = new ShapeRenderer();
         expoCamera = new ExpoCamera();
         arraySpriteBatch = new ArrayTextureSpriteBatch(8191, 2048, 2048, 32, GL30.GL_NEAREST, GL30.GL_NEAREST);
+        globalGlyph = new GlyphLayout();
 
         {
             FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/m5x7.ttf"));
@@ -217,6 +226,8 @@ public class RenderContext {
             generator.dispose();
         }
 
+        updatePreferredFonts(GameSettings.get().uiScale);
+
         waterNoiseTexture = ExpoAssets.get().texture("water/waternoise512.png");
         waterNoiseTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
@@ -229,6 +240,26 @@ public class RenderContext {
         for(int i = 0; i < 10; i++) {
             numbers[i] = new TextureRegion(baseTexture, i * 8, 0, 6, 8);
         }
+
+        TextureRegion baseButton = ExpoAssets.get().textureRegion("ui_button_patches");
+        buttonParts = new TextureRegion[7];
+        buttonParts[0] = new TextureRegion(baseButton, 0, 0, 2, 2);
+        buttonParts[1] = new TextureRegion(baseButton, 3, 0, 1, 2);
+        buttonParts[2] = new TextureRegion(baseButton, 5, 0, 2, 2);
+        buttonParts[3] = new TextureRegion(baseButton, 0, 3, 2, 4);
+        buttonParts[4] = new TextureRegion(baseButton, 3, 3, 1, 4);
+        buttonParts[5] = new TextureRegion(baseButton, 5, 3, 2, 4);
+        buttonParts[6] = new TextureRegion(baseButton, 8, 0, 1, 1);
+
+        TextureRegion baseButtonSel = ExpoAssets.get().textureRegion("ui_button_patches_sel");
+        buttonPartsSelected = new TextureRegion[7];
+        buttonPartsSelected[0] = new TextureRegion(baseButtonSel, 0, 0, 2, 2);
+        buttonPartsSelected[1] = new TextureRegion(baseButtonSel, 3, 0, 1, 2);
+        buttonPartsSelected[2] = new TextureRegion(baseButtonSel, 5, 0, 2, 2);
+        buttonPartsSelected[3] = new TextureRegion(baseButtonSel, 0, 3, 2, 4);
+        buttonPartsSelected[4] = new TextureRegion(baseButtonSel, 3, 3, 1, 4);
+        buttonPartsSelected[5] = new TextureRegion(baseButtonSel, 5, 3, 2, 4);
+        buttonPartsSelected[6] = new TextureRegion(baseButtonSel, 8, 0, 1, 1);
 
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
@@ -414,6 +445,16 @@ public class RenderContext {
         }
 
         return null;
+    }
+
+    public void updatePreferredFonts(int uiScale) {
+        m5x7_use = m5x7_all[uiScale - 1];
+        m6x11_use = m6x11_all[uiScale - 1];
+
+        m5x7_border_use = m5x7_border_all[uiScale - 1];
+        m6x11_border_use = m6x11_border_all[uiScale - 1];
+
+        m5x7_shadow_use = m5x7_shadow_all[uiScale - 1];
     }
 
     private void disposeFBOs() {

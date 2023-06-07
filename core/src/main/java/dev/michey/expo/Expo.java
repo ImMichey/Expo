@@ -25,6 +25,7 @@ import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.GameSettings;
 import imgui.ImFontAtlas;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -36,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.Set;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
@@ -58,15 +58,19 @@ public class Expo implements ApplicationListener {
 	/** Profiler */
 	private DebugGL debugGL;
 
-	public Expo() {
+	/** GameSettings */
+	private final GameSettings gameSettings;
+
+	public Expo(GameSettings gameSettings) {
 		// Enable logging to file + console for debugging
 		if(!DEV_MODE) ExpoLogger.enableDualLogging("clientlogs");
 		inactiveScreens = new HashMap<>();
+		this.gameSettings = gameSettings;
 	}
 
 	@Override
 	public void create() {
-		if(DEV_MODE) {
+		if(DEV_MODE || gameSettings.enableDebugImGui) {
 			imGuiGlfw = new ImGuiImplGlfw();
 			imGuiGl3 = new ImGuiImplGl3();
 			imGuiExpo = new ImGuiExpo();
@@ -88,8 +92,10 @@ public class Expo implements ApplicationListener {
 
 			imGuiGlfw.init(pointer, true);
 			imGuiGl3.init("#version 330");
+		}
 
-			// debugGL = new DebugGL();
+		if(gameSettings.enableDebugGL) {
+			debugGL = new DebugGL();
 		}
 
 		AudioEngine.get();
@@ -102,7 +108,10 @@ public class Expo implements ApplicationListener {
 		INSTANCE = this;
 
 		autoExec();
+		sliceAndPatch();
+	}
 
+	private void sliceAndPatch() {
 		boolean slice = false;
 
 		if(slice && DEV_MODE) {
@@ -116,7 +125,6 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_forest", false, 0, 192);
 			ExpoAssets.get().slice("tile_desert", false, 0, 224);
 			ExpoAssets.get().slice("tile_rock", false, 0, 256);
-			ExpoAssets.get().slice("tile_grass_to_forest", false, 0, 288);
 		}
 
 		boolean patch = false;
@@ -332,6 +340,10 @@ public class Expo implements ApplicationListener {
 
 	public static Expo get() {
 		return INSTANCE;
+	}
+
+	public AbstractScreen getActiveScreen() {
+		return activeScreen;
 	}
 
 }

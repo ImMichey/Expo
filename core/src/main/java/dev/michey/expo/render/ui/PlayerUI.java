@@ -17,7 +17,6 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.PlayerInventory;
-import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
@@ -40,7 +39,6 @@ public class PlayerUI {
     /** The scale for all UI elements (will be changeable in the options). */
     public float uiScale; // default = 2.0f
     private float uiWidth, uiHeight;
-    public BitmapFont m5x7_use, m6x11_use, m5x7_border_use, m6x11_border_use, m5x7_shadow_use;
 
     /** Tab list */
     public boolean tablistOpen = false;
@@ -139,7 +137,6 @@ public class PlayerUI {
 
     public final TextureRegion whiteSquare;
 
-    private final TextureRegion darkenSquarePattern;
     private final TextureRegion invBackground;      // Base inventory background
     private final TextureRegion invBackgroundCrafting;
 
@@ -209,7 +206,6 @@ public class PlayerUI {
         tabBorder1x3 = new TextureRegion(tab, 0, 10, 1, 3);
 
         whiteSquare = tr("square16x16");
-        darkenSquarePattern = tr("bg_squares128x128");
 
         playerMinimap = new PlayerMinimap(this, tr("ui_minimap"), tr("ui_minimap_arrow"), tr("ui_minimap_player"));
         pickupLines = new LinkedList<>();
@@ -377,14 +373,14 @@ public class PlayerUI {
     }
 
     public void drawTooltipColored(String text, Color color, String... extraLines) {
-        RenderContext r = RenderContext.get();
-        drawTooltipColored((int) r.mouseX, (int) r.mouseY, text, color, extraLines);
+        RenderContext rc = RenderContext.get();
+        drawTooltipColored((int) rc.mouseX, (int) rc.mouseY, text, color, extraLines);
     }
 
     public void drawTooltipCraftingRecipe(CraftingRecipe recipe) {
-        RenderContext r = RenderContext.get();
-        int x = (int) r.mouseX;
-        int y = (int) r.mouseY;
+        RenderContext rc = RenderContext.get();
+        int x = (int) rc.mouseX;
+        int y = (int) rc.mouseY;
 
         x += 4 * uiScale;
         y += 4 * uiScale;
@@ -392,12 +388,12 @@ public class PlayerUI {
         ItemMapping mapping = ItemMapper.get().getMapping(recipe.outputId);
         String outputText = recipe.outputAmount + "x " + mapping.displayName;
 
-        glyphLayout.setText(m6x11_use, outputText);
+        glyphLayout.setText(rc.m6x11_use, outputText);
         float titleWidth = glyphLayout.width;
 
         float innerWidth = 8 * uiScale + titleWidth;
 
-        glyphLayout.setText(m5x7_use, "Ingredients:");
+        glyphLayout.setText(rc.m5x7_use, "Ingredients:");
         float ingredientsWidth = glyphLayout.width + 8 * uiScale;
         float generalM5X7Height = glyphLayout.height;
 
@@ -406,7 +402,7 @@ public class PlayerUI {
 
         for(int i = 0; i < recipe.inputIds.length; i++) {
             String ingredientRowText = recipe.inputAmounts[i] + "x " + ItemMapper.get().getMapping(recipe.inputIds[i]).displayName;
-            glyphLayout.setText(m5x7_use, ingredientRowText);
+            glyphLayout.setText(rc.m5x7_use, ingredientRowText);
             float ingredientRowWidth = glyphLayout.width + 28 * uiScale;
             if(ingredientRowWidth > innerWidth) innerWidth = ingredientRowWidth;
             if(ingredientRowWidth > maxIngredientRowWidth) maxIngredientRowWidth = ingredientRowWidth;
@@ -423,7 +419,7 @@ public class PlayerUI {
             x -= totalWidthTooltip;
         }
 
-        r.hudBatch.draw(tooltipFiller, x + 4 * uiScale, y + 4 * uiScale, maxIngredientRowWidth + 7 * uiScale, 43 * uiScale + recipe.inputIds.length * 24 * uiScale + (recipe.inputIds.length - 1) * 1 * uiScale);
+        rc.hudBatch.draw(tooltipFiller, x + 4 * uiScale, y + 4 * uiScale, maxIngredientRowWidth + 7 * uiScale, 43 * uiScale + recipe.inputIds.length * 24 * uiScale + (recipe.inputIds.length - 1) * 1 * uiScale);
 
         // Draw ingredient rows
         float _cx = x + 7 * uiScale;
@@ -431,7 +427,7 @@ public class PlayerUI {
         float _coy = 0;
 
         for(int i = 0; i < recipe.inputIds.length; i++) {
-            r.hudBatch.draw(tooltipFillerCrafting, _cx, _cy + _coy, maxIngredientRowWidth, 24 * uiScale);
+            rc.hudBatch.draw(tooltipFillerCrafting, _cx, _cy + _coy, maxIngredientRowWidth, 24 * uiScale);
 
             int id = recipe.inputIds[i];
             int am = recipe.inputAmounts[i];
@@ -443,15 +439,15 @@ public class PlayerUI {
             float centeredTextureX = (24 - ingredientTexture.getRegionWidth()) * 0.5f * uiScale;
             float centeredTextureY = (24 - ingredientTexture.getRegionHeight()) * 0.5f * uiScale;
 
-            r.hudBatch.draw(ingredientTexture, _cx + centeredTextureX, _cy + _coy + centeredTextureY, ingredientTexture.getRegionWidth() * uiScale, ingredientTexture.getRegionHeight() * uiScale);
+            rc.hudBatch.draw(ingredientTexture, _cx + centeredTextureX, _cy + _coy + centeredTextureY, ingredientTexture.getRegionWidth() * uiScale, ingredientTexture.getRegionHeight() * uiScale);
 
             String ingredientText = am + "x " + m.displayName;
-            glyphLayout.setText(m5x7_use, ingredientText);
+            glyphLayout.setText(rc.m5x7_use, ingredientText);
             float th = glyphLayout.height;
 
-            m5x7_use.setColor(hasIngredient ? ClientStatic.COLOR_CRAFT_GREEN : ClientStatic.COLOR_CRAFT_RED);
-            m5x7_use.draw(r.hudBatch, ingredientText, _cx + 24 * uiScale, _cy + _coy + th + (24 * uiScale - th) * 0.5f);
-            m5x7_use.setColor(Color.WHITE);
+            rc.m5x7_use.setColor(hasIngredient ? ClientStatic.COLOR_CRAFT_GREEN : ClientStatic.COLOR_CRAFT_RED);
+            rc.m5x7_use.draw(rc.hudBatch, ingredientText, _cx + 24 * uiScale, _cy + _coy + th + (24 * uiScale - th) * 0.5f);
+            rc.m5x7_use.setColor(Color.WHITE);
 
             _coy += 24 * uiScale + 1 * uiScale;
         }
@@ -459,31 +455,32 @@ public class PlayerUI {
         float _iy = _cy + _coy + 5 * uiScale;
 
         // Ingredients: text
-        m5x7_use.setColor(ClientStatic.COLOR_CRAFT_INGREDIENTS);
-        m5x7_use.draw(r.hudBatch, "Ingredients:", _cx, _iy + generalM5X7Height);
-        m5x7_use.setColor(Color.WHITE);
+        rc.m5x7_use.setColor(ClientStatic.COLOR_CRAFT_INGREDIENTS);
+        rc.m5x7_use.draw(rc.hudBatch, "Ingredients:", _cx, _iy + generalM5X7Height);
+        rc.m5x7_use.setColor(Color.WHITE);
 
         // Header line
         float headerY = _iy + generalM5X7Height + 11 * uiScale;
-        glyphLayout.setText(m6x11_use, outputText);
-        m6x11_use.draw(r.hudBatch, outputText, _cx, headerY + glyphLayout.height);
+        glyphLayout.setText(rc.m6x11_use, outputText);
+        rc.m6x11_use.draw(rc.hudBatch, outputText, _cx, headerY + glyphLayout.height);
 
         float endY = headerY + glyphLayout.height + 4 * uiScale;
-        drawBorderAt(r, x, y, maxIngredientRowWidth + 2 * uiScale, endY - y - 9 * uiScale);
+        drawBorderAt(rc, x, y, maxIngredientRowWidth + 2 * uiScale, endY - y - 9 * uiScale);
 
         // Divider line
-        r.hudBatch.draw(tooltipFillerLight, x + 3 * uiScale, _iy + generalM5X7Height + 4 * uiScale, maxIngredientRowWidth + 8 * uiScale, 2 * uiScale);
+        rc.hudBatch.draw(tooltipFillerLight, x + 3 * uiScale, _iy + generalM5X7Height + 4 * uiScale, maxIngredientRowWidth + 8 * uiScale, 2 * uiScale);
     }
 
     public void drawTooltipColored(int x, int y, String text, Color color, String... extraLines) {
+        RenderContext rc = RenderContext.get();
         x += 4 * uiScale; // offset
         y += 4 * uiScale; // offset
 
-        glyphLayout.setText(m5x7_use, text);
+        glyphLayout.setText(rc.m5x7_use, text);
         float tw = glyphLayout.width;
 
         for(String str : extraLines) {
-            glyphLayout.setText(m5x7_use, str);
+            glyphLayout.setText(rc.m5x7_use, str);
             if(glyphLayout.width > tw) tw = glyphLayout.width;
         }
 
@@ -494,7 +491,7 @@ public class PlayerUI {
             th += 9 * uiScale;
 
             for(int i = 0; i < extraLines.length; i++) {
-                glyphLayout.setText(m5x7_use, extraLines[i]);
+                glyphLayout.setText(rc.m5x7_use, extraLines[i]);
                 th += glyphLayout.height;
                 if(i > 0) th += 4 * uiScale;
             }
@@ -505,22 +502,20 @@ public class PlayerUI {
         tw += borderSize;
         th += borderSize;
 
-        RenderContext r = RenderContext.get();
+        rc.hudBatch.draw(tooltipFiller, x + 4 * uiScale, y + 4 * uiScale, tw + 4 * uiScale, th + 4 * uiScale);
 
-        r.hudBatch.draw(tooltipFiller, x + 4 * uiScale, y + 4 * uiScale, tw + 4 * uiScale, th + 4 * uiScale);
+        drawBorderAt(rc, x, y, tw, th);
 
-        drawBorderAt(r, x, y, tw, th);
-
-        m5x7_use.setColor(color);
-        m5x7_use.draw(r.hudBatch, text, x + cornerSize + uiScale, y + cornerSize + th - uiScale);
-        m5x7_use.setColor(Color.WHITE);
+        rc.m5x7_use.setColor(color);
+        rc.m5x7_use.draw(rc.hudBatch, text, x + cornerSize + uiScale, y + cornerSize + th - uiScale);
+        rc.m5x7_use.setColor(Color.WHITE);
 
         if(extraLines.length > 0) {
-            r.hudBatch.draw(tooltipFillerLight, x + cornerSize + uiScale, y + cornerSize + th - uiScale - titleHeight - 5 * uiScale, tw, uiScale);
+            rc.hudBatch.draw(tooltipFillerLight, x + cornerSize + uiScale, y + cornerSize + th - uiScale - titleHeight - 5 * uiScale, tw, uiScale);
 
             for(int i = 0; i < extraLines.length; i++) {
                 String c = extraLines[i];
-                m5x7_use.draw(r.hudBatch, c, x + cornerSize + uiScale, y + cornerSize + th - uiScale - titleHeight - 9 * uiScale - i * (4 * uiScale + titleHeight));
+                rc.m5x7_use.draw(rc.hudBatch, c, x + cornerSize + uiScale, y + cornerSize + th - uiScale - titleHeight - 9 * uiScale - i * (4 * uiScale + titleHeight));
             }
         }
     }
@@ -642,14 +637,14 @@ public class PlayerUI {
     }
 
     public void update() {
-        RenderContext r = RenderContext.get();
+        RenderContext rc = RenderContext.get();
 
         boolean previousInventoryOpenState = inventoryOpenState;
         boolean previousCraftingOpenState = craftingOpenState;
         inventoryOpenState = playerPresent() && ClientPlayer.getLocalPlayer().inventoryOpen;
         craftingOpenState = inventoryOpenState && craftingOpen;
 
-        r.blurActive = inventoryOpenState;
+        rc.blurActive = inventoryOpenState;
 
         if(previousInventoryOpenState != inventoryOpenState) {
             // Update hotbar position.
@@ -659,14 +654,14 @@ public class PlayerUI {
             updateSlotVisibility();
         }
 
-        if(r.mouseMoved || (previousInventoryOpenState != inventoryOpenState)) {
+        if(rc.mouseMoved || (previousInventoryOpenState != inventoryOpenState)) {
             updateInventoryElements();
         }
 
         playerMinimap.updateMinimap();
 
         if(fadeInDelta < fadeInDuration) {
-            fadeInDelta += r.delta;
+            fadeInDelta += rc.delta;
             if(fadeInDelta > fadeInDuration) fadeInDelta = fadeInDuration;
         }
 
@@ -674,10 +669,10 @@ public class PlayerUI {
 
         if(fadeRainDelta != fadeRainTarget) {
             if(fadeRainDelta < fadeRainTarget) {
-                fadeRainDelta += r.delta / fadeRainDuration;
+                fadeRainDelta += rc.delta / fadeRainDuration;
                 if(fadeRainDelta > fadeRainTarget) fadeRainDelta = fadeRainTarget;
             } else {
-                fadeRainDelta -= r.delta / fadeRainDuration;
+                fadeRainDelta -= rc.delta / fadeRainDuration;
                 if(fadeRainDelta < fadeRainTarget) fadeRainDelta = fadeRainTarget;
             }
         }
@@ -689,26 +684,26 @@ public class PlayerUI {
     }
 
     private boolean uiElementInBounds(InteractableUIElement slot) {
-        RenderContext r = RenderContext.get();
-        return r.mouseX >= slot.x && r.mouseX < slot.ex && r.mouseY >= slot.y && r.mouseY < slot.ey;
+        RenderContext rc = RenderContext.get();
+        return rc.mouseX >= slot.x && rc.mouseX < slot.ex && rc.mouseY >= slot.y && rc.mouseY < slot.ey;
     }
 
     public void render() {
-        RenderContext r = RenderContext.get();
+        RenderContext rc = RenderContext.get();
 
-        r.hudBatch.begin();
+        rc.hudBatch.begin();
 
         {
             if(fadeRainDelta != 0) {
                 Color COLOR_RAIN = ExpoClientContainer.get().getClientWorld().COLOR_RAIN;
-                r.hudBatch.setColor(COLOR_RAIN.r, COLOR_RAIN.g, COLOR_RAIN.b, 0.05f * fadeRainDelta);
-                r.hudBatch.draw(whiteSquare, -1, -1, Gdx.graphics.getWidth() + 2, Gdx.graphics.getHeight() + 2);
-                r.hudBatch.setColor(Color.WHITE);
+                rc.hudBatch.setColor(COLOR_RAIN.r, COLOR_RAIN.g, COLOR_RAIN.b, 0.05f * fadeRainDelta);
+                rc.hudBatch.draw(whiteSquare, -1, -1, Gdx.graphics.getWidth() + 2, Gdx.graphics.getHeight() + 2);
+                rc.hudBatch.setColor(Color.WHITE);
             }
         }
 
         if(PlayerInventory.LOCAL_INVENTORY == null) {
-            r.hudBatch.end();
+            rc.hudBatch.end();
             return;
         }
 
@@ -718,24 +713,24 @@ public class PlayerUI {
 
             for(ClientEntity entity : players) {
                 ClientPlayer player = (ClientPlayer) entity;
-                BitmapFont useFont = m5x7_border_use;
+                BitmapFont useFont = rc.m5x7_border_use;
                 glyphLayout.setText(useFont, player.username);
 
                 Vector2 hudPos = ClientUtils.entityPosToHudPos(player.clientPosX + 5, player.clientPosY + 32);
-                useFont.draw(r.hudBatch, player.username, (int) hudPos.x - glyphLayout.width * 0.5f, (int) hudPos.y + glyphLayout.height);
+                useFont.draw(rc.hudBatch, player.username, (int) hudPos.x - glyphLayout.width * 0.5f, (int) hudPos.y + glyphLayout.height);
             }
         }
 
-        glyphLayout.setText(m5x7_border_use, "U");
+        glyphLayout.setText(rc.m5x7_border_use, "U");
         Vector2 startHudPos = ClientUtils.entityPosToHudPos(ClientPlayer.getLocalPlayer().clientPosX + 5, ClientPlayer.getLocalPlayer().clientPosY + 32 + glyphLayout.height);
         float MAX_LINE_LIFETIME = 1.25f;
 
         // Draw pickup lines
-        BitmapFont useFont = m5x7_border_use;
+        BitmapFont useFont = rc.m5x7_border_use;
 
         synchronized(PICKUP_LOCK) {
             for(PickupLine line : pickupLines) {
-                line.lifetime += r.delta;
+                line.lifetime += rc.delta;
                 if(line.lifetime >= MAX_LINE_LIFETIME) continue;
 
                 float alpha = Interpolation.circleOut.apply(line.lifetime / MAX_LINE_LIFETIME);
@@ -750,34 +745,21 @@ public class PlayerUI {
                 float startX = startHudPos.x - fullWidth * 0.5f;
                 float startY = startHudPos.y + alpha * 48;
 
-                r.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
+                rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
                 useFont.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
 
-                r.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
-                useFont.draw(r.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
+                rc.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
+                useFont.draw(rc.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
             }
 
-            r.hudBatch.setColor(Color.WHITE);
+            rc.hudBatch.setColor(Color.WHITE);
             useFont.setColor(Color.WHITE);
             pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
         }
 
         if(inventoryOpenState) {
-            /*
-            // Draw square pattern background
-            float baseWH = darkenSquarePattern.getRegionWidth();
-            int timesX = (int) (uiWidth / baseWH) + 1;
-            int timesY = (int) (uiHeight / baseWH) + 1;
-
-            for(int x = 0; x < timesX; x++) {
-                for(int y = 0; y < timesY; y++) {
-                    r.hudBatch.draw(darkenSquarePattern, x * baseWH, y * baseWH, baseWH, baseWH);
-                }
-            }
-            */
-
             // Draw inventory background
-            r.hudBatch.draw(craftingOpen ? invBackgroundCrafting : invBackground, invX, invY, invW, invH);
+            rc.hudBatch.draw(craftingOpen ? invBackgroundCrafting : invBackground, invX, invY, invW, invH);
 
             // Draw inventory slots
             drawSlots(hotbarSlots, inventorySlots, inventoryArmorSlots);
@@ -788,20 +770,20 @@ public class PlayerUI {
             for(var el : craftRecipeSlots) if(el.visible) el.drawBase();
 
             // Draw inventory text [244]
-            glyphLayout.setText(m5x7_shadow_use, "Inventory");
+            glyphLayout.setText(rc.m5x7_shadow_use, "Inventory");
             float invTextOffsetX = ((244 * uiScale) - glyphLayout.width) * 0.5f;
             float invTextOffsetY = glyphLayout.height + (craftingOpen ? 15 * uiScale : 0) + 156 * uiScale;
-            m5x7_shadow_use.draw(r.hudBatch, "Inventory", invX + 35 * uiScale + invTextOffsetX, invY + invTextOffsetY);
+            rc.m5x7_shadow_use.draw(rc.hudBatch, "Inventory", invX + 35 * uiScale + invTextOffsetX, invY + invTextOffsetY);
 
             // Draw Crafting text
             if(craftingOpen) {
-                glyphLayout.setText(m5x7_shadow_use, "Crafting");
+                glyphLayout.setText(rc.m5x7_shadow_use, "Crafting");
                 float cTextOffsetX = (150 * uiScale - glyphLayout.width) * 0.5f;
-                m5x7_shadow_use.draw(r.hudBatch, "Crafting", invX + 278 * uiScale + cTextOffsetX, invY + 199 * uiScale + glyphLayout.height);
+                rc.m5x7_shadow_use.draw(rc.hudBatch, "Crafting", invX + 278 * uiScale + cTextOffsetX, invY + 199 * uiScale + glyphLayout.height);
             }
         } else {
-            drawHotbar(r);
-            playerMinimap.draw(r);
+            drawHotbar(rc);
+            playerMinimap.draw(rc);
         }
 
         if(hoveredSlot != null && PlayerInventory.LOCAL_INVENTORY.cursorItem == null) {
@@ -809,14 +791,14 @@ public class PlayerUI {
         }
 
         if(tablistOpen) {
-            drawTablist(r);
+            drawTablist(rc);
         }
 
         if(PlayerInventory.LOCAL_INVENTORY.cursorItem != null) {
             drawCursor(PlayerInventory.LOCAL_INVENTORY.cursorItem);
         }
 
-        r.hudBatch.end();
+        rc.hudBatch.end();
 
         if(DEV_MODE || ExpoServerBase.get() == null) {
             chat.draw();
@@ -825,11 +807,11 @@ public class PlayerUI {
         {
             // World enter animation black fade out
             if(fadeInDelta != fadeInDuration) {
-                r.hudBatch.begin();
-                r.hudBatch.setColor(0.0f, 0.0f, 0.0f, 1.0f - fadeInDelta / fadeInDuration);
-                r.hudBatch.draw(whiteSquare, -1, -1, Gdx.graphics.getWidth() + 2, Gdx.graphics.getHeight() + 2);
-                r.hudBatch.setColor(Color.WHITE);
-                r.hudBatch.end();
+                rc.hudBatch.begin();
+                rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, 1.0f - fadeInDelta / fadeInDuration);
+                rc.hudBatch.draw(whiteSquare, -1, -1, Gdx.graphics.getWidth() + 2, Gdx.graphics.getHeight() + 2);
+                rc.hudBatch.setColor(Color.WHITE);
+                rc.hudBatch.end();
             }
         }
     }
@@ -857,32 +839,32 @@ public class PlayerUI {
         ItemRender render = mapping.uiRender;
         TextureRegion draw = render.textureRegion;
 
-        RenderContext r = RenderContext.get();
+        RenderContext rc = RenderContext.get();
 
         float dw = draw.getRegionWidth() * render.scaleX * uiScale;
         float dh = draw.getRegionHeight() * render.scaleY * uiScale;
 
-        float _x = r.mouseX - dw * 0.5f;
-        float _y = r.mouseY - dh * 0.5f;
+        float _x = rc.mouseX - dw * 0.5f;
+        float _y = rc.mouseY - dh * 0.5f;
 
-        r.hudBatch.draw(draw, _x, _y, dw, dh);
+        rc.hudBatch.draw(draw, _x, _y, dw, dh);
 
         if(mapping.logic.maxStackSize > 1) {
             int amount = item.itemAmount;
             String amountAsText = String.valueOf(amount);
 
-            glyphLayout.setText(m5x7_shadow_use, amountAsText);
+            glyphLayout.setText(rc.m5x7_shadow_use, amountAsText);
             float aw = glyphLayout.width;
             float ah = glyphLayout.height;
 
             float artificialEx = _x + (slotW - dw) * 0.5f + dw;
             float artificialBy = _y - (slotH - dh) * 0.5f;
 
-            m5x7_shadow_use.draw(r.hudBatch, amountAsText, artificialEx - 1 * uiScale - aw, artificialBy + ah + 1 * uiScale);
+            rc.m5x7_shadow_use.draw(rc.hudBatch, amountAsText, artificialEx - 1 * uiScale - aw, artificialBy + ah + 1 * uiScale);
         }
     }
 
-    private void drawTablist(RenderContext r) {
+    private void drawTablist(RenderContext rc) {
         var map = ExpoClientContainer.get().getPlayerOnlineList();
         float muW = 0, muH = 0; // Max Username width + height
         float mpW = 0; // Max ping width + height
@@ -890,11 +872,11 @@ public class PlayerUI {
 
         // Determine max width + height per line
         for(String username : map.keySet()) {
-            glyphLayout.setText(m5x7_shadow_use, username);
+            glyphLayout.setText(rc.m5x7_shadow_use, username);
             if(glyphLayout.width > muW) muW = glyphLayout.width;
             if(glyphLayout.height > muH) muH = glyphLayout.height;
 
-            glyphLayout.setText(m5x7_shadow_use, "999+"); // max ping to display = 999
+            glyphLayout.setText(rc.m5x7_shadow_use, "999+"); // max ping to display = 999
             if(glyphLayout.width > mpW) mpW = glyphLayout.width;
         }
 
@@ -921,23 +903,23 @@ public class PlayerUI {
         startDrawY = Gdx.graphics.getHeight() - 16 - totalHeight;
 
         // Base background
-        r.hudBatch.setColor(64f / 255f, 64f / 255f, 64f / 255f, 1.0f);
-        r.hudBatch.draw(whiteSquare, startDrawX + 1 * uiScale, startDrawY + 1 * uiScale, totalWidth - 2 * uiScale, totalHeight - 2 * uiScale);
-        r.hudBatch.setColor(Color.WHITE);
+        rc.hudBatch.setColor(64f / 255f, 64f / 255f, 64f / 255f, 1.0f);
+        rc.hudBatch.draw(whiteSquare, startDrawX + 1 * uiScale, startDrawY + 1 * uiScale, totalWidth - 2 * uiScale, totalHeight - 2 * uiScale);
+        rc.hudBatch.setColor(Color.WHITE);
 
         // Bottom row
-        r.hudBatch.draw(tabBottomLeft, startDrawX, startDrawY, cornerWH, cornerWH);
-        r.hudBatch.draw(tabBottomRight, startDrawX + totalWidth - cornerWH, startDrawY, cornerWH, cornerWH);
-        r.hudBatch.draw(tabBorder1x3, startDrawX + cornerWH, startDrawY, totalWidth - cornerWH * 2, borderWH);
+        rc.hudBatch.draw(tabBottomLeft, startDrawX, startDrawY, cornerWH, cornerWH);
+        rc.hudBatch.draw(tabBottomRight, startDrawX + totalWidth - cornerWH, startDrawY, cornerWH, cornerWH);
+        rc.hudBatch.draw(tabBorder1x3, startDrawX + cornerWH, startDrawY, totalWidth - cornerWH * 2, borderWH);
 
         // Top row
-        r.hudBatch.draw(tabTopLeft, startDrawX, startDrawY + totalHeight - cornerWH, cornerWH, cornerWH);
-        r.hudBatch.draw(tabTopRight, startDrawX + totalWidth - cornerWH, startDrawY + totalHeight - cornerWH, cornerWH, cornerWH);
-        r.hudBatch.draw(tabBorder1x3, startDrawX + cornerWH, startDrawY + totalHeight - borderWH, totalWidth - cornerWH * 2, borderWH);
+        rc.hudBatch.draw(tabTopLeft, startDrawX, startDrawY + totalHeight - cornerWH, cornerWH, cornerWH);
+        rc.hudBatch.draw(tabTopRight, startDrawX + totalWidth - cornerWH, startDrawY + totalHeight - cornerWH, cornerWH, cornerWH);
+        rc.hudBatch.draw(tabBorder1x3, startDrawX + cornerWH, startDrawY + totalHeight - borderWH, totalWidth - cornerWH * 2, borderWH);
 
         // Sides
-        r.hudBatch.draw(tabBorder3x1, startDrawX, startDrawY + cornerWH, borderWH, totalHeight - cornerWH * 2);
-        r.hudBatch.draw(tabBorder3x1, startDrawX + totalWidth - borderWH, startDrawY + cornerWH, borderWH, totalHeight - cornerWH * 2);
+        rc.hudBatch.draw(tabBorder3x1, startDrawX, startDrawY + cornerWH, borderWH, totalHeight - cornerWH * 2);
+        rc.hudBatch.draw(tabBorder3x1, startDrawX + totalWidth - borderWH, startDrawY + cornerWH, borderWH, totalHeight - cornerWH * 2);
 
         // For each element
         float rowOffsetX = borderWH + 2 * uiScale;
@@ -947,44 +929,44 @@ public class PlayerUI {
             float _x = startDrawX + rowOffsetX;
             float _w = pthW + 2 * uiScale;
 
-            r.hudBatch.setColor(43f / 255f, 43f / 255f, 43f / 255f, 1.0f);
-            r.hudBatch.draw(whiteSquare, _x, startDrawY + rowOffsetY, _w, rowHeight);
+            rc.hudBatch.setColor(43f / 255f, 43f / 255f, 43f / 255f, 1.0f);
+            rc.hudBatch.draw(whiteSquare, _x, startDrawY + rowOffsetY, _w, rowHeight);
 
             _x += _w + 2 * uiScale;
             _w = muW + 4 * uiScale;
-            r.hudBatch.draw(whiteSquare, _x, startDrawY + rowOffsetY, _w, rowHeight);
+            rc.hudBatch.draw(whiteSquare, _x, startDrawY + rowOffsetY, _w, rowHeight);
 
             _x += _w + 2 * uiScale;
             _w = mpW + 6 * uiScale + pingW;
-            r.hudBatch.draw(whiteSquare, _x, startDrawY + rowOffsetY, _w, rowHeight);
+            rc.hudBatch.draw(whiteSquare, _x, startDrawY + rowOffsetY, _w, rowHeight);
 
-            r.hudBatch.setColor(Color.WHITE);
-            r.hudBatch.draw(playerTabHead, startDrawX + rowOffsetX + 1 * uiScale, startDrawY + rowOffsetY + 1 * uiScale, pthW, pthH);
-            m5x7_shadow_use.draw(r.hudBatch, username, startDrawX + rowOffsetX + pthW + 2 * uiScale + 2 * uiScale + 2 * uiScale, startDrawY + rowOffsetY + 2 * uiScale + muH + 1 * uiScale);
+            rc.hudBatch.setColor(Color.WHITE);
+            rc.hudBatch.draw(playerTabHead, startDrawX + rowOffsetX + 1 * uiScale, startDrawY + rowOffsetY + 1 * uiScale, pthW, pthH);
+            rc.m5x7_shadow_use.draw(rc.hudBatch, username, startDrawX + rowOffsetX + pthW + 2 * uiScale + 2 * uiScale + 2 * uiScale, startDrawY + rowOffsetY + 2 * uiScale + muH + 1 * uiScale);
 
             long ping = map.get(username);
 
             if(ping < 80) {
-                m5x7_shadow_use.setColor(COLOR_GREEN);
-                r.hudBatch.setColor(COLOR_GREEN);
+                rc.m5x7_shadow_use.setColor(COLOR_GREEN);
+                rc.hudBatch.setColor(COLOR_GREEN);
             } else if(ping < 200) {
-                m5x7_shadow_use.setColor(COLOR_YELLOW);
-                r.hudBatch.setColor(COLOR_YELLOW);
+                rc.m5x7_shadow_use.setColor(COLOR_YELLOW);
+                rc.hudBatch.setColor(COLOR_YELLOW);
             } else {
-                m5x7_shadow_use.setColor(COLOR_RED);
-                r.hudBatch.setColor(COLOR_RED);
+                rc.m5x7_shadow_use.setColor(COLOR_RED);
+                rc.hudBatch.setColor(COLOR_RED);
             }
 
             String pingAsString = (ping > 999 ? "999+" : String.valueOf(ping));
-            glyphLayout.setText(m5x7_shadow_use, pingAsString);
+            glyphLayout.setText(rc.m5x7_shadow_use, pingAsString);
 
             float pingBoxWidth = pingW + 6 * uiScale + mpW;
             float pingIconX = _x + (pingBoxWidth - (pingW + 2 * uiScale + glyphLayout.width)) * 0.5f;
-            r.hudBatch.draw(tabPingIcon, pingIconX, startDrawY + rowOffsetY + (rowHeight - pingH) * 0.5f, pingW, pingH);
-            m5x7_shadow_use.draw(r.hudBatch, pingAsString, pingIconX + 2 * uiScale + pingW, startDrawY + rowOffsetY + 2 * uiScale + muH + 1 * uiScale);
+            rc.hudBatch.draw(tabPingIcon, pingIconX, startDrawY + rowOffsetY + (rowHeight - pingH) * 0.5f, pingW, pingH);
+            rc.m5x7_shadow_use.draw(rc.hudBatch, pingAsString, pingIconX + 2 * uiScale + pingW, startDrawY + rowOffsetY + 2 * uiScale + muH + 1 * uiScale);
 
-            m5x7_shadow_use.setColor(Color.WHITE);
-            r.hudBatch.setColor(Color.WHITE);
+            rc.m5x7_shadow_use.setColor(Color.WHITE);
+            rc.hudBatch.setColor(Color.WHITE);
 
             rowOffsetY += rowHeight + 2 * uiScale;
         }
@@ -1027,10 +1009,10 @@ public class PlayerUI {
             c = mapping.color;
         }
 
-        glyphLayout.setText(m5x7_border_use, text);
-        m5x7_border_use.setColor(c);
-        m5x7_border_use.draw(rc.hudBatch, text, x + (138 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
-        m5x7_border_use.setColor(Color.WHITE);
+        glyphLayout.setText(rc.m5x7_border_use, text);
+        rc.m5x7_border_use.setColor(c);
+        rc.m5x7_border_use.draw(rc.hudBatch, text, x + (138 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
+        rc.m5x7_border_use.setColor(Color.WHITE);
     }
 
     public float[] percentageToColor(float percentage) {
@@ -1079,10 +1061,10 @@ public class PlayerUI {
         float[] rgb = percentageToColor(status);
 
         String text = (int) status + "%";
-        glyphLayout.setText(m5x7_border_use, text);
+        glyphLayout.setText(rc.m5x7_border_use, text);
 
-        m5x7_border_use.setColor(rgb[0], rgb[1], rgb[2], 1.0f);
-        m5x7_border_use.draw(rc.hudBatch, text, x + (32 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
+        rc.m5x7_border_use.setColor(rgb[0], rgb[1], rgb[2], 1.0f);
+        rc.m5x7_border_use.draw(rc.hudBatch, text, x + (32 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
     }
 
     public void updateInventoryBounds() {
@@ -1122,13 +1104,7 @@ public class PlayerUI {
 
         playerMinimap.updateWH(uiScale);
 
-        m5x7_use = RenderContext.get().m5x7_all[(int) uiScale - 1];
-        m6x11_use = RenderContext.get().m6x11_all[(int) uiScale - 1];
 
-        m5x7_border_use = RenderContext.get().m5x7_border_all[(int) uiScale - 1];
-        m6x11_border_use = RenderContext.get().m6x11_border_all[(int) uiScale - 1];
-
-        m5x7_shadow_use = RenderContext.get().m5x7_shadow_all[(int) uiScale - 1];
 
         updateHotbarPosition();
 

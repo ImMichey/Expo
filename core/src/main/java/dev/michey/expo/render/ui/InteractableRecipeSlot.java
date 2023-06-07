@@ -47,13 +47,13 @@ public class InteractableRecipeSlot extends InteractableUIElement {
             r.hudBatch.draw(drawItemPreview, _x, _y, iw, ih);
 
             int amount = holdingRecipe.outputAmount;
-            String amountAsText = amount + "";
+            String amountAsText = String.valueOf(amount);
 
-            parent.glyphLayout.setText(parent.m5x7_shadow_use, amountAsText);
+            parent.glyphLayout.setText(r.m5x7_shadow_use, amountAsText);
             float aw = parent.glyphLayout.width;
             float ah = parent.glyphLayout.height;
 
-            parent.m5x7_shadow_use.draw(r.hudBatch, amountAsText, this.ex - aw - 1 * parent.uiScale, this.y + ah + 1 * parent.uiScale);
+            r.m5x7_shadow_use.draw(r.hudBatch, amountAsText, this.ex - aw - 1 * parent.uiScale, this.y + ah + 1 * parent.uiScale);
         }
     }
 
