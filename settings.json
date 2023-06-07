@@ -1,0 +1,24 @@
+{
+    "uiScale": 2,
+    "preferredWidth": 1280,
+    "debug": {
+        "enableDebugGL": false,
+        "enableDebugImGui": false
+    },
+    "fpsCap": 500,
+    "fullscreen": false,
+    "vsync": false,
+    "audio": {
+        "masterVolume": 1,
+        "ambientVolume": 1,
+        "musicVolume": 1,
+        "sfxVolume": 1
+    },
+    "graphics": {
+        "enableShadows": true,
+        "enableParticles": true,
+        "enableWater": true,
+        "enableBlur": true
+    },
+    "preferredHeight": 720
+}
