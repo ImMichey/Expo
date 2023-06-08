@@ -85,7 +85,21 @@ public class ExpoFileCreator {
                                     Object o = j.get(key);
 
                                     if(oldConfig.has(key)) {
-                                        o = oldConfig.get(key);
+                                        Object _check = oldConfig.get(key);
+
+                                        if(_check instanceof JSONObject _checkObj) {
+                                            JSONObject compareWith = (JSONObject) o;
+
+                                            for(String _key : compareWith.keySet()) {
+                                                if(_checkObj.has(_key)) {
+                                                    compareWith.put(_key, _checkObj.get(_key));
+                                                } else {
+                                                    requiresChanges = true;
+                                                }
+                                            }
+                                        } else {
+                                            o = oldConfig.get(key);
+                                        }
                                     } else {
                                         requiresChanges = true;
                                     }

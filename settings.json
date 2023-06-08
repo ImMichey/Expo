@@ -15,9 +15,10 @@
         "sfxVolume": 1
     },
     "graphics": {
+        "zoomLevel": 0,
         "enableShadows": true,
         "enableParticles": true,
-        "enableWater": true,
+        "enableWater": false,
         "enableBlur": true
     },
     "preferredHeight": 720

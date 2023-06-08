@@ -41,6 +41,7 @@ public class GameSettings {
     public boolean enableShadows = true;
     public boolean enableWater = true;
     public boolean enableParticles = true;
+    public int zoomLevel = 0;
 
     public GameSettings() {
         var result = ExpoFileCreator.createFileStructure(new ExpoFile(ExpoFile.FileType.CONFIG, "settings.json", asJson()));
@@ -90,6 +91,7 @@ public class GameSettings {
                 .put("enableShadows", enableShadows)
                 .put("enableWater", enableWater)
                 .put("enableParticles", enableParticles)
+                .put("zoomLevel", zoomLevel)
                 ;
 
         return new JSONObject()
@@ -129,6 +131,7 @@ public class GameSettings {
         enableShadows = graphicJson.getBoolean("enableShadows");
         enableWater = graphicJson.getBoolean("enableWater");
         enableParticles = graphicJson.getBoolean("enableParticles");
+        zoomLevel = graphicJson.getInt("zoomLevel");
     }
 
     @Override
