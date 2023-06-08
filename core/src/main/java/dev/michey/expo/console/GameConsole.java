@@ -166,8 +166,8 @@ public class GameConsole {
                 String converted = Gdx.app.getClipboard().getContents().replace(System.lineSeparator(), "");
 
                 for(char c : converted.toCharArray()) {
-                    if(!ALLOWED_CHARS.contains(c + "")) {
-                        converted = converted.replace(c + "", "");
+                    if(!ALLOWED_CHARS.contains(String.valueOf(c))) {
+                        converted = converted.replace(String.valueOf(c), "");
                     }
                 }
 
@@ -402,14 +402,14 @@ public class GameConsole {
                     fullConsoleLine = getUntilCursor() + fullConsoleLine.substring(cursorPos + 1);
                 }
             }
-        } else if(ALLOWED_CHARS.contains(character + "")) {
+        } else if(ALLOWED_CHARS.contains(String.valueOf(character))) {
             if(consoleLineIsEmpty()) {
-                fullConsoleLine = character + "";
+                fullConsoleLine = String.valueOf(character);
                 cursorPos++;
             } else {
                 if(isTextSelected()) {
                     if(isEntireTextSelected()) {
-                        fullConsoleLine = character + "";
+                        fullConsoleLine = String.valueOf(character);
                         cursorPos = 1;
                     } else {
                         fullConsoleLine = getUntilSelectionA() + character + getAfterSelectionB();

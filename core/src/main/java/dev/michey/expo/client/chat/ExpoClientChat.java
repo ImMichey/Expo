@@ -267,12 +267,14 @@ public class ExpoClientChat {
     }
 
     public void addConsoleMessage(ChatMessage message) {
-        synchronized (CHAT_LOCK) {
+        synchronized(CHAT_LOCK) {
             messageHistory.add(message);
-            fullConsoleLine = "";
-            cursorPos = 0;
+            if(message.byUser) {
+                fullConsoleLine = "";
+                cursorPos = 0;
+                resetSelection();
+            }
             currentUpDownIndex = messageHistory.size();
-            resetSelection();
 
             int cover = message.lines;
             int startIndex = historyLinesTotal;
