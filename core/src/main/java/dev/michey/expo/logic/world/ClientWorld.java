@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -28,6 +29,7 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.gen.EntityPopulationBounds;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
+import make.some.noise.Noise;
 
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -166,7 +168,6 @@ public class ClientWorld {
         clientChunkGrid.terrainNoiseTemperature.setSeed(seed + 1);
         clientChunkGrid.terrainNoiseMoisture.setSeed(seed + 2);
         clientChunkGrid.riverNoise.setSeed(seed);
-        for(var x : clientChunkGrid.noisePostProcessorMap.values()) x.value.setSeed(seed);
     }
 
     private void calculateWorldTime(float delta) {

@@ -1,11 +1,15 @@
 package dev.michey.expo.logic.world.chunk;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
@@ -52,7 +56,7 @@ public class ClientChunkGrid {
         INSTANCE = this;
     }
 
-    public void applyGenSettings(WorldGenNoiseSettings noiseSettings, HashMap<BiomeType, float[]> biomeDataMap) {
+    public void applyGenSettings(WorldGenNoiseSettings noiseSettings, HashMap<BiomeType, float[]> biomeDataMap, int worldSeed) {
         this.noiseSettings = noiseSettings;
         this.biomeDataMap = biomeDataMap;
         log("Applying world gen mapping " + noiseSettings);
@@ -70,7 +74,7 @@ public class ClientChunkGrid {
         if(noiseSettings.isPostProcessorGenerator()) {
             for(String key : noiseSettings.postProcessList.keySet()) {
                 NoisePostProcessor npp = noiseSettings.postProcessList.get(key);
-                Noise noise = new Noise();
+                Noise noise = new Noise(worldSeed);
                 npp.noiseWrapper.applyTo(noise);
                 noisePostProcessorMap.put(key, new Pair<>(npp, noise));
             }
@@ -175,6 +179,18 @@ public class ClientChunkGrid {
                 if(toCheck != BiomeType.OCEAN_DEEP) {
                     float river = normalized(riverNoise, x, y);
                     if(river >= 0.975f) return BiomeType.RIVER;
+                }
+
+                if(toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
+                    var rocks = noisePostProcessorMap.get("rocks");
+
+                    if(rocks != null) {
+                        float rocksValue = normalized(rocks.value, x, y);
+                        boolean isRocks = rocksValue >= rocks.key.threshold;
+                        if(isRocks) {
+                            return BiomeType.ROCK;
+                        }
+                    }
                 }
 
                 return toCheck;

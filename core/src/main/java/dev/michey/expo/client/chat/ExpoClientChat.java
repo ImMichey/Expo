@@ -263,10 +263,10 @@ public class ExpoClientChat {
     }
 
     public void addServerMessage(String message) {
-        addConsoleMessage(new ChatMessage(message, "SERVER", false));
+        addChatMessage(new ChatMessage(message, "SERVER", false));
     }
 
-    public void addConsoleMessage(ChatMessage message) {
+    public void addChatMessage(ChatMessage message) {
         synchronized(CHAT_LOCK) {
             messageHistory.add(message);
             if(message.byUser) {
@@ -821,7 +821,7 @@ public class ExpoClientChat {
     public void toggleFocus() {
         focused = !focused;
         if(!focused && !consoleLineIsEmpty()) {
-            addConsoleMessage(new ChatMessage(fullConsoleLine, ClientStatic.PLAYER_USERNAME, true));
+            addChatMessage(new ChatMessage(fullConsoleLine, ClientStatic.PLAYER_USERNAME, true));
         }
     }
 

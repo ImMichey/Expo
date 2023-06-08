@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ChatMessage;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -52,7 +53,7 @@ public class ExpoClientPacketReader {
             } else {
                 if(!local) {
                     ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
-                    ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDataMap);
+                    ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDataMap, p.worldSeed);
                 }
                 ExpoClientContainer.get().setServerTickRate(p.serverTps);
             }
@@ -186,7 +187,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P24_PositionalSound p) {
             AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false);
         } else if(o instanceof P25_ChatMessage p) {
-            ExpoClientContainer.get().getPlayerUI().chat.addConsoleMessage(new ChatMessage(p.message, p.sender, false));
+            ExpoClientContainer.get().getPlayerUI().chat.addChatMessage(new ChatMessage(p.message, p.sender, false));
         } else if(o instanceof P26_EntityDamage p) {
             ClientEntity entity = entityFromId(p.entityId);
 

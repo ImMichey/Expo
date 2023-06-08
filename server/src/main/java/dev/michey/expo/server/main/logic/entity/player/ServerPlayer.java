@@ -412,6 +412,9 @@ public class ServerPlayer extends ServerEntity {
         var tile = chunk.tiles[tileArray];
         PlaceData p = m.logic.placeData;
 
+        List<String> affectedChunks = new LinkedList<>();
+        affectedChunks.add(chunk.getChunkKey());
+
         if(p.type == PlaceType.FLOOR_0) {
             // Update tile timestamp
             chunk.lastTileUpdate = System.currentTimeMillis();
@@ -423,6 +426,7 @@ public class ServerPlayer extends ServerEntity {
                 for(ServerTile st : tile.getNeighbouringTiles()) {
                     if(st.updateLayer0Adjacent()) {
                         ServerPackets.p32ChunkDataSingle(st, 0);
+                        if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
                     }
                 }
             }
@@ -441,12 +445,27 @@ public class ServerPlayer extends ServerEntity {
                 for(ServerTile st : tile.getNeighbouringTiles()) {
                     if(st.updateLayer1Adjacent()) {
                         ServerPackets.p32ChunkDataSingle(st, 1);
+                        if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
                     }
                 }
             }
 
             { // Update inventory
                 useItemAmount(item);
+            }
+        }
+
+        long now = System.currentTimeMillis();
+
+        for(String affectedChunkKey : affectedChunks) {
+            // Update tile timestamp
+            ServerChunk sv = getChunkGrid().getActiveChunk(affectedChunkKey);
+            sv.lastTileUpdate = now;
+
+            for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
+                if(player.canSeeChunk(affectedChunkKey)) {
+                    player.hasSeenChunks.put(affectedChunkKey, now);
+                }
             }
         }
     }
@@ -502,6 +521,9 @@ public class ServerPlayer extends ServerEntity {
                     }
                 }
 
+                List<String> affectedChunks = new LinkedList<>();
+                affectedChunks.add(chunk.getChunkKey());
+
                 { // Update tile data
                     if(digLayer == 0 && tile.dynamicTileParts[digLayer].emulatingType == TileLayerType.SOIL) {
                         tile.updateLayer0(TileLayerType.SOIL_HOLE);
@@ -510,6 +532,7 @@ public class ServerPlayer extends ServerEntity {
                         for(ServerTile neighbour : tile.getNeighbouringTiles()) {
                             if(neighbour.updateLayer0Adjacent()) {
                                 ServerPackets.p32ChunkDataSingle(neighbour, 0);
+                                if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
                             }
                         }
                     } else if(digLayer == 1) {
@@ -519,10 +542,25 @@ public class ServerPlayer extends ServerEntity {
                         for(ServerTile neighbour : tile.getNeighbouringTiles()) {
                             if(neighbour.updateLayer1Adjacent()) {
                                 ServerPackets.p32ChunkDataSingle(neighbour, 1);
+                                if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
                             }
                         }
                     }
 
+                }
+
+                long now = System.currentTimeMillis();
+
+                for(String affectedChunkKey : affectedChunks) {
+                    // Update tile timestamp
+                    ServerChunk sv = getChunkGrid().getActiveChunk(affectedChunkKey);
+                    sv.lastTileUpdate = now;
+
+                    for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
+                        if(player.canSeeChunk(affectedChunkKey)) {
+                            player.hasSeenChunks.put(affectedChunkKey, now);
+                        }
+                    }
                 }
             }
 
@@ -534,6 +572,20 @@ public class ServerPlayer extends ServerEntity {
                 useItemDurability(item);
             }
         }
+    }
+
+    public boolean canSeeChunk(String chunkKey) {
+        if(currentlyVisibleChunks != null) {
+            for(int i = 0; i < currentlyVisibleChunks.length; i += 2) {
+                int x = currentlyVisibleChunks[i    ];
+                int y = currentlyVisibleChunks[i + 1];
+
+                String ck = x + "," + y;
+                if(ck.equals(chunkKey)) return true;
+            }
+        }
+
+        return false;
     }
 
     private void useItemAmount(ServerInventoryItem item) {

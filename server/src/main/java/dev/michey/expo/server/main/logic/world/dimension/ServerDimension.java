@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.world.dimension;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.dongbat.jbump.World;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;

@@ -1,6 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -374,6 +374,10 @@ public class ServerChunkGrid {
 
         activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
         return chunk;
+    }
+
+    public ServerChunk getActiveChunk(String chunkKey) {
+        return activeChunkMap.get(chunkKey).key;
     }
 
     /** Returns the hashed value of a chunk coordinate. */

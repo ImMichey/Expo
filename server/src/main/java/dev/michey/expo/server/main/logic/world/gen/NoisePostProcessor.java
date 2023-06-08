@@ -14,4 +14,12 @@ public class NoisePostProcessor {
         this.threshold = threshold;
     }
 
+    @Override
+    public String toString() {
+        return "NoisePostProcessor{" +
+                "noiseWrapper=" + noiseWrapper +
+                ", threshold=" + threshold +
+                '}';
+    }
+
 }
