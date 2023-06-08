@@ -46,6 +46,8 @@ public class BoundingBox {
         return parent.getDimension().getPhysicsWorld().move(physicsBody, xOffset + x, yOffset + y, filter);
     }
 
+    public static CollisionFilter noclipFilter = (item, other) -> Response.cross;
+
     public static CollisionFilter playerCollisionFilter = (item, other) -> {
         if(other.userData instanceof ServerPlayer) {
             return Response.cross;

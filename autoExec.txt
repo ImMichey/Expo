@@ -1,2 +1,3 @@
-#/delsave dev
-#/world dev
+/delsave dev
+/world dev
+/speed 15

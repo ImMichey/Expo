@@ -50,6 +50,8 @@ public class ServerPlayer extends ServerEntity {
     public boolean sprinting;
     private boolean dirResetPacket = false;
 
+    public boolean noclip = false;
+
     public int playerDirection = 1; // default in client
 
     public boolean punching;
@@ -182,7 +184,7 @@ public class ServerPlayer extends ServerEntity {
             float toMoveX = xDir * playerSpeed * multiplicator * normalizer;
             float toMoveY = yDir * playerSpeed * multiplicator * normalizer;
 
-            var result = physicsBody.move(toMoveX, toMoveY, BoundingBox.playerCollisionFilter);
+            var result = physicsBody.move(toMoveX, toMoveY, noclip ? BoundingBox.noclipFilter : BoundingBox.playerCollisionFilter);
 
             posX = result.goalX - physicsBody.xOffset;
             posY = result.goalY - physicsBody.yOffset;
