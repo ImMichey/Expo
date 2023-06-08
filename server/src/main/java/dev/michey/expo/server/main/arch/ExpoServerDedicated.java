@@ -53,6 +53,10 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
         kryoServer = new Server(config.getWriteBufferSize(), config.getObjectBufferSize());
         kryoServer.start();
 
+        ExpoServerRegistry.registerPackets(kryoServer.getKryo());
+        packetListener = new ExpoServerListener(packetReader);
+        kryoServer.addListener(packetListener);
+
         try {
             log("Attempting to bind server on port " + config.getServerPort());
             kryoServer.bind(config.getServerPort(), config.getServerPort());
@@ -61,10 +65,6 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
             e.printStackTrace();
             return false;
         }
-
-        ExpoServerRegistry.registerPackets(kryoServer.getKryo());
-        packetListener = new ExpoServerListener(packetReader);
-        kryoServer.addListener(packetListener);
 
         // Start console input thread to poll commands
         if(config.isConsoleInput()) {

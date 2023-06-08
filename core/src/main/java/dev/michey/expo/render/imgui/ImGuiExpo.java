@@ -25,6 +25,7 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
+import dev.michey.expo.util.GameSettings;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.type.ImBoolean;
@@ -377,7 +378,9 @@ public class ImGuiExpo {
             if(ImGui.treeNode("UI")) {
                 if(ImGui.sliderInt("uiScale", uiScale, 1, 5)) {
                     PlayerUI ui = ExpoClientContainer.get().getPlayerUI();
-                    ui.changeUiScale(uiScale[0]);
+                    GameSettings.get().uiScale = uiScale[0];
+                    RenderContext.get().updatePreferredFonts(uiScale[0]);
+                    ui.changeUiScale();
                 }
 
                 if(player != null) {

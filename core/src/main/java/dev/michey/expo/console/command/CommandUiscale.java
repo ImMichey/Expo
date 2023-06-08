@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.util.GameSettings;
 
 public class CommandUiscale extends AbstractConsoleCommand {
 
@@ -30,7 +32,9 @@ public class CommandUiscale extends AbstractConsoleCommand {
         }
 
         int amount = MathUtils.clamp(parseI(args, 1), 1, 5);
-        ExpoClientContainer.get().getPlayerUI().changeUiScale(amount);
+        GameSettings.get().uiScale = amount;
+        RenderContext.get().updatePreferredFonts(amount);
+        ExpoClientContainer.get().getPlayerUI().changeUiScale();
         success("UI scale is now [CYAN]" + amount);
     }
 

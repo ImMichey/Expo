@@ -72,7 +72,7 @@ public class ServerItem extends ServerEntity {
         }
 
         if(pickupImmunity <= 0) {
-            ServerPlayer closestPlayer = getDimension().getEntityManager().getClosestPlayer(this, 8.0f);
+            ServerPlayer closestPlayer = getDimension().getEntityManager().getClosestPlayer(this, 20.0f);
 
             if(closestPlayer != null) {
                 int lastId = closestPlayer.getCurrentItemId();

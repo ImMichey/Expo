@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.entity.player;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;

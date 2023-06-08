@@ -27,6 +27,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRende
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.weather.Weather;
 
 import java.util.LinkedList;
@@ -323,7 +324,7 @@ public class PlayerUI {
 
         chat = new ExpoClientChat(this);
 
-        changeUiScale(2.0f);
+        changeUiScale();
     }
 
     public void addPickupLine(int itemId, int itemAmount) {
@@ -1076,10 +1077,10 @@ public class PlayerUI {
         invY = centerY(invH);
     }
 
-    public void changeUiScale(float scale) {
+    public void changeUiScale() {
         uiWidth = Gdx.graphics.getWidth();
         uiHeight = Gdx.graphics.getHeight();
-        uiScale = scale;
+        uiScale = GameSettings.get().uiScale;
 
         pthW = playerTabHead.getRegionWidth() * uiScale;
         pthH = playerTabHead.getRegionHeight() * uiScale;
@@ -1103,8 +1104,6 @@ public class PlayerUI {
         hungerH = hotbarHunger.getRegionHeight() * uiScale;
 
         playerMinimap.updateWH(uiScale);
-
-
 
         updateHotbarPosition();
 

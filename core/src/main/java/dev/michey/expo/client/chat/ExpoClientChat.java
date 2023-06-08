@@ -340,14 +340,14 @@ public class ExpoClientChat {
                     fullConsoleLine = getUntilCursor() + fullConsoleLine.substring(cursorPos + 1);
                 }
             }
-        } else if(ALLOWED_CHARS.contains(character + "")) {
+        } else if(ALLOWED_CHARS.contains(String.valueOf(character))) {
             if(consoleLineIsEmpty()) {
-                fullConsoleLine = character + "";
+                fullConsoleLine = String.valueOf(character);
                 cursorPos++;
             } else {
                 if(isTextSelected()) {
                     if(isEntireTextSelected()) {
-                        fullConsoleLine = character + "";
+                        fullConsoleLine = String.valueOf(character);
                         cursorPos = 1;
                     } else {
                         fullConsoleLine = getUntilSelectionA() + character + getAfterSelectionB();

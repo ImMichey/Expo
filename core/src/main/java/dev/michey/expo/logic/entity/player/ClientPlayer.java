@@ -432,14 +432,6 @@ public class ClientPlayer extends ClientEntity {
             punchSound = true;
         }
 
-        {
-            float[] values = new float[] {-256.0f, -192.0f, -128.0f, -64.0f, -1.0f, 0.0f, 64.0f, 128.0f, 192.0f, 256.0f};
-
-            for(float f : values) {
-                ClientUtils.log("Tile for " + f + ": " + ExpoShared.posToTile(f) + " & " + ExpoShared.posToChunk(f), Input.Keys.G);
-            }
-        }
-
         // Player footstep sounds
         if((playerWalkIndex == 2 || playerWalkIndex == 7) && (playerWalkIndex != lastPlayerWalkIndex)) {
             String group = getFootstepSound();

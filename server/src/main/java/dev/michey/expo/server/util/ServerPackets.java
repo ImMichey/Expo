@@ -60,7 +60,7 @@ public class ServerPackets {
         P4_EntityDelete p = new P4_EntityDelete();
         p.entityId = entityId;
         p.reason = reason;
-        tcp(p, receiver);
+        udp(p, receiver);
     }
 
     /** Sends the P6_EntityPosition packet via UDP protocol. */
@@ -84,7 +84,7 @@ public class ServerPackets {
         P8_EntityDeleteStack p = new P8_EntityDeleteStack();
         p.entityList = entityList;
         p.reasons = reasons;
-        tcp(p, receiver);
+        udp(p, receiver);
     }
 
     /** Sends the P9_PlayerCreate packet via TCP protocol. */
@@ -137,7 +137,7 @@ public class ServerPackets {
         P12_PlayerDirection p = new P12_PlayerDirection();
         p.entityId = entityId;
         p.direction = direction;
-        tcp(p, receiver);
+        udp(p, receiver);
     }
 
     /** Sends the P13_EntityMove packet via UDP protocol. */
@@ -181,7 +181,7 @@ public class ServerPackets {
             index++;
         }
 
-        tcp(p, receiver);
+        udp(p, receiver);
     }
 
     /** Sends the P17_PlayerPunchData packet via UDP protocol. */
