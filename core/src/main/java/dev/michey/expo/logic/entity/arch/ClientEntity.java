@@ -229,6 +229,15 @@ public abstract class ClientEntity {
         };
     }
 
+    public float[] generateInteractionArray(float offsetGeneral, float yOffset) {
+        return new float[] {
+                finalTextureStartX + offsetGeneral, finalTextureStartY + offsetGeneral,
+                finalTextureStartX + textureWidth - offsetGeneral, finalTextureStartY + offsetGeneral,
+                finalTextureStartX + textureWidth - offsetGeneral, finalTextureStartY + textureHeight - yOffset,
+                finalTextureStartX + offsetGeneral, finalTextureStartY + textureHeight - yOffset,
+        };
+    }
+
     /** Util methods */
     public boolean isMoving() {
         return serverDirX != 0 || serverDirY != 0 || doLerp;

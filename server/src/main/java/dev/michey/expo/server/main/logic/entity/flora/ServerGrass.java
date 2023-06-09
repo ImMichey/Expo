@@ -25,7 +25,7 @@ public class ServerGrass extends ServerEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome) {
-        variant = MathUtils.random(1, 5);
+        variant = MathUtils.random(1, 6);
     }
 
     @Override
@@ -38,6 +38,7 @@ public class ServerGrass extends ServerEntity {
         if(variant == 3) h = 8;
         if(variant == 4) h = 10;
         if(variant == 5) h = 12;
+        if(variant == 6) h = 13;
 
         spawnEntitiesAround(1, 2, 0, (h - yOff) * 0.5f, "item_grassfiber", 8);
     }

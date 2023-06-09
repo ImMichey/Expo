@@ -18,6 +18,7 @@ public class EntityPopulator {
     public boolean spreadAsStaticEntity;
     public float[] spreadOffsets;
     public int priority;
+    public boolean spreadUseNextTarget;
     public EntityBoundsEntry dimensionBounds = null;
 
     public EntityPopulator(JSONObject singlePopulatorObject) {
@@ -45,6 +46,8 @@ public class EntityPopulator {
 
             spreadOffsets = new float[2];
             for(int i = 0; i < 2; i++) spreadOffsets[i] = spreadData.getJSONArray("spreadOffsets").getFloat(i);
+
+            if(spreadData.has("spreadUseNextTarget")) spreadUseNextTarget = spreadData.getBoolean("spreadUseNextTarget");
         }
     }
 
@@ -53,11 +56,17 @@ public class EntityPopulator {
         return "EntityPopulator{" +
                 "type=" + type +
                 ", spawnChance=" + spawnChance +
+                ", asStaticEntity=" + asStaticEntity +
                 ", poissonDiskSamplerDistance=" + poissonDiskSamplerDistance +
                 ", spreadBetweenAmount=" + Arrays.toString(spreadBetweenAmount) +
                 ", spreadChance=" + spreadChance +
                 ", spreadBetweenDistance=" + Arrays.toString(spreadBetweenDistance) +
                 ", spreadBetweenEntities=" + Arrays.toString(spreadBetweenEntities) +
+                ", spreadAsStaticEntity=" + spreadAsStaticEntity +
+                ", spreadOffsets=" + Arrays.toString(spreadOffsets) +
+                ", priority=" + priority +
+                ", spreadUseNextTarget=" + spreadUseNextTarget +
+                ", dimensionBounds=" + dimensionBounds +
                 '}';
     }
 

@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -196,22 +197,54 @@ public class ServerChunk {
                                     if(spread) {
                                         int amount = MathUtils.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
 
-                                        for(Vector2 v : GenerationUtils.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
-                                            float targetX = p.absoluteX + v.x + populator.spreadOffsets[0];
-                                            float targetY = p.absoluteY + v.y + populator.spreadOffsets[1];
+                                        if(populator.spreadUseNextTarget) {
+                                            int remaining = amount;
+                                            float nextOriginX = p.absoluteX;
+                                            float nextOriginY = p.absoluteY;
 
-                                            if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(targetX), ExpoShared.posToTile(targetY)) == t) {
-                                                check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap);
+                                            while(remaining > 0) {
+                                                Vector2 v = GenerationUtils.circularRandom(MathUtils.random(populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1]));
+                                                float targetX = nextOriginX + v.x;
+                                                float targetY = nextOriginY + v.y;
 
-                                                if(!check.key) {
-                                                    ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
-                                                    spreadEntity.posX = (int) targetX;
-                                                    spreadEntity.posY = (int) targetY;
-                                                    if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
-                                                    spreadEntity.onGeneration(true, t);
+                                                if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(targetX), ExpoShared.posToTile(targetY)) == t) {
+                                                    check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap);
 
-                                                    addToList(check.value, spreadEntity, existingEntityDimensionMap);
-                                                    registerMap.add(spreadEntity);
+                                                    if(!check.key) {
+                                                        ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
+                                                        spreadEntity.posX = (int) targetX;
+                                                        spreadEntity.posY = (int) targetY;
+                                                        if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
+                                                        spreadEntity.onGeneration(true, t);
+
+                                                        addToList(check.value, spreadEntity, existingEntityDimensionMap);
+                                                        registerMap.add(spreadEntity);
+
+                                                        nextOriginX = spreadEntity.posX;
+                                                        nextOriginY = spreadEntity.posY;
+                                                    }
+                                                }
+
+                                                remaining--;
+                                            }
+                                        } else {
+                                            for(Vector2 v : GenerationUtils.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
+                                                float targetX = p.absoluteX + v.x + populator.spreadOffsets[0];
+                                                float targetY = p.absoluteY + v.y + populator.spreadOffsets[1];
+
+                                                if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(targetX), ExpoShared.posToTile(targetY)) == t) {
+                                                    check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap);
+
+                                                    if(!check.key) {
+                                                        ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
+                                                        spreadEntity.posX = (int) targetX;
+                                                        spreadEntity.posY = (int) targetY;
+                                                        if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
+                                                        spreadEntity.onGeneration(true, t);
+
+                                                        addToList(check.value, spreadEntity, existingEntityDimensionMap);
+                                                        registerMap.add(spreadEntity);
+                                                    }
                                                 }
                                             }
                                         }

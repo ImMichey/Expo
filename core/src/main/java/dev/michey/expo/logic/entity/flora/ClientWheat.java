@@ -9,56 +9,32 @@ import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
-import dev.michey.expo.logic.entity.particle.ClientParticleHit;
+import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
-import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientGrass extends ClientEntity implements SelectableEntity {
+public class ClientWheat extends ClientEntity implements SelectableEntity {
 
-    private final FoliageAnimator foliageAnimator = new FoliageAnimator();
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(
+            0.5f, 1.0f, 0.02f, 0.03f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f
+    );
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
-    private int variant;
-    private Texture grass;
-    private TextureRegion grassShadow;
+    private Texture wheat;
+    private TextureRegion wheatShadow;
     private float[] interactionPointArray;
-
-    private final float colorOffset = MathUtils.random(0.15f);
 
     @Override
     public void onCreation() {
-        grass = ExpoAssets.get().texture("foliage/entity_grass/entity_grass_" + variant + ".png");
-        grassShadow = new TextureRegion(t("foliage/entity_grass/entity_grass_" + variant + "_shadow.png"));
+        wheat = t("foliage/entity_wheat/entity_wheat.png");
+        wheatShadow = new TextureRegion(t("foliage/entity_wheat/entity_wheat_sm.png"));
 
-        float w = 0, h = 0;
-
-        if(variant == 1) {
-            w = 11;
-            h = 9;
-        } else if(variant == 2) {
-            w = 12;
-            h = 10;
-        } else if(variant == 3) {
-            w = 13;
-            h = 8;
-        } else if(variant == 4) {
-            w = 13;
-            h = 10;
-        } else if(variant == 5) {
-            w = 13;
-            h = 12;
-        } else if(variant == 6) {
-            w = 18;
-            h = 13;
-        }
-
-        updateTextureBounds(w, h, 1, 1);
-        interactionPointArray = generateInteractionArray(2);
+        updateTextureBounds(17, 24, 1, 1);
+        interactionPointArray = generateInteractionArray(2, 12);
     }
 
     @Override
@@ -105,10 +81,8 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
         foliageAnimator.calculateWindOnDemand();
         rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
 
-        rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawCustomVertices(wheat, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, wheat.getWidth(), wheat.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
-        rc.arraySpriteBatch.setColor(Color.WHITE);
     }
 
     @Override
@@ -121,9 +95,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-            rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-            rc.arraySpriteBatch.setColor(Color.WHITE);
+            rc.arraySpriteBatch.drawCustomVertices(wheat, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, wheat.getWidth(), wheat.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 
@@ -131,24 +103,19 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
     public void renderShadow(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
         Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(grassShadow, shadow);
+        float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(wheatShadow, shadow);
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 
         if(drawGrass) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawGradientCustomVertices(wheatShadow, wheatShadow.getRegionWidth(), wheatShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
-        variant = (int) payload[0];
-    }
-
-    @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.GRASS;
+        return ClientEntityType.WHEAT_PLANT;
     }
 
 }

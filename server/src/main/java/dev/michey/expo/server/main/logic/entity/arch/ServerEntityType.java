@@ -25,6 +25,7 @@ public enum ServerEntityType {
     ROCK(14, "Rock", true),
     CRAB(15, "Crab", false),
     DYNAMIC_3D_TILE(16, "Dynamic3DTile", true),
+    WHEAT_PLANT(17, "WheatPlant", false),
     ;
 
     public final int ENTITY_ID;
@@ -56,6 +57,7 @@ public enum ServerEntityType {
             case 14 -> new ServerRock();
             case 15 -> new ServerCrab();
             case 16 -> new ServerDynamic3DTile();
+            case 17 -> new ServerWheat();
             default -> null;
         };
     }
