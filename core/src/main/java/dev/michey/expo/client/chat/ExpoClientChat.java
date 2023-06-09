@@ -9,11 +9,13 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Align;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.Pair;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -71,6 +73,8 @@ public class ExpoClientChat {
     public static final Object CHAT_LOCK = new Object();
     // Colors
     private final Color COLOR_SELECTION = Color.valueOf("0e3666");
+    // Player history map
+    public final HashMap<String, Pair<String, Pair<Float, Float>>> playerHistoryMap;
 
     public ExpoClientChat(PlayerUI ui) {
         this.ui = ui;
@@ -79,6 +83,7 @@ public class ExpoClientChat {
         historyGlyph = new GlyphLayout();
         calcGlyph = new GlyphLayout();
         indexToMessageMap = new HashMap<>();
+        playerHistoryMap = new HashMap<>();
         INSTANCE = this;
     }
 
@@ -267,6 +272,8 @@ public class ExpoClientChat {
     }
 
     public void addChatMessage(ChatMessage message) {
+        AudioEngine.get().playSoundGroup("pop");
+
         synchronized(CHAT_LOCK) {
             messageHistory.add(message);
             if(message.byUser) {
@@ -286,6 +293,12 @@ public class ExpoClientChat {
 
             historyLinesTotal += message.lines;
             message.endIndex = historyLinesTotal - 1;
+
+            if(!message.sender.equals("SYSTEM")) {
+                int msgLength = message.message.length();
+                float displayLength = 3.0f + msgLength / 16.0f;
+                playerHistoryMap.put(message.sender, new Pair<>(message.message, new Pair<>(displayLength, displayLength)));
+            }
 
             logch(message.message);
 

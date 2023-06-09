@@ -10,8 +10,6 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.console.ConsoleMessage;
-import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
@@ -23,7 +21,6 @@ import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
@@ -31,7 +28,6 @@ import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.PacketUtils;
 
@@ -63,17 +59,11 @@ public class ClientPlayer extends ClientEntity {
     private TextureRegion draw_tex_shadow_base = null;
 
     private float playerBreatheDelta;
-    private final float PLAYER_BREATHE_COOLDOWN = 1.0f;
-    private final float PLAYER_BREATHE_DURATION = 0.5f;
-
     private float playerBlinkDelta;
-    private final float PLAYER_BLINK_DURATION = 0.25f;
-    private final float PLAYER_BLINK_COOLDOWN = 3.0f;
 
     private float playerWalkDelta;
     private int playerWalkIndex;
     private int lastPlayerWalkIndex;
-    private final float PLAYER_WALK_PER_FRAME_DURATION = 0.10f;
 
     public int playerDirection = 1; // 0 = Left, 1 = Right
     private int oldPlayerDirection = 1; // for packets
@@ -464,6 +454,12 @@ public class ClientPlayer extends ClientEntity {
             playerBlinkDelta += delta;
             playerBreatheDelta += delta;
 
+            float PLAYER_BLINK_COOLDOWN = 3.0f;
+            float PLAYER_BLINK_DURATION = 0.25f;
+
+            float PLAYER_BREATHE_DURATION = 0.5f;
+            float PLAYER_BREATHE_COOLDOWN = 1.0f;
+
             if(playerBlinkDelta >= PLAYER_BLINK_COOLDOWN) playerBlinkDelta = -PLAYER_BLINK_DURATION;
             if(playerBreatheDelta >= PLAYER_BREATHE_COOLDOWN) playerBreatheDelta = -PLAYER_BREATHE_DURATION;
         }
@@ -517,6 +513,7 @@ public class ClientPlayer extends ClientEntity {
 
         if(moving) {
             playerWalkDelta += delta * (isSprinting() ? 1.25f : 1.0f);
+            float PLAYER_WALK_PER_FRAME_DURATION = 0.10f;
 
             if(playerWalkDelta >= PLAYER_WALK_PER_FRAME_DURATION) {
                 playerWalkDelta -= PLAYER_WALK_PER_FRAME_DURATION;

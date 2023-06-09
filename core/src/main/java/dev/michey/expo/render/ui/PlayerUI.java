@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.client.chat.ExpoClientChat;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -24,10 +25,7 @@ import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
-import dev.michey.expo.util.ClientStatic;
-import dev.michey.expo.util.ClientUtils;
-import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.GameSettings;
+import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
 import java.util.LinkedList;
@@ -718,7 +716,47 @@ public class PlayerUI {
                 glyphLayout.setText(useFont, player.username);
 
                 Vector2 hudPos = ClientUtils.entityPosToHudPos(player.clientPosX + 5, player.clientPosY + 32);
-                useFont.draw(rc.hudBatch, player.username, (int) hudPos.x - glyphLayout.width * 0.5f, (int) hudPos.y + glyphLayout.height);
+                int usx = (int) (hudPos.x - glyphLayout.width * 0.5f);
+                int usy = (int) (hudPos.y + glyphLayout.height);
+                useFont.draw(rc.hudBatch, player.username, usx, usy);
+
+                var pair = ExpoClientChat.get().playerHistoryMap.get(player.username);
+
+                if(pair != null) {
+                    float totalDisplayTime = pair.value.key;
+                    float remainingDisplayTime = pair.value.value;
+
+                    if(remainingDisplayTime > 0) {
+                        float alpha = 1.0f;
+                        float FADE_IN_TIME = 0.125f;
+                        float FADE_OUT_TIME = 0.125f;
+
+                        float diff = totalDisplayTime - remainingDisplayTime; // 0->5
+
+                        if(diff <= FADE_IN_TIME) { // diff <= 0.25
+                            alpha = diff / FADE_IN_TIME;
+                        } else if(diff >= (totalDisplayTime - FADE_OUT_TIME)) { // diff >= (4.75)
+                            alpha = 1f - (diff - (totalDisplayTime - FADE_OUT_TIME)) / FADE_OUT_TIME;
+                        }
+
+                        BitmapFont useChatDisplayFont = ExpoClientChat.get().chatUseFont;//rc.m5x7_border_use;
+                        glyphLayout.setText(useChatDisplayFont, pair.key);
+                        float cmx = (hudPos.x - glyphLayout.width * 0.5f);
+                        float cmy = (usy + glyphLayout.height + 6 * uiScale);
+                        int padding = 2;
+                        float MAX_ALPHA = 0.4f;
+
+                        rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, alpha * MAX_ALPHA);
+                        rc.hudBatch.draw(whiteSquare, (int) (cmx - padding * uiScale), (int) (cmy - padding * uiScale - glyphLayout.height), glyphLayout.width + padding * 2 * uiScale, glyphLayout.height + padding * 2 * uiScale);
+                        rc.hudBatch.setColor(Color.WHITE);
+
+                        useChatDisplayFont.setColor(1.0f, 1.0f, 1.0f, alpha);
+                        useChatDisplayFont.draw(rc.hudBatch, pair.key, (int) cmx, (int) cmy);
+                        useChatDisplayFont.setColor(Color.WHITE);
+
+                        pair.value.value -= rc.delta;
+                    }
+                }
             }
         }
 
