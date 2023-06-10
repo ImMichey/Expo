@@ -11,6 +11,7 @@ public class ClientPackets {
     public static void p0Auth(String username) {
         P0_Auth_Req p = new P0_Auth_Req();
         p.username = username;
+        p.protocolVersion = ExpoShared.SERVER_PROTOCOL_VERSION;
         tcp(p);
     }
 

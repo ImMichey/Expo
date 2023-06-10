@@ -114,6 +114,13 @@ public class ExpoServerPacketReader {
             }
 
             if(authorized) {
+                if(p.protocolVersion != ExpoShared.SERVER_PROTOCOL_VERSION) {
+                    authorized = false;
+                    authorizationMessage = "Wrong protocol version (" + p.protocolVersion + " -> " + ExpoShared.SERVER_PROTOCOL_VERSION + ")";
+                }
+            }
+
+            if(authorized) {
                 for(PlayerConnection con : PlayerConnectionHandler.get().connections()) {
                     if(con.player.username.equals(p.username)) {
                         authorized = false;
@@ -124,7 +131,13 @@ public class ExpoServerPacketReader {
             }
 
             WorldGenSettings s = ServerWorld.get().getMainDimension().getChunkHandler().getGenSettings();
-            ServerPackets.p1AuthResponse(authorized, authorizationMessage, ExpoServerConfiguration.get().getServerTps(), ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(), s, PacketReceiver.connection(connection));
+
+            if(authorized) {
+                ServerPackets.p1AuthResponse(true, authorizationMessage, ExpoServerConfiguration.get().getServerTps(), ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(), s, PacketReceiver.connection(connection));
+            } else {
+                ServerPackets.p1AuthResponse(false, authorizationMessage, 0, 0, null, PacketReceiver.connection(connection));
+            }
+
 
             if(authorized) {
                 CompletableFuture.runAsync(() -> {

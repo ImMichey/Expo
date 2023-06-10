@@ -328,8 +328,6 @@ public class ServerChunkGrid {
         int arrayPos = 0;
 
         for(int i = 0; i < chunks.length / 2; i++) {
-            // 4,4 =
-
             int x = i % PLAYER_CHUNK_VIEW_RANGE_X;
             int y = i / PLAYER_CHUNK_VIEW_RANGE_X;
             chunks[arrayPos    ] = playerChunkX + x;

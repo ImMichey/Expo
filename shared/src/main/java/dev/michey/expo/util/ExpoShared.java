@@ -16,6 +16,7 @@ public class ExpoShared {
     public static final long SAVE_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.minutes(3); // 3 minutes
     public static final int DEFAULT_WRITE_BUFFER_SIZE = 1_048_576;
     public static final int DEFAULT_OBJECT_BUFFER_SIZE = 1_048_576;
+    public static final int SERVER_PROTOCOL_VERSION = 1;
 
     /** Dimension constants */
     public static final String DIMENSION_OVERWORLD = "overworld";

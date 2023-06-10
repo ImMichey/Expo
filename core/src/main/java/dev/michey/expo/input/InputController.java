@@ -8,9 +8,11 @@ import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
 
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
@@ -180,6 +182,7 @@ public class InputController {
                 case Input.Keys.F6 -> RenderContext.get().drawHUD = !RenderContext.get().drawHUD;
                 case Input.Keys.TAB -> ExpoClientContainer.get().getPlayerUI().toggleTablist();
                 case Input.Keys.ENTER -> ExpoClientChat.get().toggleFocus(true);
+                case Input.Keys.Z, Input.Keys.Y -> RenderContext.get().expoCamera.camera.zoom = ClientStatic.DEFAULT_CAMERA_ZOOM;
             }
         }
     }
