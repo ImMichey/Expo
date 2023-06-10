@@ -172,9 +172,11 @@ public class Expo implements ApplicationListener {
 	public void resize(int width, int height) {
 		if(activeScreen != null) {
 			log("resize() invoked for '" + activeScreen.getScreenName() + "': " + width + "x" + height);
-			activeScreen.resize(width, height);
+			boolean shouldCreateFBOs = width > 0 && height > 0;
 
-			if(width > 0 && height > 0) {
+			if(shouldCreateFBOs) {
+				activeScreen.resize(width, height);
+
 				Matrix4 uiMatrix = new Matrix4().setToOrtho2D(0, 0, width, height);
 				RenderContext.get().hudBatch.setProjectionMatrix(uiMatrix);
 				RenderContext.get().onResize(width, height);

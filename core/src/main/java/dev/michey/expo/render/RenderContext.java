@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -106,6 +107,7 @@ public class RenderContext {
     public BitmapFont m5x7_use, m6x11_use, m5x7_border_use, m6x11_border_use, m5x7_shadow_use;
 
     /** Frame buffers */
+    public int lastFBOWidth, lastFBOHeight;
     public FrameBuffer mainFbo;
     public FrameBuffer shadowFbo;
     public FrameBuffer waterReflectionFbo;
@@ -469,15 +471,20 @@ public class RenderContext {
     }
 
     public void onResize(int width, int height) {
-        disposeFBOs();
-        createFBOs(width, height);
+        if(lastFBOWidth != width || lastFBOHeight != height) {
+            disposeFBOs();
+            createFBOs(width, height);
 
-        vignetteShader.bind();
-        vignetteShader.setUniformf("u_resolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            vignetteShader.bind();
+            vignetteShader.setUniformf("u_resolution", Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        lightEngine.resize(width, height);
+            lightEngine.resize(width, height);
 
-        if(ExpoClientContainer.get() != null) ExpoClientContainer.get().getPlayerUI().onResize();
+            if(ExpoClientContainer.get() != null) ExpoClientContainer.get().getPlayerUI().onResize();
+        }
+
+        lastFBOWidth = width;
+        lastFBOHeight = height;
     }
 
     public TextureRegion getNumber(int number) {
