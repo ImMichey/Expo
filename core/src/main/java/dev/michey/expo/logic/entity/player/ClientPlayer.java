@@ -348,10 +348,10 @@ public class ClientPlayer extends ClientEntity {
             chunkX = ExpoShared.posToChunk(clientPosX);
             chunkY = ExpoShared.posToChunk(clientPosY);
 
-            clientViewport[0] = chunkX - PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // x start
-            clientViewport[1] = chunkX + PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // x end
-            clientViewport[2] = chunkY - PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // y start
-            clientViewport[3] = chunkY + PLAYER_CHUNK_VIEW_RANGE_ONE_DIR; // y end
+            clientViewport[0] = chunkX - PLAYER_CHUNK_VIEW_RANGE_DIR_X; // x start
+            clientViewport[1] = chunkX + PLAYER_CHUNK_VIEW_RANGE_DIR_X; // x end
+            clientViewport[2] = chunkY - PLAYER_CHUNK_VIEW_RANGE_DIR_Y; // y start
+            clientViewport[3] = chunkY + PLAYER_CHUNK_VIEW_RANGE_DIR_Y; // y end
 
             if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE) {
                 new ItemMapper(true, true);

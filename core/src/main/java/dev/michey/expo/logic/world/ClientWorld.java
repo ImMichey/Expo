@@ -70,7 +70,7 @@ public class ClientWorld {
     public ClientWorld() {
         clientEntityManager = new ClientEntityManager();
         clientChunkGrid = new ClientChunkGrid();
-        drawChunks = new ClientChunk[PLAYER_CHUNK_VIEW_RANGE * PLAYER_CHUNK_VIEW_RANGE];
+        drawChunks = new ClientChunk[PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y];
     }
 
     /** Ticking the game world. */
@@ -589,8 +589,8 @@ public class ClientWorld {
         int[] viewport = player.clientViewport;
         int c = 0;
 
-        for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE; i++) {
-            for(int j = 0; j < PLAYER_CHUNK_VIEW_RANGE; j++) {
+        for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE_X; i++) {
+            for(int j = 0; j < PLAYER_CHUNK_VIEW_RANGE_Y; j++) {
                 int cx = viewport[0] + i; // CHUNK X
                 int cy = viewport[2] + j; // CHUNK Y
 

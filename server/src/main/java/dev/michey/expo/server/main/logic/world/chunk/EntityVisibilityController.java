@@ -6,13 +6,12 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ExpoShared;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
 
 /** This class controls the visibility behaviour for multiple entities between multiple players. */
 public class EntityVisibilityController {
@@ -89,11 +88,12 @@ public class EntityVisibilityController {
     }
 
     public boolean canSee(ServerEntity entity) {
-        int range = PLAYER_CHUNK_VIEW_RANGE_ONE_DIR;
-        int minChunkX = player.chunkX - range;
-        int maxChunkX = player.chunkX + range;
-        int minChunkY = player.chunkY - range;
-        int maxChunkY = player.chunkY + range;
+        int rx = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X;
+        int ry = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
+        int minChunkX = player.chunkX - rx;
+        int maxChunkX = player.chunkX + rx;
+        int minChunkY = player.chunkY - ry;
+        int maxChunkY = player.chunkY + ry;
 
         return entity.chunkX >= minChunkX &&
                 entity.chunkX <= maxChunkX &&

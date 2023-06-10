@@ -16,8 +16,7 @@ import java.io.File;
 import java.util.*;
 
 import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ExpoShared.PLAYER_CHUNK_VIEW_RANGE;
-import static dev.michey.expo.util.ExpoShared.SPAWN_AREA_CHUNK_RANGE;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public class ServerChunkGrid {
 
@@ -306,14 +305,14 @@ public class ServerChunkGrid {
 
     /** Returns an array of all chunks that are in range of given player. */
     public ServerChunk[] getChunksInPlayerRange(ServerPlayer player) {
-        int playerChunkX = ExpoShared.posToChunk(player.posX) - (PLAYER_CHUNK_VIEW_RANGE - 1) / 2;
-        int playerChunkY = ExpoShared.posToChunk(player.posY) - (PLAYER_CHUNK_VIEW_RANGE - 1) / 2;
+        int playerChunkX = ExpoShared.posToChunk(player.posX) - PLAYER_CHUNK_VIEW_RANGE_DIR_X;
+        int playerChunkY = ExpoShared.posToChunk(player.posY) - PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
 
-        ServerChunk[] chunks = new ServerChunk[PLAYER_CHUNK_VIEW_RANGE * PLAYER_CHUNK_VIEW_RANGE];
+        ServerChunk[] chunks = new ServerChunk[PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y];
 
         for(int i = 0; i < chunks.length; i++) {
-            int x = i % PLAYER_CHUNK_VIEW_RANGE;
-            int y = i / PLAYER_CHUNK_VIEW_RANGE;
+            int x = i % PLAYER_CHUNK_VIEW_RANGE_X;
+            int y = i / PLAYER_CHUNK_VIEW_RANGE_X;
             chunks[i] = getChunk(playerChunkX + x, playerChunkY + y);
         }
 
@@ -322,15 +321,17 @@ public class ServerChunkGrid {
 
     /** Returns an array of all chunk numbers that are in range of given player. */
     public int[] getChunkNumbersInPlayerRange(ServerPlayer player) {
-        int playerChunkX = ExpoShared.posToChunk(player.posX) - (PLAYER_CHUNK_VIEW_RANGE - 1) / 2;
-        int playerChunkY = ExpoShared.posToChunk(player.posY) - (PLAYER_CHUNK_VIEW_RANGE - 1) / 2;
+        int playerChunkX = ExpoShared.posToChunk(player.posX) - PLAYER_CHUNK_VIEW_RANGE_DIR_X;
+        int playerChunkY = ExpoShared.posToChunk(player.posY) - PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
 
-        int[] chunks = new int[PLAYER_CHUNK_VIEW_RANGE * PLAYER_CHUNK_VIEW_RANGE * 2];
+        int[] chunks = new int[PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y * 2];
         int arrayPos = 0;
 
         for(int i = 0; i < chunks.length / 2; i++) {
-            int x = i % PLAYER_CHUNK_VIEW_RANGE;
-            int y = i / PLAYER_CHUNK_VIEW_RANGE;
+            // 4,4 =
+
+            int x = i % PLAYER_CHUNK_VIEW_RANGE_X;
+            int y = i / PLAYER_CHUNK_VIEW_RANGE_X;
             chunks[arrayPos    ] = playerChunkX + x;
             chunks[arrayPos + 1] = playerChunkY + y;
             arrayPos += 2;

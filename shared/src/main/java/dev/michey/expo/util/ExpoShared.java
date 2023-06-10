@@ -26,12 +26,12 @@ public class ExpoShared {
     public static final int TILE_SIZE = 16;
     public static final int ROW_TILES = CHUNK_SIZE / TILE_SIZE;
     public static final int SPAWN_AREA_CHUNK_RANGE = 9;
-    public static final int PLAYER_CHUNK_VIEW_RANGE_X = 9;
+    public static final int PLAYER_CHUNK_VIEW_RANGE_X = 7;
     public static final int PLAYER_CHUNK_VIEW_RANGE_Y = 5;
-    public static final int PLAYER_CHUNK_VIEW_RANGE = 5;
-    public static final int PLAYER_CHUNK_VIEW_RANGE_ONE_DIR = (PLAYER_CHUNK_VIEW_RANGE - 1) / 2; // (11 - 1) / 2 = 5
+    public static final int PLAYER_CHUNK_VIEW_RANGE_DIR_X = (PLAYER_CHUNK_VIEW_RANGE_X - 1) / 2; // (11 - 1) / 2 = 5
+    public static final int PLAYER_CHUNK_VIEW_RANGE_DIR_Y = (PLAYER_CHUNK_VIEW_RANGE_Y - 1) / 2; // (11 - 1) / 2 = 5
 
-    public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_ONE_DIR * 0.5f * CHUNK_SIZE;
+    public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_DIR_X * 0.5f * CHUNK_SIZE;
 
     public static final int PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT = 36;
     public static final int PLAYER_INVENTORY_SLOTS = PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT + 5;
