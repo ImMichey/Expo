@@ -25,5 +25,7 @@ foliage/entity_blueberrybush/ebbb_fruits.png
 foliage/entity_bush/entity_bush.png
 foliage/entity_wheat/entity_wheat.png
 foliage/entity_wheat/entity_wheat_sm.png
+foliage/entity_sunflower/entity_sunflower.png
+foliage/entity_sunflower/entity_sunflower_sm.png
 
 [!LOAD]

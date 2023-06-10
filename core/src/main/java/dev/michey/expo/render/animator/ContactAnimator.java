@@ -19,6 +19,7 @@ public class ContactAnimator {
     private final float STRENGTH_DECREASE = 0.7f;
     private final int STEPS = 5; // step = 0.5f (half radiant)
     private float useStrength = STRENGTH;
+    public float MIN_SQUISH = 0.3334f;
 
     // Export value
     public float value;
@@ -68,7 +69,6 @@ public class ContactAnimator {
             }
 
             if(doSquish) {
-                float MIN_SQUISH = 0.3334f;
                 float SQUISH_SPEED = 1.2f;
                 squishDelta += delta * SQUISH_SPEED;
 

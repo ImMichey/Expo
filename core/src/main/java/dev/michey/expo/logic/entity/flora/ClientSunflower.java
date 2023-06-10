@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -17,10 +15,10 @@ import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientWheat extends ClientEntity implements SelectableEntity {
+public class ClientSunflower extends ClientEntity implements SelectableEntity {
 
     private final FoliageAnimator foliageAnimator = new FoliageAnimator(
-            0.5f, 1.0f, 0.02f, 0.03f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f
+            0.2f, 0.5f, 0.02f, 0.03f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f
     );
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
@@ -30,13 +28,13 @@ public class ClientWheat extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onCreation() {
-        wheat = t("foliage/entity_wheat/entity_wheat.png");
-        wheatShadow = new TextureRegion(t("foliage/entity_wheat/entity_wheat_sm.png"));
+        wheat = t("foliage/entity_sunflower/entity_sunflower.png");
+        wheatShadow = new TextureRegion(t("foliage/entity_sunflower/entity_sunflower_sm.png"));
 
-        updateTextureBounds(17, 24, 1, 1);
+        updateTextureBounds(13, 30, 1, 1);
         interactionPointArray = generateInteractionArray(2, 12);
 
-        contactAnimator.MIN_SQUISH = 0.5f;
+        contactAnimator.MIN_SQUISH = 0.6667f;
     }
 
     @Override
@@ -45,10 +43,10 @@ public class ClientWheat extends ClientEntity implements SelectableEntity {
         contactAnimator.onContact();
 
         new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(5, 9)
-                .scale(0.7f, 1.0f)
+                .amount(4, 7)
+                .scale(0.6f, 0.9f)
                 .lifetime(0.3f, 0.35f)
-                .color(ParticleColorMap.random(4))
+                .color(ParticleColorMap.random(1))
                 .position(finalTextureCenterX, finalTextureCenterY)
                 .velocity(-24, 24, -24, 24)
                 .fadeout(0.10f)
@@ -81,7 +79,7 @@ public class ClientWheat extends ClientEntity implements SelectableEntity {
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
+        rc.bindAndSetSelection(rc.arraySpriteBatch);
 
         rc.arraySpriteBatch.drawCustomVertices(wheat, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, wheat.getWidth(), wheat.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
@@ -117,7 +115,7 @@ public class ClientWheat extends ClientEntity implements SelectableEntity {
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.WHEAT_PLANT;
+        return ClientEntityType.SUNFLOWER;
     }
 
 }

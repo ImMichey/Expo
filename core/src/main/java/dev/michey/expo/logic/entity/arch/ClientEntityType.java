@@ -31,6 +31,7 @@ public enum ClientEntityType {
     CRAB(15, "Crab", ServerEntityType.CRAB),
     DYNAMIC_3D_TILE(16, "Dynamic3DTile", ServerEntityType.DYNAMIC_3D_TILE),
     WHEAT_PLANT(17, "WheatPlant", ServerEntityType.WHEAT_PLANT),
+    SUNFLOWER(18, "Sunflower", ServerEntityType.SUNFLOWER),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -79,6 +80,7 @@ public enum ClientEntityType {
             case 15 -> new ClientCrab();
             case 16 -> new ClientDynamic3DTile();
             case 17 -> new ClientWheat();
+            case 18 -> new ClientSunflower();
             default -> null;
         };
     }

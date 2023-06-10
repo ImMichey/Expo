@@ -144,6 +144,22 @@
                             }
                         },
                         {
+                            "type": "SUNFLOWER",
+                            "static": true,
+                            "chance": 0.0005,
+                            "pds": 16,
+                            "priority": 50,
+                            "spreadData": {
+                                "spread": [4, 64],
+                                "spreadChance": 1.0,
+                                "spreadDis": [24.0, 96.0],
+                                "spreadType": ["SUNFLOWER"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0],
+                                "spreadUseNextTarget": true
+                            }
+                        },
+                        {
                             "type": "BUSH",
                             "static": true,
                             "chance": 0.04,
