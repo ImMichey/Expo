@@ -831,9 +831,9 @@ public class ExpoClientChat {
         return focused;
     }
 
-    public void toggleFocus() {
+    public void toggleFocus(boolean send) {
         focused = !focused;
-        if(!focused && !consoleLineIsEmpty()) {
+        if(!focused && !consoleLineIsEmpty() && send) {
             addChatMessage(new ChatMessage(fullConsoleLine, ClientStatic.PLAYER_USERNAME, true));
         }
     }

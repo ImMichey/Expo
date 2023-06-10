@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
@@ -125,6 +126,11 @@ public class InputController {
             return;
         }
 
+        if(keycode == Input.Keys.ESCAPE && GameConsole.get().isVisible()) {
+            GameConsole.get().toggleVisibility();
+            return;
+        }
+
         if(consoleOpen) {
             if(keycode >= 19 && keycode <= 22 && !GameConsole.get().isActiveKey(Input.Keys.CONTROL_LEFT)) {
                 GameConsole.get().onArrow(keycode);
@@ -142,6 +148,11 @@ public class InputController {
                 }
             }
         } else if(chatOpen && keycode != Input.Keys.ENTER) {
+            if(keycode == Input.Keys.ESCAPE) {
+                ExpoClientChat.get().toggleFocus(false);
+                return;
+            }
+
             if(keycode >= 19 && keycode <= 22 && !ExpoClientChat.get().isActiveKey(Input.Keys.CONTROL_LEFT)) {
                 ExpoClientChat.get().onArrow(keycode);
                 ExpoClientChat.get().setActiveKey(keycode, true);
@@ -169,7 +180,7 @@ public class InputController {
                 case Input.Keys.F5 -> RenderContext.get().drawShapes = !RenderContext.get().drawShapes;
                 case Input.Keys.F6 -> RenderContext.get().drawHUD = !RenderContext.get().drawHUD;
                 case Input.Keys.TAB -> ExpoClientContainer.get().getPlayerUI().toggleTablist();
-                case Input.Keys.ENTER -> ExpoClientChat.get().toggleFocus();
+                case Input.Keys.ENTER -> ExpoClientChat.get().toggleFocus(true);
             }
         }
     }
