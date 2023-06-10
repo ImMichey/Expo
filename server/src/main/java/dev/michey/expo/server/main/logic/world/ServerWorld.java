@@ -110,7 +110,7 @@ public class ServerWorld {
         return currentEntityId;
     }
 
-    private int generateEntityId() {
+    private synchronized int generateEntityId() {
         int nextId = currentEntityId;
         currentEntityId++;
         return nextId;
