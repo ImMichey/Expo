@@ -63,6 +63,7 @@ public abstract class ExpoServerBase {
         commandResolver.addCommand(new ServerCommandHunger());
         commandResolver.addCommand(new ServerCommandDamage());
         commandResolver.addCommand(new ServerCommandNoclip());
+        commandResolver.addCommand(new ServerCommandSpeed());
         INSTANCE = this;
         applyFileProperties();
     }
