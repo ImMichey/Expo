@@ -2,12 +2,12 @@
     "maxPlayers": 10,
     "enableWhitelist": false,
     "saveChunksAfter": 180000,
-    "worldName": "myworld",
+    "worldName": "default-world",
     "serverName": "default-server",
-    "writeBufferSize": 16384,
-    "objectBufferSize": 4096,
+    "writeBufferSize": 1048576,
+    "objectBufferSize": 1048576,
     "serverPort": 25010,
     "consoleInput": true,
     "unloadChunksAfter": 5000,
-    "serverTps": 128
+    "serverTps": 60
 }

@@ -1,6 +1,9 @@
 package dev.michey.expo.client;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.minlog.Log;
+import dev.michey.expo.client.serialization.ExpoClientSerialization;
 import dev.michey.expo.server.main.packet.ExpoServerRegistry;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ExpoShared;
@@ -17,16 +20,18 @@ public class ExpoClient {
     private ExpoClientListener packetListener;
 
     /** Packet tracking */
-    public int bytesTcp;
-    public int bytesUdp;
+    public int bytesInTcp;
+    public int bytesInUdp;
+    public int bytesOutTcp;
+    public int bytesOutUdp;
     public long lastBytesUpdate;
 
     public void sendPacketTcp(Packet packet) {
-        bytesTcp += kryoClient.sendTCP(packet);
+        kryoClient.sendTCP(packet);
     }
 
     public void sendPacketUdp(Packet packet) {
-        bytesUdp += kryoClient.sendUDP(packet);
+        kryoClient.sendUDP(packet);
     }
 
     public void disconnect() {
@@ -34,7 +39,15 @@ public class ExpoClient {
     }
 
     public Exception connect(String address, int port) {
-        kryoClient = new Client(ExpoShared.DEFAULT_WRITE_BUFFER_SIZE, ExpoShared.DEFAULT_OBJECT_BUFFER_SIZE);
+        ExpoClientSerialization clientSerialization = new ExpoClientSerialization();
+        kryoClient = new Client(ExpoShared.DEFAULT_WRITE_BUFFER_SIZE, ExpoShared.DEFAULT_OBJECT_BUFFER_SIZE, clientSerialization) {
+
+            @Override
+            public Kryo getKryo() {
+                return clientSerialization.getKryo();
+            }
+
+        };
         kryoClient.start();
 
         try {

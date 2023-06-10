@@ -18,6 +18,7 @@ import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -93,6 +94,7 @@ public class ExpoClientContainer {
 
     private int inTraffic = 0;
     private int outTraffic = 0;
+    private String inOutString = "";
 
     public void render() {
         float d = RenderContext.get().delta;
@@ -106,9 +108,16 @@ public class ExpoClientContainer {
 
             if(now - client.lastBytesUpdate >= 1000) {
                 client.lastBytesUpdate = now;
-                outTraffic = client.bytesTcp + client.bytesUdp;
-                client.bytesUdp = 0;
-                client.bytesTcp = 0;
+
+                inTraffic = client.bytesInTcp + client.bytesInUdp;
+                outTraffic = client.bytesOutTcp + client.bytesOutUdp;
+
+                client.bytesInTcp = 0;
+                client.bytesInUdp = 0;
+                client.bytesOutTcp = 0;
+                client.bytesOutUdp = 0;
+
+                inOutString = "In/Out data/s: [CYAN]" + readableFileSize(inTraffic) + "[WHITE]/[CYAN]" + readableFileSize(outTraffic);
             }
         }
 
@@ -133,10 +142,9 @@ public class ExpoClientContainer {
             useFont.draw(r.hudBatch, version, Gdx.graphics.getWidth() - w - spacing, Gdx.graphics.getHeight() - spacing);
             useFont.draw(r.hudBatch, fps, Gdx.graphics.getWidth() - w2 - spacing, Gdx.graphics.getHeight() - h - spacing * 2);
             if(ExpoServerBase.get() == null) {
-                String inOut = "In/Out bytes/s: " + inTraffic + "/" + outTraffic;
-                playerUI.glyphLayout.setText(useFont, inOut);
+                playerUI.glyphLayout.setText(useFont, inOutString);
                 float w3 = playerUI.glyphLayout.width;
-                useFont.draw(r.hudBatch, inOut, Gdx.graphics.getWidth() - w3 - spacing, Gdx.graphics.getHeight() - h * 2 - spacing * 3);
+                useFont.draw(r.hudBatch, inOutString, Gdx.graphics.getWidth() - w3 - spacing, Gdx.graphics.getHeight() - h * 2 - spacing * 3);
             }
             if(ClientPlayer.getLocalPlayer() != null) {
                 float x = ClientPlayer.getLocalPlayer().clientPosX;
@@ -158,6 +166,13 @@ public class ExpoClientContainer {
             GameConsole.get().addConsoleMessage(new ConsoleMessage("/quit", true));
             GameConsole.get().addConsoleMessage(new ConsoleMessage("/world dev-world-" + System.currentTimeMillis(), true));
         }
+    }
+
+    public String readableFileSize(long size) {
+        if(size <= 0) return "0";
+        final String[] units = new String[] {"B", "kB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public void stopSession() {

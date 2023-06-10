@@ -1,4 +1,5 @@
-/delsave dev
-/world dev
-/speed 15
-/noclip
+#/delsave dev
+#/world dev
+#/speed 15
+#/noclip
+/connect localhost
