@@ -92,6 +92,15 @@ public abstract class ClientEntity {
         serverDirY = yDir;
     }
 
+    public void applyTeleportUpdate(float xPos, float yPos) {
+        serverPosX = xPos;
+        serverPosY = yPos;
+        clientPosX = xPos;
+        clientPosY = yPos;
+        lastPosX = xPos;
+        lastPosY = yPos;
+    }
+
     public void syncPositionWithServer() {
         if(doLerp) {
             float totalDisX = serverPosX - lastPosX;

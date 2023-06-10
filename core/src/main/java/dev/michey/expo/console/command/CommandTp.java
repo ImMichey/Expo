@@ -2,6 +2,8 @@ package dev.michey.expo.console.command;
 
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
+import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public class CommandTp extends AbstractConsoleCommand {

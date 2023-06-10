@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -831,6 +832,14 @@ public class ClientPlayer extends ClientEntity {
                 holdingItemSprite.draw(rc.batch);
             }
         }
+    }
+
+    @Override
+    public void applyTeleportUpdate(float xPos, float yPos) {
+        super.applyTeleportUpdate(xPos, yPos);
+        RenderContext.get().expoCamera.resetLerp();
+        updateTexturePositionData();
+        RenderContext.get().expoCamera.centerToEntity(this);
     }
 
     public void updateHoldingItemSprite() {

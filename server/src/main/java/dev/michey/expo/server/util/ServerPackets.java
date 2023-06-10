@@ -338,6 +338,15 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P37_EntityTeleport packet via UDP protocol. */
+    public static void p37EntityTeleport(int entityId, float x, float y, PacketReceiver receiver) {
+        P37_EntityTeleport p = new P37_EntityTeleport();
+        p.entityId = entityId;
+        p.x = x;
+        p.y = y;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

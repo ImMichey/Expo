@@ -156,7 +156,7 @@ public class ServerPlayer extends ServerEntity {
         physicsBody.teleport(x, y);
         posX = x;
         posY = y;
-        ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
+        ServerPackets.p37EntityTeleport(entityId, posX, posY, PacketReceiver.whoCanSee(this));
     }
 
     @Override

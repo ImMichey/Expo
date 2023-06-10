@@ -71,20 +71,20 @@
                     {
                         "type": "PLAINS",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.0, 0.5],
-                        "moisture": [0.0, 0.5]
+                        "temperature": [0.0, 0.5134],
+                        "moisture": [0.0, 0.5134]
                     },
                     {
                         "type": "FOREST",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.5, 1.0],
-                        "moisture": [0.0, 0.5]
+                        "temperature": [0.5134, 1.0],
+                        "moisture": [0.0, 0.5134]
                     },
                     {
                         "type": "DENSE_FOREST",
                         "elevation": [0.5, 1.0],
                         "temperature": [0.0, 1.0],
-                        "moisture": [0.5, 1.0]
+                        "moisture": [0.5134, 1.0]
                     }
                 ]
             },
