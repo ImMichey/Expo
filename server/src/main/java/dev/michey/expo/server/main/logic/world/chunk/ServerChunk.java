@@ -70,8 +70,8 @@ public class ServerChunk {
         int bty = ExpoShared.posToTile(wy);
 
         for(int i = 0; i < tiles.length; i++) {
-            int x = btx + i % 8;
-            int y = bty + i / 8;
+            int x = btx + i % ROW_TILES;
+            int y = bty + i / ROW_TILES;
             tiles[i] = new ServerTile(this, x, y, i);
             dimension.getChunkHandler().addTile(tiles[i]);
         }
@@ -179,7 +179,7 @@ public class ServerChunk {
                         if(!check.key) {
                             int xi = (int) p.x;
                             int yi = (int) p.y;
-                            int tIndex = yi / TILE_SIZE * 8 + xi / TILE_SIZE;
+                            int tIndex = yi / TILE_SIZE * ROW_TILES + xi / TILE_SIZE;
 
                             if(tiles[tIndex].dynamicTileParts[1].layerIds.length == 1 && tiles[tIndex].dynamicTileParts[1].layerIds[0] != -1) {
                                 ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
@@ -275,8 +275,8 @@ public class ServerChunk {
 
         for(int i = 0; i < tiles.length; i++) {
             ServerTile tile = tiles[i];
-            int x = btx + i % 8;
-            int y = bty + i / 8;
+            int x = btx + i % ROW_TILES;
+            int y = bty + i / ROW_TILES;
 
             // Assign biome.
             tile.biome = dimension.getChunkHandler().getBiome(x, y);
@@ -297,8 +297,8 @@ public class ServerChunk {
 
                 for(int i = 0; i < tiles.length; i++) {
                     ServerTile tile = tiles[i];
-                    int x = btx + i % 8;
-                    int y = bty + i / 8;
+                    int x = btx + i % ROW_TILES;
+                    int y = bty + i / ROW_TILES;
 
                     float normalized = dimension.getChunkHandler().normalized(p, x, y);
                     boolean isDirt = normalized >= processor.threshold && (tile.dynamicTileParts[1].emulatingType == TileLayerType.FOREST || tile.dynamicTileParts[1].emulatingType == TileLayerType.GRASS);
@@ -378,13 +378,13 @@ public class ServerChunk {
             Arrays.fill(tileBasedEntityIdGrid, -1);
         }
 
-        tileBasedEntityIdGrid[ty * 8 + tx] = id;
+        tileBasedEntityIdGrid[ty * ROW_TILES + tx] = id;
         tileBasedEntityAmount++;
     }
 
     /** Detaches an entity from a title within the chunk tile structure. */
     public void detachTileBasedEntity(int tx, int ty) {
-        tileBasedEntityIdGrid[ty * 8 + tx] = -1;
+        tileBasedEntityIdGrid[ty * ROW_TILES + tx] = -1;
         tileBasedEntityAmount--;
 
         if(tileBasedEntityAmount == 0) {

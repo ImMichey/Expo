@@ -15,6 +15,8 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.ExpoShared;
 
+import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+
 public class ClientSelector extends ClientEntity {
 
     private TextureRegion square;
@@ -88,7 +90,7 @@ public class ClientSelector extends ClientEntity {
                     int startTileY = ExpoShared.posToTile(ExpoShared.chunkToPos(mouseChunkY));
                     int mouseRelativeTileX = svTileX - startTileX;
                     int mouseRelativeTileY = svTileY - startTileY;
-                    svTileArray = mouseRelativeTileY * 8 + mouseRelativeTileX;
+                    svTileArray = mouseRelativeTileY * ROW_TILES + mouseRelativeTileX;
 
                     TileLayerType t0 = chunk.dynamicTiles[svTileArray][0].emulatingType;
                     TileLayerType t1 = chunk.dynamicTiles[svTileArray][1].emulatingType;

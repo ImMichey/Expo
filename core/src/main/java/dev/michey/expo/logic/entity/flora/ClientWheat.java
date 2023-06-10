@@ -43,10 +43,10 @@ public class ClientWheat extends ClientEntity implements SelectableEntity {
         contactAnimator.onContact();
 
         new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(4, 7)
-                .scale(0.6f, 0.9f)
+                .amount(5, 9)
+                .scale(0.7f, 1.0f)
                 .lifetime(0.3f, 0.35f)
-                .color(ParticleColorMap.random(1))
+                .color(ParticleColorMap.random(4))
                 .position(finalTextureCenterX, finalTextureCenterY)
                 .velocity(-24, 24, -24, 24)
                 .fadeout(0.10f)

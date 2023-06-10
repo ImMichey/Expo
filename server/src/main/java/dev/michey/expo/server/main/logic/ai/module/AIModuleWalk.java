@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.ai.module;
 
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -22,16 +21,10 @@ public class AIModuleWalk extends AIModule {
     @Override
     public void tickModule(float delta) {
         var e = getBrain().getEntity();
-        float water = 1.0f;
+        float movementMultiplicator = getBrain().getEntity().movementSpeedMultiplicator();
 
-        if(e.getTileBiome() == BiomeType.OCEAN_DEEP) {
-            water = 0.3f;
-        } else if(e.isInWater()) {
-            water = 0.5f;
-        }
-
-        float dstX = e.posX + dir.x * delta * speed * water;
-        float dstY = e.posY + dir.y * delta * speed * water;
+        float dstX = e.posX + dir.x * delta * speed * movementMultiplicator;
+        float dstY = e.posY + dir.y * delta * speed * movementMultiplicator;
 
         // Check for loaded chunk
         int chunkX = ExpoShared.posToChunk(dstX);

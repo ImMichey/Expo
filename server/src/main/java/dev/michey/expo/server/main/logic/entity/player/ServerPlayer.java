@@ -157,18 +157,6 @@ public class ServerPlayer extends ServerEntity {
         ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
     }
 
-    public float movementSpeedMultiplicator() {
-        boolean water = isInWater();
-        if(water) return 0.5f;
-
-        int tileX = ExpoShared.posToTile(posX);
-        int tileY = ExpoShared.posToTile(posY);
-        boolean hole = getChunkGrid().getTile(tileX, tileY).dynamicTileParts[0].emulatingType == TileLayerType.SOIL_HOLE;
-        if(hole) return 0.75f;
-
-        return 1.0f;
-    }
-
     @Override
     public void tick(float delta) {
         if(xDir != 0 || yDir != 0) {

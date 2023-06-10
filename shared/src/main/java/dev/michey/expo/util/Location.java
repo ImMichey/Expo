@@ -1,5 +1,7 @@
 package dev.michey.expo.util;
 
+import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+
 public class Location {
 
     public String dimension;
@@ -36,7 +38,7 @@ public class Location {
         int mouseRelativeTileX = tileX - startTileX;
         int mouseRelativeTileY = tileY - startTileY;
 
-        tileArrayPos = mouseRelativeTileY * 8 + mouseRelativeTileX;
+        tileArrayPos = mouseRelativeTileY * ROW_TILES + mouseRelativeTileX;
         return this;
     }
 

@@ -19,6 +19,7 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 
 import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
+import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
 public abstract class ClientEntity {
 
@@ -256,7 +257,7 @@ public abstract class ClientEntity {
         int startTileY = ExpoShared.posToTile(ExpoShared.chunkToPos(c.chunkY));
         int relativeTileX = tileX - startTileX;
         int relativeTileY = tileY - startTileY;
-        int tileArray = relativeTileY * 8 + relativeTileX;
+        int tileArray = relativeTileY * ROW_TILES + relativeTileX;
 
         TileLayerType t0 = c.dynamicTiles[tileArray][0].emulatingType;
         TileLayerType t1 = c.dynamicTiles[tileArray][1].emulatingType;

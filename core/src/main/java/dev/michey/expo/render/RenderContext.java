@@ -23,6 +23,7 @@ import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.InputUtils;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
 public class RenderContext {
 
@@ -325,7 +326,7 @@ public class RenderContext {
             mouseRelativeTileX = mouseTileX - startTileX;
             mouseRelativeTileY = mouseTileY - startTileY;
 
-            mouseTileArray = mouseRelativeTileY * 8 + mouseRelativeTileX;
+            mouseTileArray = mouseRelativeTileY * ROW_TILES + mouseRelativeTileX;
 
             ClientPlayer p = ClientPlayer.getLocalPlayer();
 

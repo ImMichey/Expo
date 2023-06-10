@@ -28,6 +28,13 @@ public class ContactAnimator {
     public float squishAdjustment = 0.0f;
     public boolean small = true;
 
+    public static final LinkedList<ClientEntityType> WALKING_ENTITY_LIST;
+
+    static {
+        WALKING_ENTITY_LIST = new LinkedList<>();
+        WALKING_ENTITY_LIST.add(ClientEntityType.PLAYER);
+    }
+
     public ContactAnimator(ClientEntity parent, List<ClientEntityType> contactList) {
         this.parent = parent;
         this.contactList = contactList;
@@ -35,8 +42,7 @@ public class ContactAnimator {
 
     public ContactAnimator(ClientEntity parent) {
         this.parent = parent;
-        this.contactList = new LinkedList<>();
-        this.contactList.add(ClientEntityType.PLAYER);
+        this.contactList = WALKING_ENTITY_LIST;
     }
 
     public void tick(float delta) {

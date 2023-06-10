@@ -12,6 +12,8 @@ import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
 
+import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+
 public class ServerTile {
 
     public ServerChunk chunk;
@@ -79,8 +81,8 @@ public class ServerTile {
         */
 
         if(use == TileLayerType.ROCK) {
-            int x = tileArray % 8;
-            int y = tileArray / 8;
+            int x = tileArray % ROW_TILES;
+            int y = tileArray / ROW_TILES;
 
             ServerDynamic3DTile entity = new ServerDynamic3DTile();
             entity.posX = ExpoShared.tileToPos(tileX);

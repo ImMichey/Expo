@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;

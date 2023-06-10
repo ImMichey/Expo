@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.arch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -184,6 +185,26 @@ public abstract class ServerEntity {
     public boolean isInWater() {
         BiomeType b = getTileBiome();
         return b == BiomeType.LAKE || b == BiomeType.OCEAN || b == BiomeType.RIVER;
+    }
+
+    public boolean isInDeepWater() {
+        BiomeType b = getTileBiome();
+        return b == BiomeType.OCEAN_DEEP;
+    }
+
+    public float movementSpeedMultiplicator() {
+        boolean water = isInWater();
+        if(water) return 0.6f;
+
+        boolean deepWater = isInDeepWater();
+        if(deepWater) return 0.3f;
+
+        int tileX = ExpoShared.posToTile(posX);
+        int tileY = ExpoShared.posToTile(posY);
+        boolean hole = getChunkGrid().getTile(tileX, tileY).dynamicTileParts[0].emulatingType == TileLayerType.SOIL_HOLE;
+        if(hole) return 0.75f;
+
+        return 1.0f;
     }
 
     public void setStaticEntity() {

@@ -22,11 +22,13 @@ public class ExpoShared {
     public static final String DIMENSION_CAVE = "cave";
 
     /** Game mechanic constants */
-    public static final int CHUNK_SIZE = 128;
+    public static final int CHUNK_SIZE = 256;
     public static final int TILE_SIZE = 16;
     public static final int ROW_TILES = CHUNK_SIZE / TILE_SIZE;
-    public static final int SPAWN_AREA_CHUNK_RANGE = 11;
-    public static final int PLAYER_CHUNK_VIEW_RANGE = 11;
+    public static final int SPAWN_AREA_CHUNK_RANGE = 9;
+    public static final int PLAYER_CHUNK_VIEW_RANGE_X = 9;
+    public static final int PLAYER_CHUNK_VIEW_RANGE_Y = 5;
+    public static final int PLAYER_CHUNK_VIEW_RANGE = 5;
     public static final int PLAYER_CHUNK_VIEW_RANGE_ONE_DIR = (PLAYER_CHUNK_VIEW_RANGE - 1) / 2; // (11 - 1) / 2 = 5
 
     public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_ONE_DIR * 0.5f * CHUNK_SIZE;
@@ -107,7 +109,7 @@ public class ExpoShared {
 
     /** Converts an absolute world position to a chunk position. */
     public static int posToChunk(float worldPosition) {
-        return floor(worldPosition) >> 7;
+        return floor(worldPosition) >> 8;
     }
 
     public static int floor(double num) {

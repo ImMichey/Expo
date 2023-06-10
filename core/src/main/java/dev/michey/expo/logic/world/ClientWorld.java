@@ -711,8 +711,8 @@ public class ClientWorld {
                     boolean isWaterTile = TileLayerType.isWater(chunk.dynamicTiles[k][1].emulatingType);
 
                     if(isWaterTile) {
-                        int tx = k % 8;
-                        int ty = k / 8;
+                        int tx = k % ROW_TILES;
+                        int ty = k / ROW_TILES;
                         float wx = chunk.chunkDrawBeginX + ExpoShared.tileToPos(tx);
                         float wy = chunk.chunkDrawBeginY + ExpoShared.tileToPos(ty);
 

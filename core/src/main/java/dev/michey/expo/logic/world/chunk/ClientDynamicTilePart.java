@@ -1,15 +1,12 @@
 package dev.michey.expo.logic.world.chunk;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.Pair;;
 
 public class ClientDynamicTilePart {

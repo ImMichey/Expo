@@ -130,16 +130,17 @@
                         {
                             "type": "WHEAT_PLANT",
                             "static": true,
-                            "chance": 0.0015,
+                            "chance": 0.0005,
                             "pds": 16,
                             "priority": 100,
                             "spreadData": {
-                                "spread": [4, 32],
+                                "spread": [8, 64],
                                 "spreadChance": 1.0,
-                                "spreadDis": [12.0, 48.0],
+                                "spreadDis": [12.0, 36.0],
                                 "spreadType": ["WHEAT_PLANT"],
                                 "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
+                                "spreadOffsets": [0.0, 0.0],
+                                "spreadUseNextTarget": true
                             }
                         },
                         {

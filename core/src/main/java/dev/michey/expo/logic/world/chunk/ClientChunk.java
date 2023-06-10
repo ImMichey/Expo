@@ -6,8 +6,7 @@ import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
-import static dev.michey.expo.util.ExpoShared.CHUNK_SIZE;
-import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public class ClientChunk {
 
@@ -143,8 +142,8 @@ public class ClientChunk {
 
         for(int i = 0; i < tiles.length; i++) {
             DynamicTilePart[] server = tiles[i];
-            int x = i % 8;
-            int y = i / 8;
+            int x = i % ROW_TILES;
+            int y = i / ROW_TILES;
 
             array[i] = new ClientDynamicTilePart[server.length];
 
