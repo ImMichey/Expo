@@ -95,6 +95,8 @@ public class ServerPlayer extends ServerEntity {
         physicsBody.dispose();
     }
 
+
+
     @Override
     public void onDie() {
         // drop items
@@ -152,8 +154,8 @@ public class ServerPlayer extends ServerEntity {
 
     public void teleportPlayer(float x, float y) {
         physicsBody.teleport(x, y);
-        posX = getDimension().getDimensionSpawnX();
-        posY = getDimension().getDimensionSpawnY();
+        posX = x;
+        posY = y;
         ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
     }
 

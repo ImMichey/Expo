@@ -272,7 +272,9 @@ public class ExpoClientChat {
     }
 
     public void addChatMessage(ChatMessage message) {
-        AudioEngine.get().playSoundGroup("pop");
+        if(!message.message.startsWith("/")) {
+            AudioEngine.get().playSoundGroup("pop");
+        }
 
         synchronized(CHAT_LOCK) {
             messageHistory.add(message);

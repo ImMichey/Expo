@@ -3,8 +3,6 @@ package dev.michey.expo.console.command;
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
-import dev.michey.expo.server.util.PacketReceiver;
-import dev.michey.expo.server.util.ServerPackets;
 
 public class CommandTp extends AbstractConsoleCommand {
 
@@ -32,9 +30,7 @@ public class CommandTp extends AbstractConsoleCommand {
             ServerPlayer l = ServerPlayer.getLocalPlayer();
 
             if(l != null) {
-                l.posX = x;
-                l.posY = y;
-                ServerPackets.p6EntityPosition(l.entityId, l.posX, l.posY, PacketReceiver.whoCanSee(l));
+                l.teleportPlayer(x, y);
                 success("Teleported player to " + x + ", " + y);
             }
         } else {

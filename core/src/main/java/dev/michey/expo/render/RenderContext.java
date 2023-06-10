@@ -418,11 +418,11 @@ public class RenderContext {
         bindAndSetSelection(useBatch, 2048, Color.WHITE, false);
     }
 
-    public void bindAndSetSelection(Batch useBatch, float textureSize, Color c, boolean inverse) {
+    public void bindAndSetSelection(Batch useBatch, float textureSize, Color c, boolean disableOutline) {
         float n = textureSize / expoCamera.camera.zoom;
 
         outlineShader.bind();
-        outlineShader.setUniformi("u_inverse", inverse ? 1 : 0);
+        outlineShader.setUniformi("u_outline", disableOutline ? 0 : 1);
         outlineShader.setUniformf("u_progress", ClientEntityManager.get().pulseProgress);
         outlineShader.setUniformf("u_pulseStrength", 1.2f);
         outlineShader.setUniformf("u_pulseMin", 1.0f);
