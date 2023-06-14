@@ -3,12 +3,14 @@ package dev.michey.expo.server.main.logic.entity.misc;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import org.json.JSONObject;
 
-public class ServerRock extends ServerEntity {
+public class ServerRock extends ServerEntity implements PhysicsEntity {
 
     /** Physics body */
     private EntityPhysicsBox physicsBody;
@@ -81,6 +83,21 @@ public class ServerRock extends ServerEntity {
     @Override
     public Object[] getPacketPayload() {
         return new Object[] {variant};
+    }
+
+    @Override
+    public EntityPhysicsBox getPhysicsBox() {
+        return physicsBody;
+    }
+
+    @Override
+    public void onMoved() {
+
+    }
+
+    @Override
+    public PhysicsMassClassification getPhysicsMassClassification() {
+        return PhysicsMassClassification.MEDIUM;
     }
 
 }

@@ -1,6 +1,10 @@
 package dev.michey.expo.server.main.logic.ai.module;
 
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -23,17 +27,43 @@ public class AIModuleWalk extends AIModule {
         var e = getBrain().getEntity();
         float movementMultiplicator = getBrain().getEntity().movementSpeedMultiplicator();
 
-        float dstX = e.posX + dir.x * delta * speed * movementMultiplicator;
-        float dstY = e.posY + dir.y * delta * speed * movementMultiplicator;
+        if(e instanceof PhysicsEntity pe) {
+            EntityPhysicsBox box = pe.getPhysicsBox();
 
-        // Check for loaded chunk
-        int chunkX = ExpoShared.posToChunk(dstX);
-        int chunkY = ExpoShared.posToChunk(dstY);
+            float toMoveX = dir.x * delta * speed * movementMultiplicator;
+            float toMoveY = dir.y * delta * speed * movementMultiplicator;
 
-        if(e.getChunkGrid().isActiveChunk(chunkX, chunkY)) {
-            e.posX = dstX;
-            e.posY = dstY;
-            ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, PacketReceiver.whoCanSee(e));
+            float oldPosX = e.posX;
+            float oldPosY = e.posY;
+            var result = box.move(toMoveX, toMoveY, PhysicsBoxFilters.generalFilter);
+
+            float targetX = result.goalX - box.xOffset;
+            float targetY = result.goalY - box.yOffset;
+
+            // Check for loaded chunk
+            int chunkX = ExpoShared.posToChunk(targetX);
+            int chunkY = ExpoShared.posToChunk(targetY);
+
+            if(e.getChunkGrid().isActiveChunk(chunkX, chunkY)) {
+                e.posX = targetX;
+                e.posY = targetY;
+                ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, PacketReceiver.whoCanSee(e));
+            } else {
+                box.teleport(oldPosX, oldPosY);
+            }
+        } else {
+            float dstX = e.posX + dir.x * delta * speed * movementMultiplicator;
+            float dstY = e.posY + dir.y * delta * speed * movementMultiplicator;
+
+            // Check for loaded chunk
+            int chunkX = ExpoShared.posToChunk(dstX);
+            int chunkY = ExpoShared.posToChunk(dstY);
+
+            if(e.getChunkGrid().isActiveChunk(chunkX, chunkY)) {
+                e.posX = dstX;
+                e.posY = dstY;
+                ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, PacketReceiver.whoCanSee(e));
+            }
         }
     }
 

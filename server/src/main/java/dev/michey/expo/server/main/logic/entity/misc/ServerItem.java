@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -21,7 +23,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class ServerItem extends ServerEntity {
+public class ServerItem extends ServerEntity implements PhysicsEntity {
 
     public ServerInventoryItem itemContainer;
     public float dstX;
@@ -246,6 +248,21 @@ public class ServerItem extends ServerEntity {
     @Override
     public String toString() {
         return "[" + itemContainer.itemAmount + "x " + itemContainer.itemId + "]";
+    }
+
+    @Override
+    public EntityPhysicsBox getPhysicsBox() {
+        return physicsBody;
+    }
+
+    @Override
+    public void onMoved() {
+
+    }
+
+    @Override
+    public PhysicsMassClassification getPhysicsMassClassification() {
+        return PhysicsMassClassification.ITEM;
     }
 
 }

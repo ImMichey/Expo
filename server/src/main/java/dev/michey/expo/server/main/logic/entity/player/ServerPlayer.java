@@ -9,12 +9,10 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
-import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
+import dev.michey.expo.server.main.logic.entity.arch.*;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerGravestone;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -40,7 +38,7 @@ import java.util.*;
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.*;
 
-public class ServerPlayer extends ServerEntity implements DamageableEntity {
+public class ServerPlayer extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
     public PlayerConnection playerConnection;
     public boolean localServerPlayer;
@@ -156,6 +154,11 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
         nextHungerDamageTick = 4.0f;
         nextHealthRegenTickDown = 1.0f;
 
+        // reset knockback
+        resetKnockback();
+
+        ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
+
         teleportPlayer(
                 getDimension().getDimensionSpawnX(),
                 getDimension().getDimensionSpawnY()
@@ -173,7 +176,24 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
     }
 
     @Override
+    public EntityPhysicsBox getPhysicsBox() {
+        return physicsBody;
+    }
+
+    @Override
+    public void onMoved() {
+
+    }
+
+    @Override
+    public PhysicsMassClassification getPhysicsMassClassification() {
+        return PhysicsMassClassification.PLAYER;
+    }
+
+    @Override
     public void tick(float delta) {
+        tickKnockback(delta);
+
         if(xDir != 0 || yDir != 0) {
             float multiplicator = movementSpeedMultiplicator() * (sprinting ? sprintMultiplier : 1.0f);
             boolean normalize = xDir != 0 && yDir != 0;
@@ -184,8 +204,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
                 normalizer = 1 / len;
             }
 
-            float toMoveX = xDir * playerSpeed * multiplicator * normalizer;
-            float toMoveY = yDir * playerSpeed * multiplicator * normalizer;
+            float toMoveX = xDir * playerSpeed * multiplicator * normalizer + knockbackAppliedX;
+            float toMoveY = yDir * playerSpeed * multiplicator * normalizer + knockbackAppliedY;
 
             var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
 
@@ -194,11 +214,24 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
 
             ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
             dirResetPacket = true;
-        }
-
-        if(xDir == 0 && yDir == 0 && dirResetPacket) {
+        } else if(dirResetPacket) {
             dirResetPacket = false;
+
+            if(knockbackAppliedX != 0 || knockbackAppliedY != 0) {
+                var result = physicsBody.move(knockbackAppliedX, knockbackAppliedY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
+                posX = result.goalX - physicsBody.xOffset;
+                posY = result.goalY - physicsBody.yOffset;
+            }
+
             ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
+        } else {
+            if(knockbackAppliedX != 0 || knockbackAppliedY != 0) {
+                var result = physicsBody.move(knockbackAppliedX, knockbackAppliedY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
+                posX = result.goalX - physicsBody.xOffset;
+                posY = result.goalY - physicsBody.yOffset;
+
+                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
+            }
         }
 
         if(punching) {
@@ -252,12 +285,19 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
                     if(ServerUtils.rectIsInArc(ox, oy, hitbox.xOffset + se.posX, hitbox.yOffset + se.posY, hitbox.width, hitbox.height, usePunchRange, convertedStartAngle, convertedAngle, usePunchDirection, usePunchSpan)) {
                         // Hit.
                         hitEntities.add(se.entityId);
-                        ServerPackets.p24PositionalSound("slap", se);
-                        se.applyDamageWithPacket(this, usePunchDamage);
+                        boolean applied = se.applyDamageWithPacket(this, usePunchDamage);
 
-                        // Apply knockback.
-                        if(se.health > 0) {
-                            se.applyKnockback(12, 0.33f, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
+                        if(applied) {
+                            ServerPackets.p24PositionalSound("slap", se);
+
+                            // Apply knockback.
+                            if(se.health > 0) {
+                                se.applyKnockback(12, 0.33f, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
+
+                                if(se instanceof ServerPlayer otherPlayer) {
+                                    ServerPackets.p23PlayerLifeUpdate(otherPlayer.health, otherPlayer.hunger, PacketReceiver.player(otherPlayer));
+                                }
+                            }
                         }
                     }
                 }

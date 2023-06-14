@@ -3,22 +3,21 @@ package dev.michey.expo.server.main.logic.entity.arch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
-import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
-import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionEntityManager;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -29,11 +28,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public abstract class ServerEntity {
 
@@ -63,6 +58,7 @@ public abstract class ServerEntity {
     public float knockbackDuration;
     public float knockbackDelta;
     public float knockbackOldX, knockbackOldY;
+    public float knockbackAppliedX, knockbackAppliedY;
     public Vector2 knockbackDir;
 
     /** ServerEntity base methods */
@@ -237,16 +233,16 @@ public abstract class ServerEntity {
     }
 
     public void applyKnockback(float knockbackStrength, float knockbackDuration, Vector2 knockbackDir) {
-        this.knockbackOldX = 0;
-        this.knockbackOldY = 0;
         this.knockbackDelta = 0;
         this.knockbackStrength = knockbackStrength;
         this.knockbackDuration = knockbackDuration;
         this.knockbackDir = knockbackDir;
     }
 
-    public void applyDamageWithPacket(ServerEntity damageSource, float damage) {
-        if(onDamage(damageSource, damage)) {
+    public boolean applyDamageWithPacket(ServerEntity damageSource, float damage) {
+        boolean applied = onDamage(damageSource, damage);
+
+        if(applied) {
             health -= damage;
 
             ServerPackets.p26EntityDamage(entityId, damage, health, PacketReceiver.whoCanSee(this));
@@ -255,6 +251,8 @@ public abstract class ServerEntity {
                 killEntityWithPacket();
             }
         }
+
+        return applied;
     }
 
     public void tickKnockback(float delta) {
@@ -275,10 +273,24 @@ public abstract class ServerEntity {
             float oy = knockbackOldY;
             knockbackOldX = knockbackDir.x * knockbackStrength * interpolated;
             knockbackOldY = knockbackDir.y * knockbackStrength * interpolated;
-
-            posX += (knockbackOldX - ox);
-            posY += (knockbackOldY - oy);
+            knockbackAppliedX = (knockbackOldX - ox);
+            knockbackAppliedY = (knockbackOldY - oy);
+        } else {
+            knockbackAppliedX = 0;
+            knockbackAppliedY = 0;
+            knockbackOldX = 0;
+            knockbackOldY = 0;
         }
+    }
+
+    public void movePhysicsBoxBy(EntityPhysicsBox box, float x, float y) {
+        var result = box.move(x, y, PhysicsBoxFilters.generalFilter);
+        posX = result.goalX - box.xOffset;
+        posY = result.goalY - box.yOffset;
+    }
+
+    public void resetKnockback() {
+        knockbackDuration = 0;
     }
 
     public int velToPos(float vel) {

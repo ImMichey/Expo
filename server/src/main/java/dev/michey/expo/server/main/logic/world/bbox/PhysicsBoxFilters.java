@@ -2,27 +2,48 @@ package dev.michey.expo.server.main.logic.world.bbox;
 
 import com.dongbat.jbump.CollisionFilter;
 import com.dongbat.jbump.Response;
-import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
-import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 
 public class PhysicsBoxFilters {
 
     public static CollisionFilter noclipFilter = (item, other) -> Response.cross;
 
     public static CollisionFilter playerCollisionFilter = (item, other) -> {
-        if(other.userData instanceof ServerPlayer) {
-            return Response.cross;
-        }
-        if(other.userData instanceof ServerItem) {
-            return Response.cross;
+        if(other.userData instanceof PhysicsEntity oe) {
+            PhysicsMassClassification otherClassification = oe.getPhysicsMassClassification();
+
+            if(otherClassification == PhysicsMassClassification.PLAYER || otherClassification == PhysicsMassClassification.ITEM) {
+                return null;
+            }
+
+            if(otherClassification == PhysicsMassClassification.LIGHT) {
+                return null;
+            }
         }
 
         return Response.slide;
     };
 
-    public static CollisionFilter onlyCrossPlayerFilter = (item, other) -> {
-        if(other.userData instanceof ServerPlayer) {
-            return Response.cross;
+    public static CollisionFilter generalFilter = (item, other) -> {
+        if(item.userData instanceof PhysicsEntity pe) {
+            // PhysicsMassClassification classification = pe.getPhysicsMassClassification();
+
+            if(other.userData instanceof PhysicsEntity oe) {
+                PhysicsMassClassification otherClassification = oe.getPhysicsMassClassification();
+
+                if(otherClassification == PhysicsMassClassification.WALL) {
+                    return Response.slide;
+                }
+
+                if(otherClassification == PhysicsMassClassification.PLAYER || otherClassification == PhysicsMassClassification.ITEM) {
+                    return null;
+                }
+
+                if(otherClassification == PhysicsMassClassification.LIGHT) {
+                    return null;
+                }
+            }
         }
 
         return Response.slide;

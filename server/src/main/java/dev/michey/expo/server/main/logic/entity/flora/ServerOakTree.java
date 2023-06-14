@@ -3,6 +3,8 @@ package dev.michey.expo.server.main.logic.entity.flora;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
+import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
@@ -10,7 +12,7 @@ import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
-public class ServerOakTree extends ServerEntity {
+public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     /** Physics body */
     private EntityPhysicsBox physicsBody;
@@ -142,6 +144,21 @@ public class ServerOakTree extends ServerEntity {
         } else if(variant == 5) {
             age = 2;
         }
+    }
+
+    @Override
+    public EntityPhysicsBox getPhysicsBox() {
+        return physicsBody;
+    }
+
+    @Override
+    public void onMoved() {
+
+    }
+
+    @Override
+    public PhysicsMassClassification getPhysicsMassClassification() {
+        return PhysicsMassClassification.HEAVY;
     }
 
 }
