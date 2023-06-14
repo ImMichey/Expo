@@ -239,7 +239,7 @@ public class AudioEngine {
             if(volume <= 0.0f) return;
             // Add.
             String sound = soundGroupMap.get(groupName).getRandomQualifiedName();
-            TrackedSoundData data = playSoundSpecific(sound, 1.0f, true);
+            TrackedSoundData data = playSoundSpecific(sound, volume, true);
             data.ambient = true;
             data.ambientGroup = groupName;
             ambienceTrackMap.put(groupName, data);
