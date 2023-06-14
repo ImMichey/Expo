@@ -17,9 +17,12 @@ public class ClientStatic {
     public static final String GAME_VERSION = "0.0.0 (Unstable)";
 
     public static final Color COLOR_ARMOR_TEXT = Color.valueOf("#a2cadc");
+
     public static final Color COLOR_CRAFT_TEXT = Color.valueOf("#c0ad9d");
     public static final Color COLOR_CRAFT_GREEN = Color.valueOf("#99e550");
     public static final Color COLOR_CRAFT_RED = Color.valueOf("#d72838");
     public static final Color COLOR_CRAFT_INGREDIENTS = Color.valueOf("#e1dbdb");
+
+    public static final Color COLOR_DAMAGE_TINT = Color.valueOf("#ca3636");
 
 }

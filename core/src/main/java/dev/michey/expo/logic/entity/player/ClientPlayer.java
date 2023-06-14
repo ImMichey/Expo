@@ -29,6 +29,7 @@ import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.PacketUtils;
 
@@ -148,6 +149,10 @@ public class ClientPlayer extends ClientEntity {
     /** Player night proximity light */
     public ExpoLight proximityLight;
 
+    /** Damage tint */
+    private float damageDelta;
+    private boolean damageTint;
+
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
@@ -222,6 +227,12 @@ public class ClientPlayer extends ClientEntity {
         serverPunchAngle = rotation;
         serverPunchAngleStart = RenderContext.get().deltaTotal;
         serverPunchAngleEnd = serverPunchAngleStart + PLAYER_ARM_MOVEMENT_SEND_RATE;
+    }
+
+    @Override
+    public void onDamage(float damage, float newHealth) {
+        damageDelta = RenderContext.get().deltaTotal;
+        damageTint = true;
     }
 
     @Override
@@ -446,6 +457,11 @@ public class ClientPlayer extends ClientEntity {
     public void render(RenderContext rc, float delta) {
         updateDepth();
 
+        if(damageTint) {
+            float MAX_TINT_DURATION = 0.2f;
+            if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
+        }
+
         { // Updating breathe + blink
             playerBlinkDelta += delta;
             playerBreatheDelta += delta;
@@ -501,8 +517,6 @@ public class ClientPlayer extends ClientEntity {
                 }
             }
         }
-
-        rc.useRegularBatch();
 
         // Draw player
         boolean moving = isMoving();
@@ -560,6 +574,8 @@ public class ClientPlayer extends ClientEntity {
         drawHeldItem(rc, false);
         boolean drawLooseArm = holdingItemId != -1;
 
+        if(damageTint) rc.batch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
+
         // Draw punch (debug for now)
         if(punchAnimation || drawLooseArm) {
             int px = punchAnimation ? (punchDirection == 1 ? 8 : 0) : (playerDirection == 1 ? 8 : 0);
@@ -588,7 +604,9 @@ public class ClientPlayer extends ClientEntity {
                 rc.batch.draw(holdingArmorHeadTexture, clientPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
             }
 
+            if(damageTint) rc.batch.setColor(Color.WHITE);
             drawHeldItem(rc, true);
+            if(damageTint) rc.batch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
         }
 
         { // Draw player blink
@@ -596,6 +614,8 @@ public class ClientPlayer extends ClientEntity {
                 rc.batch.draw(tex_blink, clientPosX + 5 - (direction() == 0 ? 4 : 0), clientPosY + offsetY + 13);
             }
         }
+
+        if(damageTint) rc.batch.setColor(Color.WHITE);
     }
 
     @Override

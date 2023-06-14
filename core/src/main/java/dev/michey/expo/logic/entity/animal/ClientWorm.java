@@ -3,14 +3,19 @@ package dev.michey.expo.logic.entity.animal;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.EntityRemovalReason;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ClientWorm extends ClientEntity {
 
@@ -35,7 +40,9 @@ public class ClientWorm extends ClientEntity {
 
     @Override
     public void onDeletion() {
-
+        if(removalReason == EntityRemovalReason.DEATH) {
+            playEntitySound("bloody_squish");
+        }
     }
 
     @Override
@@ -76,11 +83,11 @@ public class ClientWorm extends ClientEntity {
             rc.useRegularArrayShader();
 
             if(damageTint) {
-                float MAX_TINT_DURATION = 0.25f;
+                float MAX_TINT_DURATION = 0.2f;
                 if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
             }
 
-            if(damageTint) rc.arraySpriteBatch.setColor(Color.RED);
+            if(damageTint) rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
             if(damageTint) rc.arraySpriteBatch.setColor(Color.WHITE);
         }

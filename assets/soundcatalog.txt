@@ -111,3 +111,6 @@ pop_3.wav
 
 #crab;true;1.0-1.0;SFX;1.0
 crab.wav
+
+#bloody_squish;true;0.9-1.1;SFX;1.0
+bloody_squish_1.wav
