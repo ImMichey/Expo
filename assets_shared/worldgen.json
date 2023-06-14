@@ -22,8 +22,8 @@
                         "name": "rocks",
                         "octaves": 4,
                         "type": 5,
-                        "frequency": 0.026,
-                        "level": 0.75
+                        "frequency": 0.018,
+                        "level": 0.725
                     }
                 ],
                 "terrain": {
@@ -136,7 +136,7 @@
                             "spreadData": {
                                 "spread": [8, 64],
                                 "spreadChance": 1.0,
-                                "spreadDis": [12.0, 36.0],
+                                "spreadDis": [10.0, 24.0],
                                 "spreadType": ["WHEAT_PLANT"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0],
@@ -146,11 +146,11 @@
                         {
                             "type": "SUNFLOWER",
                             "static": true,
-                            "chance": 0.0005,
+                            "chance": 0.0006,
                             "pds": 16,
                             "priority": 50,
                             "spreadData": {
-                                "spread": [4, 64],
+                                "spread": [4, 52],
                                 "spreadChance": 1.0,
                                 "spreadDis": [24.0, 96.0],
                                 "spreadType": ["SUNFLOWER"],

@@ -693,12 +693,14 @@ public class PlayerUI {
         rc.hudBatch.begin();
 
         {
+            /*
             if(fadeRainDelta != 0) {
                 Color COLOR_RAIN = ExpoClientContainer.get().getClientWorld().COLOR_RAIN;
                 rc.hudBatch.setColor(COLOR_RAIN.r, COLOR_RAIN.g, COLOR_RAIN.b, 0.05f * fadeRainDelta);
                 rc.hudBatch.draw(whiteSquare, -1, -1, Gdx.graphics.getWidth() + 2, Gdx.graphics.getHeight() + 2);
                 rc.hudBatch.setColor(Color.WHITE);
             }
+            */
         }
 
         if(PlayerInventory.LOCAL_INVENTORY == null) {

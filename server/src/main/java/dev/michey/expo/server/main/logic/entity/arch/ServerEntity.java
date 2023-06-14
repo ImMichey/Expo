@@ -1,7 +1,9 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -55,6 +57,13 @@ public abstract class ServerEntity {
     public int tileY;
     public float health;
     public ToolType damageableWith = null;
+
+    /** Knockback fields */
+    public float knockbackStrength;
+    public float knockbackDuration;
+    public float knockbackDelta;
+    public float knockbackOldX, knockbackOldY;
+    public Vector2 knockbackDir;
 
     /** ServerEntity base methods */
     public void tick(float delta) {
@@ -227,6 +236,15 @@ public abstract class ServerEntity {
         tileY = 0;
     }
 
+    public void applyKnockback(float knockbackStrength, float knockbackDuration, Vector2 knockbackDir) {
+        this.knockbackOldX = 0;
+        this.knockbackOldY = 0;
+        this.knockbackDelta = 0;
+        this.knockbackStrength = knockbackStrength;
+        this.knockbackDuration = knockbackDuration;
+        this.knockbackDir = knockbackDir;
+    }
+
     public void applyDamageWithPacket(ServerEntity damageSource, float damage) {
         if(onDamage(damageSource, damage)) {
             health -= damage;
@@ -236,6 +254,30 @@ public abstract class ServerEntity {
             if(health <= 0) {
                 killEntityWithPacket();
             }
+        }
+    }
+
+    public void tickKnockback(float delta) {
+        if(knockbackDuration > 0) {
+            knockbackDelta += delta;
+
+            float interpolated;
+
+            if(knockbackDelta >= knockbackDuration) {
+                knockbackDelta = knockbackDuration;
+                interpolated = Interpolation.pow2InInverse.apply(knockbackDelta / knockbackDuration);
+                knockbackDuration = 0;
+            } else {
+                interpolated = Interpolation.pow2InInverse.apply(knockbackDelta / knockbackDuration);
+            }
+
+            float ox = knockbackOldX;
+            float oy = knockbackOldY;
+            knockbackOldX = knockbackDir.x * knockbackStrength * interpolated;
+            knockbackOldY = knockbackDir.y * knockbackStrength * interpolated;
+
+            posX += (knockbackOldX - ox);
+            posY += (knockbackOldY - oy);
         }
     }
 

@@ -12,8 +12,6 @@ import com.esotericsoftware.kryonet.FrameworkMessage.Ping;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
 import com.esotericsoftware.kryonet.serialization.Serialization;
-import dev.michey.expo.Expo;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 
 public class ExpoClientSerialization implements Serialization {

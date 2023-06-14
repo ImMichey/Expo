@@ -376,18 +376,6 @@ public class RenderContext {
                 && vertices[3] > drawStartY;
     }
 
-    public boolean entityVerticesIntersecting(float[] vertices1, float[] vertices2) {
-        float drawEndX = vertices2[2];
-        float drawStartX = vertices2[0];
-        float drawEndY = vertices2[3];
-        float drawStartY = vertices2[1];
-
-        return vertices1[0] < drawEndX
-                && vertices1[2] > drawStartX
-                && vertices1[1] < drawEndY
-                && vertices1[3] > drawStartY;
-    }
-
     public boolean inDrawBounds(ClientChunk chunk) {
         return drawStartX <= chunk.chunkDrawEndX && drawStartY <= chunk.chunkDrawEndY && drawEndX >= chunk.chunkDrawBeginX && drawEndY >= chunk.chunkDrawBeginY;
     }

@@ -12,6 +12,7 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleEmitter;
 
@@ -178,7 +179,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         boolean playerBehind;
 
         if(local != null) {
-            playerBehind = RenderContext.get().entityVerticesIntersecting(new float[] {
+            playerBehind = ExpoShared.overlap(new float[] {
                 local.clientPosX, local.clientPosY,
                 local.clientPosX + local.textureWidth, local.clientPosY + local.textureHeight
             }, new float[] {

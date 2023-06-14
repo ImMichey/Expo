@@ -1,20 +1,20 @@
 package dev.michey.expo.server.main.logic.entity.flora;
 
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 
 public class ServerAncientTree extends ServerEntity {
 
     /** Physics body */
-    private BoundingBox physicsBody;
+    private EntityPhysicsBox physicsBody;
 
     @Override
     public void onCreation() {
         // add physics body of player to world
-        physicsBody = new BoundingBox(this, 1, 3, 21, 4.5f);
+        physicsBody = new EntityPhysicsBox(this, 1, 3, 21, 4.5f);
     }
 
     @Override

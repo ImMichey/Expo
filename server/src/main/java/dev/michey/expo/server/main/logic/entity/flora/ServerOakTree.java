@@ -3,17 +3,17 @@ package dev.michey.expo.server.main.logic.entity.flora;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
 public class ServerOakTree extends ServerEntity {
 
     /** Physics body */
-    private BoundingBox physicsBody;
+    private EntityPhysicsBox physicsBody;
 
     public int age;
     public int variant;
@@ -31,7 +31,7 @@ public class ServerOakTree extends ServerEntity {
         // add physics body of player to world
         if(variant == 0) variant = 1;
         float[] b = TREE_BODIES[variant - 1];
-        physicsBody = new BoundingBox(this, b[0], b[1], b[2], b[3]);
+        physicsBody = new EntityPhysicsBox(this, b[0], b[1], b[2], b[3]);
         damageableWith = ToolType.AXE;
     }
 

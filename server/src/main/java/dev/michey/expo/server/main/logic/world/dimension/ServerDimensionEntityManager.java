@@ -1,9 +1,9 @@
 package dev.michey.expo.server.main.logic.world.dimension;
 
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.util.ExpoShared;
 
@@ -19,10 +19,12 @@ public class ServerDimensionEntityManager {
     private final HashMap<Integer, ServerEntity> idEntityMap;
     private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
+    private final HashMap<Integer, ServerEntity> damageableEntityMap;
 
     public ServerDimensionEntityManager() {
         idEntityMap = new HashMap<>();
         typeEntityListMap = new HashMap<>();
+        damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();
 
         for(ServerEntityType type : ServerEntityType.values()) {
@@ -79,6 +81,9 @@ public class ServerDimensionEntityManager {
     private void addEntityUnsafely(ServerEntity entity) {
         idEntityMap.put(entity.entityId, entity);
         typeEntityListMap.get(entity.getEntityType()).add(entity);
+        if(entity instanceof DamageableEntity) {
+            damageableEntityMap.put(entity.entityId, entity);
+        }
         entity.onCreation();
     }
 
@@ -86,10 +91,14 @@ public class ServerDimensionEntityManager {
     private void removeEntityUnsafely(ServerEntity entity) {
         idEntityMap.remove(entity.entityId);
         typeEntityListMap.get(entity.getEntityType()).remove(entity);
+        if(entity instanceof DamageableEntity) {
+            damageableEntityMap.remove(entity.entityId);
+        }
         entity.onDeletion();
     }
 
     /** Removes the ServerEntity from the storage maps without modifying them. */
+    @Deprecated
     private void removeEntityUnsafely(int entityId) {
         ServerEntity entity = idEntityMap.get(entityId);
         idEntityMap.remove(entityId);
@@ -111,6 +120,11 @@ public class ServerDimensionEntityManager {
         }
 
         return copy;
+    }
+
+    /** Returns all damageable entities in the current dimension. */
+    public Collection<ServerEntity> getAllDamageableEntities() {
+        return damageableEntityMap.values();
     }
 
     /** Returns the closest player to specified entity. */

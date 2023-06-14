@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -78,7 +79,7 @@ public class ClientSunflower extends ClientEntity implements SelectableEntity {
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, false);
 
         rc.arraySpriteBatch.drawCustomVertices(wheat, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, wheat.getWidth(), wheat.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();

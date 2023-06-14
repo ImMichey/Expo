@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.entity.player;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
@@ -8,7 +9,10 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
-import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
+import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerGravestone;
@@ -19,6 +23,7 @@ import dev.michey.expo.server.main.logic.inventory.item.*;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
@@ -26,17 +31,16 @@ import dev.michey.expo.server.packet.P16_PlayerPunch;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ExpoShared.PLAYER_DEFAULT_ATTACK_SPEED;
+import static dev.michey.expo.util.ExpoShared.*;
 
-public class ServerPlayer extends ServerEntity {
+public class ServerPlayer extends ServerEntity implements DamageableEntity {
 
     public PlayerConnection playerConnection;
     public boolean localServerPlayer;
@@ -61,6 +65,13 @@ public class ServerPlayer extends ServerEntity {
     public float punchDeltaFinish;
     private boolean punchDamageApplied;
 
+    public float usePunchSpan;
+    public float usePunchRange;
+    public float usePunchDirection;
+    public float usePunchDamage;
+    public float convertedMiddleAngle;
+    public float convertedStartAngle;
+
     public float serverArmRotation;
 
     public int selectedInventorySlot = 0;
@@ -81,12 +92,16 @@ public class ServerPlayer extends ServerEntity {
     public ServerPlayerInventory playerInventory = new ServerPlayerInventory(this);
 
     /** Physics body */
-    private BoundingBox physicsBody;
+    private EntityPhysicsBox physicsBody;
+    /** Hitbox */
+    private EntityHitbox hitbox;
+    private LinkedList<Integer> hitEntities = new LinkedList<>();
 
     @Override
     public void onCreation() {
         // add physics body of player to world
-        physicsBody = new BoundingBox(this, 2, 0, 6, 6);
+        physicsBody = new EntityPhysicsBox(this, 2, 0, 6, 6);
+        hitbox = EntityHitboxMapper.get().getFor(ServerEntityType.PLAYER);
     }
 
     @Override
@@ -94,8 +109,6 @@ public class ServerPlayer extends ServerEntity {
         // remove physics body of player from world
         physicsBody.dispose();
     }
-
-
 
     @Override
     public void onDie() {
@@ -174,7 +187,7 @@ public class ServerPlayer extends ServerEntity {
             float toMoveX = xDir * playerSpeed * multiplicator * normalizer;
             float toMoveY = yDir * playerSpeed * multiplicator * normalizer;
 
-            var result = physicsBody.move(toMoveX, toMoveY, noclip ? BoundingBox.noclipFilter : BoundingBox.playerCollisionFilter);
+            var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
 
             posX = result.goalX - physicsBody.xOffset;
             posY = result.goalY - physicsBody.yOffset;
@@ -190,8 +203,9 @@ public class ServerPlayer extends ServerEntity {
 
         if(punching) {
             punchDelta += delta;
+            float punchInterpolated = Interpolation.circle.apply(punchDelta / punchDeltaFinish);
 
-            if(punchDelta >= (punchDeltaFinish * 0.6f) && !punchDamageApplied) {
+            if(punchInterpolated >= (punchDeltaFinish * 0.6f) && !punchDamageApplied) {
                 punchDamageApplied = true;
 
                 ServerEntity selected = getDimension().getEntityManager().getEntityById(selectedEntity);
@@ -220,9 +234,34 @@ public class ServerPlayer extends ServerEntity {
             if(punchDelta >= punchDeltaFinish) {
                 punching = false;
                 punchDamageApplied = false;
-            }
+                hitEntities.clear();
+            } else {
+                // Apply damage to proximity entities
+                float currentAngle = convertedStartAngle - usePunchSpan * punchDelta / punchDeltaFinish * usePunchDirection;
+                float convertedAngle = currentAngle < 0 ? 360f + currentAngle : currentAngle;
+                Collection<ServerEntity> check = getDimension().getEntityManager().getAllDamageableEntities();
 
-            // in range entities damage
+                for(ServerEntity se : check) {
+                    if(se.entityId == entityId) continue;
+                    if(hitEntities.contains(se.entityId)) continue;
+                    EntityHitbox hitbox = ((DamageableEntity) se).getEntityHitbox();
+
+                    float ox = posX + 5f;
+                    float oy = posY + 7f;
+
+                    if(ServerUtils.rectIsInArc(ox, oy, hitbox.xOffset + se.posX, hitbox.yOffset + se.posY, hitbox.width, hitbox.height, usePunchRange, convertedStartAngle, convertedAngle, usePunchDirection, usePunchSpan)) {
+                        // Hit.
+                        hitEntities.add(se.entityId);
+                        ServerPackets.p24PositionalSound("slap", se);
+                        se.applyDamageWithPacket(this, usePunchDamage);
+
+                        // Apply knockback.
+                        if(se.health > 0) {
+                            se.applyKnockback(12, 0.33f, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
+                        }
+                    }
+                }
+            }
         }
 
         if(hungerCooldown > 0) {
@@ -328,11 +367,36 @@ public class ServerPlayer extends ServerEntity {
 
             punching = true;
             float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
+            float attackRange = PLAYER_DEFAULT_RANGE;
+            float attackDamage = PLAYER_DEFAULT_ATTACK_DAMAGE;
 
             int id = getCurrentItemId();
 
             if(id != -1) {
-                attackSpeed = ItemMapper.get().getMapping(id).logic.attackSpeed;
+                ItemMapping mapping = ItemMapper.get().getMapping(id);
+                attackSpeed = mapping.logic.attackSpeed;
+                attackRange = mapping.logic.range;
+                attackDamage = mapping.logic.attackDamage;
+            }
+
+            {
+                convertedMiddleAngle = p.punchAngle - 90f;
+                if(convertedMiddleAngle < 0) convertedMiddleAngle = 360 + convertedMiddleAngle;
+
+                if(convertedMiddleAngle >= 270f && convertedMiddleAngle <= 360f) {
+                    convertedStartAngle = convertedMiddleAngle + angleSpan / 2;
+                    if(convertedStartAngle > 360f) convertedStartAngle -= 360f;
+                } else if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) {
+                    convertedStartAngle = convertedMiddleAngle - angleSpan / 2;
+                } else {
+                    convertedStartAngle = convertedMiddleAngle + angleSpan / 2;
+                }
+
+                usePunchSpan = angleSpan;
+                usePunchDirection = 1;
+                if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) usePunchDirection = -1;
+                usePunchRange = attackRange;
+                usePunchDamage = attackDamage;
             }
 
             punchDeltaFinish = attackSpeed;
@@ -649,6 +713,11 @@ public class ServerPlayer extends ServerEntity {
 
     public static ServerPlayer getLocalPlayer() {
         return LOCAL_PLAYER;
+    }
+
+    @Override
+    public EntityHitbox getEntityHitbox() {
+        return null;
     }
 
 }

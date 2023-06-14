@@ -51,6 +51,10 @@ public class EntityBrain {
         }
     }
 
+    public AIState getCurrentState() {
+        return currentState;
+    }
+
     public ServerEntity getEntity() {
         return parent;
     }

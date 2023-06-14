@@ -1,28 +1,18 @@
-package dev.michey.expo.server.main.logic.entity.arch;
+package dev.michey.expo.server.main.logic.world.bbox;
 
 import com.dongbat.jbump.CollisionFilter;
 import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Response;
-import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
-import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 
-public class BoundingBox {
+public class EntityPhysicsBox extends BBox {
 
     private final ServerEntity parent;
-    public float xOffset;
-    public float yOffset;
-    private float width;
-    private float height;
-
-    // generated
     private final Item<ServerEntity> physicsBody;
 
-    public BoundingBox(ServerEntity parent, float xOffset, float yOffset, float width, float height) {
+    public EntityPhysicsBox(ServerEntity parent, float xOffset, float yOffset, float width, float height) {
+        super(xOffset, yOffset, width, height);
         this.parent = parent;
-        this.xOffset = xOffset;
-        this.yOffset = yOffset;
-        this.width = width;
-        this.height = height;
         physicsBody = parent.getDimension().getPhysicsWorld().add(new Item<>(parent), parent.posX + xOffset, parent.posY + yOffset, width, height);
     }
 
@@ -45,26 +35,5 @@ public class BoundingBox {
     public Response.Result moveAbsolute(float x, float y, CollisionFilter filter) {
         return parent.getDimension().getPhysicsWorld().move(physicsBody, xOffset + x, yOffset + y, filter);
     }
-
-    public static CollisionFilter noclipFilter = (item, other) -> Response.cross;
-
-    public static CollisionFilter playerCollisionFilter = (item, other) -> {
-        if(other.userData instanceof ServerPlayer) {
-            return Response.cross;
-        }
-        if(other.userData instanceof ServerItem) {
-            return Response.cross;
-        }
-
-        return Response.slide;
-    };
-
-    public static CollisionFilter onlyCrossPlayerFilter = (item, other) -> {
-        if(other.userData instanceof ServerPlayer) {
-            return Response.cross;
-        }
-
-        return Response.slide;
-    };
 
 }

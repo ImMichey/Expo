@@ -185,7 +185,7 @@ public class ServerChunkGrid {
                     if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
-                if(toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
+                if(toCheck == BiomeType.BEACH || toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
                     NoisePostProcessor rocks = genSettings.getNoiseSettings().postProcessList.get("rocks");
 
                     if(rocks != null) {

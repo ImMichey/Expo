@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
@@ -12,6 +11,7 @@ import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 public class ServerBlueberryBush extends ServerEntity {
 
-    private BoundingBox physicsBody;
+    private EntityPhysicsBox physicsBody;
     public boolean hasBerries;
     public float berryRegrowthDelta;
 
@@ -36,7 +36,7 @@ public class ServerBlueberryBush extends ServerEntity {
 
     @Override
     public void onCreation() {
-        physicsBody = new BoundingBox(this, -7.5f, 3, 15, 3.5f);
+        physicsBody = new EntityPhysicsBox(this, -7.5f, 3, 15, 3.5f);
     }
 
     @Override

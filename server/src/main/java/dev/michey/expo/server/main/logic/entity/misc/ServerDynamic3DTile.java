@@ -2,10 +2,10 @@ package dev.michey.expo.server.main.logic.entity.misc;
 
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 public class ServerDynamic3DTile extends ServerEntity {
 
-    private BoundingBox physicsBody;
+    private EntityPhysicsBox physicsBody;
     public TileLayerType emulatingType;
     public int[] layerIds;
 
@@ -42,7 +42,7 @@ public class ServerDynamic3DTile extends ServerEntity {
     public void checkForBoundingBox() {
         if(physicsBody == null) {
             if(hasBoundingBox(layerIds, emulatingType)) {
-                physicsBody = new BoundingBox(this, 0, 0, 16, 16);
+                physicsBody = new EntityPhysicsBox(this, 0, 0, 16, 16);
             }
         }
     }

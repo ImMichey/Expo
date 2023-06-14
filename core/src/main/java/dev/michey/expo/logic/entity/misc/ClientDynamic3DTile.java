@@ -13,6 +13,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ExpoShared;
 
 public class ClientDynamic3DTile extends ClientEntity implements SelectableEntity {
 
@@ -92,7 +93,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
         if(local != null) {
             if(local.depth > depth) {
-                playerBehind = RenderContext.get().entityVerticesIntersecting(new float[] {
+                playerBehind = ExpoShared.overlap(new float[] {
                         local.clientPosX, local.clientPosY,
                         local.clientPosX + local.textureWidth, local.clientPosY + local.textureHeight
                 }, new float[] {

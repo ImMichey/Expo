@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.entity.arch.BoundingBox;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
@@ -12,6 +12,7 @@ import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -19,8 +20,6 @@ import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
 
 import java.util.List;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerItem extends ServerEntity {
 
@@ -37,7 +36,7 @@ public class ServerItem extends ServerEntity {
     private boolean skipStackThisTick = false;
 
     /** Physics body */
-    private BoundingBox physicsBody;
+    private EntityPhysicsBox physicsBody;
 
     @Override
     public void tick(float delta) {
@@ -59,7 +58,7 @@ public class ServerItem extends ServerEntity {
             float toMoveX = originX + alpha * dstX;
             float toMoveY = originY + alpha * dstY;
 
-            var result = physicsBody.moveAbsolute(toMoveX, toMoveY, BoundingBox.playerCollisionFilter);
+            var result = physicsBody.moveAbsolute(toMoveX, toMoveY, PhysicsBoxFilters.playerCollisionFilter);
 
             posX = result.goalX - physicsBody.xOffset;
             posY = result.goalY - physicsBody.yOffset;
@@ -161,7 +160,7 @@ public class ServerItem extends ServerEntity {
                             Vector2 v = new Vector2(mergeEntity.posX, mergeEntity.posY).sub(posX, posY).nor();
                             float mergeSpeed = 12.0f;
 
-                            var result = physicsBody.move(v.x * delta * mergeSpeed, v.y * delta * mergeSpeed, BoundingBox.playerCollisionFilter);
+                            var result = physicsBody.move(v.x * delta * mergeSpeed, v.y * delta * mergeSpeed, PhysicsBoxFilters.playerCollisionFilter);
 
                             posX = result.goalX - physicsBody.xOffset;
                             posY = result.goalY - physicsBody.yOffset;
@@ -212,7 +211,7 @@ public class ServerItem extends ServerEntity {
     public void onCreation() {
         originX = posX;
         originY = posY;
-        physicsBody = new BoundingBox(this, -2, 0, 4, 4);
+        physicsBody = new EntityPhysicsBox(this, -2, 0, 4, 4);
     }
 
     @Override

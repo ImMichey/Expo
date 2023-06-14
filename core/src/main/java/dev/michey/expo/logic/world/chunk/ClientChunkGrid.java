@@ -177,7 +177,7 @@ public class ClientChunkGrid {
                     if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
-                if(toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
+                if(toCheck == BiomeType.BEACH || toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
                     var rocks = noisePostProcessorMap.get("rocks");
 
                     if(rocks != null) {

@@ -64,6 +64,31 @@ public enum ServerEntityType {
         };
     }
 
+    public static ServerEntity nameToEntity(String type) {
+        return switch (type) {
+            case "PLAYER" -> new ServerPlayer();
+            case "DUMMY" -> new ServerDummy();
+            case "GRASS" -> new ServerGrass();
+            case "OAKTREE", "OAK_TREE" -> new ServerOakTree();
+            case "MUSHROOMRED", "MUSHROOM_RED" -> new ServerMushroomRed();
+            case "MUSHROOMBROWN", "MUSHROOM_BROWN" -> new ServerMushroomBrown();
+            case "BUSH" -> new ServerBush();
+            case "ITEM" -> new ServerItem();
+            case "ANCIENTTREE", "ANCIENT_TREE" -> new ServerAncientTree();
+            case "GRAVESTONE" -> new ServerGravestone();
+            case "DANDELION" -> new ServerDandelion();
+            case "POPPY" -> new ServerPoppy();
+            case "BLUEBERRYBUSH", "BLUEBERRY_BUSH" -> new ServerBlueberryBush();
+            case "WORM" -> new ServerWorm();
+            case "ROCK" -> new ServerRock();
+            case "CRAB" -> new ServerCrab();
+            case "DYNAMIC3DTILE", "DYNAMIC_3D_TILE" -> new ServerDynamic3DTile();
+            case "WHEAT" -> new ServerWheat();
+            case "SUNFLOWER" -> new ServerSunflower();
+            default -> null;
+        };
+    }
+
     public static ServerEntity typeToEntity(ServerEntityType type) {
         return typeToEntity(type.ENTITY_ID);
     }

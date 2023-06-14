@@ -1,14 +1,13 @@
 package dev.michey.expo.server.main.arch;
 
 import com.esotericsoftware.kryonet.Connection;
-import dev.michey.expo.command.CommandResolver;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.command.*;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.fs.world.WorldSaveFile;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.packet.ExpoServerPacketReader;
@@ -42,6 +41,7 @@ public abstract class ExpoServerBase {
 
     public ExpoServerBase(boolean localServer, String worldName) {
         this.localServer = localServer;
+        EntityHitboxMapper.get();
         packetReader = new ExpoServerPacketReader();
         serverContainer = new ExpoServerContainer();
         worldSaveFile = new WorldSaveFile(worldName);

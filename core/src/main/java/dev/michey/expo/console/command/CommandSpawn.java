@@ -22,7 +22,7 @@ public class CommandSpawn extends AbstractConsoleCommand {
 
     @Override
     public String getCommandSyntax() {
-        return "/spawn <typeId> [<x> <y>] [static]";
+        return "/spawn <typeId/typeName> [<x> <y>] [static]";
     }
 
     @Override
@@ -32,23 +32,30 @@ public class CommandSpawn extends AbstractConsoleCommand {
             return;
         }
 
-        int typeId = parseI(args, 1);
+        var preResult = ExpoShared.asInt(args[1]);
+        ServerEntity spawned;
 
-        if(typeId == ServerEntityType.PLAYER.ENTITY_ID) {
-            error("Invalid entity type id '" + typeId + "' (you cannot spawn player entities)");
-            return;
-        }
+        if(preResult.value) {
+            int typeId = preResult.key;
 
-        if(typeId == ServerEntityType.ITEM.ENTITY_ID) {
-            error("Invalid entity type id '" + typeId + "' (you cannot spawn item entities)");
-            return;
-        }
+            if(forbiddenSpawn(typeId)) {
+                error("Forbidden entity type id '" + typeId + "'");
+                return;
+            }
 
-        ServerEntity spawned = ServerEntityType.typeToEntity(typeId);
+            spawned = ServerEntityType.typeToEntity(typeId);
 
-        if(spawned == null) {
-            error("Invalid entity type id '" + typeId + "'");
-            return;
+            if(spawned == null) {
+                error("Invalid entity type id '" + typeId + "'");
+                return;
+            }
+        } else {
+            spawned = ServerEntityType.nameToEntity(args[1].toUpperCase());
+
+            if(spawned == null) {
+                error("Invalid entity name '" + args[1].toUpperCase() + "'");
+                return;
+            }
         }
 
         if(args.length >= 4) {
@@ -74,6 +81,13 @@ public class CommandSpawn extends AbstractConsoleCommand {
 
         ServerWorld.get().registerServerEntity(ExpoShared.DIMENSION_OVERWORLD, spawned);
         success("Spawned entity " + spawned.getEntityType() + " at position " + spawned.posX + ", " + spawned.posY + (spawned.staticPosition ? " as static entity" : ""));
+    }
+
+    private boolean forbiddenSpawn(int id) {
+        return switch (id) {
+            case 0, 1, 7, 16, 18  -> true;
+            default -> false;
+        };
     }
 
 }

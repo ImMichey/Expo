@@ -169,19 +169,4 @@ public class ExpoShared {
                 && vertices1[3] > drawStartY;
     }
 
-    public static Location[] getNeighbourTiles(String dimension, float x, float y) {
-        Location[] array = new Location[8];
-
-        array[0] = new Location(dimension, x - 16, y - 16).toDetailedLocation();
-        array[1] = new Location(dimension, x, y - 16).toDetailedLocation();
-        array[2] = new Location(dimension, x + 16, y - 16).toDetailedLocation();
-        array[3] = new Location(dimension, x + 16, y).toDetailedLocation();
-        array[4] = new Location(dimension, x + 16, y + 16).toDetailedLocation();
-        array[5] = new Location(dimension, x, y + 16).toDetailedLocation();
-        array[6] = new Location(dimension, x - 16, y + 16).toDetailedLocation();
-        array[7] = new Location(dimension, x - 16, y).toDetailedLocation();
-
-        return array;
-    }
-
 }

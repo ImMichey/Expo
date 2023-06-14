@@ -25,11 +25,15 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.gen.EntityPopulationBounds;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
-import make.some.noise.Noise;
 
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -459,6 +463,35 @@ public class ClientWorld {
                     }
                 }
 
+                if(Expo.get().getImGuiExpo().renderChunkBorders.get()) {
+                    r.chunkRenderer.end();
+                    r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+                    for(var c : drawChunks) {
+                        r.chunkRenderer.rect(c.chunkDrawBeginX, c.chunkDrawBeginY, CHUNK_SIZE, CHUNK_SIZE);
+                    }
+                }
+
+                try {
+                    if(Expo.get().getImGuiExpo().renderHitbox.get()) {
+                        if(ServerWorld.get() != null) {
+                            for(ServerEntity all : ServerWorld.get().getMainDimension().getEntityManager().getAllEntities()) {
+                                if(all instanceof DamageableEntity de) {
+                                    if(de.getEntityHitbox() == null) continue;
+                                    EntityHitbox hitbox = de.getEntityHitbox();
+                                    float[] verts = hitbox.toWorld(all.posX, all.posY);
+
+                                    r.chunkRenderer.end();
+                                    r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                                    r.chunkRenderer.setColor(Color.GREEN);
+
+                                    r.chunkRenderer.rect(verts[0], verts[1], hitbox.width, hitbox.height);
+                                }
+                            }
+                        }
+                    }
+                } catch (ConcurrentModificationException ignored) { }
+
                 for(ClientEntity all : clientEntityManager.allEntities()) {
                     if(all.visibleToRenderEngine) {
                         float dpx = all.finalDrawPosX;
@@ -563,15 +596,6 @@ public class ClientWorld {
                                     r.chunkRenderer.setColor(Color.PURPLE);
                                     r.chunkRenderer.rect(pos[0], pos[1], pos[2] - pos[0], pos[3] - pos[1]);
                                 }
-                            }
-                        }
-
-                        if(Expo.get().getImGuiExpo().renderChunkBorders.get()) {
-                            r.chunkRenderer.end();
-                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-                            for(var c : drawChunks) {
-                                r.chunkRenderer.rect(c.chunkDrawBeginX, c.chunkDrawBeginY, CHUNK_SIZE, CHUNK_SIZE);
                             }
                         }
                     }

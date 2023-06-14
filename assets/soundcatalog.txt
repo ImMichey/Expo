@@ -82,7 +82,9 @@ grass_hit_3.wav
 eat_1.wav
 
 #slap;true;0.9-1.1;SFX;1.0
-slap_1.wav
+slap_2.wav
+slap_3.wav
+slap_4.wav
 
 #wood_cut;true;0.9-1.1;SFX;1.0
 wood_cut_1.wav
