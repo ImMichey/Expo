@@ -39,11 +39,6 @@ public class ClientGhostItem extends ClientEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
-
-    }
-
-    @Override
     public void render(RenderContext rc, float delta) {
         updateDepth();
         rc.useArrayBatch();

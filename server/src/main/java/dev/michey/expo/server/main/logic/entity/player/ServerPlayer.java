@@ -285,10 +285,11 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     if(ServerUtils.rectIsInArc(ox, oy, hitbox.xOffset + se.posX, hitbox.yOffset + se.posY, hitbox.width, hitbox.height, usePunchRange, convertedStartAngle, convertedAngle, usePunchDirection, usePunchSpan)) {
                         // Hit.
                         hitEntities.add(se.entityId);
+                        PacketReceiver toReceive = PacketReceiver.whoCanSee(se);
                         boolean applied = se.applyDamageWithPacket(this, usePunchDamage);
 
                         if(applied) {
-                            ServerPackets.p24PositionalSound("slap", se);
+                            ServerPackets.p24PositionalSound("slap", se.posX, se.posY, PLAYER_AUDIO_RANGE, toReceive);
 
                             // Apply knockback.
                             if(se.health > 0) {

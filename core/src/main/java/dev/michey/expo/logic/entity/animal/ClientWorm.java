@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.animal;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -17,6 +18,9 @@ public class ClientWorm extends ClientEntity {
 
     private boolean cachedMoving;
     private boolean flipped;
+
+    private float damageDelta;
+    private boolean damageTint;
 
     public ClientWorm() {
         animationHandler = new ExpoAnimationHandler();
@@ -36,7 +40,8 @@ public class ClientWorm extends ClientEntity {
 
     @Override
     public void onDamage(float damage, float newHealth) {
-
+        damageDelta = RenderContext.get().deltaTotal;
+        damageTint = true;
     }
 
     @Override
@@ -69,7 +74,15 @@ public class ClientWorm extends ClientEntity {
             updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
+
+            if(damageTint) {
+                float MAX_TINT_DURATION = 0.25f;
+                if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
+            }
+
+            if(damageTint) rc.arraySpriteBatch.setColor(Color.RED);
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
+            if(damageTint) rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 

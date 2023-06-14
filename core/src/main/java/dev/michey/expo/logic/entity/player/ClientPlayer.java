@@ -225,11 +225,6 @@ public class ClientPlayer extends ClientEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
-
-    }
-
-    @Override
     public void tick(float delta) {
         syncPositionWithServer();
         updateChunkAndTile();

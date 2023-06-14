@@ -26,11 +26,6 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
-
-    }
-
-    @Override
     public void onDeletion() {
 
     }

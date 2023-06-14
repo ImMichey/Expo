@@ -33,11 +33,6 @@ public class ClientRaindrop extends ClientEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
-
-    }
-
-    @Override
     public void tick(float delta) {
         if(!splash) {
             float x = velocityX * delta;

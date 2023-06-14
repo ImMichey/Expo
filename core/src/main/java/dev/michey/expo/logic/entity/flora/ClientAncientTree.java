@@ -53,11 +53,6 @@ public class ClientAncientTree extends ClientEntity implements SelectableEntity 
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
-
-    }
-
-    @Override
     public void onDeletion() {
 
     }

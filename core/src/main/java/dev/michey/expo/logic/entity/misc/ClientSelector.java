@@ -127,11 +127,6 @@ public class ClientSelector extends ClientEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
-
-    }
-
-    @Override
     public void render(RenderContext rc, float delta) {
         if(visible) {
             depth = ty;

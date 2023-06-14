@@ -1,6 +1,7 @@
 package dev.michey.expo.server.util;
 
 import com.esotericsoftware.kryonet.Connection;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
