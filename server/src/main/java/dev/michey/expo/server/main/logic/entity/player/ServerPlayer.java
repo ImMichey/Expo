@@ -95,7 +95,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
     private EntityPhysicsBox physicsBody;
     /** Hitbox */
     private EntityHitbox hitbox;
-    private LinkedList<Integer> hitEntities = new LinkedList<>();
+    private final LinkedList<Integer> hitEntities = new LinkedList<>();
 
     @Override
     public void onCreation() {
@@ -677,6 +677,11 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
     }
 
     @Override
+    public EntityHitbox getEntityHitbox() {
+        return hitbox;
+    }
+
+    @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.PLAYER;
     }
@@ -713,11 +718,6 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity {
 
     public static ServerPlayer getLocalPlayer() {
         return LOCAL_PLAYER;
-    }
-
-    @Override
-    public EntityHitbox getEntityHitbox() {
-        return null;
     }
 
 }

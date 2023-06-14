@@ -837,9 +837,11 @@ public class ClientPlayer extends ClientEntity {
     @Override
     public void applyTeleportUpdate(float xPos, float yPos) {
         super.applyTeleportUpdate(xPos, yPos);
-        RenderContext.get().expoCamera.resetLerp();
-        updateTexturePositionData();
-        RenderContext.get().expoCamera.centerToEntity(this);
+        if(player) {
+            RenderContext.get().expoCamera.resetLerp();
+            updateTexturePositionData();
+            RenderContext.get().expoCamera.centerToEntity(this);
+        }
     }
 
     public void updateHoldingItemSprite() {

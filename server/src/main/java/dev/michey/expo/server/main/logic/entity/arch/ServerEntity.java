@@ -293,11 +293,14 @@ public abstract class ServerEntity {
 
     public void killEntityWithPacket(EntityRemovalReason reason) {
         onDie();
-        getDimension().getEntityManager().removeEntitySafely(this);
-        ServerPackets.p4EntityDelete(entityId, reason, PacketReceiver.whoCanSee(this));
-        // untrack entity
-        for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
-            player.entityVisibilityController.removeTrackedEntity(entityId);
+
+        if(getEntityType() != ServerEntityType.PLAYER) {
+            getDimension().getEntityManager().removeEntitySafely(this);
+            ServerPackets.p4EntityDelete(entityId, reason, PacketReceiver.whoCanSee(this));
+            // untrack entity
+            for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
+                player.entityVisibilityController.removeTrackedEntity(entityId);
+            }
         }
     }
 
