@@ -67,6 +67,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public float usePunchRange;
     public float usePunchDirection;
     public float usePunchDamage;
+    public float usePunchKnockbackStrength;
+    public float usePunchKnockbackDuration;
     public float convertedMiddleAngle;
     public float convertedStartAngle;
 
@@ -293,7 +295,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
                             // Apply knockback.
                             if(se.health > 0) {
-                                se.applyKnockback(12, 0.33f, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
+                                se.applyKnockback(usePunchKnockbackStrength, usePunchKnockbackDuration, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
 
                                 if(se instanceof ServerPlayer otherPlayer) {
                                     ServerPackets.p23PlayerLifeUpdate(otherPlayer.health, otherPlayer.hunger, PacketReceiver.player(otherPlayer));
@@ -404,12 +406,14 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public void parsePunchPacket(P16_PlayerPunch p) {
         if(!punching) {
-            float angleSpan = 180;
 
             punching = true;
             float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
             float attackRange = PLAYER_DEFAULT_RANGE;
             float attackDamage = PLAYER_DEFAULT_ATTACK_DAMAGE;
+            float attackSpan = PLAYER_DEFAULT_ATTACK_ANGLE_SPAN;
+            float attackKnockbackStrength = PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH;
+            float attackKnockbackDuration = PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION;
 
             int id = getCurrentItemId();
 
@@ -418,6 +422,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 attackSpeed = mapping.logic.attackSpeed;
                 attackRange = mapping.logic.range;
                 attackDamage = mapping.logic.attackDamage;
+                attackSpan = mapping.logic.attackAngleSpan;
+                attackKnockbackStrength = mapping.logic.attackKnockbackStrength;
+                attackKnockbackDuration = mapping.logic.attackKnockbackDuration;
             }
 
             {
@@ -425,24 +432,26 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 if(convertedMiddleAngle < 0) convertedMiddleAngle = 360 + convertedMiddleAngle;
 
                 if(convertedMiddleAngle >= 270f && convertedMiddleAngle <= 360f) {
-                    convertedStartAngle = convertedMiddleAngle + angleSpan / 2;
+                    convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
                     if(convertedStartAngle > 360f) convertedStartAngle -= 360f;
                 } else if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) {
-                    convertedStartAngle = convertedMiddleAngle - angleSpan / 2;
+                    convertedStartAngle = convertedMiddleAngle - attackSpan / 2;
                 } else {
-                    convertedStartAngle = convertedMiddleAngle + angleSpan / 2;
+                    convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
                 }
 
-                usePunchSpan = angleSpan;
+                usePunchSpan = attackSpan;
                 usePunchDirection = 1;
                 if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) usePunchDirection = -1;
                 usePunchRange = attackRange;
                 usePunchDamage = attackDamage;
+                usePunchKnockbackStrength = attackKnockbackStrength;
+                usePunchKnockbackDuration = attackKnockbackDuration;
             }
 
             punchDeltaFinish = attackSpeed;
-            startAngle = p.punchAngle - angleSpan / 2;
-            endAngle = p.punchAngle + angleSpan / 2;
+            startAngle = p.punchAngle - attackSpan / 2;
+            endAngle = p.punchAngle + attackSpan / 2;
             punchDelta = 0;
 
             float _clientStart;

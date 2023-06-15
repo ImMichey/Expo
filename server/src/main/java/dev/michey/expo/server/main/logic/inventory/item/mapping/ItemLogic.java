@@ -9,14 +9,19 @@ import org.json.JSONObject;
 public class ItemLogic {
 
     public int maxStackSize;
-    public ToolType toolType; // can be null
     public int durability;
+
+    public ToolType toolType; // can be null
     public FoodData foodData; // can be null
+    public PlaceData placeData; // can be null
+
     public float range;
     public float attackSpeed;
     public float attackDamage;
     public float harvestDamage;
-    public PlaceData placeData; // can be null
+    public float attackAngleSpan;
+    public float attackKnockbackStrength;
+    public float attackKnockbackDuration;
 
     public ItemLogic(JSONObject object) {
         maxStackSize = object.getInt("stackSize");
@@ -58,6 +63,24 @@ public class ItemLogic {
 
         if(object.has("placeData")) {
             placeData = new PlaceData(object.getJSONObject("placeData"));
+        }
+
+        if(object.has("attackAngleSpan")) {
+            attackAngleSpan = object.getFloat("attackAngleSpan");
+        } else {
+            attackAngleSpan = ExpoShared.PLAYER_DEFAULT_ATTACK_ANGLE_SPAN;
+        }
+
+        if(object.has("attackKnockbackStrength")) {
+            attackKnockbackStrength = object.getFloat("attackKnockbackStrength");
+        } else {
+            attackKnockbackStrength = ExpoShared.PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH;
+        }
+
+        if(object.has("attackKnockbackDuration")) {
+            attackKnockbackDuration = object.getFloat("attackKnockbackDuration");
+        } else {
+            attackKnockbackDuration = ExpoShared.PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION;
         }
     }
 

@@ -27,6 +27,11 @@ public class ServerCommandSpawn extends AbstractServerCommand {
 
     @Override
     public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+        if(args.length <= 1) {
+            sendToSender(getCommandSyntax(), player);
+            return;
+        }
+
         var preResult = ExpoShared.asInt(args[1]);
         ServerEntity spawned;
 

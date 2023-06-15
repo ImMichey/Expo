@@ -32,6 +32,11 @@ public class CommandSpawn extends AbstractConsoleCommand {
             return;
         }
 
+        if(args.length <= 1) {
+            error(getCommandSyntax());
+            return;
+        }
+
         var preResult = ExpoShared.asInt(args[1]);
         ServerEntity spawned;
 

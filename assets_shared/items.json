@@ -22,7 +22,9 @@
                 "stackSize": 100,
                 "durability": -1,
                 "toolType": "ITEM",
-                "range": 25
+                "range": 25,
+                "attackKnockbackStrength": 36,
+                "attackKnockbackDuration": 1
             }
         },
         {
