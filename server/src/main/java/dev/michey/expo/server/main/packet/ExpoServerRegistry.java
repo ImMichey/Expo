@@ -50,6 +50,9 @@ public class ExpoServerRegistry {
                 DynamicTilePart.class,
                 DynamicTilePart[].class,
                 DynamicTilePart[][].class,
+                PostProcessorLogic.class,
+                PostProcessorLayer.class,
+                PostProcessorBiome.class,
 
                 // Packets
                 P0_Auth_Req.class,

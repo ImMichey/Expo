@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -21,7 +22,8 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     public int[] layerIds;
     private float[] interactionPointArray;
 
-    private float playerBehindDelta = 1.0f;
+    private float playerBehindDelta;
+    private float playerBehindDeltaInterpolated;
 
     private boolean updateTexture = false;
     public TextureRegion created;
@@ -93,12 +95,14 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
         if(local != null) {
             if(local.depth > depth) {
+                float buffer = 4;
+
                 playerBehind = ExpoShared.overlap(new float[] {
                         local.clientPosX, local.clientPosY,
                         local.clientPosX + local.textureWidth, local.clientPosY + local.textureHeight
                 }, new float[] {
-                        finalTextureStartX, finalTextureStartY,
-                        finalTextureStartX + textureWidth, finalTextureStartY + textureHeight
+                        finalTextureStartX - buffer, finalTextureStartY - buffer,
+                        finalTextureStartX + textureWidth + buffer, finalTextureStartY + textureHeight + buffer
                 });
             } else {
                 playerBehind = false;
@@ -107,14 +111,22 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             playerBehind = false;
         }
 
-        if(playerBehind && playerBehindDelta > 0.5f) {
-            playerBehindDelta -= delta;
-            if(playerBehindDelta < 0.5f) playerBehindDelta = 0.5f;
+        float MAX_BEHIND_DELTA = 0.4f;
+        float MAX_BEHIND_STRENGTH = 0.5f;
+        Interpolation useInterpolation = Interpolation.circleIn;
+
+        if(playerBehind && playerBehindDelta < MAX_BEHIND_DELTA) {
+            playerBehindDelta += delta;
+            if(playerBehindDelta > MAX_BEHIND_DELTA) playerBehindDelta = MAX_BEHIND_DELTA;
+
+            playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
         }
 
-        if(!playerBehind && playerBehindDelta < 1.0f) {
-            playerBehindDelta += delta;
-            if(playerBehindDelta > 1.0f) playerBehindDelta = 1.0f;
+        if(!playerBehind && playerBehindDelta > 0.0f) {
+            playerBehindDelta -= delta;
+            if(playerBehindDelta < 0) playerBehindDelta = 0;
+
+            playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
         }
     }
 
@@ -127,7 +139,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, playerBehindDelta);
+            rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated);
             rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY);
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
@@ -173,7 +185,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, true);
 
-        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, playerBehindDelta);
+        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated * 0.5f);
         rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY);
 
         rc.arraySpriteBatch.end();

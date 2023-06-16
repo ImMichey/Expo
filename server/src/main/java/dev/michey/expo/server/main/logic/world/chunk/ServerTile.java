@@ -42,6 +42,16 @@ public class ServerTile {
     public static final int SOUTH_WEST = 4;
     public static final int NORTH_WEST = 8;
 
+    public void updateLayer(int layer, TileLayerType type) {
+        if(layer == 0) {
+            updateLayer0(type);
+        } else if(layer == 1) {
+            updateLayer1(type);
+        } else {
+            updateLayer2(type);
+        }
+    }
+
     public void updateLayer0(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer0(biome) : type;
         dynamicTileParts[0].update(use);
@@ -52,6 +62,12 @@ public class ServerTile {
         } else {
             dynamicTileParts[0].setTileIds(runTextureGrab(td[0], 0));
         }
+
+        /*
+        for(var x : chunk.getDimension().getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.values()) {
+            x.postProcessorLogic.getLayerType()
+        }
+        */
     }
 
     public void updateLayer1(TileLayerType type) {
@@ -110,6 +126,16 @@ public class ServerTile {
         }
     }
 
+    public boolean updateLayerAdjacent(int layer) {
+        if(layer == 0) {
+            return updateLayer0Adjacent();
+        } else if(layer == 1) {
+            return updateLayer1Adjacent();
+        }
+
+        return updateLayer2Adjacent();
+    }
+
     /** This method is called when an adjacent layer 0 tile has been updated and this tile potentially needs to adjust its texture. */
     public boolean updateLayer0Adjacent() {
         int[] td = dynamicTileParts[0].emulatingType.TILE_ID_DATA;
@@ -142,8 +168,8 @@ public class ServerTile {
     }
 
     /** This method is called when an adjacent layer 2 tile has been updated and this tile potentially needs to adjust its texture. */
-    public void updateLayer2Adjacent() {
-
+    public boolean updateLayer2Adjacent() {
+        return false;
     }
 
     public static int[] runTextureGrab(int minTile, int[] indices) {

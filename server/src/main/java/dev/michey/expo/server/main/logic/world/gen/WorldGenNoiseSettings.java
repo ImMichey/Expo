@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
+import dev.michey.expo.util.JsonConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,11 +40,29 @@ public class WorldGenNoiseSettings {
         for(int i = 0; i < array.length(); i++) {
             JSONObject o = array.getJSONObject(i);
 
+            JSONObject logicObject = o.getJSONObject("logic");
+
+            String _type = logicObject.getString("replaceType").toUpperCase();
+            String[] _logicKeys = JsonConverter.pullStrings(logicObject.getJSONArray("check"));
+            String _replaceWith = logicObject.getString("replaceWith");
+            float _secondOptionThreshold = logicObject.has("thresholdSecond") ? logicObject.getFloat("thresholdSecond") : -1.0f;
+            String _secondOptionReplace = logicObject.has("thresholdReplace") ? logicObject.getString("thresholdReplace") : null;
+            float _threshold = logicObject.getFloat("threshold");
+
+            PostProcessorLogic logic;
+
+            if(_type.equals("BIOME")) {
+                logic = new PostProcessorBiome(o.getString("name"), _threshold, _logicKeys, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
+            } else {
+                logic = new PostProcessorLayer(o.getString("name"), _threshold, _logicKeys, _type, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
+            }
+
             postProcessList.put(o.getString("name"), new NoisePostProcessor(new NoiseWrapper(o.getString("name"),
                     o.getInt("octaves"),
                     o.getInt("type"),
                     o.has("fractalType") ? o.getInt("fractalType") : -1,
-                    o.getFloat("frequency")), o.getFloat("level")));
+                    o.getFloat("frequency"),
+                    o.getInt("noiseOffset")), logic));
         }
     }
 
@@ -54,7 +73,8 @@ public class WorldGenNoiseSettings {
                     elevation.getInt("octaves"),
                     elevation.getInt("type"),
                     elevation.has("fractalType") ? elevation.getInt("fractalType") : -1,
-                    elevation.getFloat("frequency"));
+                    elevation.getFloat("frequency"),
+                    o.has("noiseOffset") ? o.getInt("noiseOffset") : 0);
         }
 
         {
@@ -63,7 +83,8 @@ public class WorldGenNoiseSettings {
                     temperature.getInt("octaves"),
                     temperature.getInt("type"),
                     temperature.has("fractalType") ? temperature.getInt("fractalType") : -1,
-                    temperature.getFloat("frequency"));
+                    temperature.getFloat("frequency"),
+                    o.has("noiseOffset") ? o.getInt("noiseOffset") : 0);
         }
 
         {
@@ -72,7 +93,8 @@ public class WorldGenNoiseSettings {
                     moisture.getInt("octaves"),
                     moisture.getInt("type"),
                     moisture.has("fractalType") ? moisture.getInt("fractalType") : -1,
-                    moisture.getFloat("frequency"));
+                    moisture.getFloat("frequency"),
+                    o.has("noiseOffset") ? o.getInt("noiseOffset") : 0);
         }
     }
 
@@ -81,7 +103,8 @@ public class WorldGenNoiseSettings {
                 o.getInt("octaves"),
                 o.getInt("type"),
                 o.has("fractalType") ? o.getInt("fractalType") : -1,
-                o.getFloat("frequency"));
+                o.getFloat("frequency"),
+                o.has("noiseOffset") ? o.getInt("noiseOffset") : 0);
     }
 
     @Override

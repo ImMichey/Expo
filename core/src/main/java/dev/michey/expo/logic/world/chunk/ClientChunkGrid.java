@@ -2,9 +2,11 @@ package dev.michey.expo.logic.world.chunk;
 
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
+import dev.michey.expo.server.main.logic.world.gen.PostProcessorBiome;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
@@ -73,6 +75,7 @@ public class ClientChunkGrid {
                 Noise noise = new Noise(worldSeed);
                 npp.noiseWrapper.applyTo(noise);
                 noisePostProcessorMap.put(key, new Pair<>(npp, noise));
+                ExpoLogger.log(npp.noiseWrapper.name + ": " + noise.getSeed());
             }
         }
     }
@@ -154,20 +157,14 @@ public class ClientChunkGrid {
             float moisture = normalized(terrainNoiseMoisture, x, y);
 
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
-                // hook post processors
-                var processor = noisePostProcessorMap.get("lakes");
+                for(var pair : noisePostProcessorMap.values()) {
+                    NoisePostProcessor npp = pair.key;
 
-                if(processor != null) {
-                    float lakeValue = normalized(processor.value, x, y);
-                    boolean isLake = lakeValue >= processor.key.threshold;
+                    if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
+                        BiomeType biome = ppb.getBiome(toCheck, normalized(pair.value, x, y));
 
-                    if(isLake && !BiomeType.isWater(toCheck)) {
-                        float deepValue = processor.key.threshold + (1.0f - processor.key.threshold) * 0.3f;
-
-                        if(lakeValue >= deepValue) {
-                            return BiomeType.OCEAN_DEEP;
-                        } else {
-                            return BiomeType.LAKE;
+                        if(biome != null) {
+                            return biome;
                         }
                     }
                 }
@@ -175,18 +172,6 @@ public class ClientChunkGrid {
                 if(toCheck != BiomeType.OCEAN_DEEP) {
                     float river = normalized(riverNoise, x, y);
                     if(river >= 0.975f) return BiomeType.RIVER;
-                }
-
-                if(toCheck == BiomeType.BEACH || toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
-                    var rocks = noisePostProcessorMap.get("rocks");
-
-                    if(rocks != null) {
-                        float rocksValue = normalized(rocks.value, x, y);
-                        boolean isRocks = rocksValue >= rocks.key.threshold;
-                        if(isRocks) {
-                            return BiomeType.ROCK;
-                        }
-                    }
                 }
 
                 return toCheck;

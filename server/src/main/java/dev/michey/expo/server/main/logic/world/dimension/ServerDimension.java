@@ -91,7 +91,12 @@ public abstract class ServerDimension {
         chunkHandler.getTerrainNoiseTemperature().setSeed(seed + 1);
         chunkHandler.getTerrainNoiseMoisture().setSeed(seed + 2);
         chunkHandler.getRiverNoise().setSeed(seed);
-        for(Noise noise : chunkHandler.getNoisePostProcessorMap().values()) noise.setSeed(seed);
+
+        for(String key : chunkHandler.getNoisePostProcessorMap().keySet()) {
+            Noise n = chunkHandler.getNoisePostProcessorMap().get(key);
+            n.setSeed(seed + chunkHandler.getGenSettings().getNoiseSettings().postProcessList.get(key).noiseWrapper.seedOffset);
+            ExpoLogger.log(key + ": " + n.getSeed());
+        }
     }
 
     private boolean isBiome(int tx, int ty, BiomeType... types) {

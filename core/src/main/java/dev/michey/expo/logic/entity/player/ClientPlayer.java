@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -202,8 +201,8 @@ public class ClientPlayer extends ClientEntity {
                 QUEUED_INVENTORY_PACKET = null;
             }
 
-            proximityLight = new ExpoLight(64.0f, 32, 1f, 0.0f);
-            proximityLight.color(0.75f, 0.75f, 0.75f, 1.0f);
+            // proximityLight = new ExpoLight(64.0f, 32, 1f, 0.0f);
+            // proximityLight.color(0.75f, 0.75f, 0.75f, 1.0f);
 
             finishedWorldEnterAnimation = ExpoServerBase.get() != null && ExpoServerBase.get().getWorldSaveHandler().getWorldName().startsWith("dev-world-");
         }
@@ -245,7 +244,7 @@ public class ClientPlayer extends ClientEntity {
 
         if(player) {
             // Light update
-            proximityLight.update(clientPosX + 5.0f, clientPosY + 22.0f);
+            // proximityLight.update(clientPosX + 5.0f, clientPosY + 22.0f);
 
             // Selector update
             if(holdingItemId != -1) {

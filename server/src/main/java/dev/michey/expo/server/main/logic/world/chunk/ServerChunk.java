@@ -288,39 +288,39 @@ public class ServerChunk {
             tile.updateLayer2(null);
         }
 
-        {
-            // Dirt
-            Noise p = dimension.getChunkHandler().getNoisePostProcessorMap().get("dirt");
+        LinkedList[] postProcessedLists = new LinkedList[3];
 
-            if(p != null) {
-                NoisePostProcessor processor = dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.get("dirt");
-                List<ServerTile> adjust = null;
-
+        for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.values()) {
+            if(npp.postProcessorLogic instanceof PostProcessorLayer ppl) {
                 for(int i = 0; i < tiles.length; i++) {
                     ServerTile tile = tiles[i];
                     int x = btx + i % ROW_TILES;
                     int y = bty + i / ROW_TILES;
 
-                    float normalized = dimension.getChunkHandler().normalized(p, x, y);
-                    boolean isDirt = normalized >= processor.threshold && (tile.dynamicTileParts[1].emulatingType == TileLayerType.FOREST || tile.dynamicTileParts[1].emulatingType == TileLayerType.GRASS);
+                    TileLayerType returnedType = ppl.getLayerType(tile.dynamicTileParts[ppl.processLayer].emulatingType, dimension.getChunkHandler().normalized(
+                            dimension.getChunkHandler().getNoisePostProcessorMap().get(ppl.noiseName), x, y));
 
-                    if(isDirt) {
-                        tile.updateLayer1(TileLayerType.EMPTY);
-                        if(adjust == null) adjust = new LinkedList<>();
-                        adjust.add(tile);
+                    if(returnedType != null) {
+                        tile.updateLayer(ppl.processLayer, returnedType);
+
+                        if(postProcessedLists[ppl.processLayer] == null) {
+                            postProcessedLists[ppl.processLayer] = new LinkedList();
+                        }
+
+                        postProcessedLists[ppl.processLayer].add(tile);
                     }
                 }
+            }
+        }
 
-                if(adjust != null) {
-                    for(ServerTile tile : adjust) {
-                        for(ServerTile neighbours : tile.getNeighbouringTiles()) {
-                            if(neighbours == null) continue;
+        for(int i = 0; i < postProcessedLists.length; i++) {
+            LinkedList<ServerTile> list = postProcessedLists[i];
+            if(list == null) continue;
 
-                            if(neighbours.updateLayer1Adjacent()) {
-                                ServerPackets.p32ChunkDataSingle(neighbours, 1);
-                            }
-                        }
-                    }
+            for(ServerTile st : list) {
+                for(ServerTile neighbours : st.getNeighbouringTiles()) {
+                    if(neighbours == null) continue;
+                    if(neighbours.updateLayerAdjacent(i)) ServerPackets.p32ChunkDataSingle(neighbours, i);
                 }
             }
         }

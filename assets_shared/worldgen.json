@@ -9,38 +9,84 @@
                         "octaves": 5,
                         "type": 5,
                         "frequency": 0.0123,
-                        "level": 0.76
+                        "noiseOffset": 1,
+                        "logic": {
+                            "check": [
+                                "*"
+                            ],
+                            "threshold": 0.76,
+                            "replaceType": "BIOME",
+                            "replaceWith": "LAKE",
+                            "thresholdSecond": 0.832,
+                            "thresholdReplace": "OCEAN_DEEP"
+                        }
                     },
                     {
                         "name": "dirt",
                         "octaves": 5,
                         "type": 5,
                         "frequency": 0.04,
-                        "level": 0.777
+                        "noiseOffset": 2,
+                        "logic": {
+                            "check": [
+                                "FOREST",
+                                "GRASS"
+                            ],
+                            "threshold": 0.777,
+                            "replaceType": "LAYER_1",
+                            "replaceWith": "EMPTY"
+                        }
                     },
                     {
                         "name": "rocks",
                         "octaves": 4,
                         "type": 5,
                         "frequency": 0.018,
-                        "level": 0.725
+                        "noiseOffset": 3,
+                        "logic": {
+                            "check": [
+                                "BEACH",
+                                "DENSE_FOREST",
+                                "PLAINS",
+                                "FOREST",
+                                "DESERT"
+                            ],
+                            "threshold": 0.725,
+                            "replaceType": "BIOME",
+                            "replaceWith": "ROCK"
+                        }
+                    },
+                    {
+                        "name": "wheat_fields",
+                        "octaves": 4,
+                        "type": 5,
+                        "frequency": 0.018,
+                        "noiseOffset": 4,
+                        "logic": {
+                            "check": [
+                                "PLAINS"
+                            ],
+                            "threshold": 0.75,
+                            "replaceType": "BIOME",
+                            "replaceWith": "WHEAT_FIELDS"
+                        }
                     }
                 ],
                 "terrain": {
                     "elevation": {
                         "octaves": 5,
                         "type": 11,
-                        "frequency": 0.0125
+                        "frequency": 0.007
                     },
                     "temperature": {
-                        "octaves": 4,
+                        "octaves": 5,
                         "type": 9,
-                        "frequency": 0.021
+                        "frequency": 0.012
                     },
                     "moisture": {
-                        "octaves": 4,
+                        "octaves": 5,
                         "type": 9,
-                        "frequency": 0.021
+                        "frequency": 0.012
                     }
                 },
                 "rivers": {
@@ -89,6 +135,31 @@
                 ]
             },
             "biomePopulators": {
+                "WHEAT_FIELDS": {
+                    "entities": [
+                        {
+                            "type": "WHEAT_PLANT",
+                            "static": true,
+                            "chance": 0.35,
+                            "pds": 12,
+                            "priority": 100,
+                            "spreadData": {
+                                "spread": [2, 4],
+                                "spreadChance": 0.8,
+                                "spreadDis": [12.0, 18.0],
+                                "spreadType": ["WHEAT_PLANT"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        },
+                        {
+                            "type": "GRASS",
+                            "static": true,
+                            "chance": 0.5,
+                            "pds": 14
+                        }
+                    ]
+                },
                 "DESERT": {
                     "entities": [
                         {
@@ -127,22 +198,6 @@
                 },
                 "PLAINS": {
                     "entities": [
-                        {
-                            "type": "WHEAT_PLANT",
-                            "static": true,
-                            "chance": 0.0005,
-                            "pds": 16,
-                            "priority": 100,
-                            "spreadData": {
-                                "spread": [8, 64],
-                                "spreadChance": 1.0,
-                                "spreadDis": [10.0, 24.0],
-                                "spreadType": ["WHEAT_PLANT"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0],
-                                "spreadUseNextTarget": true
-                            }
-                        },
                         {
                             "type": "SUNFLOWER",
                             "static": true,

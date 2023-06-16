@@ -3,22 +3,22 @@ package dev.michey.expo.server.main.logic.world.gen;
 public class NoisePostProcessor {
 
     public NoiseWrapper noiseWrapper;
-    public float threshold;
+    public PostProcessorLogic postProcessorLogic;
 
     public NoisePostProcessor() {
         // KryoNet
     }
 
-    public NoisePostProcessor(NoiseWrapper noiseWrapper, float threshold) {
+    public NoisePostProcessor(NoiseWrapper noiseWrapper, PostProcessorLogic postProcessorLogic) {
         this.noiseWrapper = noiseWrapper;
-        this.threshold = threshold;
+        this.postProcessorLogic = postProcessorLogic;
     }
 
     @Override
     public String toString() {
         return "NoisePostProcessor{" +
                 "noiseWrapper=" + noiseWrapper +
-                ", threshold=" + threshold +
+                ", postProcessorLogic=" + postProcessorLogic +
                 '}';
     }
 

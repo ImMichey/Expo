@@ -9,17 +9,19 @@ public class NoiseWrapper {
     public int type;
     public int fractalType;
     public float frequency;
+    public int seedOffset;
 
     public NoiseWrapper() {
         // KryoNet
     }
 
-    public NoiseWrapper(String name, int octaves, int type, int fractalType, float frequency) {
+    public NoiseWrapper(String name, int octaves, int type, int fractalType, float frequency, int seedOffset) {
         this.name = name;
         this.octaves = octaves;
         this.type = type;
         this.fractalType = fractalType;
         this.frequency = frequency;
+        this.seedOffset = seedOffset;
     }
 
     public void applyTo(Noise noise) {
@@ -27,6 +29,7 @@ public class NoiseWrapper {
         if(fractalType != -1) noise.setFractalType(fractalType);
         noise.setNoiseType(type);
         noise.setFractalOctaves(octaves);
+        noise.setSeed(noise.getSeed() + seedOffset);
     }
 
     @Override
@@ -37,6 +40,7 @@ public class NoiseWrapper {
                 ", type=" + type +
                 ", fractalType=" + fractalType +
                 ", frequency=" + frequency +
+                ", seedOffset=" + seedOffset +
                 '}';
     }
 

@@ -193,6 +193,12 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     @Override
+    public float movementSpeedMultiplicator() {
+        if(noclip) return 1.0f;
+        return super.movementSpeedMultiplicator();
+    }
+
+    @Override
     public void tick(float delta) {
         tickKnockback(delta);
 

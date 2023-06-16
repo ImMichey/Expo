@@ -15,7 +15,7 @@ uniform vec2 u_resolution;
 
 const float outerRadius = 0.8;
 const float innerRadius = 0.2;
-const float intensity = 0.5;
+const float intensity = 0.65;
 //const float outerRadius = 0.7;
 //const float innerRadius = 0.4;
 //const float intensity = 0.3;

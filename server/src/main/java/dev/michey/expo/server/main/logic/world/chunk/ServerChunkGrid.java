@@ -162,20 +162,12 @@ public class ServerChunkGrid {
             float moisture = normalized(terrainNoiseMoisture, x, y);
 
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
-                // hook post processors
-                NoisePostProcessor processor = genSettings.getNoiseSettings().postProcessList.get("lakes");
+                for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.values()) {
+                    if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
+                        BiomeType biome = ppb.getBiome(toCheck, normalized(noisePostProcessorMap.get(ppb.noiseName), x, y));
 
-                if(processor != null) {
-                    float lakeValue = normalized(noisePostProcessorMap.get("lakes"), x, y);
-                    boolean isLake = lakeValue >= processor.threshold;
-
-                    if(isLake && !BiomeType.isWater(toCheck)) {
-                        float deepValue = processor.threshold + (1.0f - processor.threshold) * 0.3f;
-
-                        if(lakeValue >= deepValue) {
-                            return BiomeType.OCEAN_DEEP;
-                        } else {
-                            return BiomeType.LAKE;
+                        if(biome != null) {
+                            return biome;
                         }
                     }
                 }
@@ -183,19 +175,6 @@ public class ServerChunkGrid {
                 if(toCheck != BiomeType.OCEAN_DEEP) {
                     float river = normalized(riverNoise, x, y);
                     if(river >= 0.975f) return BiomeType.RIVER;
-                }
-
-                if(toCheck == BiomeType.BEACH || toCheck == BiomeType.PLAINS || toCheck == BiomeType.FOREST || toCheck == BiomeType.DENSE_FOREST || toCheck == BiomeType.DESERT) {
-                    NoisePostProcessor rocks = genSettings.getNoiseSettings().postProcessList.get("rocks");
-
-                    if(rocks != null) {
-                        float rocksValue = normalized(noisePostProcessorMap.get("rocks"), x, y);
-                        boolean isRocks = rocksValue >= rocks.threshold;
-
-                        if(isRocks) {
-                            return BiomeType.ROCK;
-                        }
-                    }
                 }
 
                 return toCheck;
