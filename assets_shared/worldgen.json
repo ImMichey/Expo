@@ -58,15 +58,15 @@
                     },
                     {
                         "name": "wheat_fields",
-                        "octaves": 4,
+                        "octaves": 6,
                         "type": 5,
-                        "frequency": 0.018,
-                        "noiseOffset": 4,
+                        "frequency": 0.0125,
+                        "noiseOffset": 0,
                         "logic": {
                             "check": [
                                 "PLAINS"
                             ],
-                            "threshold": 0.75,
+                            "threshold": 0.833,
                             "replaceType": "BIOME",
                             "replaceWith": "WHEAT_FIELDS"
                         }
@@ -141,7 +141,7 @@
                             "type": "WHEAT_PLANT",
                             "static": true,
                             "chance": 0.35,
-                            "pds": 12,
+                            "pds": 16,
                             "priority": 100,
                             "spreadData": {
                                 "spread": [2, 4],

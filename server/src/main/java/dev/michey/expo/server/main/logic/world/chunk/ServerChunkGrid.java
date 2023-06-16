@@ -162,6 +162,11 @@ public class ServerChunkGrid {
             float moisture = normalized(terrainNoiseMoisture, x, y);
 
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
+                if(toCheck != BiomeType.OCEAN_DEEP) {
+                    float river = normalized(riverNoise, x, y);
+                    if(river >= 0.975f) return BiomeType.RIVER;
+                }
+
                 for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.values()) {
                     if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
                         BiomeType biome = ppb.getBiome(toCheck, normalized(noisePostProcessorMap.get(ppb.noiseName), x, y));
@@ -170,11 +175,6 @@ public class ServerChunkGrid {
                             return biome;
                         }
                     }
-                }
-
-                if(toCheck != BiomeType.OCEAN_DEEP) {
-                    float river = normalized(riverNoise, x, y);
-                    if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
                 return toCheck;

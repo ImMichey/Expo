@@ -157,6 +157,11 @@ public class ClientChunkGrid {
             float moisture = normalized(terrainNoiseMoisture, x, y);
 
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
+                if(toCheck != BiomeType.OCEAN_DEEP) {
+                    float river = normalized(riverNoise, x, y);
+                    if(river >= 0.975f) return BiomeType.RIVER;
+                }
+
                 for(var pair : noisePostProcessorMap.values()) {
                     NoisePostProcessor npp = pair.key;
 
@@ -167,11 +172,6 @@ public class ClientChunkGrid {
                             return biome;
                         }
                     }
-                }
-
-                if(toCheck != BiomeType.OCEAN_DEEP) {
-                    float river = normalized(riverNoise, x, y);
-                    if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
                 return toCheck;
