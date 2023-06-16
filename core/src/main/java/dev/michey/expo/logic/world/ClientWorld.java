@@ -60,7 +60,8 @@ public class ClientWorld {
     public float ambientLightingG = 1.0f;
     public float ambientLightingB = 1.0f;
     public float ambientLightingDarkness = 1.0f;
-    public final Color COLOR_AMBIENT_MIDNIGHT = new Color(24f / 255f, 30f / 255f, 66f / 255f, 1.0f);
+    // public final Color COLOR_AMBIENT_MIDNIGHT = new Color(24f / 255f, 30f / 255f, 66f / 255f, 1.0f);
+    public final Color COLOR_AMBIENT_MIDNIGHT = Color.valueOf("#253676");
     public final Color COLOR_AMBIENT_SUNRISE = new Color(241f / 255f, 241f / 255f, 197f / 255f, 1.0f);
     public final Color COLOR_AMBIENT_SUNSET = new Color(222f / 255f, 177f / 255f, 128f / 255f, 1.0f);
     public final Color COLOR_RAIN = new Color(104f / 255f, 199f / 255f, 219f / 255f, 1.0f);

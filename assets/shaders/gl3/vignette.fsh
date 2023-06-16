@@ -13,9 +13,12 @@ in vec2 v_texCoords;
 uniform sampler2D u_texture;
 uniform vec2 u_resolution;
 
-const float outerRadius = 0.7;
-const float innerRadius = 0.4;
-const float intensity = 0.3;
+const float outerRadius = 0.8;
+const float innerRadius = 0.2;
+const float intensity = 0.5;
+//const float outerRadius = 0.7;
+//const float innerRadius = 0.4;
+//const float intensity = 0.3;
 
 out vec4 fragColor;
 
