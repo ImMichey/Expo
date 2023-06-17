@@ -1,6 +1,5 @@
 package dev.michey.expo.server.main.logic.entity.animal;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.ai.EntityBrain;
 import dev.michey.expo.server.main.logic.ai.module.AIModuleIdle;
@@ -41,6 +40,8 @@ public class ServerWorm extends ServerEntity implements DamageableEntity, Physic
 
     @Override
     public void tick(float delta) {
+        if(invincibility > 0) invincibility -= delta;
+
         tickKnockback(delta);
         boolean applyKnockback = knockbackAppliedX != 0 || knockbackAppliedY != 0;
 

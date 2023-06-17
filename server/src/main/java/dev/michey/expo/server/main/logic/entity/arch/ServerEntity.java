@@ -60,6 +60,7 @@ public abstract class ServerEntity {
     public float knockbackOldX, knockbackOldY;
     public float knockbackAppliedX, knockbackAppliedY;
     public Vector2 knockbackDir;
+    public float invincibility = 0.75f;
 
     /** ServerEntity base methods */
     public void tick(float delta) {

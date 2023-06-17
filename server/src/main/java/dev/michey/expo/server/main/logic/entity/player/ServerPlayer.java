@@ -139,6 +139,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
         playerInventory.clear();
 
+        // update held item
+        heldItemPacket(PacketReceiver.whoCanSee(this));
+
         ServerGravestone gravestone = new ServerGravestone();
         gravestone.posX = posX;
         gravestone.posY = posY;
@@ -284,6 +287,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
                 for(ServerEntity se : check) {
                     if(se.entityId == entityId) continue;
+                    if(se.invincibility > 0) continue;
                     if(hitEntities.contains(se.entityId)) continue;
                     EntityHitbox hitbox = ((DamageableEntity) se).getEntityHitbox();
 
