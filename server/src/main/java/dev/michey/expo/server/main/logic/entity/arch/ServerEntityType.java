@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
 import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
+import dev.michey.expo.server.main.logic.entity.animal.ServerFirefly;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.flora.*;
 import dev.michey.expo.server.main.logic.entity.misc.*;
@@ -27,6 +28,7 @@ public enum ServerEntityType {
     DYNAMIC_3D_TILE(16, "Dynamic3DTile", true),
     WHEAT_PLANT(17, "WheatPlant", false),
     SUNFLOWER(18, "Sunflower", false),
+    FIREFLY(19, "Firefly", false),
     ;
 
     public final int ENTITY_ID;
@@ -60,6 +62,7 @@ public enum ServerEntityType {
             case 16 -> new ServerDynamic3DTile();
             case 17 -> new ServerWheat();
             case 18 -> new ServerSunflower();
+            case 19 -> new ServerFirefly();
             default -> null;
         };
     }
@@ -85,6 +88,7 @@ public enum ServerEntityType {
             case "DYNAMIC3DTILE", "DYNAMIC_3D_TILE" -> new ServerDynamic3DTile();
             case "WHEAT" -> new ServerWheat();
             case "SUNFLOWER" -> new ServerSunflower();
+            case "FIREFLY" -> new ServerFirefly();
             default -> null;
         };
     }

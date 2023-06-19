@@ -42,8 +42,8 @@ public abstract class AIModule {
         return brain;
     }
 
-    public void switchToStateIfPresent(AIState state) {
-        brain.setActiveModule(state);
+    public void switchToStateIfPresent(AIState... states) {
+        brain.setAnyActiveModule(states);
     }
 
 }

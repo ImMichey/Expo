@@ -4,8 +4,6 @@ import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.AIState;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class AIModuleIdle extends AIModule {
 
     public AIModuleIdle(AIState state, float minDuration, float maxDuration) {
@@ -25,7 +23,7 @@ public class AIModuleIdle extends AIModule {
 
     @Override
     public void onEnd() {
-        switchToStateIfPresent(AIState.WALK);
+        switchToStateIfPresent(AIState.WALK, AIState.FLY);
     }
 
 }

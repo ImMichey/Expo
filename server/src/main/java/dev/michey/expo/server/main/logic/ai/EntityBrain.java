@@ -40,6 +40,20 @@ public class EntityBrain {
         }
     }
 
+    public void setAnyActiveModule(AIState... states) {
+        for(AIState state : states) {
+            AIModule existing = aiModules.get(state);
+
+            if(existing != null) {
+                currentState = state;
+                currentModule = existing;
+                currentModule.generateDuration();
+                currentModule.onStart();
+                break;
+            }
+        }
+    }
+
     public void setActiveModule(AIState state) {
         AIModule existing = aiModules.get(state);
 

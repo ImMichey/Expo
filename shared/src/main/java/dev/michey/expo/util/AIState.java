@@ -2,6 +2,6 @@ package dev.michey.expo.util;
 
 public enum AIState {
 
-    IDLE, WALK, FLEE, ATTACK
+    IDLE, WALK, FLEE, ATTACK, FLY
 
 }

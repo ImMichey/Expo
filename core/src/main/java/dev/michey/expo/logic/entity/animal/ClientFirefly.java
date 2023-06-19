@@ -8,32 +8,43 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
+import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientWorm extends ClientEntity {
+public class ClientFirefly extends ClientEntity {
 
     private final ExpoAnimationHandler animationHandler;
-    private boolean cachedMoving;
     private boolean flipped;
+    private boolean cachedMoving;
 
     private float damageDelta;
     private boolean damageTint;
 
-    public ClientWorm() {
+    private final float flightHeight = 16;
+
+    private ExpoLight fireflyLight;
+
+    public ClientFirefly() {
         animationHandler = new ExpoAnimationHandler();
-        animationHandler.addAnimation("idle", new ExpoAnimation("entity_wormS_idle", 3, 0.25f));
-        animationHandler.addAnimation("walk", new ExpoAnimation("entity_wormS_walk", 5, 0.15f));
+        animationHandler.addAnimation("idle", new ExpoAnimation("entity_firefly_fly", 4, 0.250f));
+        animationHandler.addAnimation("walk", new ExpoAnimation("entity_firefly_fly", 4, 0.125f));
     }
 
     @Override
     public void onCreation() {
-        updateTextureBounds(animationHandler.getActiveFrame());
+        TextureRegion f = animationHandler.getActiveFrame();
+        updateTextureBounds(f.getRegionWidth(), f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);
+
+        fireflyLight = new ExpoLight(128.0f, 32, 1f, 0.0f);
+        fireflyLight.color(1.0f, 1.0f, 0.0f, 0.75f);
     }
 
     @Override
     public void onDeletion() {
+        fireflyLight.delete();
+
         if(removalReason == EntityRemovalReason.DEATH) {
             playEntitySound("bloody_squish");
         }
@@ -48,6 +59,7 @@ public class ClientWorm extends ClientEntity {
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
+        fireflyLight.update(finalDrawPosX, finalDrawPosY);
 
         if(cachedMoving != isMoving()) {
             cachedMoving = !cachedMoving;
@@ -67,12 +79,12 @@ public class ClientWorm extends ClientEntity {
         }
 
         TextureRegion f = animationHandler.getActiveFrame();
-        updateTextureBounds(f);
+        updateTextureBounds(f.getRegionWidth(), f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);
 
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth();
+            updateDepth(-flightHeight);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
@@ -82,14 +94,14 @@ public class ClientWorm extends ClientEntity {
             }
 
             if(damageTint) rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
-            rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(animationHandler.getActiveFrame(), finalDrawPosX, finalDrawPosY);
             if(damageTint) rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, flightHeight);
         float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(animationHandler.getActiveFrame(), shadow);
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 
@@ -102,7 +114,7 @@ public class ClientWorm extends ClientEntity {
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.WORM;
+        return ClientEntityType.FIREFLY;
     }
 
 }

@@ -145,9 +145,6 @@ public class ClientPlayer extends ClientEntity {
     /** Player reach */
     public float playerReachCenterX, playerReachCenterY;
 
-    /** Player night proximity light */
-    public ExpoLight proximityLight;
-
     /** Damage tint */
     private float damageDelta;
     private boolean damageTint;
@@ -201,9 +198,6 @@ public class ClientPlayer extends ClientEntity {
                 QUEUED_INVENTORY_PACKET = null;
             }
 
-            // proximityLight = new ExpoLight(64.0f, 32, 1f, 0.0f);
-            // proximityLight.color(0.75f, 0.75f, 0.75f, 1.0f);
-
             finishedWorldEnterAnimation = ExpoServerBase.get() != null && ExpoServerBase.get().getWorldSaveHandler().getWorldName().startsWith("dev-world-");
         }
     }
@@ -243,9 +237,6 @@ public class ClientPlayer extends ClientEntity {
         float now = RenderContext.get().deltaTotal;
 
         if(player) {
-            // Light update
-            // proximityLight.update(clientPosX + 5.0f, clientPosY + 22.0f);
-
             // Selector update
             if(holdingItemId != -1) {
                 ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
