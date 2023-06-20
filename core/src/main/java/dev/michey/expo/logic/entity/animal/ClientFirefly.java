@@ -23,7 +23,6 @@ public class ClientFirefly extends ClientEntity {
     private boolean damageTint;
 
     private final float flightHeight = 16;
-
     private ExpoLight fireflyLight;
 
     public ClientFirefly() {
@@ -37,8 +36,8 @@ public class ClientFirefly extends ClientEntity {
         TextureRegion f = animationHandler.getActiveFrame();
         updateTextureBounds(f.getRegionWidth(), f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);
 
-        fireflyLight = new ExpoLight(128.0f, 32, 1f, 0.0f);
-        fireflyLight.color(1.0f, 1.0f, 0.0f, 0.75f);
+        fireflyLight = new ExpoLight(80.0f, 40, 1f, 0.3f);
+        fireflyLight.color(1.0f, 0.882f, 0.0f, 1.0f);
     }
 
     @Override
@@ -101,7 +100,7 @@ public class ClientFirefly extends ClientEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, flightHeight);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY - flightHeight * 2, 0, flightHeight);
         float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(animationHandler.getActiveFrame(), shadow);
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 

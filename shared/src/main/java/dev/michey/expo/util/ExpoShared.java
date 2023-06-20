@@ -58,7 +58,7 @@ public class ExpoShared {
     public static final int PLAYER_INVENTORY_ACTION_RIGHT = 1;
     public static final int PLAYER_INVENTORY_ACTION_MIDDLE = 2;
 
-    public static final float PLAYER_DEFAULT_RANGE = 16.0f;
+    public static final float PLAYER_DEFAULT_RANGE = 24.0f;
     public static final float PLAYER_DEFAULT_ATTACK_SPEED = 0.5f;
     public static final float PLAYER_DEFAULT_ATTACK_DAMAGE = 10.0f;
     public static final float PLAYER_DEFAULT_HARVEST_SPEED = 10.0f;

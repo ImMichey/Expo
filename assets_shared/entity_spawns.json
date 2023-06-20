@@ -1,0 +1,14 @@
+{
+    "database": [
+        {
+            "identifier": "firefly_natural",
+            "timeframes": [0, 360, 1200, 1440],
+            "type": "FIREFLY",
+            "biomes": ["PLAINS", "FOREST", "DENSE_FOREST", "WHEAT_FIELDS"],
+            "amountMin": 1,
+            "amountMax": 2,
+            "chance": 0.01,
+            "timer": 10
+        }
+    ]
+}

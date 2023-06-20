@@ -1,12 +1,10 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
-import dev.michey.expo.util.JsonConverter;
+import dev.michey.expo.server.util.JsonConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 public class WorldGenNoiseSettings {
 

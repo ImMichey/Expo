@@ -22,6 +22,11 @@ public class ExpoLight {
 
     public void update(float x, float y) {
         box2dLight.setPosition(x, y);
+        /* // DEBUG
+        box2dLight.setFalloff(ExpoLightEngine.CONSTANT_LIGHT_VALUE, ExpoLightEngine.LINEAR_LIGHT_VALUE, ExpoLightEngine.QUADRATIC_LIGHT_VALUE);
+        box2dLight.setDistance(ExpoLightEngine.DISTANCE_LIGHT_VALUE);
+        color(ExpoLightEngine.COLOR_LIGHT_VALUE);
+         */
     }
 
     public void color(Color color) {

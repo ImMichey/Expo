@@ -15,6 +15,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.light.ExpoLightEngine;
 import dev.michey.expo.render.ui.InteractableItemSlot;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
@@ -74,6 +75,11 @@ public class ImGuiExpo {
     private final float[] offset = new float[1];
     private final float[] skew = new float[1];
     private final float[] rainColor = new float[3];
+    private final float[] constantLight = new float[1];
+    private final float[] linearLight = new float[1];
+    private final float[] quadraticLight = new float[1];
+    private final float[] distanceLight = new float[1];
+    private final float[] colorLight = new float[3];
 
     public void draw() {
         drawExpoWindow();
@@ -134,6 +140,14 @@ public class ImGuiExpo {
             rainColor[0] = w.COLOR_RAIN.r;
             rainColor[1] = w.COLOR_RAIN.g;
             rainColor[2] = w.COLOR_RAIN.b;
+
+            constantLight[0] = ExpoLightEngine.CONSTANT_LIGHT_VALUE;
+            linearLight[0] = ExpoLightEngine.LINEAR_LIGHT_VALUE;
+            quadraticLight[0] = ExpoLightEngine.QUADRATIC_LIGHT_VALUE;
+            distanceLight[0] = ExpoLightEngine.DISTANCE_LIGHT_VALUE;
+            colorLight[0] = ExpoLightEngine.COLOR_LIGHT_VALUE.r;
+            colorLight[1] = ExpoLightEngine.COLOR_LIGHT_VALUE.g;
+            colorLight[2] = ExpoLightEngine.COLOR_LIGHT_VALUE.b;
 
             ClientPlayer player = ClientPlayer.getLocalPlayer();
 
@@ -200,6 +214,31 @@ public class ImGuiExpo {
                 coloredBulletText(0.0f, 1.0f, 0.5f, "batch: " + r.batch.totalRenderCalls);
                 coloredBulletText(0.0f, 1.0f, 0.5f, "arraySpriteBatch: " + r.arraySpriteBatch.totalRenderCalls);
                 coloredBulletText(0.0f, 1.0f, 0.5f, "hudBatch: " + r.hudBatch.totalRenderCalls);
+                ImGui.separator();
+
+                if(ImGui.treeNode(500, "Light engine")) {
+                    if(ImGui.sliderFloat("Linear", linearLight, 0.0f, 2.0f)) {
+                        ExpoLightEngine.LINEAR_LIGHT_VALUE = linearLight[0];
+                    }
+
+                    if(ImGui.sliderFloat("Constant", constantLight, 0.0f, 2.0f)) {
+                        ExpoLightEngine.CONSTANT_LIGHT_VALUE = constantLight[0];
+                    }
+
+                    if(ImGui.sliderFloat("Quadratic", quadraticLight, 0.0f, 2.0f)) {
+                        ExpoLightEngine.QUADRATIC_LIGHT_VALUE = quadraticLight[0];
+                    }
+
+                    if(ImGui.sliderFloat("Distance", distanceLight, 16.0f, 512.0f)) {
+                        ExpoLightEngine.DISTANCE_LIGHT_VALUE = distanceLight[0];
+                    }
+
+                    if(ImGui.colorPicker3("Color", colorLight)) {
+                        ExpoLightEngine.COLOR_LIGHT_VALUE.set(colorLight[0], colorLight[1], colorLight[2], 1.0f);
+                    }
+
+                    ImGui.treePop();
+                }
 
                 ImGui.treePop();
             }

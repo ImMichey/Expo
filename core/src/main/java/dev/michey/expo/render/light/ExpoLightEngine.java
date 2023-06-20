@@ -1,6 +1,7 @@
 package dev.michey.expo.render.light;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.box2dport.RayHandler;
 import dev.michey.expo.render.light.box2dport.RayHandlerOptions;
@@ -11,7 +12,14 @@ public class ExpoLightEngine {
     public RayHandler rayHandler;
 
     /** The light FBO quality (1 = best, 4 = worst) */
-    public int LIGHT_QUALITY = 4;
+    public int LIGHT_QUALITY = 2;
+
+    /** Debug */
+    public static float CONSTANT_LIGHT_VALUE = 0.5f;
+    public static float LINEAR_LIGHT_VALUE = 0.5f;
+    public static float QUADRATIC_LIGHT_VALUE = 0.5f;
+    public static float DISTANCE_LIGHT_VALUE = 128.0f;
+    public static Color COLOR_LIGHT_VALUE = new Color(1.0f, 1.0f, 0.0f, 1.0f);
 
     public ExpoLightEngine() {
         RayHandlerOptions options = new RayHandlerOptions();
