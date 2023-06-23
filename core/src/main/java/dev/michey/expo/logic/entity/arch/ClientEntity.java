@@ -51,6 +51,7 @@ public abstract class ClientEntity {
 
     /** ClientEntity render fields */
     public float depth;
+    public float removalFade;
     public boolean flipped;
     public boolean visibleToRenderEngine;
     public boolean disableTextureCentering;

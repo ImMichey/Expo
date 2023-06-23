@@ -106,12 +106,12 @@ public abstract class ExpoServerBase {
                 PlayerSaveFile.DEFAULT_PROPERTIES.put("posY", dimension.getDimensionSpawnY());
                 PlayerSaveFile.DEFAULT_PROPERTIES.put("dimensionName", dimension.getDimensionName());
 
-                int spawnChunkX = ExpoShared.posToChunk(dimension.getDimensionSpawnX());
-                int spawnChunkY = ExpoShared.posToChunk(dimension.getDimensionSpawnY());
-                int startChunkX = spawnChunkX - (SPAWN_AREA_CHUNK_RANGE - 1) / 2;
-                int startChunkY = spawnChunkY - (SPAWN_AREA_CHUNK_RANGE - 1) / 2;
+                //int spawnChunkX = ExpoShared.posToChunk(dimension.getDimensionSpawnX());
+                //int spawnChunkY = ExpoShared.posToChunk(dimension.getDimensionSpawnY());
+                //int startChunkX = spawnChunkX - (SPAWN_AREA_CHUNK_RANGE - 1) / 2;
+                //int startChunkY = spawnChunkY - (SPAWN_AREA_CHUNK_RANGE - 1) / 2;
 
-                dimension.getChunkHandler().initializeSpawnChunks(startChunkX, startChunkY);
+                //dimension.getChunkHandler().initializeSpawnChunks(startChunkX, startChunkY);
                 dimension.onReady();
             }
         }

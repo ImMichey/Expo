@@ -8,6 +8,8 @@ import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.world.chunk.EntityMasterVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
+import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnDatabase;
+import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnManager;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
@@ -35,6 +37,7 @@ public abstract class ServerDimension {
     /** Entity handler */
     private final ServerDimensionEntityManager entityManager;
     private final EntityMasterVisibilityController visibilityController;
+    private final EntitySpawnManager entitySpawnManager;
 
     /** Chunk handler */
     private final ServerChunkGrid chunkHandler;
@@ -48,6 +51,7 @@ public abstract class ServerDimension {
         entityManager = new ServerDimensionEntityManager();
         chunkHandler = new ServerChunkGrid(this);
         visibilityController = new EntityMasterVisibilityController(this);
+        entitySpawnManager = new EntitySpawnManager(this, EntitySpawnDatabase.get().getFor(dimensionName));
         physicsWorld = new World<>(16f);
     }
 
@@ -62,6 +66,7 @@ public abstract class ServerDimension {
         }
 
         chunkHandler.tickChunks();
+        entitySpawnManager.tick(ExpoServerContainer.get().globalDelta);
         entityManager.tickEntities(ExpoServerContainer.get().globalDelta);
         visibilityController.tick();
     }
@@ -69,13 +74,12 @@ public abstract class ServerDimension {
     private void generateWeather() {
         if(dimensionWeather == Weather.SUN) {
             dimensionWeather = Weather.RAIN;
-            dimensionWeatherDuration = Weather.RAIN.generateWeatherDuration();
-            dimensionWeatherStrength = Weather.RAIN.generateWeatherStrength();
         } else {
             dimensionWeather = Weather.SUN;
-            dimensionWeatherDuration = Weather.SUN.generateWeatherDuration();
-            dimensionWeatherStrength = Weather.SUN.generateWeatherStrength();
         }
+
+        dimensionWeatherDuration = dimensionWeather.generateWeatherDuration();
+        dimensionWeatherStrength = dimensionWeather.generateWeatherStrength();
 
         // Update.
         ServerPackets.p14WorldUpdate(dimensionTime, dimensionWeather.WEATHER_ID, dimensionWeatherStrength, PacketReceiver.dimension(this));

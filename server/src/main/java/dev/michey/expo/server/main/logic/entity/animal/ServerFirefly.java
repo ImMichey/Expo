@@ -1,9 +1,10 @@
 package dev.michey.expo.server.main.logic.entity.animal;
 
+import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.ai.EntityBrain;
-import dev.michey.expo.server.main.logic.ai.module.AIModuleFly;
-import dev.michey.expo.server.main.logic.ai.module.AIModuleIdle;
+import dev.michey.expo.server.main.logic.ai.module.firefly.AIModuleFireflyFly;
 import dev.michey.expo.server.main.logic.entity.arch.*;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
@@ -11,11 +12,14 @@ import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.AIState;
+import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ExpoTime;
 
 public class ServerFirefly extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
     public EntityBrain fireflyBrain = new EntityBrain(this);
     public EntityPhysicsBox physicsBody;
+    public float despawnDelta = -1.0f;
 
     public ServerFirefly() {
         health = 20.0f;
@@ -24,8 +28,7 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
     @Override
     public void onCreation() {
         physicsBody = new EntityPhysicsBox(this, -1.0f, 0, 2, 2);
-        fireflyBrain.addModule(new AIModuleIdle(AIState.IDLE, 0.25f, 0.75f));
-        fireflyBrain.addModule(new AIModuleFly(AIState.FLY, 0.8f, 2.0f, 48.0f));
+        fireflyBrain.addModule(new AIModuleFireflyFly(AIState.FLY, 0.25f, 0.75f, 48.0f));
     }
 
     @Override
@@ -36,6 +39,20 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
     @Override
     public void tick(float delta) {
         if(invincibility > 0) invincibility -= delta;
+
+        boolean day = ExpoTime.isDay(getDimension().dimensionTime);
+
+        if(day) {
+            if(despawnDelta > 0) {
+                despawnDelta -= delta;
+
+                if(despawnDelta <= 0) {
+                    killEntityWithPacket(EntityRemovalReason.DESPAWN);
+                }
+            } else {
+                despawnDelta = MathUtils.random(1.0f, 3.0f);
+            }
+        }
 
         tickKnockback(delta);
         boolean applyKnockback = knockbackAppliedX != 0 || knockbackAppliedY != 0;

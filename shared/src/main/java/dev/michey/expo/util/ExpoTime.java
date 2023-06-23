@@ -22,6 +22,14 @@ public class ExpoTime {
         return days * WORLD_DAY_DURATION + hours * WORLD_HOUR_DURATION + minutes * WORLD_MINUTE_DURATION;
     }
 
+    public static boolean isNight(float time) {
+        return time >= NIGHT || time < SUNRISE;
+    }
+
+    public static boolean isDay(float time) {
+        return time >= DAY && time < SUNSET;
+    }
+
     public static String worldTimeString(float worldTime) {
         int hours = (int) (worldTime / WORLD_HOUR_DURATION);
         int minutes = (int) (worldTime - worldDurationHours(hours));

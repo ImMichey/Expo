@@ -49,9 +49,13 @@ public class EntityBrain {
                 currentModule = existing;
                 currentModule.generateDuration();
                 currentModule.onStart();
-                break;
+                return;
             }
         }
+
+        // Restart current module if none found
+        currentModule.generateDuration();
+        currentModule.onStart();
     }
 
     public void setActiveModule(AIState state) {

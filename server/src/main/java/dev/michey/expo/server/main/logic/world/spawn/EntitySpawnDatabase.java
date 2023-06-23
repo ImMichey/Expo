@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class EntitySpawnDatabase {
 
@@ -22,8 +23,19 @@ public class EntitySpawnDatabase {
         }
     }
 
-    public HashMap<String, EntitySpawner> getSpawnerMap() {
-        return spawnerMap;
+    public LinkedList<EntitySpawner> getFor(String dimensionName) {
+        LinkedList<EntitySpawner> list = new LinkedList<>();
+
+        for(EntitySpawner all : spawnerMap.values()) {
+            for(String dim : all.dimensions) {
+                if(dim.equals(dimensionName)) {
+                    list.add(all);
+                    break;
+                }
+            }
+        }
+
+        return list;
     }
 
     public static EntitySpawnDatabase get() {

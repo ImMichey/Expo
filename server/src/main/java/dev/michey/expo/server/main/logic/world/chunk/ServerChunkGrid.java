@@ -1,6 +1,5 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -280,6 +279,11 @@ public class ServerChunkGrid {
                 }
             }
         }
+    }
+
+    /** Returns all active chunks with their respective inactivity timestamp. */
+    public Collection<Pair<ServerChunk, Long>> getActiveChunks() {
+        return activeChunkMap.values();
     }
 
     /** Returns an array of all chunks that are in range of given player. */

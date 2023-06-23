@@ -37,6 +37,10 @@ public class ExpoLight {
         box2dLight.setColor(r, g, b, a);
     }
 
+    public void colorAlpha(float a) {
+        box2dLight.setColor(box2dLight.getColor().r, box2dLight.getColor().g, box2dLight.getColor().b, a);
+    }
+
     public void delete() {
         box2dLight.remove();
     }

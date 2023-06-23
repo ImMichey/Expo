@@ -22,6 +22,8 @@ public class ClientFirefly extends ClientEntity {
     private float damageDelta;
     private boolean damageTint;
 
+    private float fadeInDelta;
+
     private final float flightHeight = 16;
     private ExpoLight fireflyLight;
 
@@ -29,6 +31,8 @@ public class ClientFirefly extends ClientEntity {
         animationHandler = new ExpoAnimationHandler();
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_firefly_fly", 4, 0.250f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_firefly_fly", 4, 0.125f));
+        removalFade = 0.25f;
+        fadeInDelta = 0.25f;
     }
 
     @Override
@@ -60,6 +64,13 @@ public class ClientFirefly extends ClientEntity {
         syncPositionWithServer();
         fireflyLight.update(finalDrawPosX, finalDrawPosY);
 
+        if(fadeInDelta > 0) {
+            fadeInDelta -= delta;
+            if(fadeInDelta < 0) fadeInDelta = 0;
+
+            fireflyLight.colorAlpha(1.0f - fadeInDelta * 4);
+        }
+
         if(cachedMoving != isMoving()) {
             cachedMoving = !cachedMoving;
             animationHandler.reset();
@@ -70,7 +81,7 @@ public class ClientFirefly extends ClientEntity {
     @Override
     public void render(RenderContext rc, float delta) {
         animationHandler.tick(delta);
-        boolean flip = (!flipped && serverDirX == 0) || (flipped && serverDirX == 1);
+        boolean flip = (!flipped && serverDirX == -1) || (flipped && serverDirX == 1);
 
         if(flip) {
             animationHandler.flipAllAnimations(true, false);
@@ -92,9 +103,17 @@ public class ClientFirefly extends ClientEntity {
                 if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
             }
 
-            if(damageTint) rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
+            if(damageTint) {
+                rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
+            } else {
+                if(fadeInDelta > 0) {
+                    rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - (fadeInDelta * 4));
+                } else {
+                    rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, removalFade * 4);
+                }
+            }
             rc.arraySpriteBatch.draw(animationHandler.getActiveFrame(), finalDrawPosX, finalDrawPosY);
-            if(damageTint) rc.arraySpriteBatch.setColor(Color.WHITE);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 

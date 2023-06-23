@@ -6,6 +6,7 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionCave;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionOverworld;
+import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnDatabase;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.ArrayList;

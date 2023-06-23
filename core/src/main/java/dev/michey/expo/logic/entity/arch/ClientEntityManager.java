@@ -8,10 +8,12 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.*;
@@ -82,17 +84,30 @@ public class ClientEntityManager {
         }
 
         // poll removal
-        while(!removalQueue.isEmpty()) {
-            int entityId = removalQueue.poll();
+        Iterator<Integer> operationIterator = removalQueue.iterator();
+
+        while(operationIterator.hasNext()) {
+            int entityId = operationIterator.next();
 
             ClientEntity entity = idEntityMap.get(entityId);
             if(entity == null) continue;
 
-            depthEntityList.remove(entity);
-            idEntityMap.remove(entityId);
-            typeEntityListMap.get(entity.getEntityType()).remove(entity);
+            boolean poll = true;
 
-            entity.onDeletion();
+            if(entity.removalFade > 0 && entity.removalReason != EntityRemovalReason.DEATH) {
+                entity.removalFade -= delta;
+                poll = entity.removalFade <= 0;
+            }
+
+            if(poll) {
+                operationIterator.remove();
+
+                depthEntityList.remove(entity);
+                idEntityMap.remove(entityId);
+                typeEntityListMap.get(entity.getEntityType()).remove(entity);
+
+                entity.onDeletion();
+            }
         }
 
         depthEntityList.sort(depthSorter);
