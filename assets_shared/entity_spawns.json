@@ -10,7 +10,7 @@
             "amountMax": 2,
             "chance": 0.001,
             "timer": 10,
-            "playerDistanceMin": 256,
+            "playerDistanceMin": 128,
             "entityCapPerPlayer": 4
         }
     ]

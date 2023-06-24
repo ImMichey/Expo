@@ -58,29 +58,37 @@ public class EntitySpawnManager {
 
                 if(!inTimeFrame) continue;
                 // ========================================= LIMIT CHECK
-                var map = getExistingEntityPage(es);
-                List<ServerPlayer> revisit = new LinkedList<>();
+                HashMap<ServerPlayer, Integer> map = null;
+                List<ServerPlayer> revisit = null;
+
+                if(es.entityCapPerPlayer != -1) {
+                    map = getExistingEntityPage(es);
+                    revisit = new LinkedList<>();
+                }
 
                 // ========================================= BIOME CHECK
                 var chunks = dimension.getChunkHandler().getActiveChunks();
 
                 nextChunk: for(var pair : chunks) {
                     ServerChunk chunk = pair.key;
-                    revisit.clear();
 
-                    // Limitation check
-                    for(ServerPlayer existingPlayer : map.keySet()) {
-                        int viewportStartX = existingPlayer.chunkX - ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X;
-                        int viewportStartY = existingPlayer.chunkY - ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
-                        int viewportEndX = existingPlayer.chunkX + ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X;
-                        int viewportEndY = existingPlayer.chunkY + ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
+                    if(es.entityCapPerPlayer != -1) {
+                        revisit.clear();
 
-                        if(chunk.chunkX >= viewportStartX && chunk.chunkX <= viewportEndX && chunk.chunkY >= viewportStartY && chunk.chunkY <= viewportEndY) {
-                            int existing = map.get(existingPlayer);
-                            revisit.add(existingPlayer);
+                        // Limitation check
+                        for(ServerPlayer existingPlayer : map.keySet()) {
+                            int viewportStartX = existingPlayer.chunkX - ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X;
+                            int viewportStartY = existingPlayer.chunkY - ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
+                            int viewportEndX = existingPlayer.chunkX + ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X;
+                            int viewportEndY = existingPlayer.chunkY + ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
 
-                            if(existing >= es.entityCapPerPlayer) {
-                                continue nextChunk;
+                            if(chunk.chunkX >= viewportStartX && chunk.chunkX <= viewportEndX && chunk.chunkY >= viewportStartY && chunk.chunkY <= viewportEndY) {
+                                int existing = map.get(existingPlayer);
+                                revisit.add(existingPlayer);
+
+                                if(existing >= es.entityCapPerPlayer) {
+                                    continue nextChunk;
+                                }
                             }
                         }
                     }
@@ -104,8 +112,10 @@ public class EntitySpawnManager {
                                     spawned.onGeneration(false, tile.biome);
                                     ServerWorld.get().registerServerEntity(dimension.getDimensionName(), spawned);
 
-                                    for(ServerPlayer rev : revisit) {
-                                        map.put(rev, map.get(rev) + 1);
+                                    if(es.entityCapPerPlayer != -1) {
+                                        for(ServerPlayer rev : revisit) {
+                                            map.put(rev, map.get(rev) + 1);
+                                        }
                                     }
 
                                     if(toSpawn <= 0) {
@@ -131,6 +141,7 @@ public class EntitySpawnManager {
     }
 
     private boolean isFarEnoughFromPlayers(float x, float y, float minDis) {
+        if(minDis == -1) return true;
         var players = dimension.getEntityManager().getAllPlayers();
 
         for(ServerPlayer player : players) {

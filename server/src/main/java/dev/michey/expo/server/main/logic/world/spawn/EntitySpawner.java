@@ -28,8 +28,8 @@ public class EntitySpawner {
         spawnMax = json.getInt("amountMax");
         spawnChance = json.getFloat("chance");
         spawnTimer = json.getFloat("timer");
-        playerDistanceMin = json.getFloat("playerDistanceMin");
-        entityCapPerPlayer = json.getInt("entityCapPerPlayer");
+        playerDistanceMin = json.has("playerDistanceMin") ? json.getFloat("playerDistanceMin") : -1;
+        entityCapPerPlayer = json.has("entityCapPerPlayer") ? json.getInt("entityCapPerPlayer") : -1;
     }
 
 }

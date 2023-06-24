@@ -1,6 +1,8 @@
 package dev.michey.expo.server.main.logic.world.dimension;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.dongbat.jbump.Item;
+import com.dongbat.jbump.Rect;
 import com.dongbat.jbump.World;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
@@ -52,7 +54,17 @@ public abstract class ServerDimension {
         chunkHandler = new ServerChunkGrid(this);
         visibilityController = new EntityMasterVisibilityController(this);
         entitySpawnManager = new EntitySpawnManager(this, EntitySpawnDatabase.get().getFor(dimensionName));
-        physicsWorld = new World<>(16f);
+        physicsWorld = new World<>(16f) {
+
+            @Override
+            public void remove(Item item) {
+                // Band-aid fix to stupid JBump :D
+                Rect rect = getRect(item);
+                if(rect == null) return;
+                super.remove(item);
+            }
+
+        };
     }
 
     private void tickDimension() {

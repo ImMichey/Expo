@@ -28,7 +28,7 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
     @Override
     public void onCreation() {
         physicsBody = new EntityPhysicsBox(this, -1.0f, 0, 2, 2);
-        fireflyBrain.addModule(new AIModuleFireflyFly(AIState.FLY, 0.25f, 0.75f, 48.0f));
+        fireflyBrain.addModule(new AIModuleFireflyFly(AIState.FLY, 0.1f, 1.0f, 24.0f));
     }
 
     @Override

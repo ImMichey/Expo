@@ -46,6 +46,10 @@ public class JsonConverter {
     }
 
     public static BiomeType[] pullBiomes(JSONArray array) {
+        if(array.length() == 1 && array.getString(0).equals("*")) {
+            return BiomeType.values();
+        }
+
         BiomeType[] biomes = new BiomeType[array.length()];
         for(int i = 0; i < array.length(); i++) biomes[i] = BiomeType.valueOf(array.getString(i));
         return biomes;

@@ -205,6 +205,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public void tick(float delta) {
         tickKnockback(delta);
 
+        if(invincibility > 0) invincibility -= delta;
+
         if(xDir != 0 || yDir != 0) {
             float multiplicator = movementSpeedMultiplicator() * (sprinting ? sprintMultiplier : 1.0f);
             boolean normalize = xDir != 0 && yDir != 0;
