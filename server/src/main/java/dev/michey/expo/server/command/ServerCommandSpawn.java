@@ -76,6 +76,9 @@ public class ServerCommandSpawn extends AbstractServerCommand {
             if(ServerPlayer.getLocalPlayer() != null) {
                 spawned.posX = ServerPlayer.getLocalPlayer().posX;
                 spawned.posY = ServerPlayer.getLocalPlayer().posY;
+            } else if(player != null) {
+                spawned.posX = player.posX;
+                spawned.posY = player.posY;
             }
         }
 

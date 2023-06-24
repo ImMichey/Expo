@@ -29,6 +29,7 @@ public enum ServerEntityType {
     WHEAT_PLANT(17, "WheatPlant", false),
     SUNFLOWER(18, "Sunflower", false),
     FIREFLY(19, "Firefly", false),
+    MUSHROOM_GLOWING(20, "MushroomGlowing", false),
     ;
 
     public final int ENTITY_ID;
@@ -63,6 +64,7 @@ public enum ServerEntityType {
             case 17 -> new ServerWheat();
             case 18 -> new ServerSunflower();
             case 19 -> new ServerFirefly();
+            case 20 -> new ServerMushroomGlowing();
             default -> null;
         };
     }
@@ -89,6 +91,7 @@ public enum ServerEntityType {
             case "WHEAT" -> new ServerWheat();
             case "SUNFLOWER" -> new ServerSunflower();
             case "FIREFLY" -> new ServerFirefly();
+            case "MUSHROOMGLOWING", "MUSHROOM_GLOWING" -> new ServerMushroomGlowing();
             default -> null;
         };
     }

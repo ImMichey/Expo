@@ -34,6 +34,7 @@ public enum ClientEntityType {
     WHEAT_PLANT(17, "WheatPlant", ServerEntityType.WHEAT_PLANT),
     SUNFLOWER(18, "Sunflower", ServerEntityType.SUNFLOWER),
     FIREFLY(19, "Firefly", ServerEntityType.FIREFLY),
+    MUSHROOM_GLOWING(20, "MushroomGlowing", ServerEntityType.MUSHROOM_GLOWING),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -84,6 +85,7 @@ public enum ClientEntityType {
             case 17 -> new ClientWheat();
             case 18 -> new ClientSunflower();
             case 19 -> new ClientFirefly();
+            case 20 -> new ClientMushroomGlowing();
             default -> null;
         };
     }

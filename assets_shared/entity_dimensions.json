@@ -11,6 +11,9 @@
     "MUSHROOM_BROWN": {
         "bbox": [-4.0, 0, 8, 7]
     },
+    "MUSHROOM_GLOWING": {
+        "bbox": [-4.0, 0, 8, 7]
+    },
     "BUSH": {
         "bbox": [-8.0, 0, 16, 12]
     },

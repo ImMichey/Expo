@@ -557,6 +557,30 @@
                 "toolType": "ITEM",
                 "durability": -1
             }
+        },
+        {
+            "identifier": "item_mushroom_glowing",
+            "id": 22,
+            "displayName": "Glowing Mushroom",
+            "displayNameColor": "#00ffff",
+            "render": {
+                "ui": {
+                    "texture": "item_mushroom_glowing"
+                },
+                "held": {
+                    "texture": "item_mushroom_glowing",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotations": [67.5, -22.5]
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
         }
     ]
 }

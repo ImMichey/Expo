@@ -50,7 +50,7 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
                     killEntityWithPacket(EntityRemovalReason.DESPAWN);
                 }
             } else {
-                despawnDelta = MathUtils.random(1.0f, 3.0f);
+                despawnDelta = MathUtils.random(10.0f, 30.0f);
             }
         }
 

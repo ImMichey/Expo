@@ -1,6 +1,8 @@
 package dev.michey.expo.render.light;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.box2dport.PointLight;
 
@@ -8,6 +10,13 @@ public class ExpoLight {
 
     /** Direct access light. */
     public PointLight box2dLight;
+
+    public boolean pulsating = false;
+    public float pulsatingAlpha = 0f;
+    public float pulsatingSpeed = 1f;
+    public boolean pulsatingDirection = true;
+    public float pulsatingMinDistance;
+    public float pulsatingMaxDistance;
 
     public ExpoLight(float distance, int rays, float constant, float quadratic) {
         box2dLight = new PointLight(RenderContext.get().lightEngine.rayHandler, rays);
@@ -20,13 +29,36 @@ public class ExpoLight {
         this(distance, (int) distance, 1.0f, 0f);
     }
 
-    public void update(float x, float y) {
+    public void update(float x, float y, float delta) {
         box2dLight.setPosition(x, y);
-        /* // DEBUG
-        box2dLight.setFalloff(ExpoLightEngine.CONSTANT_LIGHT_VALUE, ExpoLightEngine.LINEAR_LIGHT_VALUE, ExpoLightEngine.QUADRATIC_LIGHT_VALUE);
-        box2dLight.setDistance(ExpoLightEngine.DISTANCE_LIGHT_VALUE);
-        color(ExpoLightEngine.COLOR_LIGHT_VALUE);
-         */
+
+        if(pulsating) {
+            if(pulsatingDirection) {
+                pulsatingAlpha += delta * pulsatingSpeed;
+
+                if(pulsatingAlpha >= 1.0f) {
+                    pulsatingAlpha = 1.0f;
+                    pulsatingDirection = false;
+                }
+            } else {
+                pulsatingAlpha -= delta * pulsatingSpeed;
+
+                if(pulsatingAlpha <= 0.0f) {
+                    pulsatingAlpha = 0.0f;
+                    pulsatingDirection = true;
+                }
+            }
+
+            box2dLight.setDistance(pulsatingMinDistance + pulsatingMaxDistance * Interpolation.smooth.apply(pulsatingAlpha));
+        }
+    }
+
+    public void setPulsating(float speed, float minDistance, float maxDistance) {
+        pulsating = true;
+        pulsatingSpeed = speed;
+        pulsatingMinDistance = minDistance;
+        pulsatingMaxDistance = maxDistance - minDistance;
+        pulsatingAlpha = MathUtils.random();
     }
 
     public void color(Color color) {

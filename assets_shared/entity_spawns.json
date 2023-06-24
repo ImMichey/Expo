@@ -3,7 +3,7 @@
         {
             "dimensions": ["overworld"],
             "identifier": "firefly_natural",
-            "timeframes": [0, 360, 1200, 1440],
+            "timeframes": [0, 390, 1290, 1440],
             "type": "FIREFLY",
             "biomes": ["PLAINS", "FOREST", "DENSE_FOREST", "WHEAT_FIELDS"],
             "amountMin": 1,
@@ -11,7 +11,7 @@
             "chance": 0.001,
             "timer": 10,
             "playerDistanceMin": 128,
-            "entityCapPerPlayer": 4
+            "entityCapPerPlayer": 8
         }
     ]
 }

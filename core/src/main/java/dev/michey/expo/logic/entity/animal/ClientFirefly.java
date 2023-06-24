@@ -62,7 +62,7 @@ public class ClientFirefly extends ClientEntity {
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
-        fireflyLight.update(finalDrawPosX, finalDrawPosY);
+        fireflyLight.update(finalDrawPosX, finalDrawPosY, delta);
 
         if(fadeInDelta > 0) {
             fadeInDelta -= delta;
