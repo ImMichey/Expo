@@ -23,7 +23,7 @@ public class ServerCommandStop extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         sendToSender("Received server stop signal, shutting down application...", player);
         ExpoServerBase.get().stopServer();
     }

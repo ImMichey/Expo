@@ -85,6 +85,10 @@ public class ExpoClientPacketReader {
                     continue;
                 }
 
+                if(p.timestamp < entity.entityTimestamp) {
+                    ExpoLogger.log("Possible clash? Timestamp " + entity.entityId + ": " + entity.entityTimestamp + "/" + p.timestamp);
+                }
+
                 entity.removalReason = p.reasons[i];
                 ClientEntityManager.get().removeEntity(p.entityList[i]);
             }

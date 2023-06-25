@@ -22,7 +22,7 @@ public class ServerCommandSpeed extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         if(player != null) {
             player.playerSpeed = parseF(args, 1);
             sendToSender("Your new speed is " + player.playerSpeed, player);

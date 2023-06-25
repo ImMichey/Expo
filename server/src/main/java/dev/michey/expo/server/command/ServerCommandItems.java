@@ -23,7 +23,7 @@ public class ServerCommandItems extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         if(player == null) {
             var players = ServerWorld.get().getMainDimension().getEntityManager().getAllPlayers();
 

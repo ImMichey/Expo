@@ -23,7 +23,7 @@ public class ServerCommandHelp extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         sendToSender("All available commands: ", player);
 
         for(AbstractCommand command : getResolver().getCommands()) {

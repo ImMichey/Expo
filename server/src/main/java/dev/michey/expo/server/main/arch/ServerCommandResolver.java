@@ -12,11 +12,11 @@ import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ServerCommandResolver extends CommandResolver {
 
-    public void resolveCommand(String fullLine, ServerPlayer sender) {
+    public void resolveCommand(String fullLine, ServerPlayer sender, boolean ignoreLogging) {
         String[] split = fullLine.split(" ");
 
         if(split.length == 0) {
-            log("Invalid input: '" + fullLine + "'");
+            if(!ignoreLogging) log("Invalid input: '" + fullLine + "'");
             return;
         }
 
@@ -24,19 +24,19 @@ public class ServerCommandResolver extends CommandResolver {
         AbstractCommand mapped = commandMap.get(firstArg);
 
         if(mapped != null) {
-            log("Executing command '" + fullLine + "'");
+            if(!ignoreLogging) log("Executing command '" + fullLine + "'");
 
             try {
-                ((ExecutablePlayer) mapped).executeCommand(split, sender);
+                ((ExecutablePlayer) mapped).executeCommand(split, sender, ignoreLogging);
             } catch (CommandSyntaxException e) {
-                sendToSender("Syntax parse exception: " + e.getMessage(), sender);
+                if(!ignoreLogging) sendToSender("Syntax parse exception: " + e.getMessage(), sender);
 
                 if(e.reason == CommandExceptionReason.OUT_OF_BOUNDS) {
-                    sendToSender("Use: " + mapped.getCommandSyntax(), sender);
+                    if(!ignoreLogging) sendToSender("Use: " + mapped.getCommandSyntax(), sender);
                 }
             }
         } else {
-            sendToSender("Command '" + firstArg + "' does not exist in command map", sender);
+            if(!ignoreLogging) sendToSender("Command '" + firstArg + "' does not exist in command map", sender);
         }
     }
 

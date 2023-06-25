@@ -11,6 +11,7 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.packet.ExpoServerListener;
 import dev.michey.expo.server.main.packet.ExpoServerRegistry;
 import dev.michey.expo.server.packet.Packet;
+import dev.michey.expo.util.ExpoShared;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -77,7 +78,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
                     while(!consoleCommandThread.isInterrupted()) {
                         String cmd = scanner.nextLine();
                         log("User input: '" + cmd + "'");
-                        ExpoServerBase.get().getCommandResolver().resolveCommand(cmd, null);
+                        ExpoServerBase.get().getCommandResolver().resolveCommand(cmd, null, false);
                     }
                 }
 

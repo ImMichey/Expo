@@ -6,5 +6,6 @@ public class P8_EntityDeleteStack extends Packet {
 
     public int[] entityList;
     public EntityRemovalReason[] reasons;
+    public long timestamp;
 
 }

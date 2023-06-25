@@ -5,6 +5,6 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public interface ExecutablePlayer {
 
-    void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException;
+    void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException;
 
 }

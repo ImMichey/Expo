@@ -73,7 +73,7 @@ public class ClientEntityManager {
             ClientEntity toAdd = additionQueue.poll();
 
             if(idEntityMap.containsKey(toAdd.entityId)) {
-                ExpoLogger.log("ILLEGAL ENTITY ID ? " + toAdd.entityId);
+                ExpoLogger.log("ILLEGAL ENTITY ID ? " + toAdd.entityId + " creation/now: " + toAdd.entityTimestamp + "/" + System.currentTimeMillis());
             } else {
                 depthEntityList.add(toAdd);
                 idEntityMap.put(toAdd.entityId, toAdd);
@@ -327,6 +327,7 @@ public class ClientEntityManager {
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
+        e.entityTimestamp = p.timestamp;
         return e;
     }
 
@@ -337,6 +338,7 @@ public class ClientEntityManager {
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
+        e.entityTimestamp = p.timestamp;
         e.applyPacketPayload(p.payload);
         return e;
     }

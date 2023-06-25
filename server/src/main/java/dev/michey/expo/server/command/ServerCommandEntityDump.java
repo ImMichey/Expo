@@ -26,7 +26,7 @@ public class ServerCommandEntityDump extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer sender) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer sender, boolean ignoreLogging) throws CommandSyntaxException {
         ServerWorld world = ServerWorld.get();
 
         sendToSender("=== ENTITY DUMP START ===", sender);

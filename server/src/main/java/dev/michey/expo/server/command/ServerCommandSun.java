@@ -27,7 +27,7 @@ public class ServerCommandSun extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         ServerDimension dim = ServerWorld.get().getMainDimension();
         dim.dimensionWeather = Weather.SUN;
         dim.dimensionWeatherDuration = Weather.SUN.generateWeatherDuration();

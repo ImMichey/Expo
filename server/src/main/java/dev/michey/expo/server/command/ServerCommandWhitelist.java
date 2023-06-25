@@ -23,7 +23,7 @@ public class ServerCommandWhitelist extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         if(ServerWhitelist.get() == null) {
             sendToSender("Server whitelist is disabled. Enable whitelist in config and restart the server.", player);
             return;

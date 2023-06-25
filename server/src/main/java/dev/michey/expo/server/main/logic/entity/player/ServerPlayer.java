@@ -45,7 +45,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public PlayerSaveFile playerSaveFile;
     public String username;
 
-    public float playerSpeed = 1.1f;
+    public float playerSpeed = 66f;
     public final float sprintMultiplier = 1.5f;
     public int xDir = 0;
     public int yDir = 0;
@@ -217,8 +217,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 normalizer = 1 / len;
             }
 
-            float toMoveX = xDir * playerSpeed * multiplicator * normalizer + knockbackAppliedX;
-            float toMoveY = yDir * playerSpeed * multiplicator * normalizer + knockbackAppliedY;
+            float toMoveX = xDir * delta * playerSpeed * multiplicator * normalizer + knockbackAppliedX;
+            float toMoveY = yDir * delta * playerSpeed * multiplicator * normalizer + knockbackAppliedY;
 
             var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
 

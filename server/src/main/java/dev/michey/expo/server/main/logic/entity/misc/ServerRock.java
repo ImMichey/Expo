@@ -49,7 +49,7 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
     public void onDie() {
         float[] data = itemData();
 
-        boolean flint = MathUtils.random() <= 0.33f;
+        boolean flint = MathUtils.random() <= 0.5f;
 
         if(flint) {
             spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_flint", 8);

@@ -25,6 +25,7 @@ public abstract class ClientEntity {
 
     /** Passed by the game server. */
     public int entityId;
+    public long entityTimestamp;
 
     /** ClientEntity base fields */
     public float serverPosX;

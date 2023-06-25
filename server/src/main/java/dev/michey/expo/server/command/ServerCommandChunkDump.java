@@ -25,7 +25,7 @@ public class ServerCommandChunkDump extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         ServerWorld world = ServerWorld.get();
 
         sendToSender("=== CHUNKDUMP START ===", player);

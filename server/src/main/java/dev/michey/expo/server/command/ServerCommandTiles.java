@@ -25,7 +25,7 @@ public class ServerCommandTiles extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         if(player == null) {
             sendToSender("You must be a player to do this!", null);
             return;

@@ -44,6 +44,7 @@ public class ServerPackets {
         p.dimensionName = dimensionName;
         p.serverPosX = serverPosX;
         p.serverPosY = serverPosY;
+        p.timestamp = System.currentTimeMillis();
         tcp(p, receiver);
     }
 
@@ -63,6 +64,7 @@ public class ServerPackets {
         P4_EntityDelete p = new P4_EntityDelete();
         p.entityId = entityId;
         p.reason = reason;
+        p.timestamp = System.currentTimeMillis();
         udp(p, receiver);
     }
 
@@ -87,6 +89,7 @@ public class ServerPackets {
         P8_EntityDeleteStack p = new P8_EntityDeleteStack();
         p.entityList = entityList;
         p.reasons = reasons;
+        p.timestamp = System.currentTimeMillis();
         udp(p, receiver);
     }
 
@@ -292,6 +295,7 @@ public class ServerPackets {
         p.serverPosX = serverPosX;
         p.serverPosY = serverPosY;
         p.payload = payload;
+        p.timestamp = System.currentTimeMillis();
         tcp(p, receiver);
     }
 

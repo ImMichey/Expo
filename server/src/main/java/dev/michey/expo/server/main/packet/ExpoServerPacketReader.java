@@ -230,7 +230,7 @@ public class ExpoServerPacketReader {
 
     private void readChatMessage(boolean local, P25_ChatMessage p, Connection connection, ServerPlayer serverPlayer) {
         if(p.message.startsWith("/")) {
-            ExpoServerBase.get().getCommandResolver().resolveCommand(p.message, serverPlayer);
+            ExpoServerBase.get().getCommandResolver().resolveCommand(p.message, serverPlayer, false);
         } else {
             if(!local) {
                 log("[Chat] " + p.sender + ": " + p.message);

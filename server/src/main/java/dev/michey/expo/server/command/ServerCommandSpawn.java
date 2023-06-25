@@ -26,9 +26,9 @@ public class ServerCommandSpawn extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         if(args.length <= 1) {
-            sendToSender(getCommandSyntax(), player);
+            if(!ignoreLogging) sendToSender(getCommandSyntax(), player);
             return;
         }
 
@@ -39,21 +39,21 @@ public class ServerCommandSpawn extends AbstractServerCommand {
             int typeId = preResult.key;
 
             if(forbiddenSpawn(typeId)) {
-                sendToSender("Forbidden entity type id '" + typeId + "'", player);
+                if(!ignoreLogging) sendToSender("Forbidden entity type id '" + typeId + "'", player);
                 return;
             }
 
             spawned = ServerEntityType.typeToEntity(typeId);
 
             if(spawned == null) {
-                sendToSender("Invalid entity type id '" + typeId + "'", player);
+                if(!ignoreLogging) sendToSender("Invalid entity type id '" + typeId + "'", player);
                 return;
             }
         } else {
             spawned = ServerEntityType.nameToEntity(args[1].toUpperCase());
 
             if(spawned == null) {
-                sendToSender("Invalid entity name '" + args[1].toUpperCase() + "'", player);
+                if(!ignoreLogging) sendToSender("Invalid entity name '" + args[1].toUpperCase() + "'", player);
                 return;
             }
         }
@@ -83,7 +83,7 @@ public class ServerCommandSpawn extends AbstractServerCommand {
         }
 
         ServerWorld.get().registerServerEntity(ExpoShared.DIMENSION_OVERWORLD, spawned);
-        sendToSender("Spawned entity " + spawned.getEntityType() + " at position " + spawned.posX + ", " + spawned.posY + (spawned.staticPosition ? " as static entity" : ""), player);
+        if(!ignoreLogging) sendToSender("Spawned entity " + spawned.getEntityType() + " at position " + spawned.posX + ", " + spawned.posY + (spawned.staticPosition ? " as static entity" : ""), player);
     }
 
     private boolean forbiddenSpawn(int id) {

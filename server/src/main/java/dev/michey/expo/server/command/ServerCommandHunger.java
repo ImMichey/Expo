@@ -24,7 +24,7 @@ public class ServerCommandHunger extends AbstractServerCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, ServerPlayer player) throws CommandSyntaxException {
+    public void executeCommand(String[] args, ServerPlayer player, boolean ignoreLogging) throws CommandSyntaxException {
         player.hunger = 10.0f;
         ServerPackets.p23PlayerLifeUpdate(player.health, player.hunger, PacketReceiver.player(player));
 
