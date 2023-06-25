@@ -51,7 +51,7 @@ public abstract class ServerEntity {
     public int tileX;
     public int tileY;
     public float health;
-    public ToolType damageableWith = null;
+    public ToolType[] damageableWith = null;
 
     /** Knockback fields */
     public float knockbackStrength;
@@ -315,6 +315,10 @@ public abstract class ServerEntity {
                 player.entityVisibilityController.removeTrackedEntity(entityId);
             }
         }
+    }
+
+    public void setDamageableWith(ToolType... types) {
+        damageableWith = types;
     }
 
 }

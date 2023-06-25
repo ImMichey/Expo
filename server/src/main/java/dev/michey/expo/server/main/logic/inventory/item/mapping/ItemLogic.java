@@ -85,7 +85,7 @@ public class ItemLogic {
     }
 
     public boolean isTool() {
-        return isSpecialType() && (toolType == ToolType.PICKAXE || toolType == ToolType.AXE || toolType == ToolType.SHOVEL || toolType == ToolType.HOE);
+        return isSpecialType() && (toolType == ToolType.PICKAXE || toolType == ToolType.AXE || toolType == ToolType.SHOVEL || toolType == ToolType.SCYTHE);
     }
 
     public boolean isSpecialType() {

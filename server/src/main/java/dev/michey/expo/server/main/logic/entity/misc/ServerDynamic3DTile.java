@@ -27,7 +27,7 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
         checkForBoundingBox();
 
         if(emulatingType == TileLayerType.ROCK) {
-            damageableWith = ToolType.PICKAXE;
+            setDamageableWith(ToolType.PICKAXE);
             health = 50.0f;
         }
     }

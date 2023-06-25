@@ -2,7 +2,7 @@ package dev.michey.expo.server.main.logic.inventory.item;
 
 public enum ToolType {
 
-    PICKAXE, AXE, SHOVEL, HOE, WEAPON, BOW,
+    FIST, PICKAXE, AXE, SHOVEL, SCYTHE, WEAPON, BOW,
     HELMET, CHESTPLATE, GLOVES, LEGS, BOOTS
 
 }

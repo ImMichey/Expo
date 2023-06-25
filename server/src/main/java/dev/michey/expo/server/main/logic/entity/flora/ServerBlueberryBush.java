@@ -10,6 +10,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
@@ -28,6 +29,7 @@ public class ServerBlueberryBush extends ServerEntity implements PhysicsEntity {
 
     public ServerBlueberryBush() {
         health = 40.0f;
+        setDamageableWith(ToolType.SCYTHE, ToolType.AXE, ToolType.FIST);
     }
 
     @Override

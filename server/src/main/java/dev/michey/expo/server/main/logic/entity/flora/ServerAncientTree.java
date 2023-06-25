@@ -25,7 +25,7 @@ public class ServerAncientTree extends ServerEntity {
 
     public ServerAncientTree() {
         health = 100.0f;
-        damageableWith = ToolType.AXE;
+        setDamageableWith(ToolType.AXE);
     }
 
     @Override

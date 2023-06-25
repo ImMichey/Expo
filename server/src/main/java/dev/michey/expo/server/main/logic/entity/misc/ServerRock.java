@@ -48,7 +48,6 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
     @Override
     public void onDie() {
         float[] data = itemData();
-
         boolean flint = MathUtils.random() <= 0.5f;
 
         if(flint) {
@@ -64,7 +63,7 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
         float rh = 7.5f; // Rock Texture * 0.75 Scale
         if(variant == 3 || variant == 6) return new float[] {1, 2, 0, (v3y - fh) * 0.5f};
         if(variant == 1 || variant == 4) return new float[] {1, 2, 0, (v1y - rh) * 0.5f};
-        return new float[] {1, 3, 0, (v2y - rh) * 0.5f};
+        return new float[] {1, 2, 0, (v2y - rh) * 0.5f};
     }
 
     @Override

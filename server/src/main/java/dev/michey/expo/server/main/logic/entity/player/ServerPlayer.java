@@ -266,9 +266,30 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
                     if(selected.damageableWith != null) {
                         if(item != -1) {
-                            if(selected.damageableWith == ItemMapper.get().getMapping(item).logic.toolType) {
+                            ToolType usingType = ItemMapper.get().getMapping(item).logic.toolType;
+                            boolean used = false;
+                            boolean fist = false;
+
+                            for(ToolType checkFor : selected.damageableWith) {
+                                if(usingType == checkFor) {
+                                    selected.applyDamageWithPacket(this, dmg);
+                                    useItemDurability(getCurrentItem());
+                                    used = true;
+                                    break;
+                                } else if(checkFor == ToolType.FIST) {
+                                    fist = true;
+                                }
+                            }
+
+                            if(!used && fist) {
                                 selected.applyDamageWithPacket(this, dmg);
-                                useItemDurability(getCurrentItem());
+                            }
+                        } else {
+                            for(ToolType checkFor : selected.damageableWith) {
+                                if(checkFor == ToolType.FIST) {
+                                    selected.applyDamageWithPacket(this, dmg);
+                                    break;
+                                }
                             }
                         }
                     } else {

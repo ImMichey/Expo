@@ -41,7 +41,7 @@
                         "name": "rocks",
                         "octaves": 4,
                         "type": 5,
-                        "frequency": 0.018,
+                        "frequency": 0.014,
                         "noiseOffset": 3,
                         "logic": {
                             "check": [
@@ -51,7 +51,7 @@
                                 "FOREST",
                                 "DESERT"
                             ],
-                            "threshold": 0.725,
+                            "threshold": 0.765,
                             "replaceType": "BIOME",
                             "replaceWith": "ROCK",
                             "priority": -100
