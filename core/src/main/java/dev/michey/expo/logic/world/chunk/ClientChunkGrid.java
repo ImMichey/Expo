@@ -12,6 +12,7 @@ import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -31,7 +32,7 @@ public class ClientChunkGrid {
     public HashMap<BiomeType, float[]> biomeDataMap;
 
     private HashMap<String, BiomeType> noiseCacheMap;
-    public HashMap<String, Pair<NoisePostProcessor, Noise>> noisePostProcessorMap;
+    public LinkedList<Pair<NoisePostProcessor, Noise>> noisePostProcessorMap;
 
     /** Water wave logic */
     private float waveDelta;
@@ -48,7 +49,7 @@ public class ClientChunkGrid {
             terrainNoiseMoisture = new Noise();
             riverNoise = new Noise();
             noiseCacheMap = new HashMap<>();
-            noisePostProcessorMap = new HashMap<>();
+            noisePostProcessorMap = new LinkedList<>();
         }
 
         INSTANCE = this;
@@ -70,11 +71,10 @@ public class ClientChunkGrid {
         }
 
         if(noiseSettings.isPostProcessorGenerator()) {
-            for(String key : noiseSettings.postProcessList.keySet()) {
-                NoisePostProcessor npp = noiseSettings.postProcessList.get(key);
+            for(NoisePostProcessor npp : noiseSettings.postProcessList) {
                 Noise noise = new Noise(worldSeed);
                 npp.noiseWrapper.applyTo(noise);
-                noisePostProcessorMap.put(key, new Pair<>(npp, noise));
+                noisePostProcessorMap.add(new Pair<>(npp, noise));
                 ExpoLogger.log(npp.noiseWrapper.name + ": " + noise.getSeed());
             }
         }
@@ -162,10 +162,8 @@ public class ClientChunkGrid {
                     if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
-                for(var pair : noisePostProcessorMap.values()) {
-                    NoisePostProcessor npp = pair.key;
-
-                    if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
+                for(var pair : noisePostProcessorMap) {
+                    if(pair.key.postProcessorLogic instanceof PostProcessorBiome ppb) {
                         BiomeType biome = ppb.getBiome(toCheck, normalized(pair.value, x, y));
 
                         if(biome != null) {

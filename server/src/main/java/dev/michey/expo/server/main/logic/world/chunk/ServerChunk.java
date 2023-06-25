@@ -290,7 +290,7 @@ public class ServerChunk {
 
         LinkedList[] postProcessedLists = new LinkedList[3];
 
-        for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.values()) {
+        for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList) {
             if(npp.postProcessorLogic instanceof PostProcessorLayer ppl) {
                 for(int i = 0; i < tiles.length; i++) {
                     ServerTile tile = tiles[i];

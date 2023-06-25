@@ -10,6 +10,7 @@ import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.world.chunk.EntityMasterVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
+import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
 import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnDatabase;
 import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnManager;
 import dev.michey.expo.server.util.PacketReceiver;
@@ -31,7 +32,7 @@ public abstract class ServerDimension {
     protected float dimensionSpawnY = MathUtils.random(128.0f, 384.0f);
 
     /** Dimension data */
-    public float dimensionTime = ExpoTime.worldDurationHours(8);
+    public float dimensionTime = ExpoTime.worldDurationHours(7);
     public Weather dimensionWeather = Weather.SUN;
     public float dimensionWeatherDuration = Weather.SUN.generateWeatherDuration();
     public float dimensionWeatherStrength = Weather.SUN.generateWeatherStrength();
@@ -108,10 +109,12 @@ public abstract class ServerDimension {
         chunkHandler.getTerrainNoiseMoisture().setSeed(seed + 2);
         chunkHandler.getRiverNoise().setSeed(seed);
 
-        for(String key : chunkHandler.getNoisePostProcessorMap().keySet()) {
-            Noise n = chunkHandler.getNoisePostProcessorMap().get(key);
-            n.setSeed(seed + chunkHandler.getGenSettings().getNoiseSettings().postProcessList.get(key).noiseWrapper.seedOffset);
-            ExpoLogger.log(key + ": " + n.getSeed());
+        if(chunkHandler.getGenSettings().getNoiseSettings() != null) {
+            for(NoisePostProcessor npp : chunkHandler.getGenSettings().getNoiseSettings().postProcessList) {
+                String k = npp.noiseWrapper.name;
+                chunkHandler.getNoisePostProcessorMap().get(k).setSeed(seed + npp.noiseWrapper.seedOffset);
+                ExpoLogger.log(k + ": " + (seed + npp.noiseWrapper.seedOffset));
+            }
         }
     }
 

@@ -41,7 +41,7 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
     @Override
     public void onGeneration(boolean spread, BiomeType biome) {
         int start = (biome == BiomeType.DESERT || biome == BiomeType.BEACH) ? 4 : 1;
-        variant = MathUtils.random(start, start + 2);
+        variant = MathUtils.random(start, start + 1);
         health = 10.0f;
     }
 
@@ -49,7 +49,9 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
     public void onDie() {
         float[] data = itemData();
 
-        if(variant == 3 || variant == 6) {
+        boolean flint = MathUtils.random() <= 0.33f;
+
+        if(flint) {
             spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_flint", 8);
         } else {
             spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_rock", 8);

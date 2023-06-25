@@ -4,12 +4,14 @@ public class NoisePostProcessor {
 
     public NoiseWrapper noiseWrapper;
     public PostProcessorLogic postProcessorLogic;
+    public int priority;
 
     public NoisePostProcessor() {
         // KryoNet
     }
 
-    public NoisePostProcessor(NoiseWrapper noiseWrapper, PostProcessorLogic postProcessorLogic) {
+    public NoisePostProcessor(int priority, NoiseWrapper noiseWrapper, PostProcessorLogic postProcessorLogic) {
+        this.priority = priority;
         this.noiseWrapper = noiseWrapper;
         this.postProcessorLogic = postProcessorLogic;
     }
@@ -19,6 +21,7 @@ public class NoisePostProcessor {
         return "NoisePostProcessor{" +
                 "noiseWrapper=" + noiseWrapper +
                 ", postProcessorLogic=" + postProcessorLogic +
+                ", priority=" + priority +
                 '}';
     }
 

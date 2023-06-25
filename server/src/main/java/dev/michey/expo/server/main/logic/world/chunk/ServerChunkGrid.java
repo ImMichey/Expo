@@ -74,7 +74,7 @@ public class ServerChunkGrid {
             }
 
             if(settings.isPostProcessorGenerator()) {
-                for(NoisePostProcessor wrapper : settings.postProcessList.values()) {
+                for(NoisePostProcessor wrapper : settings.postProcessList) {
                     Noise noise = new Noise(0);
                     wrapper.noiseWrapper.applyTo(noise);
                     noisePostProcessorMap.put(wrapper.noiseWrapper.name, noise);
@@ -166,7 +166,7 @@ public class ServerChunkGrid {
                     if(river >= 0.975f) return BiomeType.RIVER;
                 }
 
-                for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.values()) {
+                for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList) {
                     if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
                         BiomeType biome = ppb.getBiome(toCheck, normalized(noisePostProcessorMap.get(ppb.noiseName), x, y));
 

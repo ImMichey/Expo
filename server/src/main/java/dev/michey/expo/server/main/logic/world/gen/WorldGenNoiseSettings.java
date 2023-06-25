@@ -4,7 +4,8 @@ import dev.michey.expo.server.util.JsonConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 public class WorldGenNoiseSettings {
 
@@ -17,7 +18,8 @@ public class WorldGenNoiseSettings {
     public NoiseWrapper river;
 
     /** Noise POST PROCESS */
-    public HashMap<String, NoisePostProcessor> postProcessList;
+    //public HashMap<String, NoisePostProcessor> postProcessList;
+    public LinkedList<NoisePostProcessor> postProcessList;
 
     public boolean isTerrainGenerator() {
         return terrainElevation != null;
@@ -33,7 +35,7 @@ public class WorldGenNoiseSettings {
 
     public void parsePostProcessors(JSONArray array) {
         if(array.length() == 0) return;
-        postProcessList = new HashMap<>();
+        postProcessList = new LinkedList<>();
 
         for(int i = 0; i < array.length(); i++) {
             JSONObject o = array.getJSONObject(i);
@@ -46,6 +48,7 @@ public class WorldGenNoiseSettings {
             float _secondOptionThreshold = logicObject.has("thresholdSecond") ? logicObject.getFloat("thresholdSecond") : -1.0f;
             String _secondOptionReplace = logicObject.has("thresholdReplace") ? logicObject.getString("thresholdReplace") : null;
             float _threshold = logicObject.getFloat("threshold");
+            int priority = logicObject.has("priority") ? logicObject.getInt("priority") : 0;
 
             PostProcessorLogic logic;
 
@@ -55,13 +58,15 @@ public class WorldGenNoiseSettings {
                 logic = new PostProcessorLayer(o.getString("name"), _threshold, _logicKeys, _type, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
             }
 
-            postProcessList.put(o.getString("name"), new NoisePostProcessor(new NoiseWrapper(o.getString("name"),
+            postProcessList.add(new NoisePostProcessor(priority, new NoiseWrapper(o.getString("name"),
                     o.getInt("octaves"),
                     o.getInt("type"),
                     o.has("fractalType") ? o.getInt("fractalType") : -1,
                     o.getFloat("frequency"),
                     o.getInt("noiseOffset")), logic));
         }
+
+        postProcessList.sort(Comparator.comparingInt(o -> -o.priority));
     }
 
     public void parseTerrain(JSONObject o) {

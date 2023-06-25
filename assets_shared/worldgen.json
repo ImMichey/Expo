@@ -53,7 +53,8 @@
                             ],
                             "threshold": 0.725,
                             "replaceType": "BIOME",
-                            "replaceWith": "ROCK"
+                            "replaceWith": "ROCK",
+                            "priority": -100
                         }
                     },
                     {
@@ -302,6 +303,12 @@
                 },
                 "DENSE_FOREST": {
                     "entities": [
+                        {
+                            "type": "MUSHROOM_GLOWING",
+                            "static": true,
+                            "chance": 0.0005,
+                            "pds": 16
+                        },
                         {
                             "type": "BUSH",
                             "static": true,

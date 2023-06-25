@@ -67,9 +67,11 @@ public class PostProcessorLayer implements PostProcessorLogic {
     @Override
     public String toString() {
         return "PostProcessorLayer{" +
-                "checkTypes=" + Arrays.toString(checkTypes) +
+                "noiseName='" + noiseName + '\'' +
+                ", checkTypes=" + Arrays.toString(checkTypes) +
                 ", processLayer=" + processLayer +
                 ", replacementType=" + replacementType +
+                ", threshold=" + threshold +
                 ", secondOptionThreshold=" + secondOptionThreshold +
                 ", secondOptionType=" + secondOptionType +
                 '}';
