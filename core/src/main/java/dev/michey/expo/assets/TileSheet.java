@@ -33,10 +33,11 @@ public class TileSheet {
         multiEntry("tile_forest", 22);
         multiEntry("tile_desert", 22);
         multiEntry("tile_rock", 22);
+        multiEntry("tile_soil_farmland", 22);
 
         // Variations
-        variationEntry("tile_grass", 1, 7);
-        variationEntry("tile_forest", 112, 7);
+        variationEntry("tile_grass", 1, 1);
+        variationEntry("tile_forest", 112, 1);
     }
 
     private void variationEntry(String name, int forId, int amount) {

@@ -608,6 +608,54 @@
                 "attackDamage": 14.0,
                 "harvestDamage": 50.0
             }
+        },
+        {
+            "identifier": "item_wheat",
+            "id": 24,
+            "displayName": "Wheat",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_wheat"
+                },
+                "held": {
+                    "texture": "item_wheat",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_wheat_seeds",
+            "id": 25,
+            "displayName": "Wheat Seeds",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_wheat_seeds"
+                },
+                "held": {
+                    "texture": "item_wheat_seeds",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
         }
     ]
 }

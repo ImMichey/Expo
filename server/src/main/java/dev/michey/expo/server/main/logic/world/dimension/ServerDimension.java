@@ -32,7 +32,7 @@ public abstract class ServerDimension {
     protected float dimensionSpawnY = MathUtils.random(128.0f, 384.0f);
 
     /** Dimension data */
-    public float dimensionTime = ExpoTime.worldDurationHours(7);
+    public float dimensionTime = ExpoTime.worldDurationHours(8);
     public Weather dimensionWeather = Weather.SUN;
     public float dimensionWeatherDuration = Weather.SUN.generateWeatherDuration();
     public float dimensionWeatherStrength = Weather.SUN.generateWeatherStrength();

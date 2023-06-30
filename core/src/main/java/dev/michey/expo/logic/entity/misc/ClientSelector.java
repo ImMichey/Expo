@@ -3,13 +3,16 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
@@ -95,23 +98,38 @@ public class ClientSelector extends ClientEntity {
                     TileLayerType t0 = chunk.dynamicTiles[svTileArray][0].emulatingType;
                     TileLayerType t1 = chunk.dynamicTiles[svTileArray][1].emulatingType;
 
+                    ClientPlayer p = ClientPlayer.getLocalPlayer();
+                    ItemMapping mapping = null;
+
+                    if(p.holdingItemId != -1) {
+                        mapping = ItemMapper.get().getMapping(p.holdingItemId);
+                    }
+
                     if(selectionType == 0) {
                         // Check to dig.
                         boolean grass = t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST;
                         boolean sand = t1 == TileLayerType.SAND || t1 == TileLayerType.DESERT;
                         boolean soil = t0 == TileLayerType.SOIL;
 
-                        canDig = grass || sand || (soil && t1 == TileLayerType.EMPTY);
+                        if(mapping != null) {
+                            ToolType tt = mapping.logic.toolType;
+
+                            if(tt == ToolType.SCYTHE) {
+                                canDig = soil && t1 == TileLayerType.EMPTY;
+                            } else {
+                                canDig = grass || sand || (soil && t1 == TileLayerType.EMPTY);
+                            }
+                        } else {
+                            canDig = grass || sand || (soil && t1 == TileLayerType.EMPTY);
+                        }
                     } else if(selectionType == 1) {
                         // Check to place.
-                        ClientPlayer p = ClientPlayer.getLocalPlayer();
-                        if(p.holdingItemId != -1) {
-                            ItemMapping meta = ItemMapper.get().getMapping(p.holdingItemId);
-                            PlaceData d = meta.logic.placeData;
+                        if(mapping != null) {
+                            PlaceData d = mapping.logic.placeData;
 
                             if(d != null) {
                                 if(d.type == PlaceType.FLOOR_0) {
-                                    canPlace = t1 == TileLayerType.EMPTY && t0 == TileLayerType.SOIL_HOLE;
+                                    canPlace = t1 == TileLayerType.EMPTY && (t0 == TileLayerType.SOIL_HOLE || t0 == TileLayerType.SOIL_FARMLAND);
                                 } else if(d.type == PlaceType.FLOOR_1) {
                                     canPlace = t1 == TileLayerType.EMPTY && t0 == TileLayerType.SOIL;
                                 }

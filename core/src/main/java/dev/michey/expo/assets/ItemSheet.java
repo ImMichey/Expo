@@ -40,6 +40,8 @@ public class ItemSheet {
         add("item_oak_plank", 23, 14, 11);
         add("item_mushroom_glowing", 24, 8, 9);
         add("item_flint_scythe", 25, 16, 15);
+        add("item_wheat", 26, 13, 12);
+        add("item_wheat_seeds", 27, 9, 8);
     }
 
     public TextureRegion get(String name) {

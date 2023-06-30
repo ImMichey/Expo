@@ -276,7 +276,7 @@ public abstract class ClientEntity {
         TileLayerType t0 = c.dynamicTiles[tileArray][0].emulatingType;
         TileLayerType t1 = c.dynamicTiles[tileArray][1].emulatingType;
 
-        if(t0 == TileLayerType.SOIL_HOLE) {
+        if(t0 == TileLayerType.SOIL_HOLE || t0 == TileLayerType.SOIL_FARMLAND) {
             return isRaining() ? "step_mud" : "step_dirt";
         }
 

@@ -27,7 +27,7 @@ public class ClientBush extends ClientEntity implements SelectableEntity {
         shadowMask = tr("entity_bush_sm");
         updateTextureBounds(18, 17, 1, 1);
         interactionPointArray = generateInteractionArray(3);
-        contactAnimator.small = false;
+        contactAnimator.enableSquish = false;
     }
 
     @Override

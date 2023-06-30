@@ -38,10 +38,10 @@
                         }
                     },
                     {
-                        "name": "rocks",
-                        "octaves": 4,
+                        "name": "rocks_large_formation",
+                        "octaves": 6,
                         "type": 5,
-                        "frequency": 0.014,
+                        "frequency": 0.005,
                         "noiseOffset": 3,
                         "logic": {
                             "check": [
@@ -51,7 +51,27 @@
                                 "FOREST",
                                 "DESERT"
                             ],
-                            "threshold": 0.765,
+                            "threshold": 0.82,
+                            "replaceType": "BIOME",
+                            "replaceWith": "ROCK",
+                            "priority": -50
+                        }
+                    },
+                    {
+                        "name": "rocks_small_formation",
+                        "octaves": 4,
+                        "type": 5,
+                        "frequency": 0.0175,
+                        "noiseOffset": 4,
+                        "logic": {
+                            "check": [
+                                "BEACH",
+                                "DENSE_FOREST",
+                                "PLAINS",
+                                "FOREST",
+                                "DESERT"
+                            ],
+                            "threshold": 0.793,
                             "replaceType": "BIOME",
                             "replaceWith": "ROCK",
                             "priority": -100

@@ -243,8 +243,9 @@ public class ClientPlayer extends ClientEntity {
 
                 boolean shovel = mapping.logic.isSpecialType() && mapping.logic.toolType == ToolType.SHOVEL;
                 boolean placeable = holdingItemId >= 9 && holdingItemId <= 11;
+                boolean scythe = mapping.logic.isSpecialType() && mapping.logic.toolType == ToolType.SCYTHE;
 
-                if(entityManager().selectedEntity == null && (shovel || placeable)) {
+                if(entityManager().selectedEntity == null && (shovel || placeable || scythe)) {
                     float tx = RenderContext.get().mouseWorldGridX;
                     float ty = RenderContext.get().mouseWorldGridY;
                     float range = mapping.logic.range;
@@ -274,7 +275,7 @@ public class ClientPlayer extends ClientEntity {
                     }
 
                     selector.visible = true;
-                    selector.selectionType = shovel ? 0 : 1;
+                    selector.selectionType = (shovel || scythe) ? 0 : 1;
                 } else {
                     selector.visible = false;
                 }

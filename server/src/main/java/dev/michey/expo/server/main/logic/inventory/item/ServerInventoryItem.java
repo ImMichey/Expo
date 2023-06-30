@@ -59,6 +59,14 @@ public class ServerInventoryItem {
         return this;
     }
 
+    public ToolType isTool(ToolType... types) {
+        if(itemMetadata == null) return null;
+        for(ToolType t : types) {
+            if(itemMetadata.toolType == t) return t;
+        }
+        return null;
+    }
+
     public boolean isTool(ToolType type) {
         if(itemMetadata == null) return false;
         return itemMetadata.toolType == type;

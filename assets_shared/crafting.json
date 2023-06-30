@@ -11,7 +11,7 @@
             "recipe_flint_scythe"
         ],
         "food": [
-
+            "recipe_wheat_seeds"
         ]
     },
     "recipes": [
@@ -37,7 +37,7 @@
             "input": [
                 {
                     "id": 7,
-                    "amount": 4
+                    "amount": 6
                 }
             ]
         },
@@ -50,7 +50,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 1
+                    "amount": 2
                 },
                 {
                     "id": 0,
@@ -58,7 +58,7 @@
                 },
                 {
                     "id": 13,
-                    "amount": 4
+                    "amount": 5
                 }
             ]
         },
@@ -71,7 +71,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 1
+                    "amount": 2
                 },
                 {
                     "id": 0,
@@ -79,7 +79,7 @@
                 },
                 {
                     "id": 13,
-                    "amount": 4
+                    "amount": 5
                 }
             ]
         },
@@ -92,7 +92,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 1
+                    "amount": 2
                 },
                 {
                     "id": 0,
@@ -100,7 +100,7 @@
                 },
                 {
                     "id": 13,
-                    "amount": 4
+                    "amount": 3
                 }
             ]
         },
@@ -113,7 +113,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 1
+                    "amount": 2
                 },
                 {
                     "id": 0,
@@ -122,6 +122,19 @@
                 {
                     "id": 13,
                     "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_wheat_seeds",
+            "output": {
+                "id": 25,
+                "amount": 2
+            },
+            "input": [
+                {
+                    "id": 24,
+                    "amount": 1
                 }
             ]
         }

@@ -27,7 +27,9 @@ public class ContactAnimator {
     public float squishDelta;
     public boolean doSquish = false;
     public float squishAdjustment = 0.0f;
+
     public boolean small = true;
+    public boolean enableSquish = true;
 
     public static final LinkedList<ClientEntityType> WALKING_ENTITY_LIST;
 
@@ -61,8 +63,10 @@ public class ContactAnimator {
                             contactDelta = STEPS * 0.5f;
                             contactDir = entity.serverDirX == 0 ? (entity.finalTextureCenterX < parent.finalTextureCenterX ? 1 : -1) : (entity.serverDirX < 0 ? -1 : 1);
 
-                            doSquish = true;
-                            squishDelta = 0.0f;
+                            if(enableSquish) {
+                                doSquish = true;
+                                squishDelta = 0.0f;
+                            }
                         }
                     }
                 }

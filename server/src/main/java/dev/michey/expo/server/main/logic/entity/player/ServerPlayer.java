@@ -3,7 +3,6 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -622,7 +621,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public void digAt(int chunkX, int chunkY, int tileArray) {
         ServerInventoryItem item = getCurrentItem();
-        if(!item.isTool(ToolType.SHOVEL)) return; // to combat de-sync server<->client, double check current item
+        ToolType useTool = item.isTool(ToolType.SHOVEL, ToolType.SCYTHE);
+        if(useTool == null) return; // to combat de-sync server<->client, double check current item
 
         var chunk = getChunkGrid().getChunk(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
@@ -665,7 +665,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
                 { // Update tile data
                     if(digLayer == 0 && tile.dynamicTileParts[digLayer].emulatingType == TileLayerType.SOIL) {
-                        tile.updateLayer0(TileLayerType.SOIL_HOLE);
+                        tile.updateLayer0(useTool == ToolType.SCYTHE ? TileLayerType.SOIL_FARMLAND : TileLayerType.SOIL_HOLE);
                         ServerPackets.p32ChunkDataSingle(tile, 0);
 
                         for(ServerTile neighbour : tile.getNeighbouringTiles()) {
