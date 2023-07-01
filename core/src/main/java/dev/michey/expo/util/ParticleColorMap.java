@@ -27,6 +27,10 @@ public class ParticleColorMap {
     public static final Color COLOR_PARTICLE_WHEAT_1 = Color.valueOf("#e6cb7d");
     public static final Color COLOR_PARTICLE_WHEAT_2 = Color.valueOf("#ffee91");
 
+    public static final Color COLOR_PARTICLE_LOG_1 = Color.valueOf("#1e180e");
+    public static final Color COLOR_PARTICLE_LOG_2 = Color.valueOf("#563d1a");
+    public static final Color COLOR_PARTICLE_LOG_3 = Color.valueOf("#51432e");
+
     static {
         COLOR_MAP = new HashMap<>();
 
@@ -43,6 +47,10 @@ public class ParticleColorMap {
 
         colorEntry(4, COLOR_PARTICLE_WHEAT_1);
         colorEntry(4, COLOR_PARTICLE_WHEAT_2);
+
+        colorEntry(5, COLOR_PARTICLE_LOG_1);
+        colorEntry(5, COLOR_PARTICLE_LOG_2);
+        colorEntry(5, COLOR_PARTICLE_LOG_3);
     }
 
     public static Color random(int id) {

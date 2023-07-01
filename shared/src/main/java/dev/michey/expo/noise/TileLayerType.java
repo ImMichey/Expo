@@ -101,8 +101,8 @@ public enum TileLayerType {
 
     public static TileLayerType biomeToLayer1(BiomeType type) {
         return switch (type) {
-            case FOREST, DENSE_FOREST -> FOREST;
-            case PLAINS, WHEAT_FIELDS -> GRASS;
+            case FOREST, DENSE_FOREST, PLAINS, WHEAT_FIELDS -> FOREST;
+            //case PLAINS, WHEAT_FIELDS -> GRASS;
             case DESERT -> DESERT;
             case BEACH -> SAND;
             case LAKE, RIVER, OCEAN -> WATER;

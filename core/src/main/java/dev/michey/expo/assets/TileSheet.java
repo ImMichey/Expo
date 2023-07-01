@@ -36,8 +36,8 @@ public class TileSheet {
         multiEntry("tile_soil_farmland", 22);
 
         // Variations
-        variationEntry("tile_grass", 1, 1);
-        variationEntry("tile_forest", 112, 1);
+        variationEntry("tile_grass", 1, 9);
+        variationEntry("tile_forest", 112, 9);
     }
 
     private void variationEntry(String name, int forId, int amount) {

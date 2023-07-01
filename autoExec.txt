@@ -1,4 +1,4 @@
-/delsave dev
+#/delsave dev
 /world dev
 #/time 0
 #/speed 25

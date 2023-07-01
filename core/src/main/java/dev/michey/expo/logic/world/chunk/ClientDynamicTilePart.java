@@ -46,7 +46,7 @@ public class ClientDynamicTilePart {
         } else {
             int potentialVariations = ExpoAssets.get().getTileSheet().getAmountOfVariations(layerIds[0]);
 
-            if(potentialVariations > 0 && MathUtils.random() <= 0.75f) {
+            if(potentialVariations > 0 && MathUtils.random() <= 0.66f) {
                 texture[0] = ExpoAssets.get().toTexture(layerIds, null, MathUtils.random(0, potentialVariations - 1));
             } else {
                 texture[0] = ExpoAssets.get().toTexture(layerIds, null, -1);

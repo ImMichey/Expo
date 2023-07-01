@@ -9,6 +9,8 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.util.PacketReceiver;
+import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
@@ -19,6 +21,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     public int age;
     public int variant;
+    public boolean cut;
+    public float trunkConversionHealth;
 
     public static final float[][] TREE_BODIES = new float[][] {
         new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
@@ -26,6 +30,11 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
         new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
         new float[] {-6.0f, 4.0f, 17.0f, 4.5f}
+    };
+    public static final float[] TREE_HEALTH = new float[] {
+            120.0f,
+            160.0f,
+            200.0f,
     };
 
     @Override
@@ -59,11 +68,10 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public void onGeneration(boolean spread, BiomeType biome) {
         generateAge(biome);
         generateVariant();
-    }
 
-    @Override
-    public boolean onDamage(ServerEntity damageSource, float damage) {
-        return super.onDamage(damageSource, damage);
+        if(MathUtils.random() <= 0.1f) {
+            cut = true;
+        }
     }
 
     @Override
@@ -73,7 +81,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     }
 
     public ServerOakTree() {
-        health = 50.0f;
+        health = TREE_HEALTH[0];
+        trunkConversionHealth = health * 0.5f;
         setDamageableWith(ToolType.AXE);
     }
 
@@ -84,18 +93,34 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     @Override
     public SavableEntity onSave() {
-        return new SavableEntity(this).pack().add("variant", variant);
+        return new SavableEntity(this).pack()
+                .add("variant", variant)
+                .add("cut", cut)
+                ;
     }
 
     @Override
     public void onLoad(JSONObject saved) {
         variant = saved.getInt("variant");
+        cut = saved.getBoolean("cut");
         ageFromVariant();
     }
 
     @Override
     public Object[] getPacketPayload() {
-        return new Object[] {variant};
+        return new Object[] {variant, cut};
+    }
+
+    @Override
+    public boolean onDamage(ServerEntity damageSource, float damage) {
+        float newHp = health - damage;
+
+        if(newHp <= trunkConversionHealth && !cut) {
+            cut = true;
+            ServerPackets.p30EntityDataUpdate(entityId, new Object[] {true}, PacketReceiver.whoCanSee(this));
+        }
+
+        return true;
     }
 
     public void generateAge(BiomeType biome) {
@@ -117,13 +142,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
             }
         }
 
-        if(age == 0) {
-            health = 60.0f;
-        } else if(age == 1) {
-            health = 80.0f;
-        } else {
-            health = 100.0f;
-        }
+        health = TREE_HEALTH[age];
+        trunkConversionHealth = health * 0.5f;
     }
 
     public void generateVariant() {

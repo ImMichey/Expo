@@ -4,7 +4,7 @@ import dev.michey.expo.noise.TileLayerType;
 
 public enum FloorType {
 
-    GRASS(TileLayerType.GRASS),
+    GRASS(TileLayerType.FOREST),
     SAND(TileLayerType.SAND),
     DIRT(TileLayerType.SOIL),
     ;
