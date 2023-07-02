@@ -27,6 +27,10 @@ public class ParticleSheet {
         createParticle(sheet, 27, 0, 2, 2);
         createParticle(sheet, 30, 0, 2, 2);
         createParticle(sheet, 33, 0, 2, 2);
+
+        createParticle(sheet, 36, 0, 2, 3);
+        createParticle(sheet, 39, 0, 2, 3);
+        createParticle(sheet, 42, 0, 2, 3);
     }
 
     public HashMap<Integer, TextureRegion> getParticleTextureMap() {

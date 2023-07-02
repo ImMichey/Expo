@@ -730,6 +730,11 @@ public class ClientWorld {
 
         float textureSize = r.waterNoiseTexture.getWidth();
 
+        int HALF_TILE_SIZE = TILE_SIZE / 2;
+        float uvAdjusted = 16.0f / textureSize;
+        float uvAdjustedHalf = uvAdjusted * 0.5f;
+        float halfTileInverse = 2.0f / 16.0f;
+
         for(ClientChunk chunk : drawChunks) {
             if(chunk != null && chunk.visible) {
                 for(int k = 0; k < chunk.biomes.length; k++) {
@@ -744,8 +749,68 @@ public class ClientWorld {
                         float normX = (wx % textureSize) / textureSize;
                         float normY = (wy % textureSize) / textureSize;
 
-                        float uv = 16.0f / textureSize;
-                        r.batch.draw(r.waterNoiseTexture, wx, wy, TILE_SIZE, TILE_SIZE, normX, normY, normX + uv, normY + uv);
+                        if(chunk.layer1Displacement[k] != null) {
+                            float interpolated = clientChunkGrid.interpolation;
+
+                            var values = chunk.layer1Displacement[k];
+
+                            {
+                                float x0 = interpolated * (int) values[0].key;
+                                float y0 = interpolated * (int) values[0].value;
+                                float _normX = ((wx + x0) % textureSize) / textureSize;
+                                float _normY = ((wy + y0) % textureSize) / textureSize;
+
+                                r.batch.draw(r.waterNoiseTexture, wx + x0, wy + y0,
+                                        HALF_TILE_SIZE - x0, HALF_TILE_SIZE - y0,
+                                        _normX, _normY,
+                                        _normX + uvAdjustedHalf - x0 * uvAdjustedHalf * halfTileInverse,
+                                        _normY + uvAdjustedHalf - y0 * uvAdjustedHalf * halfTileInverse);
+                            }
+
+                            {
+                                float x1 = interpolated * (int) values[1].key;
+                                float y1 = interpolated * (int) values[1].value;
+
+                                float _normX = ((wx + 8) % textureSize) / textureSize;
+
+                                r.batch.draw(r.waterNoiseTexture, wx + 8, wy + y1,
+                                        HALF_TILE_SIZE + x1, HALF_TILE_SIZE - y1,
+                                        _normX,
+                                        normY + y1 * uvAdjustedHalf * halfTileInverse,
+                                        _normX + uvAdjustedHalf + x1 * uvAdjustedHalf * halfTileInverse,
+                                        normY + uvAdjustedHalf);
+                            }
+
+                            {
+                                float x2 = interpolated * (int) values[2].key;
+                                float y2 = interpolated * (int) values[2].value;
+
+                                float _normX = ((wx + x2) % textureSize) / textureSize;
+                                float _normY = ((wy + 8) % textureSize) / textureSize;
+
+                                r.batch.draw(r.waterNoiseTexture, wx + x2, wy + 8,
+                                        HALF_TILE_SIZE - x2, HALF_TILE_SIZE + y2,
+                                        _normX, _normY,
+                                        _normX + uvAdjustedHalf - x2 * uvAdjustedHalf * halfTileInverse,
+                                        _normY + uvAdjustedHalf + y2 * uvAdjustedHalf * halfTileInverse);
+                            }
+
+                            {
+                                float x3 = interpolated * (int) values[3].key;
+                                float y3 = interpolated * (int) values[3].value;
+
+                                float _normX = ((wx + 8) % textureSize) / textureSize;
+                                float _normY = ((wy + 8) % textureSize) / textureSize;
+
+                                r.batch.draw(r.waterNoiseTexture, wx + 8, wy + 8,
+                                        HALF_TILE_SIZE + x3, HALF_TILE_SIZE + y3,
+                                        _normX, _normY,
+                                        _normX + uvAdjustedHalf + x3 * uvAdjustedHalf * halfTileInverse,
+                                        _normY + uvAdjustedHalf + y3 * uvAdjustedHalf * halfTileInverse);
+                            }
+                        } else {
+                            r.batch.draw(r.waterNoiseTexture, wx, wy, TILE_SIZE, TILE_SIZE, normX, normY, normX + uvAdjusted, normY + uvAdjusted);
+                        }
                     }
                 }
             }
