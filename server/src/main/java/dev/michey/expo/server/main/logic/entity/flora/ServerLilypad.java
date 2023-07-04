@@ -30,7 +30,7 @@ public class ServerLilypad extends ServerEntity {
 
     @Override
     public void onDie() {
-        spawnEntitiesAround(0, 5.5f, 6, 10,
+        spawnItemsAround(0, 5.5f, 6, 10,
                 new SpawnItem("item_wheat", 1, 2))
         ;
     }

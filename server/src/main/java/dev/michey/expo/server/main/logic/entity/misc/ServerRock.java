@@ -51,9 +51,9 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
         boolean flint = MathUtils.random() <= 0.5f;
 
         if(flint) {
-            spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_flint", 8);
+            spawnItemsAround((int) data[0], (int) data[1], data[2], data[3], "item_flint", 8);
         } else {
-            spawnEntitiesAround((int) data[0], (int) data[1], data[2], data[3], "item_rock", 8);
+            spawnItemsAround((int) data[0], (int) data[1], data[2], data[3], "item_rock", 8);
         }
     }
 

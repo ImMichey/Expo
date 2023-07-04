@@ -23,6 +23,9 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity {
     private float animationDelta = MathUtils.random(100f);
     private float animationSine;
 
+    private float SPEED = 5.0f;
+    private float STRENGTH = 1.0f;
+
     @Override
     public void onCreation() {
         texture = tr("entity_lilypad_" + variant);
@@ -40,6 +43,9 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity {
 
         updateTextureBounds(w, h, 0, 0);
         interactionPointArray = generateInteractionArray(2);
+
+        SPEED = 3.0f + MathUtils.random(2.0f);
+        STRENGTH = 0.5f + MathUtils.random(0.5f);
     }
 
     @Override
@@ -72,8 +78,6 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity {
     public void tick(float delta) {
         syncPositionWithServer();
 
-        float SPEED = 5.0f;
-        float STRENGTH = 1.0f;
         animationDelta += delta * SPEED;
         animationSine = MathUtils.sin(animationDelta) * STRENGTH;
     }

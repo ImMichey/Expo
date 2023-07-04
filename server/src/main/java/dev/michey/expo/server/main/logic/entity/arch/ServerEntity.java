@@ -120,11 +120,23 @@ public abstract class ServerEntity {
         return getChunkGrid().getBiome(tx, ty);
     }
 
-    public void spawnEntitiesAround(int min, int max, float xOff, float yOff, String itemName, float radius) {
-        spawnEntitiesAround(min, max, xOff, yOff, itemName, radius, radius);
+    public void spawnEntitiesAround(int min, int max, float radiusMin, float radiusMax, ServerEntityType type) {
+        int amount = MathUtils.random(min, max);
+        Vector2[] positions = GenerationUtils.positions(amount, MathUtils.random(radiusMin, radiusMax));
+
+        for(int i = 0; i < amount; i++) {
+            ServerEntity spawned = ServerEntityType.typeToEntity(type);
+            spawned.posX = posX + positions[i].x;
+            spawned.posY = posY + positions[i].y;
+            ServerWorld.get().registerServerEntity(entityDimension, spawned);
+        }
     }
 
-    public void spawnEntitiesAround(int min, int max, float xOff, float yOff, String itemName, float radiusMin, float radiusMax) {
+    public void spawnItemsAround(int min, int max, float xOff, float yOff, String itemName, float radius) {
+        spawnItemsAround(min, max, xOff, yOff, itemName, radius, radius);
+    }
+
+    public void spawnItemsAround(int min, int max, float xOff, float yOff, String itemName, float radiusMin, float radiusMax) {
         int amount = MathUtils.random(min, max);
         Vector2[] positions = GenerationUtils.positions(amount, MathUtils.random(radiusMin, radiusMax));
 
@@ -157,7 +169,7 @@ public abstract class ServerEntity {
         ServerWorld.get().registerServerEntity(entityDimension, item);
     }
 
-    public void spawnEntitiesAround(float xOff, float yOff, float radiusMin, float radiusMax, SpawnItem... spawnItems) {
+    public void spawnItemsAround(float xOff, float yOff, float radiusMin, float radiusMax, SpawnItem... spawnItems) {
         int total = 0;
 
         for(SpawnItem item : spawnItems) {

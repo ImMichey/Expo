@@ -656,6 +656,30 @@
                 "durability": -1,
                 "toolType": "ITEM"
             }
+        },
+        {
+            "identifier": "item_maggot",
+            "id": 26,
+            "displayName": "Maggot",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_maggot"
+                },
+                "held": {
+                    "texture": "item_maggot",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotation": -45
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM"
+            }
         }
     ]
 }

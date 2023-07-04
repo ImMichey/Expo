@@ -20,7 +20,7 @@ public class ServerBush extends ServerEntity {
 
     @Override
     public void onDie() {
-        spawnEntitiesAround(0, 3.25f, 10, 14,
+        spawnItemsAround(0, 3.25f, 10, 14,
                 new SpawnItem("item_stick", 2, 4),
                 new SpawnItem("item_grassfiber", 1, 2),
                 new SpawnItem("item_worm", 1, 1, 0.1f))

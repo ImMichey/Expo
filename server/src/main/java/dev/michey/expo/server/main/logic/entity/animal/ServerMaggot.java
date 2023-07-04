@@ -12,20 +12,20 @@ import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.AIState;
 
-public class ServerWorm extends ServerEntity implements DamageableEntity, PhysicsEntity {
+public class ServerMaggot extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
-    public EntityBrain wormBrain = new EntityBrain(this);
+    public EntityBrain maggotBrain = new EntityBrain(this);
     public EntityPhysicsBox physicsBody;
 
-    public ServerWorm() {
+    public ServerMaggot() {
         health = 40.0f;
     }
 
     @Override
     public void onCreation() {
         physicsBody = new EntityPhysicsBox(this, -4.5f, 0, 9, 5);
-        wormBrain.addModule(new AIModuleIdle(AIState.IDLE, 2.0f, 6.0f));
-        wormBrain.addModule(new AIModuleWalk(AIState.WALK, 2.0f, 6.0f, 5.0f));
+        maggotBrain.addModule(new AIModuleIdle(AIState.IDLE, 2.0f, 6.0f));
+        maggotBrain.addModule(new AIModuleWalk(AIState.WALK, 2.0f, 6.0f, 5.0f));
     }
 
     @Override
@@ -49,9 +49,9 @@ public class ServerWorm extends ServerEntity implements DamageableEntity, Physic
             movePhysicsBoxBy(physicsBody, knockbackAppliedX, knockbackAppliedY);
         }
 
-        wormBrain.tick(delta);
+        maggotBrain.tick(delta);
 
-        if(wormBrain.getCurrentState() != AIState.WALK && applyKnockback) {
+        if(maggotBrain.getCurrentState() != AIState.WALK && applyKnockback) {
             ServerPackets.p13EntityMove(entityId, 0, 0, posX, posY, PacketReceiver.whoCanSee(this));
         }
     }
@@ -63,7 +63,7 @@ public class ServerWorm extends ServerEntity implements DamageableEntity, Physic
 
     @Override
     public ServerEntityType getEntityType() {
-        return ServerEntityType.WORM;
+        return ServerEntityType.MAGGOT;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ServerWorm extends ServerEntity implements DamageableEntity, Physic
 
     @Override
     public EntityHitbox getEntityHitbox() {
-        return EntityHitboxMapper.get().getFor(ServerEntityType.WORM);
+        return EntityHitboxMapper.get().getFor(ServerEntityType.MAGGOT);
     }
 
     @Override

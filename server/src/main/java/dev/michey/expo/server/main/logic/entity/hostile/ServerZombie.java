@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.entity.hostile;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.ai.EntityBrain;
 import dev.michey.expo.server.main.logic.ai.module.AIModuleIdle;
@@ -28,6 +29,13 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
 
         zombieBrain.addModule(new AIModuleIdle(AIState.IDLE, 3.0f, 8.0f));
         zombieBrain.addModule(new AIModuleWalk(AIState.WALK, 4.0f, 8.0f, 16f));
+    }
+
+    @Override
+    public void onDie() {
+        if(MathUtils.random() <= 0.2f) {
+            spawnItemsAround(1, 2, 0, 0, "item_maggot", 8f);
+        }
     }
 
     @Override

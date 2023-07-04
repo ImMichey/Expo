@@ -58,7 +58,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
             max += 3;
         }
 
-        spawnEntitiesAround(0.0f, 6.0f, 14.0f, 18.0f,
+        spawnItemsAround(0.0f, 6.0f, 14.0f, 18.0f,
                 new SpawnItem("item_oak_log", min, max),
                 new SpawnItem("item_acorn", 1, 2)
         );
