@@ -38,6 +38,22 @@
                         }
                     },
                     {
+                        "name": "dirt_small",
+                        "octaves": 5,
+                        "type": 5,
+                        "frequency": 0.1,
+                        "noiseOffset": 5,
+                        "logic": {
+                            "check": [
+                                "FOREST",
+                                "GRASS"
+                            ],
+                            "threshold": 0.82,
+                            "replaceType": "LAYER_1",
+                            "replaceWith": "EMPTY"
+                        }
+                    },
+                    {
                         "name": "rocks_large_formation",
                         "octaves": 6,
                         "type": 5,
@@ -318,6 +334,16 @@
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
                             }
+                        }
+                    ]
+                },
+                "LAKE": {
+                    "entities": [
+                        {
+                            "type": "LILYPAD",
+                            "static": true,
+                            "chance": 0.125,
+                            "pds": 16
                         }
                     ]
                 },

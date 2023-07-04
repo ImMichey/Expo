@@ -4,6 +4,7 @@ import dev.michey.expo.logic.entity.animal.ClientCrab;
 import dev.michey.expo.logic.entity.animal.ClientFirefly;
 import dev.michey.expo.logic.entity.animal.ClientWorm;
 import dev.michey.expo.logic.entity.flora.*;
+import dev.michey.expo.logic.entity.hostile.ClientZombie;
 import dev.michey.expo.logic.entity.misc.*;
 import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
@@ -35,6 +36,8 @@ public enum ClientEntityType {
     SUNFLOWER(18, "Sunflower", ServerEntityType.SUNFLOWER),
     FIREFLY(19, "Firefly", ServerEntityType.FIREFLY),
     MUSHROOM_GLOWING(20, "MushroomGlowing", ServerEntityType.MUSHROOM_GLOWING),
+    LILYPAD(21, "Lilypad", ServerEntityType.LILYPAD),
+    ZOMBIE(22, "Zombie", ServerEntityType.ZOMBIE),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -86,6 +89,8 @@ public enum ClientEntityType {
             case 18 -> new ClientSunflower();
             case 19 -> new ClientFirefly();
             case 20 -> new ClientMushroomGlowing();
+            case 21 -> new ClientLilypad();
+            case 22 -> new ClientZombie();
             default -> null;
         };
     }

@@ -4,6 +4,7 @@ import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
 import dev.michey.expo.server.main.logic.entity.animal.ServerFirefly;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.flora.*;
+import dev.michey.expo.server.main.logic.entity.hostile.ServerZombie;
 import dev.michey.expo.server.main.logic.entity.misc.*;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
@@ -30,6 +31,8 @@ public enum ServerEntityType {
     SUNFLOWER(18, "Sunflower", false),
     FIREFLY(19, "Firefly", false),
     MUSHROOM_GLOWING(20, "MushroomGlowing", false),
+    LILYPAD(21, "Lilypad", true),
+    ZOMBIE(22, "Zombie", false),
     ;
 
     public final int ENTITY_ID;
@@ -65,6 +68,8 @@ public enum ServerEntityType {
             case 18 -> new ServerSunflower();
             case 19 -> new ServerFirefly();
             case 20 -> new ServerMushroomGlowing();
+            case 21 -> new ServerLilypad();
+            case 22 -> new ServerZombie();
             default -> null;
         };
     }
@@ -92,6 +97,8 @@ public enum ServerEntityType {
             case "SUNFLOWER" -> new ServerSunflower();
             case "FIREFLY" -> new ServerFirefly();
             case "MUSHROOMGLOWING", "MUSHROOM_GLOWING" -> new ServerMushroomGlowing();
+            case "LILYPAD" -> new ServerLilypad();
+            case "ZOMBIE" -> new ServerZombie();
             default -> null;
         };
     }

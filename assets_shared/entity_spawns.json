@@ -12,6 +12,19 @@
             "timer": 10,
             "playerDistanceMin": 128,
             "entityCapPerPlayer": 8
+        },
+        {
+            "dimensions": ["overworld"],
+            "identifier": "zombie_natural",
+            "timeframes": [0, 360, 1320, 1440],
+            "type": "ZOMBIE",
+            "biomes": ["PLAINS", "FOREST", "DENSE_FOREST", "WHEAT_FIELDS", "DESERT", "BEACH"],
+            "amountMin": 1,
+            "amountMax": 3,
+            "chance": 0.001,
+            "timer": 2,
+            "playerDistanceMin": 384,
+            "entityCapPerPlayer": 8
         }
     ]
 }

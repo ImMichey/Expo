@@ -9,7 +9,6 @@ import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
-import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.RenderContext;

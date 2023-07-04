@@ -30,8 +30,15 @@ public class ExpoAnimation {
     }
 
     public TextureRegion getFrame() {
-        int index = (int) (animationDelta / frameDuration) % textureArray.size;
+        return getFrame(getFrameIndex());
+    }
+
+    public TextureRegion getFrame(int index) {
         return textureArray.get(index);
+    }
+
+    public int getFrameIndex() {
+        return (int) (animationDelta / frameDuration) % textureArray.size;
     }
 
     public boolean isAnimationFinished() {

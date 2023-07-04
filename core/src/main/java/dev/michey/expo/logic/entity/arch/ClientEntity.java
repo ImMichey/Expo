@@ -259,7 +259,6 @@ public abstract class ClientEntity {
     }
 
     public String getFootstepSound() {
-
         int chunkX = ExpoShared.posToChunk(clientPosX);
         int chunkY = ExpoShared.posToChunk(clientPosY);
         int tileX = ExpoShared.posToTile(clientPosX);

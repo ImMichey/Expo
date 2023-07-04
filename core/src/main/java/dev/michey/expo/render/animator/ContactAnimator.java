@@ -36,6 +36,7 @@ public class ContactAnimator {
     static {
         WALKING_ENTITY_LIST = new LinkedList<>();
         WALKING_ENTITY_LIST.add(ClientEntityType.PLAYER);
+        WALKING_ENTITY_LIST.add(ClientEntityType.ZOMBIE);
     }
 
     public ContactAnimator(ClientEntity parent, List<ClientEntityType> contactList) {

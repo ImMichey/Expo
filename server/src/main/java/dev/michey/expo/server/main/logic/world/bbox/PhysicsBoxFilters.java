@@ -36,6 +36,10 @@ public class PhysicsBoxFilters {
                     return Response.slide;
                 }
 
+                if(otherClassification == PhysicsMassClassification.PLAYER && pe.getPhysicsMassClassification() == PhysicsMassClassification.MEDIUM) {
+                    return Response.slide;
+                }
+
                 if(otherClassification == PhysicsMassClassification.PLAYER || otherClassification == PhysicsMassClassification.ITEM) {
                     return null;
                 }
