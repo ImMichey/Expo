@@ -2,8 +2,6 @@ package dev.michey.expo.server.main.logic.ai;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
-import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.hostile.ServerZombie;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;

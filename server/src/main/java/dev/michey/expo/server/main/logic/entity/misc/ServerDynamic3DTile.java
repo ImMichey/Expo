@@ -11,6 +11,7 @@ import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.server.util.SpawnItem;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -82,7 +83,7 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
             }
         }
 
-        spawnItemSingle(posX, posY, 0, "item_rock", 8);
+        spawnItemsAround(8, 8, 8, 8, new SpawnItem("item_rock", 2, 3), new SpawnItem("item_flint", 1, 1, 0.5f));
     }
 
     @Override
