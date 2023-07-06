@@ -25,7 +25,7 @@ public class AIModuleWalk extends AIModule {
     @Override
     public void tickModule(float delta) {
         var e = getBrain().getEntity();
-        float movementMultiplicator = getBrain().getEntity().movementSpeedMultiplicator();
+        float movementMultiplicator = e.movementSpeedMultiplicator();
 
         if(e instanceof PhysicsEntity pe) {
             EntityPhysicsBox box = pe.getPhysicsBox();

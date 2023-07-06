@@ -73,6 +73,10 @@ public class EntityBrain {
         return currentState;
     }
 
+    public AIModule getModule(AIState state) {
+        return aiModules.get(state);
+    }
+
     public ServerEntity getEntity() {
         return parent;
     }

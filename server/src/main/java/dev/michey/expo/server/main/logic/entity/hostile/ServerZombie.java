@@ -1,10 +1,11 @@
 package dev.michey.expo.server.main.logic.entity.hostile;
 
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.logic.ai.AIConstants;
 import dev.michey.expo.server.main.logic.ai.EntityBrain;
-import dev.michey.expo.server.main.logic.ai.module.AIModuleIdle;
-import dev.michey.expo.server.main.logic.ai.module.AIModuleWalk;
+import dev.michey.expo.server.main.logic.ai.ServerZombieBrain;
+import dev.michey.expo.server.main.logic.ai.module.zombie.AIModuleZombieFindTarget;
+import dev.michey.expo.server.main.logic.ai.module.zombie.AIModuleZombieWalkTarget;
 import dev.michey.expo.server.main.logic.entity.arch.*;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
@@ -13,10 +14,13 @@ import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.AIState;
 
+import static dev.michey.expo.server.main.logic.ai.module.zombie.AIModuleZombieFindTarget.DEFAULT_TARGETS;
+
 public class ServerZombie extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
-    public EntityBrain zombieBrain = new EntityBrain(this);
     public EntityPhysicsBox physicsBody;
+
+    public ServerZombieBrain brain = new ServerZombieBrain(this);
 
     public ServerZombie() {
         health = 100.0f;
@@ -26,9 +30,6 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
     @Override
     public void onCreation() {
         physicsBody = new EntityPhysicsBox(this, -3, 0, 6, 5);
-
-        zombieBrain.addModule(new AIModuleIdle(AIState.IDLE, 3.0f, 8.0f));
-        zombieBrain.addModule(new AIModuleWalk(AIState.WALK, 4.0f, 8.0f, 16f));
     }
 
     @Override
@@ -52,9 +53,9 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
             movePhysicsBoxBy(physicsBody, knockbackAppliedX, knockbackAppliedY);
         }
 
-        zombieBrain.tick(delta);
+        brain.tick(delta);
 
-        if(zombieBrain.getCurrentState() != AIState.WALK && applyKnockback) {
+        if(brain.currentMode != AIConstants.STROLL && applyKnockback) {
             ServerPackets.p13EntityMove(entityId, 0, 0, posX, posY, PacketReceiver.whoCanSee(this));
         }
     }

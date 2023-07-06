@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -319,19 +320,19 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     if(ServerUtils.rectIsInArc(ox, oy, hitbox.xOffset + se.posX, hitbox.yOffset + se.posY, hitbox.width, hitbox.height, usePunchRange, convertedStartAngle, convertedAngle, usePunchDirection, usePunchSpan)) {
                         // Hit.
                         hitEntities.add(se.entityId);
-                        PacketReceiver toReceive = PacketReceiver.whoCanSee(se);
+                        float preDamageHp = se.health;
                         boolean applied = se.applyDamageWithPacket(this, usePunchDamage);
 
                         if(applied) {
-                            ServerPackets.p24PositionalSound("slap", se.posX, se.posY, PLAYER_AUDIO_RANGE, toReceive);
+                            ServerPackets.p24PositionalSound("slap", se.posX, se.posY, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(se));
 
                             // Apply knockback.
-                            if(se.health > 0) {
+                            if(preDamageHp > se.health) {
                                 se.applyKnockback(usePunchKnockbackStrength, usePunchKnockbackDuration, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
+                            }
 
-                                if(se instanceof ServerPlayer otherPlayer) {
-                                    ServerPackets.p23PlayerLifeUpdate(otherPlayer.health, otherPlayer.hunger, PacketReceiver.player(otherPlayer));
-                                }
+                            if(se instanceof ServerPlayer otherPlayer) {
+                                ServerPackets.p23PlayerLifeUpdate(otherPlayer.health, otherPlayer.hunger, PacketReceiver.player(otherPlayer));
                             }
                         }
                     }
