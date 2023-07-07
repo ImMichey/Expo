@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
@@ -13,6 +14,9 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.ContactAnimator;
+import dev.michey.expo.render.animator.FoliageAnimator;
+import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
@@ -315,6 +319,39 @@ public abstract class ClientEntity {
         finalTextureStartY = other.finalTextureStartY;
         finalTextureCenterX = other.finalTextureCenterX;
         finalTextureCenterY = other.finalTextureCenterY;
+    }
+
+    public void drawShadowIfVisible(TextureRegion texture) {
+        RenderContext rc = RenderContext.get();
+
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
+
+        if(rc.verticesInBounds(vertices)) {
+            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
+        }
+    }
+
+    public void drawWindShadowIfVisible(TextureRegion texture, ContactAnimator contactAnimator) {
+        RenderContext rc = RenderContext.get();
+
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
+
+        if(rc.verticesInBounds(vertices)) {
+            rc.arraySpriteBatch.drawGradientCustomVertices(texture, texture.getRegionWidth(), texture.getRegionHeight(), shadow, contactAnimator.value, contactAnimator.value);
+        }
+    }
+
+    public void drawWindShadowIfVisible(TextureRegion texture, FoliageAnimator foliageAnimator, ContactAnimator contactAnimator) {
+        RenderContext rc = RenderContext.get();
+
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
+
+        if(rc.verticesInBounds(vertices)) {
+            rc.arraySpriteBatch.drawGradientCustomVertices(texture, texture.getRegionWidth(), texture.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        }
     }
 
     public void readEntityDataUpdate(Object[] payload) {

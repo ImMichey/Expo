@@ -66,6 +66,7 @@ public abstract class ExpoServerBase {
         commandResolver.addCommand(new ServerCommandSpeed());
         commandResolver.addCommand(new ServerCommandRepeat());
         commandResolver.addCommand(new ServerCommandSpawn());
+        log("Registered " + commandResolver.getCommandMap().size() + " commands.");
         INSTANCE = this;
         applyFileProperties();
     }

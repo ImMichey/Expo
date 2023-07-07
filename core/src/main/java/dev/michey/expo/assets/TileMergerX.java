@@ -123,6 +123,9 @@ public class TileMergerX {
         }
 
         ExpoLogger.log("Found " + possibleVariations.size() + " possible variations.");
+        for(String k : possibleVariations.keySet()) {
+            ExpoLogger.log(k);
+        }
         return possibleVariations;
     }
 

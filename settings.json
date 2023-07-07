@@ -2,6 +2,7 @@
     "uiScale": 2,
     "preferredWidth": 1280,
     "debug": {
+        "enableDebugMode": false,
         "enableDebugGL": false,
         "enableDebugImGui": false
     },
@@ -16,6 +17,7 @@
     },
     "graphics": {
         "zoomLevel": 0,
+        "enableScreenshake": true,
         "enableShadows": true,
         "enableParticles": true,
         "enableWater": false,

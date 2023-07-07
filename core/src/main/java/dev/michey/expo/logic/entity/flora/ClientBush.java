@@ -91,15 +91,7 @@ public class ClientBush extends ClientEntity implements SelectableEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
-        boolean drawGrass = rc.verticesInBounds(grassVertices);
-
-        if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradientCustomVertices(shadowMask, shadowMask.getRegionWidth(), shadowMask.getRegionHeight(), shadow, contactAnimator.value, contactAnimator.value);
-        }
+        drawWindShadowIfVisible(shadowMask, contactAnimator);
     }
 
     @Override

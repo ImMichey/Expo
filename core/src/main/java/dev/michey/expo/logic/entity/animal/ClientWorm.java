@@ -89,15 +89,7 @@ public class ClientWorm extends ClientEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(animationHandler.getActiveFrame(), shadow);
-        boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
-
-        if(drawMushroom) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(animationHandler.getActiveFrame(), textureWidth, textureHeight, shadow);
-        }
+        drawShadowIfVisible(animationHandler.getActiveFrame());
     }
 
     @Override

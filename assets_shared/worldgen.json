@@ -154,20 +154,20 @@
                     {
                         "type": "PLAINS",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.0, 0.5134],
-                        "moisture": [0.0, 0.5134]
+                        "temperature": [0.0, 0.505],
+                        "moisture": [0.0, 0.505]
                     },
                     {
                         "type": "FOREST",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.5134, 1.0],
-                        "moisture": [0.0, 0.5134]
+                        "temperature": [0.505, 1.0],
+                        "moisture": [0.0, 0.505]
                     },
                     {
                         "type": "DENSE_FOREST",
                         "elevation": [0.5, 1.0],
                         "temperature": [0.0, 1.0],
-                        "moisture": [0.5134, 1.0]
+                        "moisture": [0.505, 1.0]
                     }
                 ]
             },
@@ -283,11 +283,11 @@
                             "type": "GRASS",
                             "static": true,
                             "chance": 0.15,
-                            "pds": 18,
+                            "pds": 14,
                             "spreadData": {
-                                "spread": [1, 7],
+                                "spread": [1, 5],
                                 "spreadChance": 1.0,
-                                "spreadDis": [8.0, 18.0],
+                                "spreadDis": [12.0, 20.0],
                                 "spreadType": ["GRASS"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]

@@ -26,6 +26,7 @@ public class ServerZombieBrain {
     private int targetPlayerId = -1;
     private ServerPlayer targetPlayer = null;
     private float damageCooldown;
+    private float scanCooldown = 1.0f;
 
     private final Vector2 dirVector = new Vector2();
 
@@ -41,11 +42,18 @@ public class ServerZombieBrain {
 
         // ==== TARGET NEARBY PLAYER BLOCK ====
         if(targetPlayerId == -1) {
-            ServerPlayer found = findTargetPlayer();
+            if(scanCooldown > 0) {
+                scanCooldown -= delta;
 
-            if(found != null) {
-                targetPlayerId = found.entityId;
-                targetPlayer = found;
+                if(scanCooldown <= 0) {
+                    scanCooldown = 1.0f;
+                    ServerPlayer found = findTargetPlayer();
+
+                    if(found != null) {
+                        targetPlayerId = found.entityId;
+                        targetPlayer = found;
+                    }
+                }
             }
         } else {
             // Check

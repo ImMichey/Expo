@@ -12,6 +12,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.FoliageAnimator;
+import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ParticleBuilder;

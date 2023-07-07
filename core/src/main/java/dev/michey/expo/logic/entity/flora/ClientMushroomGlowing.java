@@ -104,15 +104,7 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
-        boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
-
-        if(drawMushroom) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
-        }
+        drawShadowIfVisible(texture);
     }
 
     @Override

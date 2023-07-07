@@ -7,7 +7,8 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
-import dev.michey.expo.util.Pair;;
+import dev.michey.expo.util.Pair;;import java.util.Arrays;
+import java.util.HashMap;
 
 public class ClientDynamicTilePart {
 

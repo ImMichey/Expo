@@ -63,6 +63,7 @@ public class Expo implements ApplicationListener {
 
 	public Expo(GameSettings gameSettings) {
 		// Enable logging to file + console for debugging
+		if(gameSettings.enableDebugMode) DEV_MODE = true;
 		if(!DEV_MODE) ExpoLogger.enableDualLogging("clientlogs");
 		inactiveScreens = new HashMap<>();
 		this.gameSettings = gameSettings;

@@ -11,7 +11,6 @@ public class Lwjgl3Launcher {
 
 	public static void main(String[] args) {
 		GameSettings settings = new GameSettings();
-		ExpoLogger.log("Using GameSettings: " + settings);
 		
 		try {
 			new Lwjgl3Application(new Expo(settings), getDefaultConfiguration(settings));

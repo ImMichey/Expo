@@ -74,14 +74,7 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(mask, shadow);
-        boolean draw = rc.verticesInBounds(vertices);
-
-        if(draw) {
-            rc.useArrayBatch();
-            rc.arraySpriteBatch.drawGradient(mask, textureWidth, textureHeight, shadow);
-        }
+        drawShadowIfVisible(mask);
     }
 
     @Override

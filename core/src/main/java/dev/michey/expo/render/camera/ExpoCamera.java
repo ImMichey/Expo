@@ -10,6 +10,7 @@ import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.InputUtils;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -84,8 +85,16 @@ public class ExpoCamera {
             RenderContext.get().expoCamera.camera.zoom = newZoom;
         }
 
+        /*
+        if(CameraShake.tick(RenderContext.get().delta)) {
+            movementPosition = null;
+            mousePosition = null;
+        }
+        */
+
         cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
         cameraLerpMouse();
+        cameraScreenShake();
 
         if(Float.isNaN(camera.position.x)) {
             centerToEntity(p);
@@ -122,6 +131,21 @@ public class ExpoCamera {
         // Update actual camera with calculated values
         camera.position.x += movementCameraX;
         camera.position.y += movementCameraY;
+    }
+
+    private void cameraScreenShake() {
+        CameraShake.tick(RenderContext.get().delta);
+
+        if(GameSettings.get().enableScreenshake) {
+            Vector2 oldPos = CameraShake.getOldPos();
+            Vector2 currentPos = CameraShake.getCurrentPos();
+
+            camera.position.x -= oldPos.x;
+            camera.position.y -= oldPos.y;
+
+            camera.position.x += currentPos.x;
+            camera.position.y += currentPos.y;
+        }
     }
 
     private void cameraLerpMouse() {

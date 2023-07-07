@@ -26,6 +26,7 @@ public class GameSettings {
     // Debug variables
     public boolean enableDebugGL = false;
     public boolean enableDebugImGui = false;
+    public boolean enableDebugMode = false;
 
     // Audio variables
     public float masterVolume = 1.0f;
@@ -41,6 +42,7 @@ public class GameSettings {
     public boolean enableShadows = true;
     public boolean enableWater = true;
     public boolean enableParticles = true;
+    public boolean enableScreenshake = true;
     public int zoomLevel = 0;
 
     public GameSettings() {
@@ -77,6 +79,7 @@ public class GameSettings {
         JSONObject debugJson = new JSONObject()
                 .put("enableDebugGL", enableDebugGL)
                 .put("enableDebugImGui", enableDebugImGui)
+                .put("enableDebugMode", enableDebugMode)
                 ;
 
         JSONObject audioJson = new JSONObject()
@@ -91,6 +94,7 @@ public class GameSettings {
                 .put("enableShadows", enableShadows)
                 .put("enableWater", enableWater)
                 .put("enableParticles", enableParticles)
+                .put("enableScreenshake", enableScreenshake)
                 .put("zoomLevel", zoomLevel)
                 ;
 
@@ -117,6 +121,7 @@ public class GameSettings {
         JSONObject debugJson = jsonSettings.getJSONObject("debug");
         enableDebugGL = debugJson.getBoolean("enableDebugGL");
         enableDebugImGui = debugJson.getBoolean("enableDebugImGui");
+        enableDebugMode = debugJson.getBoolean("enableDebugMode");
 
         JSONObject audioJson = jsonSettings.getJSONObject("audio");
         masterVolume = audioJson.getFloat("masterVolume");
@@ -132,6 +137,7 @@ public class GameSettings {
         enableWater = graphicJson.getBoolean("enableWater");
         enableParticles = graphicJson.getBoolean("enableParticles");
         zoomLevel = graphicJson.getInt("zoomLevel");
+        enableScreenshake = graphicJson.getBoolean("enableScreenshake");
     }
 
     @Override

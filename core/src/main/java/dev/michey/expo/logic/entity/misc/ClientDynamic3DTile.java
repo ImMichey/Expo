@@ -11,6 +11,7 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -79,6 +80,10 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     @Override
     public void onDamage(float damage, float newHealth) {
         playEntitySound("stone_hit");
+
+        if(selected && newHealth <= 0) {
+            CameraShake.invoke(1.25f, 0.33f);
+        }
     }
 
     @Override

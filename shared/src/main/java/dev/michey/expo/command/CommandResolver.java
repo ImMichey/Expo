@@ -18,7 +18,6 @@ public class CommandResolver {
     }
 
     public void addCommand(AbstractCommand command) {
-        log("Registering command: " + command.getCommandName());
         command.setResolver(this);
         commandMap.put(command.getCommandName().toLowerCase(), command);
     }

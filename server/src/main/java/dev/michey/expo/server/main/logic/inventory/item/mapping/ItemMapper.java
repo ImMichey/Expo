@@ -65,10 +65,9 @@ public class ItemMapper {
             ItemMapping mapping = new ItemMapping(identifier, id, displayName, displayNameColor, uiRender, heldRender, armorRender, logic);
             itemMappings.put(identifier, mapping);
             itemMappingsId.put(id, mapping);
-
-            log("Added item mapping [" + id + ", " + identifier + ", itemRenderPresent=" + (uiRender != null) + "]");
         }
 
+        log("Added " + itemMappings.size() + " item mappings.");
         INSTANCE = this;
     }
 

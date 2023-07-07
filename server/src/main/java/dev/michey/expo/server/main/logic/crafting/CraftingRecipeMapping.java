@@ -51,9 +51,10 @@ public class CraftingRecipeMapping {
                 cr.inputAmounts[j] = input.getInt("amount");
             }
 
-            log("New crafting recipe entry: " + identifier);
             recipeMap.put(identifier, cr);
         }
+
+        log("Added " + recipeMap.size() + " crafting recipe entries.");
 
         if(client) {
             categoryMap = new HashMap<>();
