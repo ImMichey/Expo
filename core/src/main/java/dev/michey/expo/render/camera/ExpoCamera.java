@@ -85,13 +85,6 @@ public class ExpoCamera {
             RenderContext.get().expoCamera.camera.zoom = newZoom;
         }
 
-        /*
-        if(CameraShake.tick(RenderContext.get().delta)) {
-            movementPosition = null;
-            mousePosition = null;
-        }
-        */
-
         cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
         cameraLerpMouse();
         cameraScreenShake();

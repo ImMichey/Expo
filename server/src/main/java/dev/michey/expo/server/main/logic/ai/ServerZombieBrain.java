@@ -115,7 +115,7 @@ public class ServerZombieBrain {
             if(modeDelta >= duration) {
                 if(currentMode == IDLE) {
                     currentMode = STROLL;
-                    dirVector.set(GenerationUtils.circularRandom(1)).sub(parent.posX, parent.posY).nor();
+                    dirVector.set(GenerationUtils.circularRandom(1).add(parent.posX, parent.posY)).sub(parent.posX, parent.posY).nor();
                     generateDuration(4, 8);
                 } else if(currentMode == STROLL) {
                     currentMode = IDLE;
@@ -138,14 +138,24 @@ public class ServerZombieBrain {
 
         float toMoveX = dirVector.x * delta * speed * movementMultiplicator;
         float toMoveY = dirVector.y * delta * speed * movementMultiplicator;
+        float oldPosX = parent.posX;
+        float oldPosY = parent.posY;
         var result = box.move(toMoveX, toMoveY, PhysicsBoxFilters.generalFilter);
 
         float targetX = result.goalX - box.xOffset;
         float targetY = result.goalY - box.yOffset;
-        parent.posX = targetX;
-        parent.posY = targetY;
 
-        packet();
+        // Check for loaded chunk
+        int chunkX = ExpoShared.posToChunk(targetX);
+        int chunkY = ExpoShared.posToChunk(targetY);
+
+        if(parent.getChunkGrid().isActiveChunk(chunkX, chunkY)) {
+            parent.posX = targetX;
+            parent.posY = targetY;
+            packet();
+        } else {
+            box.teleport(oldPosX, oldPosY);
+        }
     }
 
     public void packet() {

@@ -54,6 +54,7 @@ public class ServerChunk {
 
     /** Inactive chunk properties */
     private List<ServerEntity> inactiveEntities;
+    private List<ServerEntity> removeWithoutCachingList;
 
     public ServerChunk(ServerDimension dimension, int chunkX, int chunkY) {
         this.dimension = dimension;
@@ -344,12 +345,17 @@ public class ServerChunk {
     public void onInactive() {
         if(inactiveEntities == null) {
             inactiveEntities = new LinkedList<>();
+            removeWithoutCachingList = new LinkedList<>();
         }
 
         for(ServerEntity serverEntity : dimension.getEntityManager().getAllEntities()) {
             if(serverEntity.getEntityType() == ServerEntityType.PLAYER) continue;
             if(serverEntity.chunkX == chunkX && serverEntity.chunkY == chunkY) {
-                inactiveEntities.add(serverEntity);
+                if(serverEntity.persistentEntity) {
+                    inactiveEntities.add(serverEntity);
+                } else {
+                    removeWithoutCachingList.add(serverEntity);
+                }
             }
         }
 
@@ -358,12 +364,18 @@ public class ServerChunk {
             dimension.getEntityManager().removeEntitySafely(nowInactive);
         }
 
+        for(ServerEntity nowInactive : removeWithoutCachingList) {
+            dimension.getEntityManager().removeEntitySafely(nowInactive);
+        }
+
+        removeWithoutCachingList.clear();
+
         // log(chunkKey + " INACTIVE, removed " + inactiveEntities.size() + " entities");
     }
 
     /** Called when the chunk has been inactive before and is now commanded to save. */
     public void onSave() {
-        // log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
+        //log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
         String worldName = ExpoServerBase.get().getWorldSaveHandler().getWorldName();
         if(worldName.startsWith("dev-world-")) return;
 

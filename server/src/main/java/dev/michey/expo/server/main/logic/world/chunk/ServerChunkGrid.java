@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -244,7 +245,7 @@ public class ServerChunkGrid {
             ServerChunk[] chunksInView = getChunksInPlayerRange(player);
 
             for(ServerChunk chunk : chunksInView) {
-                activeChunkMap.get(chunk.getChunkKey()).value = now;
+                activeChunkMap.get(chunk.getChunkKey()).value = generateInactiveChunkTimestamp();
             }
         }
 
@@ -256,7 +257,7 @@ public class ServerChunkGrid {
                 String key = iterator.next();
                 var pair = activeChunkMap.get(key);
 
-                if(now - pair.value > 0) { // reached inactive state
+                if((now - pair.value) > 0) { // reached inactive state
                     iterator.remove();
                     pair.value = generateSaveChunkTimestamp();
                     inactiveChunkMap.put(key, pair);

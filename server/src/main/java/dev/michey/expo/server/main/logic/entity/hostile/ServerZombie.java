@@ -2,19 +2,13 @@ package dev.michey.expo.server.main.logic.entity.hostile;
 
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.server.main.logic.ai.AIConstants;
-import dev.michey.expo.server.main.logic.ai.EntityBrain;
 import dev.michey.expo.server.main.logic.ai.ServerZombieBrain;
-import dev.michey.expo.server.main.logic.ai.module.zombie.AIModuleZombieFindTarget;
-import dev.michey.expo.server.main.logic.ai.module.zombie.AIModuleZombieWalkTarget;
 import dev.michey.expo.server.main.logic.entity.arch.*;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
-import dev.michey.expo.util.AIState;
-
-import static dev.michey.expo.server.main.logic.ai.module.zombie.AIModuleZombieFindTarget.DEFAULT_TARGETS;
 
 public class ServerZombie extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
@@ -25,6 +19,7 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
     public ServerZombie() {
         health = 100.0f;
         invincibility = 0.0f;
+        persistentEntity = false;
     }
 
     @Override
