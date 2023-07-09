@@ -81,6 +81,9 @@ grass_hit_3.wav
 #eat;true;0.9-1.4;SFX;1.0
 eat_1.wav
 
+#falling_tree;true;1.0-1.0;SFX;0.5
+falling_tree_1.wav
+
 #slap;true;0.9-1.1;SFX;1.0
 slap_2.wav
 slap_3.wav

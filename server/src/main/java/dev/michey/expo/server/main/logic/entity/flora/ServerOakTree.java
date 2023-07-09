@@ -8,6 +8,7 @@ import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -118,6 +119,14 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         if(newHp <= trunkConversionHealth && !cut) {
             cut = true;
             ServerPackets.p30EntityDataUpdate(entityId, new Object[] {true}, PacketReceiver.whoCanSee(this));
+
+            // Spawn falling tree.
+            ServerFallingTree fallingTree = new ServerFallingTree();
+            fallingTree.variant = variant;
+            fallingTree.fallDirectionRight = damageSource.posX < posX;
+            fallingTree.posX = posX - 0.5f;
+            fallingTree.posY = posY + 12;
+            ServerWorld.get().registerServerEntity(entityDimension, fallingTree);
         }
 
         return true;

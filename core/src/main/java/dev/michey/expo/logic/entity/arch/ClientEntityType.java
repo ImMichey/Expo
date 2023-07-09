@@ -40,6 +40,7 @@ public enum ClientEntityType {
     LILYPAD(21, "Lilypad", ServerEntityType.LILYPAD),
     ZOMBIE(22, "Zombie", ServerEntityType.ZOMBIE),
     MAGGOT(23, "Maggot", ServerEntityType.MAGGOT),
+    FALLING_TREE(24, "FallingTree", ServerEntityType.FALLING_TREE),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -94,6 +95,7 @@ public enum ClientEntityType {
             case 21 -> new ClientLilypad();
             case 22 -> new ClientZombie();
             case 23 -> new ClientMaggot();
+            case 24 -> new ClientFallingTree();
             default -> null;
         };
     }

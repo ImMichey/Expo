@@ -14,6 +14,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.server.main.logic.entity.flora.ServerFallingTree;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
@@ -36,6 +37,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private final float colorMix = MathUtils.random(0.1f);
 
     private float playerBehindDelta = 1.0f;
+    private float resetShadowFadeTimer;
 
     private TextureRegion selectionTrunk;
 
@@ -318,6 +320,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
+        if(resetShadowFadeTimer > 0) resetShadowFadeTimer -= delta;
+
         if(!cut) {
             foliageAnimator.calculateWindOnDemand();
         }
@@ -338,7 +342,11 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
                 float bt = 1.0f;
 
                 if(cut) {
-                    tt = fraction * cutTotalHeight();
+                    if(resetShadowFadeTimer <= 0) {
+                        tt = fraction * cutTotalHeight();
+                    } else {
+                        tt = fraction * (totalHeight() - cutTotalHeight());
+                    }
                 } else {
                     tt = fraction * (totalHeight() - trunkHeight() + leavesDisplacement);
                 }
@@ -378,6 +386,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
             trunkShadowMask = tr("eot_trunk_cut_" + variant);
             selectionTrunk = generateSelectionTexture(trunk);
             updateTextureBounds(cutTotalWidth(), cutTotalHeight(), 0, 0);
+
+            resetShadowFadeTimer = ServerFallingTree.FALLING_ANIMATION_DURATION;
         }
     }
 

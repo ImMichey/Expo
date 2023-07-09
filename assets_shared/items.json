@@ -103,7 +103,7 @@
                 "toolType": "AXE",
                 "attackSpeed": 0.4,
                 "attackDamage": 16.0,
-                "harvestDamage": 10.0
+                "harvestDamage": 75.0
             }
         },
         {
