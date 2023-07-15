@@ -35,7 +35,6 @@ public enum ServerEntityType {
     LILYPAD(21, "Lilypad", true),
     ZOMBIE(22, "Zombie", false),
     MAGGOT(23, "Maggot", false),
-    FALLING_TREE(24, "FallingTree", true),
     ;
 
     public final int ENTITY_ID;
@@ -74,7 +73,6 @@ public enum ServerEntityType {
             case 21 -> new ServerLilypad();
             case 22 -> new ServerZombie();
             case 23 -> new ServerMaggot();
-            case 24 -> new ServerFallingTree();
             default -> null;
         };
     }
@@ -105,7 +103,6 @@ public enum ServerEntityType {
             case "LILYPAD" -> new ServerLilypad();
             case "ZOMBIE" -> new ServerZombie();
             case "MAGGOT" -> new ServerMaggot();
-            case "FALLING_TREE", "FALLINGTREE" -> new ServerFallingTree();
             default -> null;
         };
     }

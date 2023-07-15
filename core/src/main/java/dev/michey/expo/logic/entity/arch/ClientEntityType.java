@@ -40,7 +40,6 @@ public enum ClientEntityType {
     LILYPAD(21, "Lilypad", ServerEntityType.LILYPAD),
     ZOMBIE(22, "Zombie", ServerEntityType.ZOMBIE),
     MAGGOT(23, "Maggot", ServerEntityType.MAGGOT),
-    FALLING_TREE(24, "FallingTree", ServerEntityType.FALLING_TREE),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -50,6 +49,7 @@ public enum ClientEntityType {
     GHOST_ITEM(-5, "GhostItem", null),
     PARTICLE_OAK_LEAF(-6, "ParticleOakLeaf", null),
     PUDDLE(-7, "Puddle", null),
+    FALLING_TREE(-8, "FallingTree", null),
 
     ;
 
@@ -71,6 +71,7 @@ public enum ClientEntityType {
             case -4 -> new ClientParticleFood();
             case -5 -> new ClientGhostItem();
             case -6 -> new ClientParticleOakLeaf();
+            case -8 -> new ClientFallingTree();
             case 0 -> new ClientPlayer();
             case 1 -> new ClientDummy();
             case 2 -> new ClientGrass();
@@ -95,7 +96,6 @@ public enum ClientEntityType {
             case 21 -> new ClientLilypad();
             case 22 -> new ClientZombie();
             case 23 -> new ClientMaggot();
-            case 24 -> new ClientFallingTree();
             default -> null;
         };
     }

@@ -172,6 +172,42 @@ public abstract class ServerEntity {
         ServerWorld.get().registerServerEntity(entityDimension, item);
     }
 
+    public void spawnItemsAlongLine(float startX, float startY, float maxDistanceX, float maxDistanceY, float radiusDst, SpawnItem... spawnItems) {
+        int total = 0;
+
+        for(SpawnItem item : spawnItems) {
+            total += item.amount;
+        }
+
+        List<ServerInventoryItem> items = new ArrayList<>(total);
+
+        for(SpawnItem item : spawnItems) {
+            for(int i = 0; i < item.amount; i++) {
+                items.add(new ServerInventoryItem(item.id, 1));
+            }
+        }
+
+        Collections.shuffle(items);
+        float perX = maxDistanceX / (float) total;
+        float perY = maxDistanceY / (float) total;
+
+        for(int i = 0; i < total; i++) {
+            ServerItem item = new ServerItem();
+            item.itemContainer = items.get(i);
+
+            float nextX = startX + perX * i;
+            float nextY = startY + perY * i;
+
+            Vector2 dst = GenerationUtils.circularRandom(radiusDst);
+
+            item.posX = nextX;
+            item.posY = nextY;
+            item.dstX = dst.x;
+            item.dstY = dst.y;
+            ServerWorld.get().registerServerEntity(entityDimension, item);
+        }
+    }
+
     public void spawnItemsAround(float xOff, float yOff, float radiusMin, float radiusMax, SpawnItem... spawnItems) {
         int total = 0;
 

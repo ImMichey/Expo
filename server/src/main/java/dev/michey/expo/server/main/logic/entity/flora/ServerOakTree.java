@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.entity.flora;
 
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
@@ -24,6 +25,11 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public int variant;
     public boolean cut;
     public float trunkConversionHealth;
+
+    public boolean falling;
+    public float fallingEnd;
+    public boolean fallingDirectionRight;
+    public static float FALLING_ANIMATION_DURATION = 4.25f;
 
     public static final float[][] TREE_BODIES = new float[][] {
         new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
@@ -49,20 +55,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onDie() {
-        int min = 3, max = 6;
-
-        if(age == 1) {
-            min += 1;
-            max += 1;
-        } else if(age == 2) {
-            min += 2;
-            max += 3;
-        }
-
-        spawnItemsAround(0.0f, 6.0f, 14.0f, 18.0f,
-                new SpawnItem("item_oak_log", min, max),
-                new SpawnItem("item_acorn", 1, 2)
-        );
+        spawnItemsAround(0.0f, 6.0f, 10f, 14f, new SpawnItem("item_oak_log", 1, 2));
     }
 
     @Override
@@ -72,6 +65,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
         if(MathUtils.random() <= 0.1f) {
             cut = true;
+            health = trunkConversionHealth;
         }
     }
 
@@ -88,6 +82,30 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     }
 
     @Override
+    public void tick(float delta) {
+        if(invincibility > 0) invincibility -= delta;
+
+        if(falling) {
+            fallingEnd -= delta;
+
+            if(fallingEnd <= 0) {
+                falling = false;
+                ServerPackets.p30EntityDataUpdate(entityId, new Object[] {cut, falling, fallingEnd, fallingDirectionRight}, PacketReceiver.whoCanSee(this));
+
+                int reach = 90;
+
+                if(variant == 4) {
+                    reach = 120;
+                }
+
+                spawnItemsAlongLine(posX + (20 * (fallingDirectionRight ? 1 : -1)), posY, reach * (fallingDirectionRight ? 1 : -1), 0, 10.0f,
+                        new SpawnItem("item_oak_log", 2, 5),
+                        new SpawnItem("item_acorn", 1, 2));
+            }
+        }
+    }
+
+    @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.OAK_TREE;
     }
@@ -97,6 +115,9 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         return new SavableEntity(this).pack()
                 .add("variant", variant)
                 .add("cut", cut)
+                .optional("falling", falling, falling)
+                .optional("fallingEnd", fallingEnd, falling)
+                .optional("fallingDirectionRight", fallingDirectionRight, falling)
                 ;
     }
 
@@ -104,29 +125,32 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public void onLoad(JSONObject saved) {
         variant = saved.getInt("variant");
         cut = saved.getBoolean("cut");
+        if(saved.has("falling")) {
+            falling = true;
+            fallingEnd = saved.getFloat("fallingEnd");
+            fallingDirectionRight = saved.getBoolean("fallingDirectionRight");
+        }
         ageFromVariant();
     }
 
     @Override
     public Object[] getPacketPayload() {
-        return new Object[] {variant, cut};
+        return new Object[] {variant, cut, falling, fallingEnd, fallingDirectionRight};
     }
 
     @Override
     public boolean onDamage(ServerEntity damageSource, float damage) {
+        if(invincibility > 0) return false;
         float newHp = health - damage;
 
         if(newHp <= trunkConversionHealth && !cut) {
             cut = true;
-            ServerPackets.p30EntityDataUpdate(entityId, new Object[] {true}, PacketReceiver.whoCanSee(this));
+            falling = true;
+            fallingEnd = FALLING_ANIMATION_DURATION;
+            invincibility = FALLING_ANIMATION_DURATION;
 
-            // Spawn falling tree.
-            ServerFallingTree fallingTree = new ServerFallingTree();
-            fallingTree.variant = variant;
-            fallingTree.fallDirectionRight = damageSource.posX < posX;
-            fallingTree.posX = posX - 0.5f;
-            fallingTree.posY = posY + 12;
-            ServerWorld.get().registerServerEntity(entityDimension, fallingTree);
+            fallingDirectionRight = damageSource.posX < posX;
+            ServerPackets.p30EntityDataUpdate(entityId, new Object[] {cut, falling, fallingEnd, fallingDirectionRight}, PacketReceiver.whoCanSee(this));
         }
 
         return true;

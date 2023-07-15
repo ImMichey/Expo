@@ -12,9 +12,8 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.FoliageAnimator;
-import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.server.main.logic.entity.flora.ServerFallingTree;
+import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
@@ -40,6 +39,11 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private float resetShadowFadeTimer;
 
     private TextureRegion selectionTrunk;
+
+    // Falling animation
+    private boolean falling;
+    private float fallingRemaining;
+    private boolean fallingDirectionRight;
 
     /*
      *      [0] = LeavesWidth
@@ -368,18 +372,47 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         }
     }
 
+    private void spawnFallingTree() {
+        ClientFallingTree fallingTree = new ClientFallingTree();
+
+        fallingTree.clientPosX = clientPosX - 0.5f;
+        fallingTree.clientPosY = clientPosY + 12.0f;
+        fallingTree.depth = fallingTree.clientPosY - 12.001f;
+
+        fallingTree.leavesDisplacement = leavesDisplacement;
+        fallingTree.variant = variant;
+        fallingTree.fallingRightDirection = fallingDirectionRight;
+        fallingTree.animationDelta = ServerOakTree.FALLING_ANIMATION_DURATION - fallingRemaining;
+        fallingTree.colorDisplacement = colorMix;
+        fallingTree.windDisplacement = foliageAnimator == null ? 0 : foliageAnimator.value;
+        fallingTree.windDisplacementBase = fallingTree.windDisplacement;
+        fallingTree.transparency = playerBehindDelta;
+
+        entityManager().addClientSideEntity(fallingTree);
+    }
+
     @Override
     public void applyPacketPayload(Object[] payload) {
         variant = (int) payload[0];
         cut = (boolean) payload[1];
+
+        falling = (boolean) payload[2];
+        fallingRemaining = (float) payload[3];
+        fallingDirectionRight = (boolean) payload[4];
+
+        if(falling) {
+            spawnFallingTree();
+        }
     }
 
     @Override
     public void readEntityDataUpdate(Object[] payload) {
         cut = (boolean) payload[0];
+        falling = (boolean) payload[1];
+        fallingRemaining = (float) payload[2];
+        fallingDirectionRight = (boolean) payload[3];
 
         if(cut) {
-            foliageAnimator = null;
             leafParticleEmitter = null;
 
             trunk = tr("eot_trunk_cut_" + variant);
@@ -387,7 +420,13 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
             selectionTrunk = generateSelectionTexture(trunk);
             updateTextureBounds(cutTotalWidth(), cutTotalHeight(), 0, 0);
 
-            resetShadowFadeTimer = ServerFallingTree.FALLING_ANIMATION_DURATION;
+            if(falling) {
+                resetShadowFadeTimer = ServerOakTree.FALLING_ANIMATION_DURATION;
+            }
+        }
+
+        if(falling) {
+            spawnFallingTree();
         }
     }
 
