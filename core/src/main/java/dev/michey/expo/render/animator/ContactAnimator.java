@@ -14,10 +14,10 @@ public class ContactAnimator {
     private final List<ClientEntityType> contactList;
     private float contactDelta = 0f;
     private float contactDir = 0f;
-    private final float SPEED = 3.5f;
-    private final float STRENGTH = 3.5f;
-    private final float STRENGTH_DECREASE = 0.7f;
-    private final int STEPS = 5; // step = 0.5f (half radiant)
+    public float SPEED = 3.5f;
+    public float STRENGTH = 3.5f;
+    public float STRENGTH_DECREASE = 0.7f;
+    public int STEPS = 5; // step = 0.5f (half radiant)
     private float useStrength = STRENGTH;
     public float MIN_SQUISH = 0.3334f;
 

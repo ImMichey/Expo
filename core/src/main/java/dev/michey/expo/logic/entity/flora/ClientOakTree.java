@@ -11,6 +11,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
@@ -21,6 +22,7 @@ import dev.michey.expo.util.ParticleEmitter;
 
 public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
+    private ContactAnimator contactAnimator;
     private FoliageAnimator foliageAnimator;
     private ParticleEmitter leafParticleEmitter;
 
@@ -167,6 +169,11 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         updateDepth(5);
 
         if(!cut) {
+            contactAnimator = new ContactAnimator(this);
+            contactAnimator.small = false;
+            contactAnimator.STRENGTH = 2.0f;
+            contactAnimator.STRENGTH_DECREASE = 0.4f;
+
             foliageAnimator = new FoliageAnimator(0.5f, 1.2f, 0.03f, 0.05f, 0.06f, 0.07f, 2.0f, 5.0f, 0.5f, 1.5f);
 
             leafParticleEmitter = new ParticleEmitter(
@@ -233,6 +240,10 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
                 .rotateWithVelocity()
                 .depth(depth - 0.0001f)
                 .spawn();
+
+        if(!cut) {
+            contactAnimator.onContact();
+        }
     }
 
     @Override
@@ -245,6 +256,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         syncPositionWithServer();
 
         if(!cut) {
+            contactAnimator.tick(delta);
             foliageAnimator.resetWind();
             leafParticleEmitter.tick(delta);
 
@@ -290,7 +302,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
         if(!cut) {
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value, foliageAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
@@ -316,7 +328,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
 
             if(!cut) {
                 rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-                rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value, foliageAnimator.value);
+                rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
         }
@@ -367,7 +379,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
                 float topColorL = new Color(0f, 0f, 0f, tl).toFloatBits();
                 float bottomColorL = new Color(0f, 0f, 0f, bl).toFloatBits();
 
-                rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(leavesShadowMask, leavesShadowMask.getRegionWidth(), leavesShadowMask.getRegionHeight(), shadowL, foliageAnimator.value, foliageAnimator.value, topColorL, bottomColorL);
+                rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(leavesShadowMask, leavesShadowMask.getRegionWidth(), leavesShadowMask.getRegionHeight(), shadowL, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value, topColorL, bottomColorL);
             }
         }
     }
@@ -384,7 +396,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         fallingTree.fallingRightDirection = fallingDirectionRight;
         fallingTree.animationDelta = ServerOakTree.FALLING_ANIMATION_DURATION - fallingRemaining;
         fallingTree.colorDisplacement = colorMix;
-        fallingTree.windDisplacement = foliageAnimator == null ? 0 : foliageAnimator.value;
+        fallingTree.windDisplacement = (foliageAnimator == null ? 0 : foliageAnimator.value) + (contactAnimator == null ? 0 : contactAnimator.value);
         fallingTree.windDisplacementBase = fallingTree.windDisplacement;
         fallingTree.transparency = playerBehindDelta;
 
