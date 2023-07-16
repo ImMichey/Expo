@@ -113,7 +113,7 @@ public abstract class ServerDimension {
             for(NoisePostProcessor npp : chunkHandler.getGenSettings().getNoiseSettings().postProcessList) {
                 String k = npp.noiseWrapper.name;
                 chunkHandler.getNoisePostProcessorMap().get(k).setSeed(seed + npp.noiseWrapper.seedOffset);
-                ExpoLogger.log(k + ": " + (seed + npp.noiseWrapper.seedOffset));
+                // ExpoLogger.log(k + ": " + (seed + npp.noiseWrapper.seedOffset));
             }
         }
     }

@@ -43,7 +43,7 @@ public class WorldGen {
             if(generator.has("biomePopulators")) settings.parseBiomeSettings(generator.getJSONObject("biomePopulators"));
 
             worldGenMap.put(dimension, settings);
-            log("Added world gen mapping [" + dimension + ", " + settings + "]");
+            log("Added world gen mapping for '" + dimension + "'");
         }
 
         INSTANCE = this;
