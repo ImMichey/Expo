@@ -298,7 +298,7 @@ public abstract class ServerEntity {
         if(applied) {
             health -= damage;
 
-            ServerPackets.p26EntityDamage(entityId, damage, health, PacketReceiver.whoCanSee(this));
+            ServerPackets.p26EntityDamage(entityId, damage, health, damageSource.entityId, PacketReceiver.whoCanSee(this));
 
             if(health <= 0) {
                 killEntityWithPacket();

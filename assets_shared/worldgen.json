@@ -350,6 +350,12 @@
                 "DENSE_FOREST": {
                     "entities": [
                         {
+                            "type": "WORM",
+                            "static": false,
+                            "chance": 0.002,
+                            "pds": 16
+                        },
+                        {
                             "type": "MUSHROOM_GLOWING",
                             "static": true,
                             "chance": 0.0005,

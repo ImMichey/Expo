@@ -2,14 +2,11 @@ package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
-import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
@@ -49,7 +46,7 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("grass_hit");
 
         new ParticleBuilder(ClientEntityType.PARTICLE_HIT)

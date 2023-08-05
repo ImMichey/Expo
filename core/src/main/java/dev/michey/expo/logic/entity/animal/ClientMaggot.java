@@ -2,13 +2,11 @@ package dev.michey.expo.logic.entity.animal;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
-import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
@@ -40,7 +38,7 @@ public class ClientMaggot extends ClientEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         damageDelta = RenderContext.get().deltaTotal;
         damageTint = true;
     }

@@ -138,6 +138,7 @@ public class RenderContext {
 
     /** Numbers */
     private final TextureRegion[] numbers;
+    private final TextureRegion[] numbersOutline;
 
     /** Game camera */
     public ExpoCamera expoCamera;
@@ -242,6 +243,13 @@ public class RenderContext {
 
         for(int i = 0; i < 10; i++) {
             numbers[i] = new TextureRegion(baseTexture, i * 8, 0, 6, 8);
+        }
+
+        numbersOutline = new TextureRegion[10];
+        TextureRegion baseTexture2 = ExpoAssets.get().textureRegion("numbersOutline");
+
+        for(int i = 0; i < 10; i++) {
+            numbersOutline[i] = new TextureRegion(baseTexture2, i * 8, 0, 7, 9);
         }
 
         TextureRegion baseButton = ExpoAssets.get().textureRegion("ui_button_patches");
@@ -478,6 +486,10 @@ public class RenderContext {
 
     public TextureRegion getNumber(int number) {
         return numbers[number];
+    }
+
+    public TextureRegion getNumberOutline(int number) {
+        return numbersOutline[number];
     }
 
     private ShaderProgram compileShader(String key) {

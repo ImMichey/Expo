@@ -270,11 +270,12 @@ public class ServerPackets {
     }
 
     /** Sends the P26_EntityDamage packet via UDP protocol. */
-    public static void p26EntityDamage(int entityId, float damage, float newHealth, PacketReceiver receiver) {
+    public static void p26EntityDamage(int entityId, float damage, float newHealth, int damageSourceEntityId, PacketReceiver receiver) {
         P26_EntityDamage p = new P26_EntityDamage();
         p.entityId = entityId;
         p.damage = damage;
         p.newHealth = newHealth;
+        p.damageSourceEntityId = damageSourceEntityId;
         udp(p, receiver);
     }
 

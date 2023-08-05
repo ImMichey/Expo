@@ -54,7 +54,7 @@ public class ClientFirefly extends ClientEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         damageDelta = RenderContext.get().deltaTotal;
         damageTint = true;
     }

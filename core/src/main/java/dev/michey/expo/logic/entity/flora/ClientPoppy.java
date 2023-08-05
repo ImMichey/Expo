@@ -35,7 +35,7 @@ public class ClientPoppy extends ClientEntity implements SelectableEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("grass_hit");
         contactAnimator.onContact();
 

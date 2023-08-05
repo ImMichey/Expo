@@ -1,7 +1,10 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.util.PacketReceiver;
@@ -405,6 +408,19 @@ public class ServerTile {
         return list;
     }
 
+    // North -> East -> South -> West (4 tiles)
+    public ServerTile[] getNeighbouringTilesNESW() {
+        ServerTile[] list = new ServerTile[4];
+        ServerChunkGrid grid = chunk.getDimension().getChunkHandler();
+
+        list[0] = grid.getTile(tileX, tileY + 1);
+        list[1] = grid.getTile(tileX + 1, tileY);
+        list[2] = grid.getTile(tileX, tileY - 1);
+        list[3] = grid.getTile(tileX - 1, tileY);
+
+        return list;
+    }
+
     public BiomeType[] getNeighbouringBiomes() {
         BiomeType[] list = new BiomeType[8];
         ServerChunkGrid grid = chunk.getDimension().getChunkHandler();
@@ -437,6 +453,16 @@ public class ServerTile {
         if(isType(TileLayerType.SAND, 1) || isType(TileLayerType.DESERT, 1)) return 2;
         if(isType(TileLayerType.SOIL, 0)) return 0;
         return -1;
+    }
+
+    public ServerEntity hasTileBasedEntity(ServerEntityType type) {
+        if(!chunk.hasTileBasedEntities()) return null;
+        int entityId = chunk.getTileBasedEntityIdGrid()[tileArray];
+        if(entityId == -1) return null;
+        ServerEntity found = ServerWorld.get().getDimension(chunk.getDimension().getDimensionName()).getEntityManager().getEntityById(entityId);
+        if(found == null) return null;
+        if(found.getEntityType() == type) return found;
+        return null;
     }
 
     public boolean isType(TileLayerType type, int layer) {

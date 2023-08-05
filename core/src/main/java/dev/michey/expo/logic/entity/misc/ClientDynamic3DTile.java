@@ -78,7 +78,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("stone_hit");
 
         if(selected && newHealth <= 0) {

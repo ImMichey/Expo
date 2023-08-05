@@ -4,11 +4,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
@@ -17,7 +16,6 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
@@ -136,7 +134,7 @@ public abstract class ClientEntity {
 
     }
 
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
 
     }
 
@@ -319,6 +317,15 @@ public abstract class ClientEntity {
         finalTextureStartY = other.finalTextureStartY;
         finalTextureCenterX = other.finalTextureCenterX;
         finalTextureCenterY = other.finalTextureCenterY;
+    }
+
+    public void spawnDamageIndicator(int damage, float posX, float posY, Vector2 dir) {
+        ClientDamageIndicator damageIndicator = new ClientDamageIndicator();
+        damageIndicator.damageNumber = damage;
+        damageIndicator.moveDir = dir == null ? new Vector2(0, 0) : dir;
+        damageIndicator.clientPosX = posX;
+        damageIndicator.clientPosY = posY;
+        ClientEntityManager.get().addClientSideEntity(damageIndicator);
     }
 
     public void drawShadowIfVisible(TextureRegion texture) {

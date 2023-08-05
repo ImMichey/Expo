@@ -196,7 +196,7 @@ public class ExpoClientPacketReader {
             ClientEntity entity = entityFromId(p.entityId);
 
             if(entity != null) {
-                entity.onDamage(p.damage, p.newHealth);
+                entity.onDamage(p.damage, p.newHealth, p.damageSourceEntityId);
             }
         } else if(o instanceof P28_PlayerFoodParticle p) {
             ClientEntity entity = entityFromId(p.entityId);

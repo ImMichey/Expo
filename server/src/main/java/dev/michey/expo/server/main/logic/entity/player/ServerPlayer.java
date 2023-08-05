@@ -592,6 +592,27 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             { // Update inventory
                 useItemAmount(item);
             }
+        } else if(p.type == PlaceType.ENTITY) {
+            if(p.alignment == PlaceAlignment.TILE) {
+                boolean proceed = true;
+
+                if(chunk.hasTileBasedEntities() && chunk.getTileBasedEntityIdGrid()[tileArray] != -1) {
+                    proceed = false;
+                }
+
+                if(proceed) {
+                    // Proceed.
+                    ServerEntity createdTileEntity = ServerEntityType.typeToEntity(p.entityType);
+                    int x = tileArray % ROW_TILES;
+                    int y = tileArray / ROW_TILES;
+                    createdTileEntity.posX = ExpoShared.tileToPos(tile.tileX);
+                    createdTileEntity.posY = ExpoShared.tileToPos(tile.tileY);
+                    ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
+                    createdTileEntity.attachToTile(chunk, x, y);
+                }
+            } else {
+
+            }
         }
 
         long now = System.currentTimeMillis();

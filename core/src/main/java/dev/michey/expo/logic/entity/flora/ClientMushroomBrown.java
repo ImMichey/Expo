@@ -3,9 +3,6 @@ package dev.michey.expo.logic.entity.flora;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -14,8 +11,6 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
-
-import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ClientMushroomBrown extends ClientEntity implements SelectableEntity {
 
@@ -32,7 +27,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("grass_hit");
 
         int particles = MathUtils.random(2, 5);

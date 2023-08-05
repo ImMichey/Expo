@@ -379,7 +379,11 @@
             "logic": {
                 "stackSize": 100,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "foodData": {
+                    "hungerRestore": 15.0,
+                    "hungerCooldownRestore": 60.0
+                }
             }
         },
         {
@@ -710,6 +714,30 @@
                 "stackSize": 1,
                 "durability": 100,
                 "toolType": "HELMET"
+            }
+        },
+        {
+            "identifier": "item_fence_stick",
+            "id": 28,
+            "displayName": "Stick Fence",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_fence_stick"
+                },
+                "held": {
+                    "texture": "item_fence_stick"
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "FENCE_STICK"
+                }
             }
         }
     ]

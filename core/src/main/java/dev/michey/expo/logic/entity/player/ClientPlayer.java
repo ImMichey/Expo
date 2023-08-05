@@ -11,19 +11,19 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.inventory.PlayerInventory;
-import dev.michey.expo.logic.world.chunk.ClientChunk;
-import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.render.ui.SelectorType;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
@@ -223,7 +223,7 @@ public class ClientPlayer extends ClientEntity {
     }
 
     @Override
-    public void onDamage(float damage, float newHealth) {
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         damageDelta = RenderContext.get().deltaTotal;
         damageTint = true;
     }
@@ -241,25 +241,51 @@ public class ClientPlayer extends ClientEntity {
             if(holdingItemId != -1) {
                 ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
 
-                boolean shovel = mapping.logic.isSpecialType() && mapping.logic.toolType == ToolType.SHOVEL;
-                boolean placeable = holdingItemId >= 9 && holdingItemId <= 11;
-                boolean scythe = mapping.logic.isSpecialType() && mapping.logic.toolType == ToolType.SCYTHE;
+                boolean scanTile = false;
+                boolean scanFreely = false;
 
-                if(entityManager().selectedEntity == null && (shovel || placeable || scythe)) {
-                    float tx = RenderContext.get().mouseWorldGridX;
-                    float ty = RenderContext.get().mouseWorldGridY;
-                    float range = mapping.logic.range;
+                if(mapping.logic.isSpecialType()) {
+                    ToolType tt = mapping.logic.toolType;
 
+                    if(tt == ToolType.SHOVEL) {
+                        scanTile = true;
+                        selector.currentSelectorType = SelectorType.DIG_SHOVEL;
+                    } else if(tt == ToolType.SCYTHE) {
+                        scanTile = true;
+                        selector.currentSelectorType = SelectorType.DIG_SCYTHE;
+                    }
+                }
+                if(mapping.logic.placeData != null) {
+                    PlaceData placeData = mapping.logic.placeData;
+
+                    if(placeData.floorType != null) {
+                        selector.currentSelectorType = SelectorType.PLACE_TILE;
+                    } else {
+                        selector.currentSelectorType = SelectorType.PLACE_ENTITY;
+                    }
+
+                    if(placeData.alignment == PlaceAlignment.TILE) {
+                        scanTile = true;
+                    } else {
+                        scanFreely = true;
+                    }
+                }
+
+                // Scan process
+                float tx = RenderContext.get().mouseWorldGridX;
+                float ty = RenderContext.get().mouseWorldGridY;
+                float range = mapping.logic.range;
+
+                if(scanTile) {
+                    selector.currentlyVisible = true;
                     float d1 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty);
                     float d2 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty);
                     float d3 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty + 16);
                     float d4 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty + 16);
 
                     if(d1 <= range || d2 <= range || d3 <= range || d4 <= range) {
-                        selector.tx = tx;
-                        selector.ty = ty;
-                        selector.tix = RenderContext.get().mouseTileX;
-                        selector.tiy = RenderContext.get().mouseTileY;
+                        selector.externalPosX = tx;
+                        selector.externalPosY = ty;
                     } else {
                         Vector2 dst = GenerationUtils.circular(RenderContext.get().mouseRotation + 270, range);
                         float ntx = playerReachCenterX + dst.x;
@@ -268,19 +294,20 @@ public class ClientPlayer extends ClientEntity {
                         int _tix = ExpoShared.posToTile(ntx);
                         int _tiy = ExpoShared.posToTile(nty);
 
-                        selector.tx = ExpoShared.tileToPos(_tix);
-                        selector.ty = ExpoShared.tileToPos(_tiy);
-                        selector.tix = _tix;
-                        selector.tiy = _tiy;
+                        selector.externalPosX = ExpoShared.tileToPos(_tix);
+                        selector.externalPosY = ExpoShared.tileToPos(_tiy);
                     }
+                } else if(scanFreely) {
+                    selector.currentlyVisible = true;
 
-                    selector.visible = true;
-                    selector.selectionType = (shovel || scythe) ? 0 : 1;
+                    // Revisit later.
+                    selector.externalPosX = RenderContext.get().mouseWorldX;
+                    selector.externalPosY = RenderContext.get().mouseWorldY;
                 } else {
-                    selector.visible = false;
+                    selector.currentlyVisible = false;
                 }
             } else {
-                selector.visible = false;
+                selector.currentlyVisible = false;
             }
 
             // Player direction
@@ -367,8 +394,8 @@ public class ClientPlayer extends ClientEntity {
                 ClientPackets.p22PlayerArmDirection(currentRotation);
             }
 
-            if(selector.visible && selector.canPlace && IngameInput.get().rightJustPressed()) {
-                ClientPackets.p34PlayerPlace(selector.svChunkX, selector.svChunkY, selector.svTileX, selector.svTileY, selector.svTileArray);
+            if(selector.canDoAction() && IngameInput.get().rightJustPressed()) {
+                ClientPackets.p34PlayerPlace(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray);
             }
         } else {
             // Sync arm rotation if needed
@@ -401,10 +428,8 @@ public class ClientPlayer extends ClientEntity {
                 if(player) {
                     AudioEngine.get().playSoundGroup("punch");
 
-                    if(selector.visible) {
-                        if(selector.canDig) {
-                            ClientPackets.p31PlayerDig(selector.svChunkX, selector.svChunkY, selector.svTileX, selector.svTileY, selector.svTileArray);
-                        }
+                    if(selector.canDoAction()) {
+                        ClientPackets.p31PlayerDig(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray);
                     }
                 } else {
                     AudioEngine.get().playSoundGroupManaged("punch", new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
