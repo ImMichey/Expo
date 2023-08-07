@@ -117,7 +117,7 @@ public class ClientEntityManager {
         for(ClientEntity entity : depthEntityList) {
             entity.tick(delta);
 
-            if(doCheck && !player.selector.currentlyVisible) {
+            if(doCheck) {
                 if(entity instanceof SelectableEntity) {
                     Object[] data = isNowSelected(entity);
 

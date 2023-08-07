@@ -542,7 +542,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         }
     }
 
-    public void placeAt(int chunkX, int chunkY, int tileArray) {
+    public void placeAt(int chunkX, int chunkY, int tileArray, float mouseWorldX, float mouseWorldY) {
         ServerInventoryItem item = getCurrentItem();
         ItemMapping m = ItemMapper.get().getMapping(item.itemId);
         if(m.logic.placeData == null) return; // to combat de-sync server<->client, double check current item
@@ -609,9 +609,17 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     createdTileEntity.posY = ExpoShared.tileToPos(tile.tileY);
                     ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
                     createdTileEntity.attachToTile(chunk, x, y);
+
+                    useItemAmount(item);
                 }
             } else {
+                // Proceed.
+                ServerEntity placedEntity = ServerEntityType.typeToEntity(p.entityType);
+                placedEntity.posX = mouseWorldX;
+                placedEntity.posY = mouseWorldY;
+                ServerWorld.get().registerServerEntity(entityDimension, placedEntity);
 
+                useItemAmount(item);
             }
         }
 

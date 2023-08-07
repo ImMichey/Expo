@@ -254,14 +254,18 @@ public class ClientPlayer extends ClientEntity {
                         scanTile = true;
                         selector.currentSelectorType = SelectorType.DIG_SCYTHE;
                     }
+
+                    selector.currentEntityPlacementTexture = null;
                 }
                 if(mapping.logic.placeData != null) {
                     PlaceData placeData = mapping.logic.placeData;
 
                     if(placeData.floorType != null) {
                         selector.currentSelectorType = SelectorType.PLACE_TILE;
+                        selector.currentEntityPlacementTexture = null;
                     } else {
                         selector.currentSelectorType = SelectorType.PLACE_ENTITY;
+                        selector.currentEntityPlacementTexture = placeData.previewTextureName;
                     }
 
                     if(placeData.alignment == PlaceAlignment.TILE) {
@@ -395,7 +399,8 @@ public class ClientPlayer extends ClientEntity {
             }
 
             if(selector.canDoAction() && IngameInput.get().rightJustPressed()) {
-                ClientPackets.p34PlayerPlace(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray);
+                ClientPackets.p34PlayerPlace(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray,
+                        RenderContext.get().mouseWorldX, RenderContext.get().mouseWorldY);
             }
         } else {
             // Sync arm rotation if needed

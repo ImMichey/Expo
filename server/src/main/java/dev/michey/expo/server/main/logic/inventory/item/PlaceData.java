@@ -9,12 +9,14 @@ public class PlaceData {
     public PlaceType type;
     public FloorType floorType;
     public ServerEntityType entityType;
+    public String previewTextureName;
 
     public PlaceData(JSONObject o) {
         alignment = PlaceAlignment.valueOf(o.getString("alignment"));
         type = PlaceType.valueOf(o.getString("type"));
         if(o.has("floorType")) floorType = FloorType.valueOf(o.getString("floorType"));
         if(o.has("entityType")) entityType = ServerEntityType.valueOf(o.getString("entityType"));
+        if(o.has("previewTexture")) previewTextureName = o.getString("previewTexture");
     }
 
 }

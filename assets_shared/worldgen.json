@@ -5,6 +5,23 @@
             "noise": {
                 "postProcessors": [
                     {
+                        "name": "puddles_small",
+                        "octaves": 5,
+                        "type": 5,
+                        "frequency": 0.027,
+                        "noiseOffset": 6,
+                        "logic": {
+                            "check": [
+                                "DENSE_FOREST",
+                                "PLAINS",
+                                "FOREST"
+                            ],
+                            "threshold": 0.85,
+                            "replaceType": "BIOME",
+                            "replaceWith": "LAKE"
+                        }
+                    },
+                    {
                         "name": "lakes",
                         "octaves": 5,
                         "type": 5,

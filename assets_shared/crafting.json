@@ -2,7 +2,8 @@
     "categories": {
         "misc": [
             "recipe_cord",
-            "recipe_oak_plank"
+            "recipe_oak_plank",
+            "recipe_fence_stick"
         ],
         "tools": [
             "recipe_flint_pickaxe",
@@ -134,6 +135,23 @@
             "input": [
                 {
                     "id": 24,
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_fence_stick",
+            "output": {
+                "id": 28,
+                "amount": 2
+            },
+            "input": [
+                {
+                    "id": 0,
+                    "amount": 4
+                },
+                {
+                    "id": 15,
                     "amount": 1
                 }
             ]

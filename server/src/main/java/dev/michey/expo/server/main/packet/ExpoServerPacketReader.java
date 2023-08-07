@@ -84,7 +84,7 @@ public class ExpoServerPacketReader {
             ServerPlayer sp = ServerPlayer.getLocalPlayer();
             if(sp == null) return;
 
-            sp.placeAt(p.chunkX, p.chunkY, p.tileArray);
+            sp.placeAt(p.chunkX, p.chunkY, p.tileArray, p.mouseWorldX, p.mouseWorldY);
         } else if(packet instanceof P35_PlayerCraft p) {
             ServerPlayer sp = ServerPlayer.getLocalPlayer();
             if(sp == null) return;
@@ -216,7 +216,7 @@ public class ExpoServerPacketReader {
             ServerPlayer player = connectionToPlayer(connection);
 
             if(player != null) {
-                player.placeAt(p.chunkX, p.chunkY, p.tileArray);
+                player.placeAt(p.chunkX, p.chunkY, p.tileArray, p.mouseWorldX, p.mouseWorldY);
             }
         } else if(o instanceof P35_PlayerCraft p) {
             ServerPlayer player = connectionToPlayer(connection);

@@ -583,7 +583,13 @@
             "logic": {
                 "stackSize": 100,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "UNRESTRICTED",
+                    "type": "ENTITY",
+                    "entityType": "MUSHROOM_GLOWING",
+                    "previewTexture": "entity_mushroom_glowing"
+                }
             }
         },
         {
@@ -736,7 +742,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "ENTITY",
-                    "entityType": "FENCE_STICK"
+                    "entityType": "FENCE_STICK",
+                    "previewTexture": "entity_fence_stick_1"
                 }
             }
         }

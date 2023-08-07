@@ -88,13 +88,15 @@ public class ClientPackets {
     }
 
     /** Sends the P34_PlayerPlace packet via UDP protocol. */
-    public static void p34PlayerPlace(int chunkX, int chunkY, int tileX, int tileY, int tileArray) {
+    public static void p34PlayerPlace(int chunkX, int chunkY, int tileX, int tileY, int tileArray, float mouseWorldX, float mouseWorldY) {
         P34_PlayerPlace p = new P34_PlayerPlace();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
         p.tileX = tileX;
         p.tileY = tileY;
         p.tileArray = tileArray;
+        p.mouseWorldX = mouseWorldX;
+        p.mouseWorldY = mouseWorldY;
         udp(p);
     }
 

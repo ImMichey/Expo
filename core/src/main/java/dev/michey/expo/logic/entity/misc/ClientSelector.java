@@ -35,6 +35,7 @@ public class ClientSelector extends ClientEntity {
 
     /** New selector values */
     public SelectorType currentSelectorType = SelectorType.DIG_SHOVEL; // default
+    public String currentEntityPlacementTexture;
     public boolean currentlyVisible = false;
     private boolean eligible;
 
@@ -159,7 +160,12 @@ public class ClientSelector extends ClientEntity {
             } else {
                 rc.arraySpriteBatch.setColor(1.0f, 0.25f, 0.25f, 0.5f);
             }
-            rc.arraySpriteBatch.draw(square, externalPosX, externalPosY);
+            if(currentEntityPlacementTexture == null) {
+                rc.arraySpriteBatch.draw(square, externalPosX, externalPosY);
+            } else {
+                rc.arraySpriteBatch.draw(tr(currentEntityPlacementTexture), externalPosX, externalPosY);
+            }
+
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }

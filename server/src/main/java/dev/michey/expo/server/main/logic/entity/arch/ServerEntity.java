@@ -373,4 +373,8 @@ public abstract class ServerEntity {
         damageableWith = types;
     }
 
+    public ServerTile getCurrentTile() {
+        return getChunkGrid().getTile(ExpoShared.posToTile(posX), ExpoShared.posToTile(posY));
+    }
+
 }

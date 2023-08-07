@@ -7,5 +7,7 @@ public class P34_PlayerPlace extends Packet {
     public int tileX;
     public int tileY;
     public int tileArray;
+    public float mouseWorldX;
+    public float mouseWorldY;
 
 }
