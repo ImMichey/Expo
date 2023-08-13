@@ -287,7 +287,7 @@
         {
             "identifier": "item_dirt",
             "id": 11,
-            "displayName": "Dirt",
+            "displayName": "Dirt Floor",
             "displayNameColor": "#ffffff",
             "render": {
                 "ui": {
@@ -588,7 +588,8 @@
                     "alignment": "UNRESTRICTED",
                     "type": "ENTITY",
                     "entityType": "MUSHROOM_GLOWING",
-                    "previewTexture": "entity_mushroom_glowing"
+                    "previewTexture": "entity_mushroom_glowing",
+                    "placeAlignmentOffsetX": 4
                 }
             }
         },
@@ -664,7 +665,15 @@
             "logic": {
                 "stackSize": 100,
                 "durability": -1,
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "CROP_WHEAT",
+                    "placeAlignmentOffsetX": 8,
+                    "placeAlignmentOffsetY": 3,
+                    "floorRequirement": "SOIL_FARMLAND"
+                }
             }
         },
         {
@@ -744,6 +753,30 @@
                     "type": "ENTITY",
                     "entityType": "FENCE_STICK",
                     "previewTexture": "entity_fence_stick_1"
+                }
+            }
+        },
+        {
+            "identifier": "item_oak_plank_floor",
+            "id": 29,
+            "displayName": "Oak Plank Floor",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_oak_plank_floor"
+                },
+                "held": {
+                    "texture": "item_oak_plank_floor"
+                }
+            },
+            "logic": {
+                "stackSize": 100,
+                "durability": -1,
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_1",
+                    "floorType": "OAK_PLANK"
                 }
             }
         }

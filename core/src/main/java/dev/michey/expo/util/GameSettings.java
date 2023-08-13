@@ -43,6 +43,7 @@ public class GameSettings {
     public boolean enableWater = true;
     public boolean enableParticles = true;
     public boolean enableScreenshake = true;
+    public boolean enableSoftShadows = true;
     public int zoomLevel = 0;
 
     public GameSettings() {
@@ -95,6 +96,7 @@ public class GameSettings {
                 .put("enableWater", enableWater)
                 .put("enableParticles", enableParticles)
                 .put("enableScreenshake", enableScreenshake)
+                .put("enableSoftShadows", enableSoftShadows)
                 .put("zoomLevel", zoomLevel)
                 ;
 
@@ -138,6 +140,7 @@ public class GameSettings {
         enableParticles = graphicJson.getBoolean("enableParticles");
         zoomLevel = graphicJson.getInt("zoomLevel");
         enableScreenshake = graphicJson.getBoolean("enableScreenshake");
+        enableSoftShadows = graphicJson.getBoolean("enableSoftShadows");
     }
 
     @Override

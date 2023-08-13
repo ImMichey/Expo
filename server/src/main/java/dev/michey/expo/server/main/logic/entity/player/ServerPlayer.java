@@ -22,6 +22,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
+import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
@@ -600,13 +601,24 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     proceed = false;
                 }
 
+                if(p.floorRequirement != null && proceed) {
+                    proceed = false;
+
+                    for(DynamicTilePart dtp : tile.dynamicTileParts) {
+                        if(dtp.emulatingType == p.floorRequirement) {
+                            proceed = true;
+                            break;
+                        }
+                    }
+                }
+
                 if(proceed) {
                     // Proceed.
                     ServerEntity createdTileEntity = ServerEntityType.typeToEntity(p.entityType);
                     int x = tileArray % ROW_TILES;
                     int y = tileArray / ROW_TILES;
-                    createdTileEntity.posX = ExpoShared.tileToPos(tile.tileX);
-                    createdTileEntity.posY = ExpoShared.tileToPos(tile.tileY);
+                    createdTileEntity.posX = ExpoShared.tileToPos(tile.tileX) + p.placeAlignmentOffsetX;
+                    createdTileEntity.posY = ExpoShared.tileToPos(tile.tileY) + p.placeAlignmentOffsetY;
                     ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
                     createdTileEntity.attachToTile(chunk, x, y);
 
@@ -615,8 +627,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             } else {
                 // Proceed.
                 ServerEntity placedEntity = ServerEntityType.typeToEntity(p.entityType);
-                placedEntity.posX = mouseWorldX;
-                placedEntity.posY = mouseWorldY;
+                placedEntity.posX = mouseWorldX + p.placeAlignmentOffsetX;
+                placedEntity.posY = mouseWorldY + p.placeAlignmentOffsetY;
                 ServerWorld.get().registerServerEntity(entityDimension, placedEntity);
 
                 useItemAmount(item);

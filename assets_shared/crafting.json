@@ -3,7 +3,8 @@
         "misc": [
             "recipe_cord",
             "recipe_oak_plank",
-            "recipe_fence_stick"
+            "recipe_fence_stick",
+            "recipe_oak_wood_floor"
         ],
         "tools": [
             "recipe_flint_pickaxe",
@@ -16,6 +17,19 @@
         ]
     },
     "recipes": [
+        {
+            "identifier": "recipe_oak_wood_floor",
+            "output": {
+                "id": 29,
+                "amount": 2
+            },
+            "input": [
+                {
+                    "id": 21,
+                    "amount": 4
+                }
+            ]
+        },
         {
             "identifier": "recipe_oak_plank",
             "output": {
@@ -38,7 +52,7 @@
             "input": [
                 {
                     "id": 7,
-                    "amount": 6
+                    "amount": 5
                 }
             ]
         },
@@ -51,7 +65,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "id": 0,
@@ -72,7 +86,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "id": 0,
@@ -93,7 +107,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "id": 0,
@@ -114,7 +128,7 @@
             "input": [
                 {
                     "id": 15,
-                    "amount": 2
+                    "amount": 1
                 },
                 {
                     "id": 0,

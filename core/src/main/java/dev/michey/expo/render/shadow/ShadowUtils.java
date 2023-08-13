@@ -11,6 +11,11 @@ import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class ShadowUtils {
 
+    public static final Affine2 SHEARING_AFFINE = new Affine2();
+    public static final Affine2 OFFSET_AFFINE = new Affine2();
+    public static final Affine2 ROTATION_AFFINE = new Affine2();
+    public static final Affine2 FINAL_AFFINE = new Affine2();
+
     /*
      *      Creates a custom Affine2 for shadows with rotation
      *
@@ -27,17 +32,29 @@ public class ShadowUtils {
                                                      float originX, float originY,
                                                      float shearX, float shearY,
                                                      float scaleX, float scaleY) {
-        Affine2 shearingAffine = new Affine2();
-        shearingAffine.setToShearing(shearX, shearY);
 
-        Affine2 offsetAffine = new Affine2();
-        offsetAffine.setToTranslation(offsetX, offsetY);
+        SHEARING_AFFINE.setToShearing(shearX, shearY);
+        OFFSET_AFFINE.setToTranslation(offsetX, offsetY);
+        ROTATION_AFFINE.idt().translate(originX, originY).rotate(rotation).translate(-originX, -originY).preMul(OFFSET_AFFINE);
+        FINAL_AFFINE.idt().preMul(ROTATION_AFFINE);
 
+        if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
+            FINAL_AFFINE.preMul(SHEARING_AFFINE).preScale(scaleX, scaleY);
+        }
+
+        //Affine2 shearingAffine = new Affine2();
+        //shearingAffine.setToShearing(shearX, shearY);
+
+        //Affine2 offsetAffine = new Affine2();
+        //offsetAffine.setToTranslation(offsetX, offsetY);
+
+        /*
         Affine2 rotationAffine = new Affine2();
         rotationAffine.translate(originX, originY);
         rotationAffine.rotate(rotation);
         rotationAffine.translate(-originX, -originY);
         rotationAffine.preMul(offsetAffine);
+
 
         // Note: You could potentially stop after the rotationAffine and grab the vertices applied with that affine for wind entities
 
@@ -48,6 +65,9 @@ public class ShadowUtils {
         }
 
         return r.preTranslate(worldX, worldY);
+        */
+
+        return new Affine2(FINAL_AFFINE.preTranslate(worldX, worldY));
     }
 
     public static Affine2 createSimpleShadowAffine(float worldX, float worldY) {

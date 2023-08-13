@@ -281,6 +281,10 @@ public abstract class ClientEntity {
             return isRaining() ? "step_mud" : "step_dirt";
         }
 
+        if(t1 == TileLayerType.OAK_PLANK) {
+            return "step_wood";
+        }
+
         if(t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST) {
             return "step_forest";
         }

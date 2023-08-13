@@ -787,7 +787,7 @@ public class PlayerUI {
                 float startY = startHudPos.y + alpha * 48;
 
                 rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
-                useFont.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
+                useFont.setColor(mapping.color.r, mapping.color.g, mapping.color.b, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
 
                 rc.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
                 useFont.draw(rc.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);

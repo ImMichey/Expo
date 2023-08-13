@@ -106,7 +106,13 @@ public class ClientSelector extends ClientEntity {
 
                 if(placeData != null) {
                     if(placeData.alignment == PlaceAlignment.TILE) {
-                        eligible = true;
+                        if(placeData.floorRequirement != null) {
+                            if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement) {
+                                eligible = true;
+                            }
+                        } else {
+                            eligible = true;
+                        }
                     } else if(placeData.alignment == PlaceAlignment.UNRESTRICTED) {
                         eligible = true;
                     }

@@ -14,6 +14,7 @@ public enum BiomeType {
     DENSE_FOREST(9, "Dense Forest", new float[] {57f/255f, 113f/255f, 35f/255f, 1.0f}),
     ROCK(10, "Rock", new float[] {71f/255f, 71f/255f, 76f/255f, 1.0f}),
     WHEAT_FIELDS(11, "WheatFields", new float[] {140f/255f, 205f/255f, 76f/255f, 1.0f}),
+    PUDDLE(12, "Puddle", new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}),
     ;
 
     public final int BIOME_ID;
@@ -39,13 +40,14 @@ public enum BiomeType {
             case 9 -> DENSE_FOREST;
             case 10 -> ROCK;
             case 11 -> WHEAT_FIELDS;
+            case 12 -> PUDDLE;
             default -> OCEAN;
         };
     }
 
     public static boolean isWater(BiomeType biomeType) {
         return switch (biomeType) {
-            case OCEAN, RIVER, LAKE, OCEAN_DEEP -> true;
+            case OCEAN, RIVER, LAKE, OCEAN_DEEP, PUDDLE -> true;
             default -> false;
         };
     }

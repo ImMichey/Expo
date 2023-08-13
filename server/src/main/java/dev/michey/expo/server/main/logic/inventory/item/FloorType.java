@@ -7,6 +7,7 @@ public enum FloorType {
     GRASS(TileLayerType.FOREST),
     SAND(TileLayerType.SAND),
     DIRT(TileLayerType.SOIL),
+    OAK_PLANK(TileLayerType.OAK_PLANK),
     ;
 
     public final TileLayerType TILE_LAYER_TYPE;

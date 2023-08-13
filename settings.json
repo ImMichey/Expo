@@ -17,6 +17,7 @@
     },
     "graphics": {
         "zoomLevel": 0,
+        "enableSoftShadows": true,
         "enableScreenshake": true,
         "enableShadows": true,
         "enableParticles": true,

@@ -1,11 +1,13 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
@@ -19,32 +21,53 @@ public class ClientFenceStick extends ClientEntity implements SelectableEntity {
 
     public TextureRegion fenceTexture;
     public TextureRegion selectionTexture;
+    public TextureRegion shadowTexture;
 
     private void updateFenceTexture() {
         disableTextureCentering = true;
         fenceTexture = tr("entity_fence_stick_" + (fenceOrientation + 1));
+        shadowTexture = tr("entity_fence_stick_sm_" + (fenceOrientation + 1));
         updateTextureBounds(16, 20, 0, 0);
         interactionPointArray = generateFenceInteractionArray();
         selectionTexture = generateSelectionTexture(fenceTexture);
     }
 
     public static final float[][] INTERACTION_POINTS = new float[][] {
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
-            new float[] {8, 8},
+            new float[] {8, 2},
+            new float[] {8, 2},
+            new float[] {8, 2, 15, 2},
+            new float[] {15, 2, 9, 5},
+            new float[] {8, 2},
+            new float[] {8, 2},
+            new float[] {15, 2, 8, 1},
+            new float[] {15, 2, 8, 1},
+            new float[] {1, 2, 8, 2},
+            new float[] {1, 2, 7, 5},
+            new float[] {1, 2, 8, 2, 15, 2},
+            new float[] {1, 2, 8, 2, 15, 2},
+            new float[] {1, 2, 8, 1},
+            new float[] {1, 2, 8, 1},
+            new float[] {1, 2, 8, 1, 15, 2},
+            new float[] {1, 2, 8, 1, 15, 2},
+    };
+
+    public static final float[][] SHADOW_OFFSETS = new float[][] {
+            new float[] {6, 1},
+            new float[] {7, 1},
+            new float[] {6, 1},
+            new float[] {7, 1},
+            new float[] {7, 3},
+            new float[] {7, 3},
+            new float[] {7, 0},
+            new float[] {6, 0},
+            new float[] {0, 1},
+            new float[] {0, 1},
+            new float[] {0, 1},
+            new float[] {0, 1},
+            new float[] {0, 0},
+            new float[] {0, 0},
+            new float[] {0, 0},
+            new float[] {0, 0},
     };
 
     private float[] generateFenceInteractionArray() {
@@ -109,7 +132,14 @@ public class ClientFenceStick extends ClientEntity implements SelectableEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        drawShadowIfVisible(fenceTexture);
+        float[] offsets = SHADOW_OFFSETS[fenceOrientation];
+
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX + offsets[0], finalTextureStartY + offsets[1]);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowTexture, shadow);
+
+        if(rc.verticesInBounds(vertices)) {
+            rc.arraySpriteBatch.drawGradient(shadowTexture, shadowTexture.getRegionWidth(), shadowTexture.getRegionHeight(), shadow);
+        }
     }
 
     @Override

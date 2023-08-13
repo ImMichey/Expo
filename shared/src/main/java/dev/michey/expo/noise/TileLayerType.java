@@ -15,6 +15,7 @@ public enum TileLayerType {
     WATER_DEEP(8,       new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER"}),
     ROCK(9,             new int[] {156, 177},   new String[] {"ROCK"}),
     SOIL_FARMLAND(10,   new int[] {178, 199},   new String[] {"SOIL_FARMLAND"}),
+    OAK_PLANK(11,       new int[] {200, 221},   new String[] {"OAK_PLANK"}),
     ;
 
     public final int SERIALIZATION_ID;
@@ -50,6 +51,7 @@ public enum TileLayerType {
             case 8 -> WATER_DEEP;
             case 9 -> ROCK;
             case 10 -> SOIL_FARMLAND;
+            case 11 -> OAK_PLANK;
             default -> EMPTY;
         };
     }
@@ -105,7 +107,7 @@ public enum TileLayerType {
             //case PLAINS, WHEAT_FIELDS -> GRASS;
             case DESERT -> DESERT;
             case BEACH -> SAND;
-            case LAKE, RIVER, OCEAN -> WATER;
+            case LAKE, RIVER, OCEAN, PUDDLE -> WATER;
             case OCEAN_DEEP -> WATER_DEEP;
             case ROCK -> ROCK;
             default -> EMPTY;

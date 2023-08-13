@@ -48,6 +48,13 @@ step_water_3.wav
 step_water_4.wav
 step_water_5.wav
 
+#step_wood;true;0.9-1.1;SFX;1.0
+step_wood_1.wav
+step_wood_2.wav
+step_wood_3.wav
+step_wood_4.wav
+step_wood_5.wav
+
 #leaves_rustle;true;0.9-1.1;SFX;1.0
 leaves_rustle_1.wav
 leaves_rustle_2.wav

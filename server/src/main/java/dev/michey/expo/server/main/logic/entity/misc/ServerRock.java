@@ -98,7 +98,7 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
 
     @Override
     public PhysicsMassClassification getPhysicsMassClassification() {
-        return PhysicsMassClassification.MEDIUM;
+        return PhysicsMassClassification.LIGHT;
     }
 
 }

@@ -26,6 +26,7 @@ import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.SpawnItem;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.weather.Weather;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -241,7 +242,7 @@ public abstract class ServerEntity {
 
     public boolean isInWater() {
         BiomeType b = getTileBiome();
-        return b == BiomeType.LAKE || b == BiomeType.OCEAN || b == BiomeType.RIVER;
+        return b == BiomeType.LAKE || b == BiomeType.OCEAN || b == BiomeType.RIVER || b == BiomeType.PUDDLE;
     }
 
     public boolean isInDeepWater() {
@@ -357,6 +358,9 @@ public abstract class ServerEntity {
     }
 
     public void killEntityWithPacket(EntityRemovalReason reason) {
+        // Detach from internal tile entity structure if existing
+        if(tileEntity) detachFromTile(getChunkGrid().getChunk(chunkX, chunkY));
+
         onDie();
 
         if(getEntityType() != ServerEntityType.PLAYER) {
@@ -375,6 +379,10 @@ public abstract class ServerEntity {
 
     public ServerTile getCurrentTile() {
         return getChunkGrid().getTile(ExpoShared.posToTile(posX), ExpoShared.posToTile(posY));
+    }
+
+    public boolean isRaining() {
+        return getDimension().dimensionWeather == Weather.RAIN;
     }
 
 }

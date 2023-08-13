@@ -126,6 +126,7 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_forest", false, 0, 192);
 			ExpoAssets.get().slice("tile_desert", false, 0, 224);
 			ExpoAssets.get().slice("tile_rock", false, 0, 256);
+			ExpoAssets.get().slice("tile_oak_plank", false, 0, 288);
 			ExpoAssets.get().slice("tile_soil_farmland", false, 0, 320);
 		}
 
@@ -155,6 +156,7 @@ public class Expo implements ApplicationListener {
 
 						if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
 							int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
+							ExpoLogger.log("Variations for " + newIds[0] + ": " + variations);
 
 							for(int var = 0; var < variations; var++) {
 								merger.createFreshTile(newIds, null, var);

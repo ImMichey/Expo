@@ -52,9 +52,6 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onDie() {
-        // Detach from internal tile entity structure
-        detachFromTile(getChunkGrid().getChunk(chunkX, chunkY));
-
         // Update tile layer
         int tx = ExpoShared.posToTile(posX);
         int ty = ExpoShared.posToTile(posY);
