@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
@@ -364,6 +365,20 @@ public class ClientEntityManager {
     public Object[] isNowSelected(ClientEntity entity) {
         // only check if in view
         if(!entity.visibleToRenderEngine) return null;
+
+        if(entity.getEntityType() == ClientEntityType.DYNAMIC_3D_TILE) {
+            ClientDynamic3DTile dyn = (ClientDynamic3DTile) entity;
+            int minus = dyn.emulatingType.TILE_ID_DATA[0];
+            if(dyn.layerIds.length == 1 && (dyn.layerIds[0] - minus) == 0) return null;
+
+            if(dyn.layerIds.length == 4) {
+                for(int id : dyn.layerIds) {
+                    if(id >= (minus + 18) && id <= (minus + 21)) {
+                        return null;
+                    }
+                }
+            }
+        }
 
         ClientPlayer player = ClientPlayer.getLocalPlayer();
         RenderContext r = RenderContext.get();

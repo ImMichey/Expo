@@ -46,24 +46,25 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     private void createTexture() {
         String elevationName;
         int ad0 = layerIds[0] - emulatingType.TILE_ID_DATA[0];
+        String ev = emulatingType.name().toLowerCase();
 
         if(layerIds.length == 1) {
             if(ad0 == 0) {
-                elevationName = "tile_rock_elevation_1";
+                elevationName = "tile_" + ev + "_elevation_1";
             } else {
-                elevationName = "tile_rock_elevation_2";
+                elevationName = "tile_" + ev + "_elevation_2";
             }
         } else {
             int ad1 = layerIds[1] - emulatingType.TILE_ID_DATA[0];
 
             if(ad0 == 12 && ad1 == 17) {
-                elevationName = "tile_rock_elevation_2";
+                elevationName = "tile_" + ev + "_elevation_2";
             } else if(ad0 == 12) {
-                elevationName = "tile_rock_elevation_4";
+                elevationName = "tile_" + ev + "_elevation_4";
             } else if(ad1 == 17) {
-                elevationName = "tile_rock_elevation_3";
+                elevationName = "tile_" + ev + "_elevation_3";
             } else {
-                elevationName = "tile_rock_elevation_1";
+                elevationName = "tile_" + ev + "_elevation_1";
             }
         }
 

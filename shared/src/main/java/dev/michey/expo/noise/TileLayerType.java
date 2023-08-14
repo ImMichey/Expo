@@ -16,6 +16,7 @@ public enum TileLayerType {
     ROCK(9,             new int[] {156, 177},   new String[] {"ROCK"}),
     SOIL_FARMLAND(10,   new int[] {178, 199},   new String[] {"SOIL_FARMLAND"}),
     OAK_PLANK(11,       new int[] {200, 221},   new String[] {"OAK_PLANK"}),
+    DIRT(12,            new int[] {222, 243},   new String[] {"DIRT"}),
     ;
 
     public final int SERIALIZATION_ID;
@@ -31,6 +32,7 @@ public enum TileLayerType {
 
         ELEVATION_TEXTURE_MAP = new HashMap<>();
         ELEVATION_TEXTURE_MAP.put(ROCK, "tile_rock_elevation");
+        ELEVATION_TEXTURE_MAP.put(DIRT, "tile_dirt_elevation");
     }
 
     TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA) {
@@ -52,6 +54,7 @@ public enum TileLayerType {
             case 9 -> ROCK;
             case 10 -> SOIL_FARMLAND;
             case 11 -> OAK_PLANK;
+            case 12 -> DIRT;
             default -> EMPTY;
         };
     }
@@ -110,6 +113,7 @@ public enum TileLayerType {
             case LAKE, RIVER, OCEAN, PUDDLE -> WATER;
             case OCEAN_DEEP -> WATER_DEEP;
             case ROCK -> ROCK;
+            case DIRT -> DIRT;
             default -> EMPTY;
         };
     }

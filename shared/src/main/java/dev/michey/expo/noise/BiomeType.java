@@ -15,6 +15,7 @@ public enum BiomeType {
     ROCK(10, "Rock", new float[] {71f/255f, 71f/255f, 76f/255f, 1.0f}),
     WHEAT_FIELDS(11, "WheatFields", new float[] {140f/255f, 205f/255f, 76f/255f, 1.0f}),
     PUDDLE(12, "Puddle", new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}),
+    DIRT(13, "Dirt", new float[] {78f/255f, 67f/255f, 55f/255f, 1.0f}),
     ;
 
     public final int BIOME_ID;
@@ -41,6 +42,7 @@ public enum BiomeType {
             case 10 -> ROCK;
             case 11 -> WHEAT_FIELDS;
             case 12 -> PUDDLE;
+            case 13 -> DIRT;
             default -> OCEAN;
         };
     }

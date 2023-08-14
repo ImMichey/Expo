@@ -98,7 +98,7 @@ public class ServerTile {
         }
         */
 
-        if(use == TileLayerType.ROCK) {
+        if(use == TileLayerType.ROCK || use == TileLayerType.DIRT) {
             int x = tileArray % ROW_TILES;
             int y = tileArray / ROW_TILES;
 
@@ -107,7 +107,7 @@ public class ServerTile {
             entity.posY = ExpoShared.tileToPos(tileY);
             entity.setStaticEntity();
             entity.layerIds = dynamicTileParts[1].layerIds;
-            entity.emulatingType = TileLayerType.ROCK;
+            entity.emulatingType = use;
 
             ServerWorld.get().registerServerEntity(chunk.getDimension().getDimensionName(), entity);
             entity.attachToTile(chunk, x, y);
@@ -158,7 +158,7 @@ public class ServerTile {
         int[] td = dynamicTileParts[1].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[1].layerIds;
 
-        if(dynamicTileParts[1].emulatingType != TileLayerType.ROCK) {
+        if(dynamicTileParts[1].emulatingType != TileLayerType.ROCK && dynamicTileParts[1].emulatingType != TileLayerType.DIRT) {
             if(td.length == 1) {
                 dynamicTileParts[1].setTileIds(new int[] {td[0]});
             } else {

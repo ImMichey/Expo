@@ -124,6 +124,27 @@
                             "replaceType": "BIOME",
                             "replaceWith": "WHEAT_FIELDS"
                         }
+                    },
+
+                    {
+                        "name": "dirt_tiny_formation",
+                        "octaves": 4,
+                        "type": 5,
+                        "frequency": 0.035,
+                        "noiseOffset": 8,
+                        "logic": {
+                            "check": [
+                                "BEACH",
+                                "DENSE_FOREST",
+                                "PLAINS",
+                                "FOREST",
+                                "DESERT"
+                            ],
+                            "threshold": 0.845,
+                            "replaceType": "BIOME",
+                            "replaceWith": "DIRT",
+                            "priority": -200
+                        }
                     }
                 ],
                 "terrain": {

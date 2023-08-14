@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
@@ -59,8 +60,10 @@ public class ClientPlayer extends ClientEntity {
     private TextureRegion draw_tex_arm_left = null;
     private TextureRegion draw_tex_shadow_base = null;
 
-    private float playerBreatheDelta;
-    private float playerBlinkDelta;
+    private final float PLAYER_BLINK_COOLDOWN = 3.0f;
+    private final float PLAYER_BREATHE_COOLDOWN = 1.0f;
+    private float playerBreatheDelta = MathUtils.random(PLAYER_BREATHE_COOLDOWN);
+    private float playerBlinkDelta = MathUtils.random(PLAYER_BLINK_COOLDOWN);
 
     private float playerWalkDelta;
     private int playerWalkIndex;
@@ -487,11 +490,8 @@ public class ClientPlayer extends ClientEntity {
             playerBlinkDelta += delta;
             playerBreatheDelta += delta;
 
-            float PLAYER_BLINK_COOLDOWN = 3.0f;
             float PLAYER_BLINK_DURATION = 0.25f;
-
             float PLAYER_BREATHE_DURATION = 0.5f;
-            float PLAYER_BREATHE_COOLDOWN = 1.0f;
 
             if(playerBlinkDelta >= PLAYER_BLINK_COOLDOWN) playerBlinkDelta = -PLAYER_BLINK_DURATION;
             if(playerBreatheDelta >= PLAYER_BREATHE_COOLDOWN) playerBreatheDelta = -PLAYER_BREATHE_DURATION;
