@@ -1,6 +1,7 @@
 package dev.michey.expo.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -465,6 +466,19 @@ public class RenderContext {
         entityFbo.dispose();
         blurTargetAFbo.dispose();
         blurTargetBFbo.dispose();
+    }
+
+    public void toggleFullscreen() {
+        boolean fs = Gdx.graphics.isFullscreen();
+
+        if(fs) {
+            // Switch to windowed mode.
+            Gdx.graphics.setUndecorated(false);
+            Gdx.graphics.setWindowedMode(GameSettings.get().preferredWidth, GameSettings.get().preferredHeight);
+        } else {
+            // Switch to fullscreen mode.
+            Gdx.graphics.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
+        }
     }
 
     public void onResize(int width, int height) {

@@ -19,7 +19,7 @@ public class GameSettings {
     // Window variables
     public int preferredWidth = 1280;
     public int preferredHeight = 720;
-    public boolean fullscreen = false;
+    public int windowMode = 0;
     public boolean vsync = false;
     public int fpsCap = 500;
 
@@ -104,7 +104,7 @@ public class GameSettings {
                 .put("preferredWidth", preferredWidth)
                 .put("preferredHeight", preferredHeight)
                 .put("fpsCap", fpsCap)
-                .put("fullscreen", fullscreen)
+                .put("windowMode", windowMode)
                 .put("vsync", vsync)
                 .put("debug", debugJson)
                 .put("audio", audioJson)
@@ -117,7 +117,7 @@ public class GameSettings {
         preferredWidth = jsonSettings.getInt("preferredWidth");
         preferredHeight = jsonSettings.getInt("preferredHeight");
         fpsCap = jsonSettings.getInt("fpsCap");
-        fullscreen = jsonSettings.getBoolean("fullscreen");
+        windowMode = jsonSettings.getInt("windowMode");
         vsync = jsonSettings.getBoolean("vsync");
 
         JSONObject debugJson = jsonSettings.getJSONObject("debug");

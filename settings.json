@@ -1,13 +1,13 @@
 {
     "uiScale": 2,
     "preferredWidth": 1280,
+    "windowMode": 1,
     "debug": {
         "enableDebugMode": false,
         "enableDebugGL": false,
         "enableDebugImGui": false
     },
     "fpsCap": 500,
-    "fullscreen": false,
     "vsync": false,
     "audio": {
         "masterVolume": 1,

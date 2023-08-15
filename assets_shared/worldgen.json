@@ -300,7 +300,8 @@
                                 "spreadDis": [24.0, 32.0],
                                 "spreadType": ["BUSH"],
                                 "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
+                                "spreadOffsets": [0.0, 0.0],
+                                "spreadUseNextTarget": true
                             }
                         },
                         {
@@ -346,20 +347,6 @@
                             }
                         },
                         {
-                            "type": "DANDELION",
-                            "static": true,
-                            "chance": 0.005,
-                            "pds": 32,
-                            "spreadData": {
-                                "spread": [2, 7],
-                                "spreadChance": 0.75,
-                                "spreadDis": [16.0, 40.0],
-                                "spreadType": ["DANDELION"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
                             "type": "BLUEBERRY_BUSH",
                             "static": true,
                             "chance": 0.0025,
@@ -388,12 +375,6 @@
                 "DENSE_FOREST": {
                     "entities": [
                         {
-                            "type": "MUSHROOM_GLOWING",
-                            "static": true,
-                            "chance": 0.0005,
-                            "pds": 16
-                        },
-                        {
                             "type": "BUSH",
                             "static": true,
                             "chance": 0.07,
@@ -404,7 +385,8 @@
                                 "spreadDis": [24.0, 32.0],
                                 "spreadType": ["BUSH"],
                                 "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
+                                "spreadOffsets": [0.0, 0.0],
+                                "spreadUseNextTarget": true
                             }
                         },
                         {
@@ -491,20 +473,6 @@
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
                             }
-                        },
-                        {
-                            "type": "DANDELION",
-                            "static": true,
-                            "chance": 0.005,
-                            "pds": 32,
-                            "spreadData": {
-                                "spread": [2, 7],
-                                "spreadChance": 0.75,
-                                "spreadDis": [16.0, 32.0],
-                                "spreadType": ["DANDELION"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
                         }
                     ]
                 },
@@ -521,7 +489,8 @@
                                 "spreadDis": [24.0, 32.0],
                                 "spreadType": ["BUSH"],
                                 "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
+                                "spreadOffsets": [0.0, 0.0],
+                                "spreadUseNextTarget": true
                             }
                         },
                         {
@@ -605,20 +574,6 @@
                                 "spreadChance": 0.5,
                                 "spreadDis": [12.0, 16.0],
                                 "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "DANDELION",
-                            "static": true,
-                            "chance": 0.005,
-                            "pds": 32,
-                            "spreadData": {
-                                "spread": [2, 7],
-                                "spreadChance": 0.75,
-                                "spreadDis": [16.0, 32.0],
-                                "spreadType": ["DANDELION"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
                             }

@@ -49,7 +49,7 @@ jar {
 // using 'lib' instead of the default 'libs' appears to be needed by jpackageimage.
 	destinationDirectory = file("$project.buildDir/lib")
 // the duplicatesStrategy matters starting in Gradle 7.0; this setting works.
-	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+	duplicatesStrategy(duplicatesStrategy = DuplicatesStrategy.EXCLUDE)
 	dependsOn configurations.runtimeClasspath
 	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 // these "exclude" lines remove some unnecessary duplicate files in the output JAR.

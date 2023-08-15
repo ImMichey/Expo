@@ -35,6 +35,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.util.GameSettings;
 
 /** Draws batched quads using indices.
  * <p>
@@ -119,6 +120,7 @@ public class ArrayTextureSpriteBatch implements Batch {
 
     private final Color color = new Color(1, 1, 1, 1);
     private float colorPacked = Color.WHITE_FLOAT_BITS;
+    private final float BLACK_BITS = Color.BLACK.toFloatBits();
 
     /** Number of render calls since the last {@link #begin()}. **/
     public int renderCalls = 0;
@@ -1348,7 +1350,6 @@ public class ArrayTextureSpriteBatch implements Batch {
     }
 
     public static final float TRANSPARENT_BITS = Color.toFloatBits(0f, 0f, 0f, 0f);
-    public static final float BLACK_BITS = Color.BLACK.toFloatBits();
 
     public void drawGradient(TextureRegion region, float width, float height, Affine2 transform) {
         if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before drawGradient.");
@@ -1385,14 +1386,14 @@ public class ArrayTextureSpriteBatch implements Batch {
 
         vertices[idx++] = x2;
         vertices[idx++] = y2;
-        vertices[idx++] = colorOPAQUE;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? colorOPAQUE : BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x3;
         vertices[idx++] = y3;
-        vertices[idx++] = colorOPAQUE;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? colorOPAQUE : BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
@@ -1445,28 +1446,28 @@ public class ArrayTextureSpriteBatch implements Batch {
 
         vertices[idx++] = x1;
         vertices[idx++] = y1;
-        vertices[idx++] = bottomColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? bottomColor : BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v;
         vertices[idx++] = ti;
 
         vertices[idx++] = x2;
         vertices[idx++] = y2;
-        vertices[idx++] = topColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? topColor : BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x3;
         vertices[idx++] = y3;
-        vertices[idx++] = topColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? topColor : BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x4;
         vertices[idx++] = y4;
-        vertices[idx++] = bottomColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? bottomColor : BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = ti;
@@ -1507,14 +1508,14 @@ public class ArrayTextureSpriteBatch implements Batch {
 
         vertices[idx++] = x2 + c1;
         vertices[idx++] = y2;
-        vertices[idx++] = colorOPAQUE;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? colorOPAQUE : BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x3 + c2;
         vertices[idx++] = y3;
-        vertices[idx++] = colorOPAQUE;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? colorOPAQUE : BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
@@ -1551,28 +1552,28 @@ public class ArrayTextureSpriteBatch implements Batch {
 
         vertices[idx++] = x1;
         vertices[idx++] = y1;
-        vertices[idx++] = bottomColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? bottomColor : BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v;
         vertices[idx++] = ti;
 
         vertices[idx++] = x2 + c1;
         vertices[idx++] = y2;
-        vertices[idx++] = topColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? topColor : BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x3 + c2;
         vertices[idx++] = y3;
-        vertices[idx++] = topColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? topColor : BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x4;
         vertices[idx++] = y4;
-        vertices[idx++] = bottomColor;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? bottomColor : BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = ti;
