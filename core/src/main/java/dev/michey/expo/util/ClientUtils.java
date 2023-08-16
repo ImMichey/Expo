@@ -1,18 +1,15 @@
 package dev.michey.expo.util;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.render.RenderContext;
 
+import java.io.File;
 import java.util.zip.Deflater;
-
-import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class ClientUtils {
 
@@ -36,12 +33,13 @@ public class ClientUtils {
         return new Vector2(absoluteX, absoluteY);
     }
 
-    public static void screencap(String name) {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.T) && DEV_MODE) {
-            Pixmap pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
-            PixmapIO.writePNG(Gdx.files.external("TEST/" + System.currentTimeMillis() + "_" + name + ".png"), pixmap, Deflater.DEFAULT_COMPRESSION, true);
+    public static void takeScreenshot(String name) {
+        Pixmap pixmap = Pixmap.createFromFrameBuffer(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+
+        new Thread(() -> {
+            PixmapIO.writePNG(Gdx.files.absolute(ExpoLogger.getLocalPath() + File.separator + "screenshots/" + name + ".png"), pixmap, Deflater.DEFAULT_COMPRESSION, true);
             pixmap.dispose();
-        }
+        }).start();
     }
 
 }

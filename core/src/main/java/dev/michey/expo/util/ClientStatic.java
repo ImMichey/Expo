@@ -10,7 +10,7 @@ public class ClientStatic {
     /** Client constants */
     public static final String SCREEN_MENU = "Menu";
     public static final String SCREEN_GAME = "Game";
-    public static final float DEFAULT_CAMERA_ZOOM = 0.5f;
+    public static float DEFAULT_CAMERA_ZOOM = 0.5f; // Modified by GameSettings
     public static final float CAMERA_ANIMATION_MIN_ZOOM = 0.075f;
     public static boolean DEV_MODE = true; // Enables ImGui, Console, etc.
 

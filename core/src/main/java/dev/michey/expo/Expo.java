@@ -25,6 +25,7 @@ import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.GameSettings;
 import imgui.ImFontAtlas;
 import imgui.ImGui;
@@ -64,6 +65,13 @@ public class Expo implements ApplicationListener {
 	public Expo(GameSettings gameSettings) {
 		// Enable logging to file + console for debugging
 		if(gameSettings.enableDebugMode) DEV_MODE = true;
+		if(gameSettings.zoomLevel == 0) {
+			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.5f;
+		} else if(gameSettings.zoomLevel == 1) {
+			ClientStatic.DEFAULT_CAMERA_ZOOM = 1f / 3f;
+		} else if(gameSettings.zoomLevel == 2) {
+			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.25f;
+		}
 		if(!DEV_MODE) ExpoLogger.enableDualLogging("clientlogs");
 		inactiveScreens = new HashMap<>();
 		this.gameSettings = gameSettings;
@@ -106,6 +114,7 @@ public class Expo implements ApplicationListener {
 		Gdx.input.setInputProcessor(new GameInput());
 		switchToNewScreen(new MenuScreen());
 		GameConsole.get().addSystemMessage("In order to see an overview of existing commands, type '/help'.");
+		GameConsole.get().addSystemMessage("F1 = Console   F6 = Hide HUD   F10 = Screenshot   F11 = Toggle Fullscreen");
 		INSTANCE = this;
 
 		autoExec();
@@ -221,6 +230,11 @@ public class Expo implements ApplicationListener {
 		if(debugGL != null) debugGL.postRender();
 		r.reset();
 		if(debugGL != null) debugGL.preRender();
+
+		if(r.queueScreenshot) {
+			r.queueScreenshot = false;
+			ClientUtils.takeScreenshot("screenshot-" + System.currentTimeMillis());
+		}
 	}
 
 	@Override

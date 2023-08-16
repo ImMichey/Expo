@@ -53,6 +53,8 @@ public class ClientWorld {
     public final float MAX_SHADOW_X = 1.8f;
     public final float MIN_SHADOW_Y = 0.6f;
     public final float MAX_SHADOW_Y = 1.5f;
+    public final float SHADOW_ALPHA_TRANSITION_DURATION = 3.0f;
+    public final Interpolation SHADOW_ALPHA_INTERPOLATION = Interpolation.fade;
     public float worldSunShadowX = MAX_SHADOW_X;
     public float worldSunShadowY = MAX_SHADOW_Y;
     public float worldSunShadowAlpha = 1.0f;
@@ -202,7 +204,12 @@ public class ClientWorld {
             // 6:00 - 8:00
             float secondsPassed = worldTime - ExpoTime.SUNRISE;
             float normalized = secondsPassed / ExpoTime.worldDurationHours(2);
-            worldSunShadowAlpha = normalized;
+
+            if(secondsPassed <= SHADOW_ALPHA_TRANSITION_DURATION) {
+                worldSunShadowAlpha = SHADOW_ALPHA_INTERPOLATION.apply(secondsPassed / SHADOW_ALPHA_TRANSITION_DURATION);
+            } else {
+                worldSunShadowAlpha = 1.0f;
+            }
 
             if(normalized < 0.5f) {
                 float _n = normalized * 2;
@@ -236,7 +243,14 @@ public class ClientWorld {
             // 20:00 - 22:00
             float secondsPassed = worldTime - ExpoTime.SUNSET;
             float normalized = secondsPassed / ExpoTime.worldDurationHours(2);
-            worldSunShadowAlpha = 1f - normalized;
+
+            float startAlphaTimer = ExpoTime.worldDurationHours(2) - SHADOW_ALPHA_TRANSITION_DURATION;
+
+            if(secondsPassed >= startAlphaTimer) {
+                worldSunShadowAlpha = SHADOW_ALPHA_INTERPOLATION.apply(1.0f - (secondsPassed - startAlphaTimer) / SHADOW_ALPHA_TRANSITION_DURATION);
+            } else {
+                worldSunShadowAlpha = 1.0f;
+            }
 
             if(normalized < 0.5f) {
                 float _n = normalized * 2;
@@ -269,9 +283,20 @@ public class ClientWorld {
         } else if(worldTime >= ExpoTime.NIGHT || worldTime < ExpoTime.SUNRISE) {
             // 22:00 - 6:00
             float secondsPassed = (worldTime < ExpoTime.SUNRISE ? (worldTime + ExpoTime.worldDurationHours(2)) : (worldTime - ExpoTime.NIGHT));
-            float normalized = secondsPassed / ExpoTime.worldDurationHours(8);
+            //float normalized = secondsPassed / ExpoTime.worldDurationHours(8);
             setAmbient(COLOR_AMBIENT_MIDNIGHT.r, COLOR_AMBIENT_MIDNIGHT.g, COLOR_AMBIENT_MIDNIGHT.b);
 
+            float startAlphaTimer = ExpoTime.worldDurationHours(8) - SHADOW_ALPHA_TRANSITION_DURATION;
+
+            if(secondsPassed <= SHADOW_ALPHA_TRANSITION_DURATION) {
+                worldSunShadowAlpha = SHADOW_ALPHA_INTERPOLATION.apply(secondsPassed / SHADOW_ALPHA_TRANSITION_DURATION);
+            } else if(secondsPassed >= startAlphaTimer) {
+                worldSunShadowAlpha = SHADOW_ALPHA_INTERPOLATION.apply(1.0f - (secondsPassed - startAlphaTimer) / SHADOW_ALPHA_TRANSITION_DURATION);
+            } else {
+                worldSunShadowAlpha = 1.0f;
+            }
+
+            /*
             if(normalized < 0.125f) {
                 // One hour
                 worldSunShadowAlpha = normalized * 8;
@@ -280,6 +305,7 @@ public class ClientWorld {
             } else {
                 worldSunShadowAlpha = 1f - (normalized - 0.875f) * 8;
             }
+            */
 
             AudioEngine.get().ambientVolume("ambience_day", 0.0f);
             AudioEngine.get().ambientVolume("ambience_night", 1.0f);
@@ -350,7 +376,7 @@ public class ClientWorld {
         }
 
         {
-            boolean displayBlur = r.blurActive || r.blurStrength > 0;
+            boolean displayBlur = GameSettings.get().enableBlur && (r.blurActive || r.blurStrength > 0);
             float BLUR_SPEED = 4.0f;
             float MAX_BLUR = 1.0f;
             float blurSign = r.blurActive ? 1.0f : -1.0f;

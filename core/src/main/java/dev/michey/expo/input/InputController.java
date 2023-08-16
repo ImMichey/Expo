@@ -181,6 +181,7 @@ public class InputController {
                 case Input.Keys.F5 -> RenderContext.get().drawShapes = !RenderContext.get().drawShapes;
                 case Input.Keys.F6 -> RenderContext.get().drawHUD = !RenderContext.get().drawHUD;
                 case Input.Keys.F11 -> RenderContext.get().toggleFullscreen();
+                case Input.Keys.F10 -> RenderContext.get().takeScreenshot();
                 case Input.Keys.TAB -> ExpoClientContainer.get().getPlayerUI().toggleTablist();
                 case Input.Keys.ENTER -> ExpoClientChat.get().toggleFocus(true);
                 case Input.Keys.Z, Input.Keys.Y -> RenderContext.get().expoCamera.camera.zoom = ClientStatic.DEFAULT_CAMERA_ZOOM;

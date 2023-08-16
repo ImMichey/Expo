@@ -1,7 +1,7 @@
 {
     "uiScale": 2,
     "preferredWidth": 1280,
-    "windowMode": 1,
+    "windowMode": 0,
     "debug": {
         "enableDebugMode": false,
         "enableDebugGL": false,
@@ -19,6 +19,7 @@
         "zoomLevel": 0,
         "enableSoftShadows": true,
         "enableScreenshake": true,
+        "lightQuality": 2,
         "enableShadows": true,
         "enableParticles": true,
         "enableWater": false,

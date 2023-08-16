@@ -154,6 +154,9 @@ public class RenderContext {
     public TextureRegion[] buttonPartsSelected;
     public GlyphLayout globalGlyph;
 
+    /** Screenshots */
+    public boolean queueScreenshot;
+
     public RenderContext() {
         batch = new SpriteBatch();
         hudBatch = new SpriteBatch();
@@ -466,6 +469,10 @@ public class RenderContext {
         entityFbo.dispose();
         blurTargetAFbo.dispose();
         blurTargetBFbo.dispose();
+    }
+
+    public void takeScreenshot() {
+        queueScreenshot = true;
     }
 
     public void toggleFullscreen() {

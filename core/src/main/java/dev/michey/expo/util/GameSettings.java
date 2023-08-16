@@ -45,6 +45,7 @@ public class GameSettings {
     public boolean enableScreenshake = true;
     public boolean enableSoftShadows = true;
     public int zoomLevel = 0;
+    public int lightQuality = 2;
 
     public GameSettings() {
         var result = ExpoFileCreator.createFileStructure(new ExpoFile(ExpoFile.FileType.CONFIG, "settings.json", asJson()));
@@ -98,6 +99,7 @@ public class GameSettings {
                 .put("enableScreenshake", enableScreenshake)
                 .put("enableSoftShadows", enableSoftShadows)
                 .put("zoomLevel", zoomLevel)
+                .put("lightQuality", lightQuality)
                 ;
 
         return new JSONObject()
@@ -141,6 +143,7 @@ public class GameSettings {
         zoomLevel = graphicJson.getInt("zoomLevel");
         enableScreenshake = graphicJson.getBoolean("enableScreenshake");
         enableSoftShadows = graphicJson.getBoolean("enableSoftShadows");
+        lightQuality = graphicJson.getInt("lightQuality");
     }
 
     @Override

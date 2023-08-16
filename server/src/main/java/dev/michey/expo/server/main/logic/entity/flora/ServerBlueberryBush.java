@@ -18,12 +18,13 @@ import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.server.util.SpawnItem;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
 
-public class ServerBlueberryBush extends ServerEntity implements PhysicsEntity {
+public class ServerBlueberryBush extends ServerEntity {
 
-    private EntityPhysicsBox physicsBody;
+    //private EntityPhysicsBox physicsBody;
     public boolean hasBerries;
     public float berryRegrowthDelta;
 
@@ -40,12 +41,12 @@ public class ServerBlueberryBush extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onCreation() {
-        physicsBody = new EntityPhysicsBox(this, -7.5f, 3, 15, 3.5f);
+        //physicsBody = new EntityPhysicsBox(this, -7.5f, 3, 15, 3.5f);
     }
 
     @Override
     public void onDeletion() {
-        physicsBody.dispose();
+        //physicsBody.dispose();
     }
 
     @Override
@@ -53,21 +54,9 @@ public class ServerBlueberryBush extends ServerEntity implements PhysicsEntity {
         if(hasBerries) {
             hasBerries = false;
 
-            int dropBerries = MathUtils.random(2, 3);
-            Vector2[] positions = GenerationUtils.positions(dropBerries, 18.0f);
-
-            for(int i = 0; i < dropBerries; i++) {
-                ServerItem item = new ServerItem();
-
-                ItemMapping r = ItemMapper.get().getMapping("item_blueberry");
-                item.itemContainer = new ServerInventoryItem(r.id, 1);
-
-                item.posX = posX + 7.5f;
-                item.posY = posY + 3f;
-                item.dstX = positions[i].x;
-                item.dstY = positions[i].y;
-                ServerWorld.get().registerServerEntity(entityDimension, item);
-            }
+            spawnItemsAround(0, 4.25f, 14, 18,
+                    new SpawnItem("item_blueberry", 2, 3))
+            ;
 
             ServerPackets.p30EntityDataUpdate(entityId, new Object[] {false}, PacketReceiver.whoCanSee(this));
             ServerPackets.p24PositionalSound("pop", posX, posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
@@ -110,21 +99,6 @@ public class ServerBlueberryBush extends ServerEntity implements PhysicsEntity {
     @Override
     public Object[] getPacketPayload() {
         return new Object[] {hasBerries};
-    }
-
-    @Override
-    public EntityPhysicsBox getPhysicsBox() {
-        return physicsBody;
-    }
-
-    @Override
-    public void onMoved() {
-
-    }
-
-    @Override
-    public PhysicsMassClassification getPhysicsMassClassification() {
-        return PhysicsMassClassification.LIGHT;
     }
 
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.box2dport.RayHandler;
 import dev.michey.expo.render.light.box2dport.RayHandlerOptions;
+import dev.michey.expo.util.GameSettings;
 
 public class ExpoLightEngine {
 
@@ -26,6 +27,7 @@ public class ExpoLightEngine {
         options.setDiffuse(true);
         options.setGammaCorrection(false);
 
+        LIGHT_QUALITY = GameSettings.get().lightQuality;
         rayHandler = new RayHandler(null, Gdx.graphics.getWidth() / LIGHT_QUALITY, Gdx.graphics.getHeight() / LIGHT_QUALITY, options);
     }
 

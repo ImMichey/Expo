@@ -4,6 +4,8 @@ import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PostProcessorBiome implements PostProcessorLogic {
 
@@ -24,19 +26,24 @@ public class PostProcessorBiome implements PostProcessorLogic {
         this.noiseName = noiseName;
         this.threshold = threshold;
 
-        boolean listAll = replacementKeys.length > 0 && replacementKeys[0].equals("*");
-        BiomeType[] all = BiomeType.values();
-        BiomeType[] bt = new BiomeType[listAll ? all.length : replacementKeys.length];
+        LinkedList<BiomeType> biomeList = new LinkedList<>();
 
-        if(listAll) {
-            System.arraycopy(BiomeType.values(), 0, bt, 0, all.length);
-        } else {
-            for(int i = 0; i < replacementKeys.length; i++) {
-                bt[i] = BiomeType.valueOf(replacementKeys[i]);
+        if(replacementKeys.length > 0 && replacementKeys[0].equals("*")) {
+            biomeList.addAll(Arrays.asList(BiomeType.values()));
+        }
+
+        for(String rk : replacementKeys) {
+            if(rk.equals("*")) continue;
+            if(rk.startsWith("!")) {
+                biomeList.remove(BiomeType.valueOf(rk.substring(1)));
+            } else {
+                biomeList.add(BiomeType.valueOf(rk));
             }
         }
 
-        this.checkBiomes = bt;
+        BiomeType[] array = new BiomeType[biomeList.size()];
+        for(int i = 0; i < array.length; i++) array[i] = biomeList.get(i);
+        this.checkBiomes =  array;
         this.replacementType = BiomeType.valueOf(replaceWith);
 
         this.secondOptionThreshold = thresholdSecond;

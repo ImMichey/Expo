@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import dev.michey.expo.log.ExpoLogger;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -51,7 +52,11 @@ public class ExpoAssets {
                     continue;
                 }
 
-                assetManager.load("textures/" + line, currentMode);
+                if(!Gdx.files.internal("textures/" + line).exists()) {
+                    ExpoLogger.log("ResourceLoader WARNING: The file textures/" + line + " does not exist, skipping...");
+                } else {
+                    assetManager.load("textures/" + line, currentMode);
+                }
             }
         }
 

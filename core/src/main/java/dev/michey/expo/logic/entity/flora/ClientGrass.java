@@ -49,11 +49,17 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
             w = 13;
             h = 10;
         } else if(variant == 5) {
-            w = 13;
-            h = 12;
+            w = 11;
+            h = 6;
         } else if(variant == 6) {
-            w = 18;
-            h = 13;
+            w = 12;
+            h = 10;
+        } else if(variant == 7) {
+            w = 19;
+            h = 9;
+        } else if(variant == 8) {
+            w = 20;
+            h = 12;
         }
 
         updateTextureBounds(w, h, 1, 1);
