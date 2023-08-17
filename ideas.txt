@@ -4,5 +4,4 @@ Clouds
 Fix Grass tiles
 Fix Rocks
 Boulders
-Fix tileset corners
-Implement better shadow interpolation method when switching between moon and sun shadows
+Fix multithreaded entity generation bug

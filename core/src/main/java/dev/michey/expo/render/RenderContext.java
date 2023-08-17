@@ -117,6 +117,7 @@ public class RenderContext {
     public FrameBuffer entityFbo;
     public FrameBuffer blurTargetAFbo;
     public FrameBuffer blurTargetBFbo;
+    public FrameBuffer hudFbo;
 
     /** Debug helpers */
     public boolean drawTileInfo = false;
@@ -369,6 +370,7 @@ public class RenderContext {
         entityFbo = createFBO(w, h);
         blurTargetAFbo = createFBO(w, h);
         blurTargetBFbo = createFBO(w, h);
+        hudFbo = createFBO(w, h);
     }
 
     public boolean inDrawBounds(ClientEntity entity) {
@@ -469,6 +471,7 @@ public class RenderContext {
         entityFbo.dispose();
         blurTargetAFbo.dispose();
         blurTargetBFbo.dispose();
+        hudFbo.dispose();
     }
 
     public void takeScreenshot() {

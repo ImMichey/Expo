@@ -2,6 +2,7 @@ package dev.michey.expo.logic.container;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.ExpoClientPacketReader;
@@ -17,6 +18,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.ClientUtils;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -100,7 +102,6 @@ public class ExpoClientContainer {
         float d = RenderContext.get().delta;
         float serverDelta = 1f / (float) serverTickRate;
         clientWorld.tickWorld(d, serverDelta);
-        clientWorld.renderWorld();
         playerUI.update();
 
         if(client != null) {
@@ -122,6 +123,12 @@ public class ExpoClientContainer {
         }
 
         if(RenderContext.get().drawHUD) {
+            // Draw shadows to shadow FBO.
+            RenderContext.get().hudFbo.begin();
+            clientWorld.transparentScreen();
+
+            RenderContext.get().hudBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
             playerUI.render();
 
             RenderContext r = RenderContext.get();
@@ -156,7 +163,15 @@ public class ExpoClientContainer {
                 useFont.draw(r.hudBatch, pos, Gdx.graphics.getWidth() - w3 - spacing, Gdx.graphics.getHeight() - h * 3 - spacing * 4);
             }
             r.hudBatch.end();
+
+            if(Gdx.input.isKeyPressed(Input.Keys.F)) {
+                ClientUtils.takeScreenshot("hud-fbo");
+            }
+
+            RenderContext.get().hudFbo.end();
         }
+
+        clientWorld.renderWorld();
 
         if(client != null) {
             client.getPacketListener().evaluatePackets();

@@ -46,7 +46,7 @@ public class CommandNoise extends AbstractConsoleCommand {
     @Override
     public void executeCommand(String[] args) {
         new Thread(() -> {
-            final int pxmapsize = 1536;
+            final int pxmapsize = 768;
             int runs = pxmapsize / 16;
             Pixmap pixmap = new Pixmap(pxmapsize, pxmapsize, Pixmap.Format.RGBA8888);
 

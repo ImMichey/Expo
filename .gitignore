@@ -18,6 +18,8 @@ gradle-app.setting
 /serverlogs/*
 /clientlogs/*
 /noiseTests/*
+/noiseCmd/*
+/screenshots/*
 
 ## Java:
 *.class

@@ -493,6 +493,7 @@ public class ClientWorld {
                 if(Expo.get().getImGuiExpo().renderChunkBorders.get()) {
                     r.chunkRenderer.end();
                     r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                    r.chunkRenderer.setColor(Color.WHITE);
 
                     for(var c : drawChunks) {
                         r.chunkRenderer.rect(c.chunkDrawBeginX, c.chunkDrawBeginY, CHUNK_SIZE, CHUNK_SIZE);
@@ -631,6 +632,13 @@ public class ClientWorld {
                 r.chunkRenderer.end();
             }
         }
+
+        { // Draw HUD
+            r.batch.setColor(Color.WHITE);
+            r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            drawFboTexture(r.hudFbo, null);
+            r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
+        }
     }
 
     private void updateChunksToDraw() {
@@ -681,7 +689,7 @@ public class ClientWorld {
         }
     }
 
-    private void transparentScreen() {
+    public void transparentScreen() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
     }

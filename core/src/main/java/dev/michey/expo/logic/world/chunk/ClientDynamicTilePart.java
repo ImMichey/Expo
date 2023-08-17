@@ -7,8 +7,7 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
-import dev.michey.expo.util.Pair;;import java.util.Arrays;
-import java.util.HashMap;
+import dev.michey.expo.util.Pair;
 
 public class ClientDynamicTilePart {
 
@@ -62,10 +61,14 @@ public class ClientDynamicTilePart {
         } else {
             float val = ExpoClientContainer.get().getClientWorld().getClientChunkGrid().interpolation;
 
+            //r.batch.setColor(1.0f, 1.0f, 1.0f, 0.75f);
+
             r.batch.draw(texture[0], x + val * (int) displacementPairs[0].key, y + val * (int) displacementPairs[0].value);
             r.batch.draw(texture[1], x + 8 + val * (int) displacementPairs[1].key, y + val * (int) displacementPairs[1].value);
             r.batch.draw(texture[2], x + val * (int) displacementPairs[2].key, y + 8 + val * (int) displacementPairs[2].value);
             r.batch.draw(texture[3], x + 8 + val * (int) displacementPairs[3].key, y + 8 + val * (int) displacementPairs[3].value);
+
+            //r.batch.setColor(Color.WHITE);
         }
     }
 
