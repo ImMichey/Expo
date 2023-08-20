@@ -44,6 +44,8 @@ public class GameSettings {
     public boolean enableParticles = true;
     public boolean enableScreenshake = true;
     public boolean enableSoftShadows = true;
+    public boolean grassColoring = true;
+    public boolean ambientOcclusion = true;
     public int zoomLevel = 0;
     public int lightQuality = 2;
 
@@ -100,6 +102,8 @@ public class GameSettings {
                 .put("enableSoftShadows", enableSoftShadows)
                 .put("zoomLevel", zoomLevel)
                 .put("lightQuality", lightQuality)
+                .put("grassColoring", grassColoring)
+                .put("ambientOcclusion", ambientOcclusion)
                 ;
 
         return new JSONObject()
@@ -144,6 +148,8 @@ public class GameSettings {
         enableScreenshake = graphicJson.getBoolean("enableScreenshake");
         enableSoftShadows = graphicJson.getBoolean("enableSoftShadows");
         lightQuality = graphicJson.getInt("lightQuality");
+        grassColoring = graphicJson.getBoolean("grassColoring");
+        ambientOcclusion = graphicJson.getBoolean("ambientOcclusion");
     }
 
     @Override

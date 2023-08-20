@@ -426,7 +426,7 @@ entity_firefly
   index: -1
 entity_firefly_fly_1
   rotate: false
-  xy: 1521, 1948
+  xy: 604, 1683
   size: 9, 8
   orig: 9, 8
   offset: 0, 0
@@ -440,14 +440,14 @@ entity_firefly_fly_2
   index: -1
 entity_firefly_fly_3
   rotate: false
-  xy: 590, 1683
+  xy: 618, 1683
   size: 9, 8
   orig: 9, 8
   offset: 0, 0
   index: -1
 entity_firefly_fly_4
   rotate: false
-  xy: 513, 1546
+  xy: 590, 1683
   size: 9, 8
   orig: 9, 8
   offset: 0, 0
@@ -517,14 +517,14 @@ entity_lilypad_2
   index: -1
 entity_lilypad_3
   rotate: false
-  xy: 604, 1672
+  xy: 617, 1671
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
   index: -1
 entity_lilypad_4
   rotate: false
-  xy: 577, 1656
+  xy: 604, 1671
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
@@ -648,9 +648,51 @@ entity_rock_5
   orig: 22, 20
   offset: 0, 0
   index: -1
+entity_rockn_1
+  rotate: false
+  xy: 1521, 1948
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+entity_rockn_2
+  rotate: false
+  xy: 577, 1655
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+entity_rockn_3
+  rotate: false
+  xy: 603, 1659
+  size: 8, 7
+  orig: 8, 7
+  offset: 0, 0
+  index: -1
+entity_rockn_4
+  rotate: false
+  xy: 513, 1546
+  size: 9, 8
+  orig: 9, 8
+  offset: 0, 0
+  index: -1
+entity_rockn_5
+  rotate: false
+  xy: 632, 1683
+  size: 8, 8
+  orig: 8, 8
+  offset: 0, 0
+  index: -1
+entity_rockn_6
+  rotate: false
+  xy: 590, 1647
+  size: 8, 7
+  orig: 8, 7
+  offset: 0, 0
+  index: -1
 entity_small_rock_1
   rotate: false
-  xy: 577, 1644
+  xy: 616, 1659
   size: 7, 7
   orig: 7, 7
   offset: 0, 0
@@ -671,7 +713,7 @@ entity_small_rock_3
   index: -1
 entity_small_rock_4
   rotate: false
-  xy: 617, 1684
+  xy: 603, 1647
   size: 7, 7
   orig: 7, 7
   offset: 0, 0
@@ -1224,14 +1266,14 @@ itemsheet
   index: -1
 mushroom_brown
   rotate: false
-  xy: 629, 1674
+  xy: 66, 735
   size: 6, 6
   orig: 6, 6
   offset: 0, 0
   index: -1
 mushroom_brown_var2
   rotate: false
-  xy: 590, 1659
+  xy: 577, 1643
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
@@ -1245,14 +1287,14 @@ mushroom_proximity_shadow
   index: -1
 mushroom_red
   rotate: false
-  xy: 629, 1685
+  xy: 615, 1648
   size: 6, 6
   orig: 6, 6
   offset: 0, 0
   index: -1
 mushroom_red_var2
   rotate: false
-  xy: 604, 1684
+  xy: 590, 1659
   size: 8, 7
   orig: 8, 7
   offset: 0, 0
@@ -1581,7 +1623,7 @@ raindrop
   index: -1
 rainsplash_1
   rotate: false
-  xy: 66, 726
+  xy: 66, 715
   size: 7, 5
   orig: 7, 5
   offset: 0, 0
@@ -1595,14 +1637,14 @@ rainsplash_2
   index: -1
 rainsplash_3
   rotate: false
-  xy: 617, 1674
+  xy: 630, 1673
   size: 7, 5
   orig: 7, 5
   offset: 0, 0
   index: -1
 rainsplash_4
   rotate: false
-  xy: 66, 736
+  xy: 66, 725
   size: 7, 5
   orig: 7, 5
   offset: 0, 0

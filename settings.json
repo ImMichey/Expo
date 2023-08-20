@@ -7,7 +7,7 @@
         "enableDebugGL": false,
         "enableDebugImGui": false
     },
-    "fpsCap": 500,
+    "fpsCap": 240,
     "vsync": false,
     "audio": {
         "masterVolume": 1,
@@ -23,7 +23,9 @@
         "enableShadows": true,
         "enableParticles": true,
         "enableWater": false,
-        "enableBlur": true
+        "enableBlur": true,
+        "grassColoring": true,
+        "ambientOcclusion": true
     },
     "preferredHeight": 720
 }

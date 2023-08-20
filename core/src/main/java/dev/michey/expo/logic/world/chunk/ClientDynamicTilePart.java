@@ -1,13 +1,19 @@
 package dev.michey.expo.logic.world.chunk;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.util.Pair;
+
+import java.util.Arrays;
 
 public class ClientDynamicTilePart {
 
@@ -54,21 +60,27 @@ public class ClientDynamicTilePart {
         }
     }
 
-    public void draw(RenderContext r, Pair[] displacementPairs) {
+    private static final float[] n = new float[] {0, 0, 0, 0};
+
+    public void draw(RenderContext r, Pair[] displacementPairs, float grassColor, float[] ambientOcclusion) {
         if(texture.length == 1) {
             if(texture[0] == null) return;
-            r.batch.draw(texture[0], x, y);
+
+            r.polygonTileBatch.draw(texture[0], x, y, 16, 16, grassColor, ambientOcclusion);
         } else {
-            float val = ExpoClientContainer.get().getClientWorld().getClientChunkGrid().interpolation;
+            if(displacementPairs == null) {
+                r.polygonTileBatch.draw(texture[0], x, y, 8, 8, grassColor, n);
+                r.polygonTileBatch.draw(texture[1], x + 8, y, 8, 8, grassColor, n);
+                r.polygonTileBatch.draw(texture[2], x , y + 8, 8, 8, grassColor, n);
+                r.polygonTileBatch.draw(texture[3], x + 8, y + 8, 8, 8, grassColor, n);
+            } else {
+                float val = ExpoClientContainer.get().getClientWorld().getClientChunkGrid().interpolation;
 
-            //r.batch.setColor(1.0f, 1.0f, 1.0f, 0.75f);
-
-            r.batch.draw(texture[0], x + val * (int) displacementPairs[0].key, y + val * (int) displacementPairs[0].value);
-            r.batch.draw(texture[1], x + 8 + val * (int) displacementPairs[1].key, y + val * (int) displacementPairs[1].value);
-            r.batch.draw(texture[2], x + val * (int) displacementPairs[2].key, y + 8 + val * (int) displacementPairs[2].value);
-            r.batch.draw(texture[3], x + 8 + val * (int) displacementPairs[3].key, y + 8 + val * (int) displacementPairs[3].value);
-
-            //r.batch.setColor(Color.WHITE);
+                r.polygonTileBatch.draw(texture[0], x + val * (int) displacementPairs[0].key, y + val * (int) displacementPairs[0].value, 8, 8, grassColor, n);
+                r.polygonTileBatch.draw(texture[1], x + 8 + val * (int) displacementPairs[1].key, y + val * (int) displacementPairs[1].value, 8, 8, grassColor, n);
+                r.polygonTileBatch.draw(texture[2], x + val * (int) displacementPairs[2].key, y + 8 + val * (int) displacementPairs[2].value, 8, 8, grassColor, n);
+                r.polygonTileBatch.draw(texture[3], x + 8 + val * (int) displacementPairs[3].key, y + 8 + val * (int) displacementPairs[3].value, 8, 8, grassColor, n);
+            }
         }
     }
 

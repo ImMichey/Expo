@@ -1,7 +1,4 @@
-Grass tile vertices color depending on biome/temperature
 Fix Dynamic3DTile selection
 Clouds
 Fix Grass tiles
-Fix Rocks
 Boulders
-Fix multithreaded entity generation bug

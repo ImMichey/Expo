@@ -93,12 +93,21 @@ public class ServerChunk {
         return dimension;
     }
 
-    private Pair<Boolean, float[]> causesCollision(float x, float y, EntityBoundsEntry entry, HashMap<String, List<float[]>> map) {
+    private Pair<Boolean, float[]> causesCollision(float x, float y, EntityBoundsEntry entry, HashMap<String, List<float[]>> map, float chunkWorldX, float chunkWorldY) {
         boolean collision = false;
         float[] expectedBounds = null;
 
         if(entry != null) {
             expectedBounds = entry.toWorld(x, y);
+
+            /*
+
+            This fixes the multithreaded intersection entities, but it makes the chunks look less dense
+
+            if(expectedBounds[0] < chunkWorldX || expectedBounds[2] > (chunkWorldX + CHUNK_SIZE) || expectedBounds[1] < chunkWorldY || expectedBounds[3] > (chunkWorldY + CHUNK_SIZE)) {
+                collision = true;
+            }
+            */
 
             exit: for(List<float[]> coordList : map.values()) {
                 for(float[] coords : coordList) {
@@ -111,6 +120,45 @@ public class ServerChunk {
         }
 
         return new Pair<>(collision, expectedBounds);
+    }
+
+    public void updateAO() {
+        for(ServerTile tile : tiles) {
+            tile.generateAO();
+        }
+    }
+
+    public LinkedList<ServerTile> getBorderingTiles() {
+        LinkedList<ServerTile> list = new LinkedList<>();
+
+        int baseX = ExpoShared.posToTile(ExpoShared.chunkToPos(chunkX)) - 1;
+        int baseY = ExpoShared.posToTile(ExpoShared.chunkToPos(chunkY)) - 1;
+
+        // Bottom line
+        for(int i = 0; i < ROW_TILES + 2; i++) {
+            ServerTile _t = dimension.getChunkHandler().getTile(baseX + i, baseY);
+            if(_t != null) list.add(_t);
+        }
+
+        // Top line
+        for(int i = 0; i < ROW_TILES + 2; i++) {
+            ServerTile _t = dimension.getChunkHandler().getTile(baseX + i, baseY + ROW_TILES + 2);
+            if(_t != null) list.add(_t);
+        }
+
+        // Left side line
+        for(int i = 0; i < ROW_TILES - 2; i++) {
+            ServerTile _t = dimension.getChunkHandler().getTile(baseX, baseY + 1 + i);
+            if(_t != null) list.add(_t);
+        }
+
+        // Right side line
+        for(int i = 0; i < ROW_TILES - 2; i++) {
+            ServerTile _t = dimension.getChunkHandler().getTile(baseX + ROW_TILES + 2, baseY + 1 + i);
+            if(_t != null) list.add(_t);
+        }
+
+        return list;
     }
 
     private void addToList(EntityBoundsEntry entry, ServerEntity entity, HashMap<String, List<float[]>> map) {
@@ -166,7 +214,7 @@ public class ServerChunk {
         CompletableFuture.runAsync(() -> {
             for(BiomeType t : biomeList) {
                 var populators = dimension.getChunkHandler().getGenSettings().getEntityPopulators(t);
-                if(populators == null || populators.size() == 0) continue;
+                if(populators == null || populators.isEmpty()) continue;
 
                 for(EntityPopulator populator : populators) {
                     List<Point> points = new PoissonDiskSampler(0, 0, CHUNK_SIZE, CHUNK_SIZE, populator.poissonDiskSamplerDistance).sample(wx, wy);
@@ -177,7 +225,7 @@ public class ServerChunk {
 
                         if(spawn) {
                             EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
-                            var check = causesCollision(p.absoluteX, p.absoluteY, entry, existingEntityDimensionMap);
+                            var check = causesCollision(p.absoluteX, p.absoluteY, entry, existingEntityDimensionMap, wx, wy);
 
                             if(!check.key) {
                                 int xi = (int) p.x;
@@ -211,7 +259,7 @@ public class ServerChunk {
                                                     float targetY = nextOriginY + v.y;
 
                                                     if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(targetX), ExpoShared.posToTile(targetY)) == t) {
-                                                        check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap);
+                                                        check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap, wx, wy);
 
                                                         if(!check.key) {
                                                             ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
@@ -236,7 +284,7 @@ public class ServerChunk {
                                                     float targetY = p.absoluteY + v.y + populator.spreadOffsets[1];
 
                                                     if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(targetX), ExpoShared.posToTile(targetY)) == t) {
-                                                        check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap);
+                                                        check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap, wx, wy);
 
                                                         if(!check.key) {
                                                             ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);

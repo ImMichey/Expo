@@ -40,8 +40,8 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome) {
-        int start = (biome == BiomeType.DESERT || biome == BiomeType.BEACH) ? 4 : 1;
-        variant = MathUtils.random(start, start + 1);
+        //int start = (biome == BiomeType.DESERT || biome == BiomeType.BEACH) ? 4 : 1;
+        variant = MathUtils.random(1, 3);
         health = 10.0f;
     }
 

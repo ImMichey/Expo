@@ -74,9 +74,8 @@ public class PlayerMinimap {
                     for(int j = 0; j < 100; j++) {
                         int tx = startX + i;
                         int ty = startY + j;
-                        String key = tx + "," + ty;
 
-                        BiomeType type = ServerWorld.get().getMainDimension().getChunkHandler().getBiome(tx, ty, key);
+                        BiomeType type = ServerWorld.get().getMainDimension().getChunkHandler().getBiome(tx, ty);
 
                         if(!biomeMinimap.containsKey(type)) biomeMinimap.put(type, new LinkedList<>());
                         biomeMinimap.get(type).add(new int[] {i, j});
@@ -87,9 +86,8 @@ public class PlayerMinimap {
                     for(int j = 0; j < 100; j++) {
                         int tx = startX + i;
                         int ty = startY + j;
-                        String key = tx + "," + ty;
 
-                        BiomeType type = ClientChunkGrid.get().getBiome(tx, ty, key);
+                        BiomeType type = ClientChunkGrid.get().getBiome(tx, ty);
 
                         if(!biomeMinimap.containsKey(type)) biomeMinimap.put(type, new LinkedList<>());
                         biomeMinimap.get(type).add(new int[] {i, j});

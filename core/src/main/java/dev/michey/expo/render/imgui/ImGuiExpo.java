@@ -80,6 +80,8 @@ public class ImGuiExpo {
     private final float[] quadraticLight = new float[1];
     private final float[] distanceLight = new float[1];
     private final float[] colorLight = new float[3];
+    private final float[] gradientStartOffset = new float[1];
+    private final float[] gradientMultiplier = new float[1];
 
     public void draw() {
         drawExpoWindow();
@@ -140,6 +142,9 @@ public class ImGuiExpo {
             rainColor[0] = w.COLOR_RAIN.r;
             rainColor[1] = w.COLOR_RAIN.g;
             rainColor[2] = w.COLOR_RAIN.b;
+
+            gradientStartOffset[0] = RenderContext.get().gradientStartOffset;
+            gradientMultiplier[0] = RenderContext.get().gradientMultiplier;
 
             constantLight[0] = ExpoLightEngine.CONSTANT_LIGHT_VALUE;
             linearLight[0] = ExpoLightEngine.LINEAR_LIGHT_VALUE;
@@ -217,6 +222,14 @@ public class ImGuiExpo {
                 ImGui.separator();
 
                 if(ImGui.treeNode(500, "Light engine")) {
+                    if(ImGui.sliderFloat("gradientStartOffset", gradientStartOffset, 0.0f, 1.0f)) {
+                        r.gradientStartOffset = gradientStartOffset[0];
+                    }
+
+                    if(ImGui.sliderFloat("gradientMultiplier", gradientMultiplier, 0.0f, 1.0f)) {
+                        r.gradientMultiplier = gradientMultiplier[0];
+                    }
+
                     if(ImGui.sliderFloat("Linear", linearLight, 0.0f, 2.0f)) {
                         ExpoLightEngine.LINEAR_LIGHT_VALUE = linearLight[0];
                     }
@@ -287,6 +300,8 @@ public class ImGuiExpo {
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][0].texture));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][1].texture));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][2].texture));
+
+                    coloredBulletText(1.0f, 1.0f, 1.0f, "ambientOcclusion " + Arrays.toString(chunk.ambientOcclusion[r.mouseTileArray]));
                 }
 
                 ImGui.treePop();

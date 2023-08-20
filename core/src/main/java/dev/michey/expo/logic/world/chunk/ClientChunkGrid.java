@@ -31,7 +31,7 @@ public class ClientChunkGrid {
     public WorldGenNoiseSettings noiseSettings;
     public HashMap<BiomeType, float[]> biomeDataMap;
 
-    private HashMap<String, BiomeType> noiseCacheMap;
+    private HashMap<String, Pair<BiomeType, Float>> noiseCacheMap;
     public LinkedList<Pair<NoisePostProcessor, Noise>> noisePostProcessorMap;
 
     /** Water wave logic */
@@ -105,40 +105,44 @@ public class ClientChunkGrid {
         interpolation = Interpolation.smooth2.apply(waveDelta) * WAVE_STRENGTH;
     }
 
-    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] individualTileData) {
+    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] individualTileData, float[] grassColor, float[][] ambientOcclusion) {
         String key = chunkX + "," + chunkY;
         ClientChunk existing = clientChunkMap.get(key);
 
         if(existing == null) {
-            clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, individualTileData));
+            clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, individualTileData, grassColor, ambientOcclusion));
         } else {
-            existing.update(biomes, individualTileData);
+            existing.update(biomes, individualTileData, grassColor, ambientOcclusion);
         }
     }
 
     /** Returns the BiomeType at tile position X & Y. */
     public BiomeType getBiome(int x, int y) {
-        String key = x + "," + y;
-        return getBiome(x, y, key);
+        return getBiomeData(x, y).key;
     }
 
-    public BiomeType getBiome(int x, int y, String key) {
-        BiomeType type = noiseCacheMap.get(key);
+    public float getElevation(int x, int y) {
+        return getBiomeData(x, y).value;
+    }
 
-        if(type == null) {
-            type = convertNoise(x, y);
-            noiseCacheMap.put(key, type);
+    public Pair<BiomeType, Float> getBiomeData(int x, int y) {
+        String key = x + "," + y;
+        Pair<BiomeType, Float> pair = noiseCacheMap.get(key);
+
+        if(pair == null) {
+            pair = convertNoise(x, y);
+            noiseCacheMap.put(key, pair);
         }
 
-        return type;
+        return pair;
     }
 
     private float normalized(Noise noise, int x, int y) {
         return (noise.getConfiguredNoise(x, y) + 1) * 0.5f;
     }
 
-    private BiomeType convertNoise(int x, int y) {
-        if(terrainNoiseHeight == null) return BiomeType.VOID;
+    private Pair<BiomeType, Float> convertNoise(int x, int y) {
+        if(terrainNoiseHeight == null) return new Pair<>(BiomeType.VOID, 0f);
 
         for(BiomeType toCheck : biomeDataMap.keySet()) {
             float[] values = biomeDataMap.get(toCheck);
@@ -159,24 +163,25 @@ public class ClientChunkGrid {
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
                 if(toCheck != BiomeType.OCEAN_DEEP) {
                     float river = normalized(riverNoise, x, y);
-                    if(river >= 0.975f) return BiomeType.RIVER;
+                    if(river >= 0.975f) return new Pair<>(BiomeType.RIVER, river);
                 }
 
                 for(var pair : noisePostProcessorMap) {
                     if(pair.key.postProcessorLogic instanceof PostProcessorBiome ppb) {
-                        BiomeType biome = ppb.getBiome(toCheck, normalized(pair.value, x, y));
+                        float _norm = normalized(pair.value, x, y);
+                        BiomeType biome = ppb.getBiome(toCheck, _norm);
 
                         if(biome != null) {
-                            return biome;
+                            return new Pair<>(biome, _norm);
                         }
                     }
                 }
 
-                return toCheck;
+                return new Pair<>(toCheck, height);
             }
         }
 
-        return BiomeType.VOID;
+        return new Pair<>(BiomeType.VOID, 0f);
     }
 
     public ClientChunk getChunk(int x, int y) {

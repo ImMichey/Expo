@@ -1,6 +1,5 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -40,7 +39,7 @@ public class ServerChunkGrid {
     private final Noise terrainNoiseMoisture;
     private final Noise riverNoise;
     private final HashMap<String, Noise> noisePostProcessorMap;
-    private final HashMap<String, BiomeType> noiseCacheMap;
+    private final HashMap<String, Pair<BiomeType, float[]>> noiseCacheMap;
 
     /** Biome logic */
     private final WorldGenSettings genSettings;
@@ -96,19 +95,23 @@ public class ServerChunkGrid {
 
     /** Returns the BiomeType at tile position X & Y. */
     public BiomeType getBiome(int x, int y) {
-        String key = x + "," + y;
-        return getBiome(x, y, key);
+        return getBiomeData(x, y).key;
     }
 
-    public BiomeType getBiome(int x, int y, String key) {
-        BiomeType type = noiseCacheMap.get(key);
+    public float[] getElevationTemperatureMoisture(int x, int y) {
+        return getBiomeData(x, y).value;
+    }
 
-        if(type == null) {
-            type = convertNoise(x, y);
-            noiseCacheMap.put(key, type);
+    public Pair<BiomeType, float[]> getBiomeData(int x, int y) {
+        String key = x + "," + y;
+        Pair<BiomeType, float[]> pair = noiseCacheMap.get(key);
+
+        if(pair == null) {
+            pair = convertNoise(x, y);
+            noiseCacheMap.put(key, pair);
         }
 
-        return type;
+        return pair;
     }
 
     public float normalized(Noise noise, int x, int y) {
@@ -142,8 +145,8 @@ public class ServerChunkGrid {
         return TileLayerType.biomeToLayer(b, layer);
     }
 
-    private BiomeType convertNoise(int x, int y) {
-        if(!genSettings.getNoiseSettings().isTerrainGenerator()) return BiomeType.VOID;
+    private Pair<BiomeType, float[]> convertNoise(int x, int y) {
+        if(!genSettings.getNoiseSettings().isTerrainGenerator()) return new Pair<>(BiomeType.VOID, new float[] {0, 0, 0});
 
         for(BiomeType toCheck : genSettings.getBiomeDataMap().keySet()) {
             float[] values = genSettings.getBiomeDataMap().get(toCheck);
@@ -164,24 +167,25 @@ public class ServerChunkGrid {
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
                 if(toCheck != BiomeType.OCEAN_DEEP) {
                     float river = normalized(riverNoise, x, y);
-                    if(river >= 0.975f) return BiomeType.RIVER;
+                    if(river >= 0.975f) return new Pair<>(BiomeType.RIVER, new float[] {river, temperature, moisture});
                 }
 
                 for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList) {
                     if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
-                        BiomeType biome = ppb.getBiome(toCheck, normalized(noisePostProcessorMap.get(ppb.noiseName), x, y));
+                        float _norm = normalized(noisePostProcessorMap.get(ppb.noiseName), x, y);
+                        BiomeType biome = ppb.getBiome(toCheck, _norm);
 
                         if(biome != null) {
-                            return biome;
+                            return new Pair<>(biome, new float[] {_norm, temperature, moisture});
                         }
                     }
                 }
 
-                return toCheck;
+                return new Pair<>(toCheck, new float[] {height, temperature, moisture});
             }
         }
 
-        return BiomeType.VOID;
+        return new Pair<>(BiomeType.VOID, new float[] {0, 0, 0});
     }
 
     /** Initializes the known chunk list. */
@@ -328,6 +332,10 @@ public class ServerChunkGrid {
 
     /** Returns the chunk at chunk coordinates X & Y. */
     public ServerChunk getChunk(int chunkX, int chunkY) {
+        return getChunk(chunkX, chunkY, true);
+    }
+
+    public ServerChunk getChunk(int chunkX, int chunkY, boolean populate) {
         // Generate chunk hash.
         String hash = chunkHash(chunkX, chunkY);
 
@@ -352,7 +360,7 @@ public class ServerChunkGrid {
             chunk.loadFromFile();
         } else {
             // Generate chunk.
-            chunk.generate(true);
+            chunk.generate(populate);
         }
 
         activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));

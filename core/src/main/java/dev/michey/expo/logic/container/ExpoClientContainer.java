@@ -127,11 +127,11 @@ public class ExpoClientContainer {
             RenderContext.get().hudFbo.begin();
             clientWorld.transparentScreen();
 
-            RenderContext.get().hudBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            RenderContext r = RenderContext.get();
+            r.hudBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
             playerUI.render();
 
-            RenderContext r = RenderContext.get();
             BitmapFont useFont = r.m5x7_border_all[0];
 
             String version = "Expo v" + ClientStatic.GAME_VERSION;
@@ -164,11 +164,9 @@ public class ExpoClientContainer {
             }
             r.hudBatch.end();
 
-            if(Gdx.input.isKeyPressed(Input.Keys.F)) {
-                ClientUtils.takeScreenshot("hud-fbo");
-            }
-
             RenderContext.get().hudFbo.end();
+
+            r.hudBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
         }
 
         clientWorld.renderWorld();

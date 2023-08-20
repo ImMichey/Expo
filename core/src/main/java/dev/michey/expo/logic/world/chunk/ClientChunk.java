@@ -1,10 +1,15 @@
 package dev.michey.expo.logic.world.chunk;
 
+import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
+
+import java.util.Arrays;
 
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -15,6 +20,8 @@ public class ClientChunk {
     public int chunkY;
     public BiomeType[] biomes;
     public ClientDynamicTilePart[][] dynamicTiles;
+    public float[] grassColor;
+    public float[][] ambientOcclusion;
 
     // SET BY CLIENT
     public Pair[][] layer1Displacement;
@@ -31,16 +38,35 @@ public class ClientChunk {
         visible = RenderContext.get().inDrawBounds(this);
     }
 
-    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] dynamicTiles) {
+    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] dynamicTiles, float[] grassColor, float[][] ambientOcclusion) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
         this.biomes = biomes;
         this.dynamicTiles = convertToClient(dynamicTiles);
+        this.grassColor = grassColor;
+        this.ambientOcclusion = ambientOcclusion;
 
         chunkDrawBeginX = ExpoShared.chunkToPos(chunkX);
         chunkDrawBeginY = ExpoShared.chunkToPos(chunkY);
         chunkDrawEndX = chunkDrawBeginX + CHUNK_SIZE;
         chunkDrawEndY = chunkDrawBeginY + CHUNK_SIZE;
+
+        /*
+        int baseTileX = ExpoShared.posToTile(chunkDrawBeginX);
+        int baseTileY = ExpoShared.posToTile(chunkDrawBeginY);
+        for(int i = 0; i < blending.length; i++) {
+            int adjustedTileX = baseTileX + i % ROW_TILES;
+            int adjustedTileY = baseTileY + i / ROW_TILES;
+            float value = ClientChunkGrid.get().getElevation(adjustedTileX, adjustedTileY);
+
+            blending[i][0] = value;
+            blending[i][1] = value;
+            blending[i][2] = value;
+            blending[i][3] = value;
+
+            ExpoLogger.log(adjustedTileX + "," + adjustedTileY + ": " + value);
+        }
+        */
 
         for(BiomeType t : biomes) {
             if(BiomeType.isWater(t)) {
@@ -58,7 +84,7 @@ public class ClientChunk {
                 for(DynamicTilePart tile : tiles) {
                     int[] ids = tile.layerIds;
 
-                    if(BiomeType.isWater(biomes[i]) && biomes[i] != BiomeType.OCEAN_DEEP && ids.length > 1) {
+                    if(BiomeType.isWater(biomes[i]) && biomes[i] != BiomeType.OCEAN_DEEP && biomes[i] != BiomeType.PUDDLE && ids.length > 1) {
                         Pair[] array = new Pair[ids.length];
 
                         for(int a = 0; a < ids.length; a++) {
@@ -72,12 +98,16 @@ public class ClientChunk {
         }
     }
 
-    public void updateSingle(int layer, int tileArray, DynamicTilePart tile) {
+    public void updateSingle(int layer, int tileArray, DynamicTilePart tile, float grassColor, float[] ambientOcclusion) {
         dynamicTiles[tileArray][layer].updateFrom(tile);
+        this.grassColor[tileArray] = grassColor;
+        this.ambientOcclusion[tileArray] = ambientOcclusion;
     }
 
-    public void update(BiomeType[] biomes, DynamicTilePart[][] individualTileData) {
+    public void update(BiomeType[] biomes, DynamicTilePart[][] individualTileData, float[] grassColor, float[][] ambientOcclusion) {
         this.biomes = biomes;
+        this.grassColor = grassColor;
+        this.ambientOcclusion = ambientOcclusion;
 
         for(int i = 0; i < individualTileData.length; i++) {
             DynamicTilePart[] server = individualTileData[i];

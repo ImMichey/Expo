@@ -83,15 +83,18 @@ public class RenderContext {
     public ShaderProgram blurShader;
     public ShaderProgram waterShader;
     public ShaderProgram outlineShader;
+    public ShaderProgram grassShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
 
     /** Render helpers */
-    public SpriteBatch batch;                           // Game world batch
+    public TileBatch batch;                             // Game world batch
+    public PolygonTileBatch polygonTileBatch;           // Game world batch
     public ShapeRenderer chunkRenderer;                 // Game world batch
     public ArrayTextureSpriteBatch arraySpriteBatch;    // Game world batch
     public SpriteBatch hudBatch;                        // HUD batch
+    public TextureRegion square;
 
     /** Fonts */
     public BitmapFont[] m5x7_all;
@@ -118,6 +121,7 @@ public class RenderContext {
     public FrameBuffer blurTargetAFbo;
     public FrameBuffer blurTargetBFbo;
     public FrameBuffer hudFbo;
+    public FrameBuffer tilesFbo;
 
     /** Debug helpers */
     public boolean drawTileInfo = false;
@@ -158,8 +162,12 @@ public class RenderContext {
     /** Screenshots */
     public boolean queueScreenshot;
 
+    public float gradientStartOffset;
+    public float gradientMultiplier;
+
     public RenderContext() {
-        batch = new SpriteBatch();
+        batch = new TileBatch();
+        polygonTileBatch = new PolygonTileBatch();
         hudBatch = new SpriteBatch();
         chunkRenderer = new ShapeRenderer();
         expoCamera = new ExpoCamera();
@@ -246,6 +254,8 @@ public class RenderContext {
         numbers = new TextureRegion[10];
         TextureRegion baseTexture = ExpoAssets.get().textureRegion("numbers");
 
+        square = ExpoAssets.get().findTile("square16x16");
+
         for(int i = 0; i < 10; i++) {
             numbers[i] = new TextureRegion(baseTexture, i * 8, 0, 6, 8);
         }
@@ -284,6 +294,7 @@ public class RenderContext {
         blurShader = compileShader("gl3/blur");
         waterShader = compileShader("gl3/water");
         outlineShader = compileShader("gl3/outline");
+        grassShader = compileShader("gl3/grass");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         lightEngine = new ExpoLightEngine();
@@ -371,6 +382,7 @@ public class RenderContext {
         blurTargetAFbo = createFBO(w, h);
         blurTargetBFbo = createFBO(w, h);
         hudFbo = createFBO(w, h);
+        tilesFbo = createFBO(w, h);
     }
 
     public boolean inDrawBounds(ClientEntity entity) {
@@ -429,8 +441,7 @@ public class RenderContext {
         outlineShader.setUniformf("u_pulseStrength", 1.2f);
         outlineShader.setUniformf("u_pulseMin", 1.0f);
 
-        outlineShader.setUniformf("u_pulseMin", 1.0f);
-        outlineShader.setUniformf("u_pulseMin", 1.0f);
+        outlineShader.setUniformf("u_thickness", ClientEntityManager.get().pulseThickness);
 
         outlineShader.setUniformf("u_textureSize", n, n);
         outlineShader.setUniformf("u_outlineColor", c.r, c.g, c.b, ClientEntityManager.get().pulseProgress * 0.75f * c.a);
@@ -472,6 +483,7 @@ public class RenderContext {
         blurTargetAFbo.dispose();
         blurTargetBFbo.dispose();
         hudFbo.dispose();
+        tilesFbo.dispose();
     }
 
     public void takeScreenshot() {

@@ -20,7 +20,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onCreation() {
-        texture = tr("entity_small_rock_" + variant);
+        texture = tr("entity_rockn_" + variant);
         shadowMask = texture;
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);

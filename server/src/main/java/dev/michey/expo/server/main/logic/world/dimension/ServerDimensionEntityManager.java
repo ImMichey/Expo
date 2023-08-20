@@ -6,12 +6,11 @@ import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.ExpoShared;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerDimensionEntityManager {
@@ -21,12 +20,16 @@ public class ServerDimensionEntityManager {
     private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
+    private final HashSet<ServerChunk> chunksToUpdate;
+    private final HashSet<ServerTile> tilesToUpdate;
 
     public ServerDimensionEntityManager() {
         idEntityMap = new HashMap<>();
         typeEntityListMap = new HashMap<>();
         damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();
+        chunksToUpdate = new HashSet<>();
+        tilesToUpdate = new HashSet<>();
 
         for(ServerEntityType type : ServerEntityType.values()) {
             typeEntityListMap.put(type, new LinkedList<>());
@@ -35,16 +38,40 @@ public class ServerDimensionEntityManager {
 
     /** Main tick method. */
     public void tickEntities(float delta) {
+        boolean requiresAO = false;
+
         while(!entityOperationQueue.isEmpty()) {
             EntityOperation op = entityOperationQueue.poll();
             ServerEntity entity = op.payload;
             if(entity == null) entity = getEntityById(op.optionalId);
+
+            if(entity.getEntityType() == ServerEntityType.DYNAMIC_3D_TILE) {
+                requiresAO = true;
+                chunksToUpdate.add(entity.getCurrentTile().chunk);
+            }
 
             if(op.add) {
                 addEntityUnsafely(entity);
             } else {
                 removeEntityUnsafely(entity);
             }
+        }
+
+        if(requiresAO) {
+            for(ServerChunk chunk : chunksToUpdate) {
+                tilesToUpdate.addAll(chunk.getBorderingTiles());
+            }
+
+            for(ServerChunk chunk : chunksToUpdate) {
+                chunk.updateAO();
+            }
+
+            for(ServerTile tile : tilesToUpdate) {
+                tile.generateAO();
+            }
+
+            chunksToUpdate.clear();
+            tilesToUpdate.clear();
         }
 
         for(ServerEntity entity : idEntityMap.values()) {

@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
@@ -14,6 +15,7 @@ import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 
@@ -46,8 +48,11 @@ public class ClientEntityManager {
     // Rendering helpers
     private int lastEntityId = -1;
     private float pDelta;
+    private float tDelta;
     private boolean plus = true;
+    private boolean plusT = true;
     public float pulseProgress;
+    public float pulseThickness;
 
     public ClientEntityManager() {
         depthEntityList = new LinkedList<>();
@@ -198,7 +203,9 @@ public class ClientEntityManager {
         if(entity.entityId != lastEntityId) {
             lastEntityId = entity.entityId;
             plus = false;
+            plusT = false;
             pDelta = 1.0f;
+            tDelta = 1.0f;
         }
 
         float speed = 3.0f;
@@ -219,7 +226,24 @@ public class ClientEntityManager {
             }
         }
 
+        if(plusT) {
+            tDelta += rc.delta * 6.0f;
+
+            if(tDelta >= 1f) {
+                tDelta = 1f;
+                plusT = false;
+            }
+        } else {
+            tDelta -= rc.delta * 6.0f;
+
+            if(tDelta <= 0f) {
+                tDelta = 0f;
+                plusT = true;
+            }
+        }
+
         pulseProgress = Interpolation.smooth2.apply(pDelta);
+        pulseThickness = 1.0f;
 
         if(rc.batch.isDrawing()) rc.batch.end();
         if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
@@ -249,6 +273,9 @@ public class ClientEntityManager {
 
         if(rc.batch.isDrawing()) rc.batch.end();
         if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
+        if(Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            ClientUtils.takeScreenshot("entityTest");
+        }
         rc.batch.setShader(null);
         rc.arraySpriteBatch.setShader(null);
     }

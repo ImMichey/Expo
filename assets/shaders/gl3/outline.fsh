@@ -19,6 +19,7 @@ uniform vec4 u_outlineColor;
 uniform float u_progress;
 uniform float u_pulseStrength;
 uniform float u_pulseMin;
+uniform float u_thickness;
 uniform bool u_outline;
 
 out vec4 fragColor;
@@ -27,7 +28,7 @@ void main() {
     vec4 c = texture(u_texturearray, vec3(v_texCoords, v_texture_index));
 
     if(c.a == 0.0) {
-        vec2 pixelSize = 1.0 / u_textureSize;
+        vec2 pixelSize = u_thickness / u_textureSize;
 
         vec4 c1 = texture(u_texturearray, vec3(v_texCoords + vec2(pixelSize.x, 0.0), v_texture_index));
         vec4 c2 = texture(u_texturearray, vec3(v_texCoords + vec2(-pixelSize.x, 0.0), v_texture_index));

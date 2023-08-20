@@ -339,11 +339,23 @@ public class ClientWorld {
         r.batch.setShader(r.DEFAULT_GLES3_SHADER);
 
         {
-            // Draw tiles to main FBO.
-            r.mainFbo.begin();
+            // Draw tiles to tiles FBO.
+            r.tilesFbo.begin();
                 transparentScreen();
                 updateChunksToDraw();
                 renderChunkTiles();
+            r.tilesFbo.end();
+        }
+
+        { // Draw tiles to main FBO.
+            r.mainFbo.begin();
+                transparentScreen();
+                r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                drawFboTexture(r.tilesFbo, null);
+                r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
+                if(Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+                    ClientUtils.takeScreenshot("post");
+                }
             r.mainFbo.end();
         }
 
@@ -636,7 +648,9 @@ public class ClientWorld {
         { // Draw HUD
             r.batch.setColor(Color.WHITE);
             r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
-            drawFboTexture(r.hudFbo, null);
+            if(r.drawHUD) {
+                drawFboTexture(r.hudFbo, null);
+            }
             r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
         }
     }
@@ -855,11 +869,15 @@ public class ClientWorld {
         r.batch.setColor(Color.WHITE);
     }
 
+    private static final float[] NULL = new float[] {0, 0, 0, 0};
+
     private void renderChunkTiles() {
         if(ClientPlayer.getLocalPlayer() != null) {
             RenderContext rc = RenderContext.get();
 
-            rc.batch.begin();
+            rc.polygonTileBatch.begin();
+            rc.polygonTileBatch.setShader(rc.grassShader);
+            rc.polygonTileBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
             for(ClientChunk chunk : drawChunks) {
                 if(chunk != null && chunk.visible) {
@@ -871,15 +889,28 @@ public class ClientWorld {
                         ClientDynamicTilePart l2 = tiles[2];
 
                         if(!ExpoAssets.get().getTileSheet().isFullTile(l1.layerIds[0])) {
-                            l0.draw(rc, null);
+                            l0.draw(rc, null, 0f, chunk.ambientOcclusion[i]);
                         }
 
-                        l1.draw(rc, chunk.layer1Displacement == null ? null : chunk.layer1Displacement[i]);
-                        l2.draw(rc, null);
+                        float color = 0;
+
+                        if(l1.emulatingType == TileLayerType.FOREST) {
+                            color = chunk.grassColor[i];
+                        }
+
+                        l1.draw(rc, chunk.layer1Displacement == null ? null : chunk.layer1Displacement[i], color, chunk.ambientOcclusion[i]);
+                        l2.draw(rc, null, 0f, chunk.ambientOcclusion[i]);
                     }
                 }
             }
 
+            if(Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+                ClientUtils.takeScreenshot("debug");
+            }
+
+            rc.polygonTileBatch.setShader(rc.DEFAULT_GLES3_SHADER);
+            rc.polygonTileBatch.end();
+            rc.batch.begin();
             drawWater();
         }
     }

@@ -7,13 +7,22 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,6 +55,8 @@ public class CommandNoise extends AbstractConsoleCommand {
     @Override
     public void executeCommand(String[] args) {
         new Thread(() -> {
+            LinkedList<Float> avgList = new LinkedList<>();
+
             final int pxmapsize = 768;
             int runs = pxmapsize / 16;
             Pixmap pixmap = new Pixmap(pxmapsize, pxmapsize, Pixmap.Format.RGBA8888);
@@ -58,10 +69,31 @@ public class CommandNoise extends AbstractConsoleCommand {
                         int _x = i * 16 + t % ROW_TILES;
                         int _y = j * 16 + t / ROW_TILES;
 
+                        BiomeType b = c.tiles[t].biome;
+
+                        if(b == BiomeType.FOREST || b == BiomeType.PLAINS || b == BiomeType.DENSE_FOREST) {
+                            float avg = c.tiles[t].foliageColor;
+                            avgList.add(avg);
+                        }
+
                         float[] colors = c.tiles[t].biome.BIOME_COLOR;
                         pixmap.drawPixel(_x, _y, Color.rgba8888(colors[0], colors[1], colors[2], 1.0f));
                     }
                 }
+            }
+
+            ExpoLogger.log("Entries: " + avgList.size());
+            avgList.sort(Float::compare);
+
+            StringBuilder builder = new StringBuilder();
+            for(Float f : avgList) {
+                builder.append(f);
+                builder.append(System.lineSeparator());
+            }
+            try {
+                Files.writeString(Paths.get(Gdx.files.local("testfile.txt").path()), builder.toString(), StandardOpenOption.CREATE_NEW);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
             FileHandle fh = Gdx.files.local("noiseCmd/_" + System.currentTimeMillis() + ".png");

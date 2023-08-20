@@ -508,6 +508,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         //log("PLAYER " + username + " changed chunk to " + chunkX + "," + chunkY);
         currentlyVisibleChunks = getChunkGrid().getChunkNumbersInPlayerRange(this);
         List<Pair<String, ServerTile[]>> chunkPacketList = null;
+        List<ServerChunk> populationChunkQueue = new LinkedList<>();
 
         for(int i = 0; i < currentlyVisibleChunks.length; i += 2) {
             int x = currentlyVisibleChunks[i    ];
@@ -529,7 +530,10 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
             if(newChunk || resend) {
                 if(chunkPacketList == null) chunkPacketList = new LinkedList<>();
-                if(chunk == null) chunk = getChunkGrid().getChunk(x, y);
+                if(chunk == null) {
+                    chunk = getChunkGrid().getChunk(x, y);
+                    populationChunkQueue.add(chunk);
+                }
 
                 hasSeenChunks.put(key, chunk.lastTileUpdate);
                 chunkPacketList.add(new Pair<>(key, chunk.tiles));

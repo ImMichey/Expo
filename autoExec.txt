@@ -1,5 +1,7 @@
-/delsave dev
+#/delsave dev
 /world dev
 #/time 0
 #/connect localhost
 #/noise
+#/noclip
+#/speed 1000

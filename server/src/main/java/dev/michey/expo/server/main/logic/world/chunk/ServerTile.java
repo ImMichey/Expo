@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
@@ -19,12 +20,15 @@ import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 public class ServerTile {
 
     public ServerChunk chunk;
-    public int tileX;
-    public int tileY;
+    public int tileX; // Absolute tile X
+    public int tileY; // Absolute tile Y
     public int tileArray;
 
     public BiomeType biome;
     public DynamicTilePart[] dynamicTileParts;
+
+    public float foliageColor;
+    public float[] ambientOcclusion;
 
     public ServerTile(ServerChunk chunk, int tileX, int tileY, int tileArray) {
         this.chunk = chunk;
@@ -32,6 +36,8 @@ public class ServerTile {
         this.tileY = tileY;
         this.tileArray = tileArray;
         biome = BiomeType.VOID;
+        ambientOcclusion = new float[4];
+        generateBaseBlendingAO();
     }
 
     public static final int NORTH = 1;
@@ -72,6 +78,59 @@ public class ServerTile {
         */
     }
 
+    public void generateBaseBlendingAO() {
+        foliageColor = chunk.getDimension().getChunkHandler().getElevationTemperatureMoisture(tileX, tileY)[1];
+        Arrays.fill(ambientOcclusion, 0.0f);
+    }
+
+    public void generateAO() {
+        if(hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE)) {
+            Arrays.fill(ambientOcclusion, 1.0f);
+            ExpoLogger.log(tileX + "," + tileY + ": " + Arrays.toString(ambientOcclusion) + " SP");
+            return;
+        }
+
+        ServerTile[] neighbours = getNeighbouringTiles();
+        boolean n = neighbours[5] != null && neighbours[5].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+        boolean e = neighbours[3] != null && neighbours[3].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+        boolean s = neighbours[1] != null && neighbours[1].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+        boolean w = neighbours[7] != null && neighbours[7].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+        boolean ne = neighbours[4] != null && neighbours[4].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+        boolean se = neighbours[2] != null && neighbours[2].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+        boolean sw = neighbours[0] != null && neighbours[0].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+        boolean nw = neighbours[6] != null && neighbours[6].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
+
+        // [0] = Bottom Left
+        if(s || w || sw) {
+            ambientOcclusion[0] = 1.0f;
+        } else {
+            ambientOcclusion[0] = 0.0f;
+        }
+
+        // [1] = Top Left
+        if(n || w || nw) {
+            ambientOcclusion[1] = 1.0f;
+        } else {
+            ambientOcclusion[1] = 0.0f;
+        }
+
+        // [2] = Top Right
+        if(n || e || ne) {
+            ambientOcclusion[2] = 1.0f;
+        } else {
+            ambientOcclusion[2] = 0.0f;
+        }
+
+        // [3] = Bottom Right
+        if(s || e || se) {
+            ambientOcclusion[3] = 1.0f;
+        } else {
+            ambientOcclusion[3] = 0.0f;
+        }
+
+        ExpoLogger.log(tileX + "," + tileY + ": " + Arrays.toString(ambientOcclusion));
+    }
+
     public void updateLayer1(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer1(biome) : type;
         dynamicTileParts[1].update(use);
@@ -82,21 +141,6 @@ public class ServerTile {
         } else {
             dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
         }
-
-        /*
-        TileLayerType checkFor = TileLayerType.BLENDING_MAP.get(use);
-
-        if(checkFor != null) {
-            int[] result = indexStraightDiagonalX(1, tileX, tileY, checkFor);
-
-            if(result[0] != 0 && result[1] != 0) {
-                int[] textures = runTextureGrab(TileLayerType.GRASS_TO_FOREST.TILE_ID_DATA[0], result);
-                dynamicTileParts[1].setTileIds(textures);
-
-                ExpoLogger.log("tx, ty: " + tileX + "," + tileY + ": " + Arrays.toString(result) + "=" + Arrays.toString(textures));
-            }
-        }
-        */
 
         if(use == TileLayerType.ROCK || use == TileLayerType.DIRT) {
             int x = tileArray % ROW_TILES;
@@ -440,7 +484,8 @@ public class ServerTile {
     @Override
     public String toString() {
         return "ServerTile{" +
-                "chunk=" + chunk +
+                "chunkX=" + chunk.chunkX +
+                ", chunkY=" + chunk.chunkY +
                 ", tileX=" + tileX +
                 ", tileY=" + tileY +
                 ", tileArray=" + tileArray +
@@ -463,6 +508,18 @@ public class ServerTile {
         if(found == null) return null;
         if(found.getEntityType() == type) return found;
         return null;
+    }
+
+    public boolean hasTileBasedEntityB(ServerEntityType... type) {
+        if(!chunk.hasTileBasedEntities()) return false;
+        int entityId = chunk.getTileBasedEntityIdGrid()[tileArray];
+        if(entityId == -1) return false;
+        ServerEntity found = ServerWorld.get().getDimension(chunk.getDimension().getDimensionName()).getEntityManager().getEntityById(entityId);
+        if(found == null) return false;
+        for(ServerEntityType t : type) {
+            if(found.getEntityType() == t) return true;
+        }
+        return false;
     }
 
     public boolean isType(TileLayerType type, int layer) {
