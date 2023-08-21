@@ -122,11 +122,13 @@ public class ServerChunk {
         return new Pair<>(collision, expectedBounds);
     }
 
+    /*
     public void updateAO() {
         for(ServerTile tile : tiles) {
             tile.generateAO();
         }
     }
+    */
 
     public LinkedList<ServerTile> getBorderingTiles() {
         LinkedList<ServerTile> list = new LinkedList<>();

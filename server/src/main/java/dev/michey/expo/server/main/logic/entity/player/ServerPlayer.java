@@ -507,7 +507,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public void onChunkChanged() {
         //log("PLAYER " + username + " changed chunk to " + chunkX + "," + chunkY);
         currentlyVisibleChunks = getChunkGrid().getChunkNumbersInPlayerRange(this);
-        List<Pair<String, ServerTile[]>> chunkPacketList = null;
+        List<Pair<String, ServerChunk>> chunkPacketList = null;
         List<ServerChunk> populationChunkQueue = new LinkedList<>();
 
         for(int i = 0; i < currentlyVisibleChunks.length; i += 2) {
@@ -536,13 +536,13 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 }
 
                 hasSeenChunks.put(key, chunk.lastTileUpdate);
-                chunkPacketList.add(new Pair<>(key, chunk.tiles));
+                chunkPacketList.add(new Pair<>(key, chunk));
             }
         }
 
         if(chunkPacketList != null) {
             for(var pair : chunkPacketList) {
-                ServerPackets.p11ChunkData(pair.value[0].chunk.chunkX, pair.value[0].chunk.chunkY, pair.value, PacketReceiver.player(this));
+                ServerPackets.p11ChunkData(pair.value, PacketReceiver.player(this));
             }
         }
     }
@@ -625,6 +625,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     createdTileEntity.posY = ExpoShared.tileToPos(tile.tileY) + p.placeAlignmentOffsetY;
                     ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
                     createdTileEntity.attachToTile(chunk, x, y);
+
+                    ServerPackets.p38TileEntityIdUpdate(tile, PacketReceiver.whoCanSee(tile.chunk.getDimension(), tile.chunk.chunkX, tile.chunk.chunkY));
 
                     useItemAmount(item);
                 }

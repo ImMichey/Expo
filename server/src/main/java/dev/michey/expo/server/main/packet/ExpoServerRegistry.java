@@ -92,7 +92,8 @@ public class ExpoServerRegistry {
                 P34_PlayerPlace.class,
                 P35_PlayerCraft.class,
                 P36_PlayerReceiveItem.class,
-                P37_EntityTeleport.class
+                P37_EntityTeleport.class,
+                P38_TileEntityIdUpdate.class
         );
     }
 

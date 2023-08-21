@@ -11,5 +11,6 @@ public class P11_ChunkData extends Packet {
     public DynamicTilePart[][] individualTileData;
     public float[] grassColor;
     public float[][] ambientOcclusion;
+    public int[] tileEntities;
 
 }

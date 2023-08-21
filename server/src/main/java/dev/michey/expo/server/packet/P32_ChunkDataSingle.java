@@ -11,5 +11,6 @@ public class P32_ChunkDataSingle extends Packet {
     public DynamicTilePart tile;
     public float grassColor;
     public float[] ambientOcclusion;
+    public int tileEntity;
 
 }

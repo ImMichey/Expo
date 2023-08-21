@@ -904,10 +904,6 @@ public class ClientWorld {
                 }
             }
 
-            if(Gdx.input.isKeyJustPressed(Input.Keys.G)) {
-                ClientUtils.takeScreenshot("debug");
-            }
-
             rc.polygonTileBatch.setShader(rc.DEFAULT_GLES3_SHADER);
             rc.polygonTileBatch.end();
             rc.batch.begin();

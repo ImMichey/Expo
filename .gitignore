@@ -20,6 +20,7 @@ gradle-app.setting
 /noiseTests/*
 /noiseCmd/*
 /screenshots/*
+testfile.txt
 
 ## Java:
 *.class

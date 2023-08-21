@@ -23,6 +23,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
@@ -302,6 +303,13 @@ public class ImGuiExpo {
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][2].texture));
 
                     coloredBulletText(1.0f, 1.0f, 1.0f, "ambientOcclusion " + Arrays.toString(chunk.ambientOcclusion[r.mouseTileArray]));
+                    coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (CLIENT) " + (chunk.tileEntities == null ? "EMPTY" : chunk.tileEntities[r.mouseTileArray] + ""));
+
+                    if(ServerWorld.get() != null) {
+                        ServerChunk ch = ServerWorld.get().getDimension("overworld").getChunkHandler().getChunk(chunk.chunkX, chunk.chunkY);
+
+                        coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (SERVER) " + (ch.hasTileBasedEntities() ? ch.getTileBasedEntityIdGrid()[r.mouseTileArray] : "EMPTY"));
+                    }
                 }
 
                 ImGui.treePop();

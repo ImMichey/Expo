@@ -143,6 +143,8 @@ public class ServerFenceStick extends ServerEntity {
         if(west != null) ((ServerFenceStick) west).calculateOrientation(false, true);
 
         spawnItemSingle(posX + 8, posY + 8 - 5.625f, 0, "item_fence_stick", 8);
+
+        ServerPackets.p38TileEntityIdUpdate(tile, PacketReceiver.whoCanSee(tile));
     }
 
     @Override

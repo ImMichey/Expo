@@ -86,7 +86,6 @@ public class ServerTile {
     public void generateAO() {
         if(hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE)) {
             Arrays.fill(ambientOcclusion, 1.0f);
-            ExpoLogger.log(tileX + "," + tileY + ": " + Arrays.toString(ambientOcclusion) + " SP");
             return;
         }
 
@@ -127,8 +126,6 @@ public class ServerTile {
         } else {
             ambientOcclusion[3] = 0.0f;
         }
-
-        ExpoLogger.log(tileX + "," + tileY + ": " + Arrays.toString(ambientOcclusion));
     }
 
     public void updateLayer1(TileLayerType type) {

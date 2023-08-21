@@ -123,20 +123,23 @@ public class ServerPackets {
     }
 
     /** Sends the P11_ChunkData packet via TCP protocol. */
-    public static void p11ChunkData(int chunkX, int chunkY, ServerTile[] tiles, PacketReceiver receiver) {
+    public static void p11ChunkData(ServerChunk chunk, PacketReceiver receiver) {
         P11_ChunkData p = new P11_ChunkData();
-        p.chunkX = chunkX;
-        p.chunkY = chunkY;
-        p.biomes = new BiomeType[tiles.length];
-        p.individualTileData = new DynamicTilePart[tiles.length][];
-        p.grassColor = new float[tiles.length];
-        p.ambientOcclusion = new float[tiles.length][];
+        p.chunkX = chunk.chunkX;
+        p.chunkY = chunk.chunkY;
+        p.tileEntities = chunk.getTileBasedEntityIdGrid();
 
-        for(int i = 0; i < tiles.length; i++) {
-            p.biomes[i] = tiles[i].biome;
-            p.individualTileData[i] = tiles[i].dynamicTileParts;
-            p.grassColor[i] = tiles[i].foliageColor;
-            p.ambientOcclusion[i] = tiles[i].ambientOcclusion;
+        int s = chunk.tiles.length;
+        p.biomes = new BiomeType[s];
+        p.individualTileData = new DynamicTilePart[s][];
+        p.grassColor = new float[s];
+        p.ambientOcclusion = new float[s][];
+
+        for(int i = 0; i < s; i++) {
+            p.biomes[i] = chunk.tiles[i].biome;
+            p.individualTileData[i] = chunk.tiles[i].dynamicTileParts;
+            p.grassColor[i] = chunk.tiles[i].foliageColor;
+            p.ambientOcclusion[i] = chunk.tiles[i].ambientOcclusion;
         }
 
         tcp(p, receiver);
@@ -317,7 +320,7 @@ public class ServerPackets {
     }
 
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
-    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, float grassColor, float[] ambientOcclusion, PacketReceiver receiver) {
+    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, float grassColor, float[] ambientOcclusion, int tileEntity, PacketReceiver receiver) {
         P32_ChunkDataSingle p = new P32_ChunkDataSingle();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
@@ -326,11 +329,12 @@ public class ServerPackets {
         p.tile = dynamicTile;
         p.grassColor = grassColor;
         p.ambientOcclusion = ambientOcclusion;
+        p.tileEntity = tileEntity;
         udp(p, receiver);
     }
 
     public static void p32ChunkDataSingle(ServerTile tile, int layer) {
-        p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, layer, tile.tileArray, tile.dynamicTileParts[layer], tile.foliageColor, tile.ambientOcclusion, PacketReceiver.whoCanSee(tile.chunk.getDimension(), tile.chunk.chunkX, tile.chunk.chunkY));
+        p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, layer, tile.tileArray, tile.dynamicTileParts[layer], tile.foliageColor, tile.ambientOcclusion, tile.chunk.hasTileBasedEntities() ? tile.chunk.getTileBasedEntityIdGrid()[tile.tileArray] : -1, PacketReceiver.whoCanSee(tile.chunk.getDimension(), tile.chunk.chunkX, tile.chunk.chunkY));
     }
 
     /** Sends the P33_TileDig packet via UDP protocol. */
@@ -357,6 +361,16 @@ public class ServerPackets {
         p.x = x;
         p.y = y;
         udp(p, receiver);
+    }
+
+    /** Sends the P38_TileEntityIdUpdate packet via TCP protocol. */
+    public static void p38TileEntityIdUpdate(ServerTile tile, PacketReceiver receiver) {
+        P38_TileEntityIdUpdate p = new P38_TileEntityIdUpdate();
+        p.chunkX = tile.chunk.chunkX;
+        p.chunkY = tile.chunk.chunkY;
+        p.tileArray = tile.tileArray;
+        p.entityId = tile.chunk.hasTileBasedEntities() ? tile.chunk.getTileBasedEntityIdGrid()[p.tileArray] : -1;
+        tcp(p, receiver);
     }
 
     /** Helper methods below. */

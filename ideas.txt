@@ -1,4 +1,9 @@
-Fix Dynamic3DTile selection
-Clouds
-Fix Grass tiles
-Boulders
+Client->Server Tile based entities sync
+Fix player texture offsets + adjust everything
+Implement new audio engine (gdx-miniaudio)
+Fix Dynamic3DTile selection (current implementation is buggy)
+Fix Ambient occlusion bug for chunk corners
+
+- Add Boulders
+- Add new trees
+- Maybe redo old trees

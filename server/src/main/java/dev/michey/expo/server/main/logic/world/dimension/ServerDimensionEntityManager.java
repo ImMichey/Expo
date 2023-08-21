@@ -20,7 +20,6 @@ public class ServerDimensionEntityManager {
     private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
-    private final HashSet<ServerChunk> chunksToUpdate;
     private final HashSet<ServerTile> tilesToUpdate;
 
     public ServerDimensionEntityManager() {
@@ -28,7 +27,6 @@ public class ServerDimensionEntityManager {
         typeEntityListMap = new HashMap<>();
         damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();
-        chunksToUpdate = new HashSet<>();
         tilesToUpdate = new HashSet<>();
 
         for(ServerEntityType type : ServerEntityType.values()) {
@@ -47,7 +45,14 @@ public class ServerDimensionEntityManager {
 
             if(entity.getEntityType() == ServerEntityType.DYNAMIC_3D_TILE) {
                 requiresAO = true;
-                chunksToUpdate.add(entity.getCurrentTile().chunk);
+
+                ServerTile baseTile = entity.getCurrentTile();
+                ServerTile[] surrounding = baseTile.getNeighbouringTiles();
+
+                tilesToUpdate.add(entity.getCurrentTile());
+                for(ServerTile s : surrounding) {
+                    if(s != null) tilesToUpdate.add(s);
+                }
             }
 
             if(op.add) {
@@ -58,6 +63,7 @@ public class ServerDimensionEntityManager {
         }
 
         if(requiresAO) {
+            /*
             for(ServerChunk chunk : chunksToUpdate) {
                 tilesToUpdate.addAll(chunk.getBorderingTiles());
             }
@@ -66,11 +72,14 @@ public class ServerDimensionEntityManager {
                 chunk.updateAO();
             }
 
+            tilesToUpdate.removeIf(element -> chunksToUpdate.contains(element.chunk));
+            */
+
             for(ServerTile tile : tilesToUpdate) {
                 tile.generateAO();
             }
 
-            chunksToUpdate.clear();
+            //chunksToUpdate.clear();
             tilesToUpdate.clear();
         }
 

@@ -120,7 +120,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P10_PlayerQuit p) {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
-            ClientChunkGrid.get().updateChunkData(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.grassColor, p.ambientOcclusion);
+            ClientChunkGrid.get().updateChunkData(p);
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);
 
@@ -242,7 +242,7 @@ public class ExpoClientPacketReader {
             var grid = ClientChunkGrid.get(); if(grid == null) return;
             var chunk = grid.getChunk(p.chunkX, p.chunkY); if(chunk == null) return;
 
-            chunk.updateSingle(p.layer, p.tileArray, p.tile, p.grassColor, p.ambientOcclusion);
+            chunk.updateSingle(p);
         } else if(o instanceof P33_TileDig p) {
             float x = ExpoShared.tileToPos(p.tileX);
             float y = ExpoShared.tileToPos(p.tileY);
@@ -273,6 +273,12 @@ public class ExpoClientPacketReader {
             if(entity != null) {
                 entity.applyTeleportUpdate(p.x, p.y);
             }
+        } else if(o instanceof P38_TileEntityIdUpdate p) {
+            var grid = ClientChunkGrid.get(); if(grid == null) return;
+            var chunk = grid.getChunk(p.chunkX, p.chunkY); if(chunk == null) return;
+
+            chunk.createTileEntityGridIfRequired();
+            chunk.tileEntities[p.tileArray] = p.entityId;
         }
     }
 

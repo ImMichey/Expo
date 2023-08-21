@@ -8,6 +8,7 @@ import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
 import dev.michey.expo.server.main.logic.world.gen.PostProcessorBiome;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
+import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
@@ -105,14 +106,14 @@ public class ClientChunkGrid {
         interpolation = Interpolation.smooth2.apply(waveDelta) * WAVE_STRENGTH;
     }
 
-    public void updateChunkData(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] individualTileData, float[] grassColor, float[][] ambientOcclusion) {
-        String key = chunkX + "," + chunkY;
+    public void updateChunkData(P11_ChunkData p) {
+        String key = p.chunkX + "," + p.chunkY;
         ClientChunk existing = clientChunkMap.get(key);
 
         if(existing == null) {
-            clientChunkMap.put(key, new ClientChunk(chunkX, chunkY, biomes, individualTileData, grassColor, ambientOcclusion));
+            clientChunkMap.put(key, new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.grassColor, p.ambientOcclusion, p.tileEntities));
         } else {
-            existing.update(biomes, individualTileData, grassColor, ambientOcclusion);
+            existing.update(p.biomes, p.individualTileData, p.grassColor, p.ambientOcclusion, p.tileEntities);
         }
     }
 

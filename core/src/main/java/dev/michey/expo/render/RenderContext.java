@@ -89,7 +89,7 @@ public class RenderContext {
     public ExpoLightEngine lightEngine;
 
     /** Render helpers */
-    public TileBatch batch;                             // Game world batch
+    public SpriteBatch batch;                           // Game world batch
     public PolygonTileBatch polygonTileBatch;           // Game world batch
     public ShapeRenderer chunkRenderer;                 // Game world batch
     public ArrayTextureSpriteBatch arraySpriteBatch;    // Game world batch
@@ -166,7 +166,7 @@ public class RenderContext {
     public float gradientMultiplier;
 
     public RenderContext() {
-        batch = new TileBatch();
+        batch = new SpriteBatch();
         polygonTileBatch = new PolygonTileBatch();
         hudBatch = new SpriteBatch();
         chunkRenderer = new ShapeRenderer();

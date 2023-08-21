@@ -6,6 +6,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 
 import java.util.LinkedList;
@@ -62,6 +63,10 @@ public class PacketReceiver {
 
     public static PacketReceiver connection(Connection receiver) {
         return new PacketReceiver(false, receiver, null, null);
+    }
+
+    public static PacketReceiver whoCanSee(ServerTile tile) {
+        return whoCanSee(tile.chunk.getDimension(), tile.chunk.chunkX, tile.chunk.chunkY);
     }
 
     public static PacketReceiver whoCanSee(ServerDimension dimension, int chunkX, int chunkY) {

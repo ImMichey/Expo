@@ -33,7 +33,7 @@ void main() {
         }
 
         if(ambientOcclusion > 0.0 && tileColor.a > 0.0) {
-            float factor = 0.25;
+            float factor = 0.25; // Ambient Occlusion alpha
             float _r = tileColor.r - (tileColor.r * data.a * factor);
             float _g = tileColor.g - (tileColor.g * data.a * factor);
             float _b = tileColor.b - (tileColor.b * data.a * factor);
@@ -43,24 +43,3 @@ void main() {
         }
     }
 }
-    // bc * v_color
-    // v_color = 0.0, 0.0, 0.0, [0-1]
-
-    /*
-    if(v_color.a > 0.1 || bc.g < 0.2) {
-        fragColor = bc;
-    } else {
-        if(use == 1) {
-            fragColor = bc;
-        } else {
-            float grassColor = v_color.r;
-            float ambientOcclusion = v_color.g;
-
-            float baseR = bc.r;
-            float baseG = bc.g;
-            float baseB = bc.b;
-
-            fragColor = vec4(baseR - (baseR * grassColor * 1.5), baseG - (baseG * grassColor * 1), baseB - (baseB * grassColor * 2), bc.a);
-        }
-    }
-    */
