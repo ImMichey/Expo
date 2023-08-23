@@ -3,7 +3,6 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -508,7 +507,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         //log("PLAYER " + username + " changed chunk to " + chunkX + "," + chunkY);
         currentlyVisibleChunks = getChunkGrid().getChunkNumbersInPlayerRange(this);
         List<Pair<String, ServerChunk>> chunkPacketList = null;
-        List<ServerChunk> populationChunkQueue = new LinkedList<>();
+        //List<ServerChunk> populationChunkQueue = new LinkedList<>();
 
         for(int i = 0; i < currentlyVisibleChunks.length; i += 2) {
             int x = currentlyVisibleChunks[i    ];
@@ -532,7 +531,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 if(chunkPacketList == null) chunkPacketList = new LinkedList<>();
                 if(chunk == null) {
                     chunk = getChunkGrid().getChunk(x, y);
-                    populationChunkQueue.add(chunk);
+                    //populationChunkQueue.add(chunk);
                 }
 
                 hasSeenChunks.put(key, chunk.lastTileUpdate);
@@ -625,8 +624,6 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     createdTileEntity.posY = ExpoShared.tileToPos(tile.tileY) + p.placeAlignmentOffsetY;
                     ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
                     createdTileEntity.attachToTile(chunk, x, y);
-
-                    ServerPackets.p38TileEntityIdUpdate(tile, PacketReceiver.whoCanSee(tile.chunk.getDimension(), tile.chunk.chunkX, tile.chunk.chunkY));
 
                     useItemAmount(item);
                 }

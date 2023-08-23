@@ -7,10 +7,10 @@ public class P29_EntityCreateAdvanced extends Packet {
     public ServerEntityType entityType;
     public int entityId;
     public String dimensionName;
-    public long timestamp;
 
     public float serverPosX;
     public float serverPosY;
+    public int tileArray;
 
     public Object[] payload;
 

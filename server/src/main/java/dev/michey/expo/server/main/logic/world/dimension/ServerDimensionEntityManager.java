@@ -20,14 +20,12 @@ public class ServerDimensionEntityManager {
     private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
-    private final HashSet<ServerTile> tilesToUpdate;
 
     public ServerDimensionEntityManager() {
         idEntityMap = new HashMap<>();
         typeEntityListMap = new HashMap<>();
         damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();
-        tilesToUpdate = new HashSet<>();
 
         for(ServerEntityType type : ServerEntityType.values()) {
             typeEntityListMap.put(type, new LinkedList<>());
@@ -36,51 +34,16 @@ public class ServerDimensionEntityManager {
 
     /** Main tick method. */
     public void tickEntities(float delta) {
-        boolean requiresAO = false;
-
         while(!entityOperationQueue.isEmpty()) {
             EntityOperation op = entityOperationQueue.poll();
             ServerEntity entity = op.payload;
             if(entity == null) entity = getEntityById(op.optionalId);
-
-            if(entity.getEntityType() == ServerEntityType.DYNAMIC_3D_TILE) {
-                requiresAO = true;
-
-                ServerTile baseTile = entity.getCurrentTile();
-                ServerTile[] surrounding = baseTile.getNeighbouringTiles();
-
-                tilesToUpdate.add(entity.getCurrentTile());
-                for(ServerTile s : surrounding) {
-                    if(s != null) tilesToUpdate.add(s);
-                }
-            }
 
             if(op.add) {
                 addEntityUnsafely(entity);
             } else {
                 removeEntityUnsafely(entity);
             }
-        }
-
-        if(requiresAO) {
-            /*
-            for(ServerChunk chunk : chunksToUpdate) {
-                tilesToUpdate.addAll(chunk.getBorderingTiles());
-            }
-
-            for(ServerChunk chunk : chunksToUpdate) {
-                chunk.updateAO();
-            }
-
-            tilesToUpdate.removeIf(element -> chunksToUpdate.contains(element.chunk));
-            */
-
-            for(ServerTile tile : tilesToUpdate) {
-                tile.generateAO();
-            }
-
-            //chunksToUpdate.clear();
-            tilesToUpdate.clear();
         }
 
         for(ServerEntity entity : idEntityMap.values()) {

@@ -85,10 +85,6 @@ public class ExpoClientPacketReader {
                     continue;
                 }
 
-                if(p.timestamp < entity.entityTimestamp) {
-                    ExpoLogger.log("Possible clash? Timestamp " + entity.entityId + ": " + entity.entityTimestamp + "/" + p.timestamp);
-                }
-
                 entity.removalReason = p.reasons[i];
                 ClientEntityManager.get().removeEntity(p.entityList[i]);
             }
@@ -97,6 +93,7 @@ public class ExpoClientPacketReader {
             log("Held item ids: " + Arrays.toString(p.equippedItemIds));
 
             ClientPlayer player = new ClientPlayer();
+            player.tileEntityTileArray = -1;
             player.entityId = p.entityId;
             player.username = p.username;
             player.serverPosX = p.serverPosX;
@@ -273,12 +270,6 @@ public class ExpoClientPacketReader {
             if(entity != null) {
                 entity.applyTeleportUpdate(p.x, p.y);
             }
-        } else if(o instanceof P38_TileEntityIdUpdate p) {
-            var grid = ClientChunkGrid.get(); if(grid == null) return;
-            var chunk = grid.getChunk(p.chunkX, p.chunkY); if(chunk == null) return;
-
-            chunk.createTileEntityGridIfRequired();
-            chunk.tileEntities[p.tileArray] = p.entityId;
         }
     }
 

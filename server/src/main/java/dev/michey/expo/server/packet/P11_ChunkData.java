@@ -10,7 +10,6 @@ public class P11_ChunkData extends Packet {
     public BiomeType[] biomes;
     public DynamicTilePart[][] individualTileData;
     public float[] grassColor;
-    public float[][] ambientOcclusion;
-    public int[] tileEntities;
+    public int tileEntityCount;
 
 }

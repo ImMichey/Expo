@@ -20,6 +20,8 @@ import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 
+import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+
 public class ServerPackets {
 
     /** Sends the P1_Auth_Rsp packet via TCP protocol. */
@@ -37,19 +39,19 @@ public class ServerPackets {
     }
 
     /** Sends the P2_EntityCreate packet via TCP protocol. */
-    public static void p2EntityCreate(ServerEntityType entityType, int entityId, String dimensionName, float serverPosX, float serverPosY, PacketReceiver receiver) {
+    public static void p2EntityCreate(ServerEntityType entityType, int entityId, String dimensionName, float serverPosX, float serverPosY, int tileArray, PacketReceiver receiver) {
         P2_EntityCreate p = new P2_EntityCreate();
         p.entityType = entityType;
         p.entityId = entityId;
         p.dimensionName = dimensionName;
         p.serverPosX = serverPosX;
         p.serverPosY = serverPosY;
-        p.timestamp = System.currentTimeMillis();
+        p.tileArray = tileArray;
         tcp(p, receiver);
     }
 
     public static void p2EntityCreate(ServerEntity entity, PacketReceiver receiver) {
-        p2EntityCreate(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, receiver);
+        p2EntityCreate(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, receiver);
     }
 
     /** Sends the P3_PlayerJoin packet via TCP protocol. */
@@ -64,7 +66,6 @@ public class ServerPackets {
         P4_EntityDelete p = new P4_EntityDelete();
         p.entityId = entityId;
         p.reason = reason;
-        p.timestamp = System.currentTimeMillis();
         udp(p, receiver);
     }
 
@@ -89,7 +90,6 @@ public class ServerPackets {
         P8_EntityDeleteStack p = new P8_EntityDeleteStack();
         p.entityList = entityList;
         p.reasons = reasons;
-        p.timestamp = System.currentTimeMillis();
         udp(p, receiver);
     }
 
@@ -127,19 +127,26 @@ public class ServerPackets {
         P11_ChunkData p = new P11_ChunkData();
         p.chunkX = chunk.chunkX;
         p.chunkY = chunk.chunkY;
-        p.tileEntities = chunk.getTileBasedEntityIdGrid();
 
         int s = chunk.tiles.length;
         p.biomes = new BiomeType[s];
         p.individualTileData = new DynamicTilePart[s][];
         p.grassColor = new float[s];
-        p.ambientOcclusion = new float[s][];
 
         for(int i = 0; i < s; i++) {
             p.biomes[i] = chunk.tiles[i].biome;
             p.individualTileData[i] = chunk.tiles[i].dynamicTileParts;
             p.grassColor[i] = chunk.tiles[i].foliageColor;
-            p.ambientOcclusion[i] = chunk.tiles[i].ambientOcclusion;
+        }
+
+        if(chunk.hasTileBasedEntities()) {
+            int count = 0;
+
+            for(int id : chunk.getTileBasedEntityIdGrid()) {
+                if(id != -1) count++;
+            }
+
+            p.tileEntityCount = count;
         }
 
         tcp(p, receiver);
@@ -295,7 +302,7 @@ public class ServerPackets {
     }
 
     /** Sends the P29_EntityCreateAdvanced packet via TCP protocol. */
-    public static void p29EntityCreateAdvanced(ServerEntityType entityType, int entityId, String dimensionName, float serverPosX, float serverPosY, Object[] payload, PacketReceiver receiver) {
+    public static void p29EntityCreateAdvanced(ServerEntityType entityType, int entityId, String dimensionName, float serverPosX, float serverPosY, int tileArray, Object[] payload, PacketReceiver receiver) {
         P29_EntityCreateAdvanced p = new P29_EntityCreateAdvanced();
         p.entityType = entityType;
         p.entityId = entityId;
@@ -303,12 +310,13 @@ public class ServerPackets {
         p.serverPosX = serverPosX;
         p.serverPosY = serverPosY;
         p.payload = payload;
-        p.timestamp = System.currentTimeMillis();
+        p.tileArray = tileArray;
         tcp(p, receiver);
     }
 
     public static void p29EntityCreateAdvanced(ServerEntity entity, PacketReceiver receiver) {
-        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.getPacketPayload(), receiver);
+        int tileEntityId = entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1;
+        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, tileEntityId, entity.getPacketPayload(), receiver);
     }
 
     /** Sends the P30_EntityDataUpdate packet via UDP protocol. */
@@ -320,7 +328,7 @@ public class ServerPackets {
     }
 
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
-    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, float grassColor, float[] ambientOcclusion, int tileEntity, PacketReceiver receiver) {
+    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, float grassColor, PacketReceiver receiver) {
         P32_ChunkDataSingle p = new P32_ChunkDataSingle();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
@@ -328,13 +336,11 @@ public class ServerPackets {
         p.tileArray = tileArray;
         p.tile = dynamicTile;
         p.grassColor = grassColor;
-        p.ambientOcclusion = ambientOcclusion;
-        p.tileEntity = tileEntity;
         udp(p, receiver);
     }
 
     public static void p32ChunkDataSingle(ServerTile tile, int layer) {
-        p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, layer, tile.tileArray, tile.dynamicTileParts[layer], tile.foliageColor, tile.ambientOcclusion, tile.chunk.hasTileBasedEntities() ? tile.chunk.getTileBasedEntityIdGrid()[tile.tileArray] : -1, PacketReceiver.whoCanSee(tile.chunk.getDimension(), tile.chunk.chunkX, tile.chunk.chunkY));
+        p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, layer, tile.tileArray, tile.dynamicTileParts[layer], tile.foliageColor, PacketReceiver.whoCanSee(tile));
     }
 
     /** Sends the P33_TileDig packet via UDP protocol. */
@@ -361,16 +367,6 @@ public class ServerPackets {
         p.x = x;
         p.y = y;
         udp(p, receiver);
-    }
-
-    /** Sends the P38_TileEntityIdUpdate packet via TCP protocol. */
-    public static void p38TileEntityIdUpdate(ServerTile tile, PacketReceiver receiver) {
-        P38_TileEntityIdUpdate p = new P38_TileEntityIdUpdate();
-        p.chunkX = tile.chunk.chunkX;
-        p.chunkY = tile.chunk.chunkY;
-        p.tileArray = tile.tileArray;
-        p.entityId = tile.chunk.hasTileBasedEntities() ? tile.chunk.getTileBasedEntityIdGrid()[p.tileArray] : -1;
-        tcp(p, receiver);
     }
 
     /** Helper methods below. */

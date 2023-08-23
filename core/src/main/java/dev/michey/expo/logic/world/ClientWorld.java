@@ -35,8 +35,7 @@ import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
+import java.util.*;
 
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -47,6 +46,8 @@ public class ClientWorld {
     private final ClientChunkGrid clientChunkGrid;
     /** Optimization */
     private final ClientChunk[] drawChunks;
+    private final int[] cachedViewport = new int[] {Integer.MAX_VALUE, 0, 0, 0};
+    private final LinkedList<QueuedAmbientOcclusion> ambientOcclusionQueue;
 
     /** Time */
     public float worldTime;
@@ -78,6 +79,7 @@ public class ClientWorld {
         clientEntityManager = new ClientEntityManager();
         clientChunkGrid = new ClientChunkGrid();
         drawChunks = new ClientChunk[PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y];
+        ambientOcclusionQueue = new LinkedList<>();
     }
 
     /** Ticking the game world. */
@@ -87,6 +89,7 @@ public class ClientWorld {
 
         // Tick entities
         clientEntityManager.tickEntities(delta);
+        //clientChunkGrid.runPostAmbientOcclusion();
 
         // Tick camera
         RenderContext.get().expoCamera.tick();
@@ -342,7 +345,6 @@ public class ClientWorld {
             // Draw tiles to tiles FBO.
             r.tilesFbo.begin();
                 transparentScreen();
-                updateChunksToDraw();
                 renderChunkTiles();
             r.tilesFbo.end();
         }
@@ -655,12 +657,18 @@ public class ClientWorld {
         }
     }
 
-    private void updateChunksToDraw() {
+    public void updateChunksToDraw() {
         ClientPlayer player = ClientPlayer.getLocalPlayer();
         if(player == null) return;
 
         int[] viewport = player.clientViewport;
+        boolean sameViewport = sameViewport(viewport);
         int c = 0;
+
+        for(ClientChunk existing : drawChunks) {
+            if(existing == null) continue;
+            existing.updateVisibility(false, true);
+        }
 
         for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE_X; i++) {
             for(int j = 0; j < PLAYER_CHUNK_VIEW_RANGE_Y; j++) {
@@ -671,11 +679,135 @@ public class ClientWorld {
 
                 if(chunk != null) {
                     drawChunks[c] = chunk;
-                    drawChunks[c].updateVisibility();
+                    chunk.updateVisibility(true, false);
                     c++;
                 }
             }
         }
+
+        if(!sameViewport && (cachedViewport[0] != Integer.MAX_VALUE)) {
+            int xDir = viewport[0] - cachedViewport[0];
+
+            if(xDir > 0) {
+                // moved right
+                int cx = viewport[1];
+                int cy = viewport[2];
+
+                for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE_Y; i++) {
+                    int _cy = cy + i;
+                    int[] indexes = new int[ROW_TILES];
+
+                    for(int ta = 0; ta < ROW_TILES; ta++) {
+                        indexes[ta] = ROW_TILES - 1 + ta * ROW_TILES;
+                    }
+
+                    addQueuedAO(indexes, cx, _cy, cx + 1, _cy, cx - 1, _cy, cx, _cy);
+                }
+            } else if(xDir < 0) {
+                // moved left
+                int cx = viewport[0];
+                int cy = viewport[2];
+
+                for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE_Y; i++) {
+                    int _cy = cy + i;
+                    int[] indexes = new int[ROW_TILES];
+
+                    for(int ta = 0; ta < ROW_TILES; ta++) {
+                        indexes[ta] = ta * ROW_TILES;
+                    }
+
+                    addQueuedAO(indexes, cx, _cy, cx - 1, _cy, cx + 1, _cy, cx, _cy);
+                }
+            }
+
+            int yDir = viewport[2] - cachedViewport[2];
+
+            if(yDir > 0) {
+                // moved up
+                int cx = viewport[0];
+                int cy = viewport[3];
+
+                for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE_X; i++) {
+                    int _cx = cx + i;
+                    int[] indexes = new int[ROW_TILES];
+
+                    for(int ta = 0; ta < ROW_TILES; ta++) {
+                        indexes[ta] = ta + ((ROW_TILES - 1) * ROW_TILES);
+                    }
+
+                    addQueuedAO(indexes, _cx, cy, _cx, cy + 1, _cx, cy - 1, _cx, cy);
+                }
+            } else if(yDir < 0) {
+                // moved down
+                int cx = viewport[0];
+                int cy = viewport[2];
+
+                for(int i = 0; i < PLAYER_CHUNK_VIEW_RANGE_X; i++) {
+                    int _cx = cx + i;
+                    int[] indexes = new int[ROW_TILES];
+
+                    for(int ta = 0; ta < ROW_TILES; ta++) {
+                        indexes[ta] = ta;
+                    }
+
+                    addQueuedAO(indexes, _cx, cy, _cx, cy - 1, _cx, cy + 1, _cx, cy);
+                }
+            }
+        }
+
+        ListIterator<QueuedAmbientOcclusion> iterator = ambientOcclusionQueue.listIterator();
+
+        while(iterator.hasNext()) {
+            QueuedAmbientOcclusion next = iterator.next();
+
+            // Out of bounds check
+            boolean inBoundsRequire = next.requiresChunkX >= viewport[0] && next.requiresChunkX <= viewport[1] && next.requiresChunkY >= viewport[2] && next.requiresChunkY <= viewport[3];
+            boolean inBoundsUpdate = next.updateChunkX >= viewport[0] && next.updateChunkX <= viewport[1] && next.updateChunkY >= viewport[2] && next.updateChunkY <= viewport[3];
+
+            if(!inBoundsRequire && !inBoundsUpdate) {
+                iterator.remove();
+                continue;
+            }
+
+            ClientChunk requireChunk = clientChunkGrid.getChunk(next.requiresChunkX, next.requiresChunkY);
+
+            if(requireChunk != null && (requireChunk.ranAmbientOcclusion || (requireChunk.getInitializationTileCount() == 0 && !requireChunk.ranAmbientOcclusion))) {
+                iterator.remove();
+                for(int index : next.updateTileArray) {
+                    clientChunkGrid.getChunk(next.updateChunkX, next.updateChunkY).updateAmbientOcclusion(index, false, true);
+                }
+            }
+        }
+
+        cachedViewport[0] = viewport[0];
+        cachedViewport[1] = viewport[1];
+        cachedViewport[2] = viewport[2];
+        cachedViewport[3] = viewport[3];
+    }
+
+    private void addQueuedAO(int[] indexes, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) {
+        QueuedAmbientOcclusion qao = new QueuedAmbientOcclusion();
+        qao.updateChunkX = x0;
+        qao.updateChunkY = y0;
+        qao.requiresChunkX = x1;
+        qao.requiresChunkY = y1;
+        qao.updateTileArray = indexes;
+        ambientOcclusionQueue.add(qao);
+
+        QueuedAmbientOcclusion qao2 = new QueuedAmbientOcclusion();
+        qao2.updateChunkX = x2;
+        qao2.updateChunkY = y2;
+        qao2.requiresChunkX = x3;
+        qao2.requiresChunkY = y3;
+        qao2.updateTileArray = indexes;
+        ambientOcclusionQueue.add(qao2);
+    }
+
+    private boolean sameViewport(int[] newViewport) {
+        for(int i = 0; i < newViewport.length; i++) {
+            if(cachedViewport[i] != newViewport[i]) return false;
+        }
+        return true;
     }
 
     private void blurPass() {
@@ -784,7 +916,7 @@ public class ClientWorld {
         float halfTileInverse = 2.0f / 16.0f;
 
         for(ClientChunk chunk : drawChunks) {
-            if(chunk != null && chunk.visible) {
+            if(chunk != null && chunk.visibleRender) {
                 for(int k = 0; k < chunk.biomes.length; k++) {
                     boolean isWaterTile = TileLayerType.isWater(chunk.dynamicTiles[k][1].emulatingType);
 
@@ -869,8 +1001,6 @@ public class ClientWorld {
         r.batch.setColor(Color.WHITE);
     }
 
-    private static final float[] NULL = new float[] {0, 0, 0, 0};
-
     private void renderChunkTiles() {
         if(ClientPlayer.getLocalPlayer() != null) {
             RenderContext rc = RenderContext.get();
@@ -880,7 +1010,7 @@ public class ClientWorld {
             rc.polygonTileBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
             for(ClientChunk chunk : drawChunks) {
-                if(chunk != null && chunk.visible) {
+                if(chunk != null && chunk.visibleRender) {
                     for(int i = 0; i < chunk.dynamicTiles.length; i++) {
                         ClientDynamicTilePart[] tiles = chunk.dynamicTiles[i];
 

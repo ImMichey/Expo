@@ -28,7 +28,6 @@ public class ServerTile {
     public DynamicTilePart[] dynamicTileParts;
 
     public float foliageColor;
-    public float[] ambientOcclusion;
 
     public ServerTile(ServerChunk chunk, int tileX, int tileY, int tileArray) {
         this.chunk = chunk;
@@ -36,8 +35,7 @@ public class ServerTile {
         this.tileY = tileY;
         this.tileArray = tileArray;
         biome = BiomeType.VOID;
-        ambientOcclusion = new float[4];
-        generateBaseBlendingAO();
+        foliageColor = chunk.getDimension().getChunkHandler().getElevationTemperatureMoisture(tileX, tileY)[1];
     }
 
     public static final int NORTH = 1;
@@ -78,11 +76,7 @@ public class ServerTile {
         */
     }
 
-    public void generateBaseBlendingAO() {
-        foliageColor = chunk.getDimension().getChunkHandler().getElevationTemperatureMoisture(tileX, tileY)[1];
-        Arrays.fill(ambientOcclusion, 0.0f);
-    }
-
+    /*
     public void generateAO() {
         if(hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE)) {
             Arrays.fill(ambientOcclusion, 1.0f);
@@ -127,6 +121,7 @@ public class ServerTile {
             ambientOcclusion[3] = 0.0f;
         }
     }
+    */
 
     public void updateLayer1(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer1(biome) : type;

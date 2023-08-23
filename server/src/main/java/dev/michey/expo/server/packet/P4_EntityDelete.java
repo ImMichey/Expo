@@ -6,6 +6,5 @@ public class P4_EntityDelete extends Packet {
 
     public int entityId;
     public EntityRemovalReason reason;
-    public long timestamp;
 
 }

@@ -52,7 +52,7 @@ public class ClientPlayer extends ClientEntity {
     /** Player chunk */
     public int chunkX;
     public int chunkY;
-    public int[] clientViewport = new int[4];
+    public int[] clientViewport = new int[] {Integer.MAX_VALUE, 0, 0, 0};
 
     /** Player textures */
     private TextureRegion draw_tex_base = null;

@@ -303,7 +303,7 @@ public class ImGuiExpo {
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][2].texture));
 
                     coloredBulletText(1.0f, 1.0f, 1.0f, "ambientOcclusion " + Arrays.toString(chunk.ambientOcclusion[r.mouseTileArray]));
-                    coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (CLIENT) " + (chunk.tileEntities == null ? "EMPTY" : chunk.tileEntities[r.mouseTileArray] + ""));
+                    coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (CLIENT) " + (chunk.tileEntityGrid == null ? "EMPTY" : chunk.tileEntityGrid[r.mouseTileArray] + ""));
 
                     if(ServerWorld.get() != null) {
                         ServerChunk ch = ServerWorld.get().getDimension("overworld").getChunkHandler().getChunk(chunk.chunkX, chunk.chunkY);

@@ -9,15 +9,15 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
+import dev.michey.expo.logic.world.ClientWorld;
+import dev.michey.expo.logic.world.chunk.ClientChunk;
+import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
-import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ClientUtils;
-import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -35,6 +35,8 @@ public class ClientEntityManager {
     private final HashMap<ClientEntityType, LinkedList<ClientEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<Integer> removalQueue;
     private final ConcurrentLinkedQueue<ClientEntity> additionQueue;
+    private final HashSet<Pair<ClientChunk, Integer>> ambientOcclusionUpdateSet;
+    private final LinkedList<ClientChunk> greenlitAmbientOcclusionList;
 
     /** Client side only entities */
     private int clientEntityId = -1;
@@ -60,6 +62,8 @@ public class ClientEntityManager {
         typeEntityListMap = new HashMap<>();
         removalQueue = new ConcurrentLinkedQueue<>();
         additionQueue = new ConcurrentLinkedQueue<>();
+        ambientOcclusionUpdateSet = new HashSet<>();
+        greenlitAmbientOcclusionList = new LinkedList<>();
 
         for(ClientEntityType type : ClientEntityType.values()) {
             typeEntityListMap.put(type, new LinkedList<>());
@@ -73,17 +77,33 @@ public class ClientEntityManager {
 
     public void tickEntities(float delta) {
         selectableEntities.clear();
+        ambientOcclusionUpdateSet.clear();
+        greenlitAmbientOcclusionList.clear();
 
         // poll addition
         while(!additionQueue.isEmpty()) {
             ClientEntity toAdd = additionQueue.poll();
 
-            if(idEntityMap.containsKey(toAdd.entityId)) {
-                ExpoLogger.log("ILLEGAL ENTITY ID ? " + toAdd.entityId + " creation/now: " + toAdd.entityTimestamp + "/" + System.currentTimeMillis());
-            } else {
+            if(!idEntityMap.containsKey(toAdd.entityId)) { // Might cause some bugs in the future
                 depthEntityList.add(toAdd);
                 idEntityMap.put(toAdd.entityId, toAdd);
                 typeEntityListMap.get(toAdd.getEntityType()).add(toAdd);
+
+                if(toAdd.entityId >= 0 && toAdd.tileEntityTileArray != -1) {
+                    int chunkX = ExpoShared.posToChunk(toAdd.serverPosX);
+                    int chunkY = ExpoShared.posToChunk(toAdd.serverPosY);
+                    ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
+                    int newAmount = chunk.attachTileEntity(toAdd.entityId, toAdd.tileEntityTileArray);
+
+                    if(!chunk.ranAmbientOcclusion) {
+                        if(newAmount == chunk.getInitializationTileCount()) {
+                            greenlitAmbientOcclusionList.add(chunk);
+                            chunk.ranAmbientOcclusion = true;
+                        }
+                    } else {
+                        ambientOcclusionUpdateSet.add(new Pair<>(chunk, toAdd.tileEntityTileArray));
+                    }
+                }
 
                 toAdd.onCreation();
             }
@@ -112,8 +132,33 @@ public class ClientEntityManager {
                 idEntityMap.remove(entityId);
                 typeEntityListMap.get(entity.getEntityType()).remove(entity);
 
+                if(entity.entityId >= 0 && entity.tileEntityTileArray != -1) {
+                    int chunkX = ExpoShared.posToChunk(entity.serverPosX);
+                    int chunkY = ExpoShared.posToChunk(entity.serverPosY);
+                    ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
+                    chunk.detachTileEntity(entity.tileEntityTileArray);
+
+                    if(chunk.ranAmbientOcclusion && chunk.visibleLogic) {
+                        ambientOcclusionUpdateSet.add(new Pair<>(chunk, entity.tileEntityTileArray));
+                    }
+                }
+
                 entity.onDeletion();
             }
+        }
+
+        for(ClientChunk chunk : greenlitAmbientOcclusionList) {
+            chunk.generateAmbientOcclusion(false);
+        }
+
+        if(!ambientOcclusionUpdateSet.isEmpty()) {
+            for(var pair : ambientOcclusionUpdateSet) {
+                pair.key.updateAmbientOcclusion(pair.value, true, false);
+            }
+        }
+
+        for(ClientChunk chunk : ClientChunkGrid.get().getAllClientChunks()) {
+            chunk.completeAO();
         }
 
         depthEntityList.sort(depthSorter);
@@ -351,22 +396,22 @@ public class ClientEntityManager {
     public ClientEntity createFromPacket(P2_EntityCreate p) {
         ClientEntity e = ClientEntityType.typeToClientEntity(p.entityType.ENTITY_ID);
         e.entityId = p.entityId;
+        e.tileEntityTileArray = p.tileArray;
         e.serverPosX = p.serverPosX;
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
-        e.entityTimestamp = p.timestamp;
         return e;
     }
 
     public ClientEntity createFromPacketAdvanced(P29_EntityCreateAdvanced p) {
         ClientEntity e = ClientEntityType.typeToClientEntity(p.entityType.ENTITY_ID);
         e.entityId = p.entityId;
+        e.tileEntityTileArray = p.tileArray;
         e.serverPosX = p.serverPosX;
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
-        e.entityTimestamp = p.timestamp;
         e.applyPacketPayload(p.payload);
         return e;
     }

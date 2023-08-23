@@ -1,7 +1,6 @@
 package dev.michey.expo.server.util;
 
 import com.esotericsoftware.kryonet.Connection;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
@@ -92,7 +91,7 @@ public class PacketReceiver {
                 }
             }
 
-            if(list.size() > 0) {
+            if(!list.isEmpty()) {
                 return new PacketReceiver(false, null, null, list);
             } else {
                 return null;
@@ -121,7 +120,7 @@ public class PacketReceiver {
                 }
             }
 
-            if(list.size() > 0) {
+            if(!list.isEmpty()) {
                 return new PacketReceiver(false, null, null, list);
             } else {
                 return null;

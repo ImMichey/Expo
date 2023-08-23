@@ -3,6 +3,8 @@ package dev.michey.expo.logic.world.chunk;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
@@ -12,6 +14,7 @@ import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,6 +59,10 @@ public class ClientChunkGrid {
         INSTANCE = this;
     }
 
+    public Collection<ClientChunk> getAllClientChunks() {
+        return clientChunkMap.values();
+    }
+
     public void applyGenSettings(WorldGenNoiseSettings noiseSettings, HashMap<BiomeType, float[]> biomeDataMap, int worldSeed) {
         this.noiseSettings = noiseSettings;
         this.biomeDataMap = biomeDataMap;
@@ -77,6 +84,16 @@ public class ClientChunkGrid {
                 npp.noiseWrapper.applyTo(noise);
                 noisePostProcessorMap.add(new Pair<>(npp, noise));
                 ExpoLogger.log(npp.noiseWrapper.name + ": " + noise.getSeed());
+            }
+        }
+    }
+
+    public void runPostAmbientOcclusion() {
+        for(ClientChunk chunk : clientChunkMap.values()) {
+            if(!chunk.ranAmbientOcclusion && chunk.getInitializationTileCount() == 0 && chunk.hasGridNeighbours()) {
+                chunk.ranAmbientOcclusion = true;
+                chunk.generateAmbientOcclusion(true);
+                ExpoLogger.log("Der käse " + chunk.chunkX + "," + chunk.chunkY + " ");
             }
         }
     }
@@ -104,16 +121,21 @@ public class ClientChunkGrid {
         }
 
         interpolation = Interpolation.smooth2.apply(waveDelta) * WAVE_STRENGTH;
+        ExpoClientContainer.get().getClientWorld().updateChunksToDraw();
     }
 
     public void updateChunkData(P11_ChunkData p) {
         String key = p.chunkX + "," + p.chunkY;
         ClientChunk existing = clientChunkMap.get(key);
 
+        if(p.chunkX == -386 && p.chunkY == 106) {
+            ExpoLogger.log("DEBUG :: " + existing);
+        }
+
         if(existing == null) {
-            clientChunkMap.put(key, new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.grassColor, p.ambientOcclusion, p.tileEntities));
+            clientChunkMap.put(key, new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.grassColor, p.tileEntityCount));
         } else {
-            existing.update(p.biomes, p.individualTileData, p.grassColor, p.ambientOcclusion, p.tileEntities);
+            existing.update(p.biomes, p.individualTileData, p.grassColor, p.tileEntityCount);
         }
     }
 
