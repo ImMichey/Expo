@@ -37,6 +37,8 @@ import org.lwjgl.glfw.GLFW;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -72,7 +74,26 @@ public class Expo implements ApplicationListener {
 		} else if(gameSettings.zoomLevel == 2) {
 			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.25f;
 		}
-		if(!DEV_MODE) ExpoLogger.enableDualLogging("clientlogs");
+		if(!DEV_MODE) {
+			ExpoLogger.enableDualLogging("clientlogs");
+		} else {
+			// Delete temporary ImGui Java files in OS temp folder on each startup to fix pollution
+			File[] list = Paths.get(System.getProperty("java.io.tmpdir")).toFile().listFiles();
+
+			if(list != null) {
+				for(File f : list) {
+					if(!f.isFile() && f.getName().startsWith("imgui-java-natives_")) {
+						File dllFile = new File(f.getAbsolutePath() + File.separator + "imgui-java64.dll");
+						boolean fileDeletion = dllFile.delete();
+						boolean folderDeletion = f.delete();
+
+						if(fileDeletion && folderDeletion) {
+							ExpoLogger.log("Deleted ImGui debug dll files in temp folder: " + dllFile.getPath());
+						}
+					}
+				}
+			}
+		}
 		inactiveScreens = new HashMap<>();
 		this.gameSettings = gameSettings;
 	}
