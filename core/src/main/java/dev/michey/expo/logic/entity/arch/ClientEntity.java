@@ -20,6 +20,8 @@ import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 
+import java.util.LinkedList;
+
 import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
@@ -321,6 +323,10 @@ public abstract class ClientEntity {
         finalTextureStartY = other.finalTextureStartY;
         finalTextureCenterX = other.finalTextureCenterX;
         finalTextureCenterY = other.finalTextureCenterY;
+    }
+
+    public ClientEntity[] getNeighbouringTileEntitiesNESW() {
+        return chunkGrid().getChunk(ExpoShared.posToChunk(serverPosX), ExpoShared.posToChunk(serverPosY)).getNeighbouringEntitiesNESW(tileEntityTileArray);
     }
 
     public void spawnDamageIndicator(int damage, float posX, float posY, Vector2 dir) {

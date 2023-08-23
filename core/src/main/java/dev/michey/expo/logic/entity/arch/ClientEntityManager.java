@@ -138,7 +138,7 @@ public class ClientEntityManager {
                     ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
                     chunk.detachTileEntity(entity.tileEntityTileArray);
 
-                    if(chunk.ranAmbientOcclusion && chunk.visibleLogic) {
+                    if(chunk.visibleLogic && (chunk.ranAmbientOcclusion || chunk.getInitializationTileCount() == 0)) {
                         ambientOcclusionUpdateSet.add(new Pair<>(chunk, entity.tileEntityTileArray));
                     }
                 }
@@ -443,6 +443,13 @@ public class ClientEntityManager {
             int minus = dyn.emulatingType.TILE_ID_DATA[0];
             if(dyn.layerIds.length == 1 && (dyn.layerIds[0] - minus) == 0) return null;
 
+            ClientEntity[] entities = dyn.getNeighbouringTileEntitiesNESW();
+
+            if(entities[0] != null && entities[1] != null && entities[2] != null && entities[3] != null) {
+                return null;
+            }
+
+            /*
             if(dyn.layerIds.length == 4) {
                 for(int id : dyn.layerIds) {
                     if(id >= (minus + 18) && id <= (minus + 21)) {
@@ -450,6 +457,7 @@ public class ClientEntityManager {
                     }
                 }
             }
+            */
         }
 
         ClientPlayer player = ClientPlayer.getLocalPlayer();

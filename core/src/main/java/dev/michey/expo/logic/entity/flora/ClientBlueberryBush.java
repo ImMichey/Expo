@@ -30,6 +30,8 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
         updateTextureBounds(16, 16, 1, 1);
         interactionPointArray = generateInteractionArray(3);
         contactAnimator.enableSquish = false;
+        contactAnimator.STRENGTH = 2.0f;
+        contactAnimator.STRENGTH_DECREASE = 0.4f;
     }
 
     @Override

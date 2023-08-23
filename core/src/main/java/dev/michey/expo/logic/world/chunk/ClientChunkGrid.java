@@ -88,16 +88,6 @@ public class ClientChunkGrid {
         }
     }
 
-    public void runPostAmbientOcclusion() {
-        for(ClientChunk chunk : clientChunkMap.values()) {
-            if(!chunk.ranAmbientOcclusion && chunk.getInitializationTileCount() == 0 && chunk.hasGridNeighbours()) {
-                chunk.ranAmbientOcclusion = true;
-                chunk.generateAmbientOcclusion(true);
-                ExpoLogger.log("Der käse " + chunk.chunkX + "," + chunk.chunkY + " ");
-            }
-        }
-    }
-
     public void tick(float delta) {
         float WAVE_SPEED = 0.75f;
         float WAVE_COOLDOWN_IN = 0.1f;
@@ -127,10 +117,6 @@ public class ClientChunkGrid {
     public void updateChunkData(P11_ChunkData p) {
         String key = p.chunkX + "," + p.chunkY;
         ClientChunk existing = clientChunkMap.get(key);
-
-        if(p.chunkX == -386 && p.chunkY == 106) {
-            ExpoLogger.log("DEBUG :: " + existing);
-        }
 
         if(existing == null) {
             clientChunkMap.put(key, new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.grassColor, p.tileEntityCount));

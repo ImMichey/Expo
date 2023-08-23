@@ -24,14 +24,23 @@ public class ItemLogic {
     public float attackKnockbackDuration;
 
     public ItemLogic(JSONObject object) {
-        maxStackSize = object.getInt("stackSize");
         String _toolType = object.getString("toolType");
 
         if(!_toolType.equals("ITEM")) {
             toolType = ToolType.valueOf(_toolType);
         }
 
-        durability = object.getInt("durability");
+        if(object.has("stackSize")) {
+            maxStackSize = object.getInt("stackSize");
+        } else {
+            maxStackSize = 100;
+        }
+
+        if(object.has("durability")) {
+            durability = object.getInt("durability");
+        } else {
+            durability = -1;
+        }
 
         if(object.has("foodData")) {
             foodData = new FoodData(object.getJSONObject("foodData"));

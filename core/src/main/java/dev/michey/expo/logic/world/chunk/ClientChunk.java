@@ -157,7 +157,9 @@ public class ClientChunk {
 
         ClientChunk existingChunk = ClientChunkGrid.get().getChunk(_chunkX, _chunkY);
         if(existingChunk == null) return null;
-        if(existingChunk.tileEntityGrid == null) return null;
+
+        // Might break something in the future, not sure. Commented out to prevent a bug when updating broken 3D tiles.
+        // if(existingChunk.tileEntityGrid == null) return null;
 
         return new Pair<>(existingChunk, y * ROW_TILES + x);
     }
@@ -223,9 +225,6 @@ public class ClientChunk {
     }
 
     public void updateAmbientOcclusion(int tileArray, boolean neighbours, boolean ignoreNullGrid) {
-        if(chunkX == -235 && chunkY == 105) {
-            ExpoLogger.log("poggers");
-        }
         if(!ignoreNullGrid) {
             if(tileEntityGrid == null) return;
         }
@@ -281,10 +280,6 @@ public class ClientChunk {
             } else {
                 ambientOcclusion[tileArray][3] = 0.0f;
             }
-
-            if(chunkX == -235 && chunkY == 105) {
-                ExpoLogger.log(n + " " + e + " " + s + " " + w + " " + ne + " " + se + " " + sw + " " + nw);
-            }
         }
 
         // Do neighbours
@@ -298,6 +293,18 @@ public class ClientChunk {
     private static final ClientEntity[] iterationArray = new ClientEntity[8];
     private static final LinkedList<Pair<ClientChunk, Integer>> neighbourList = new LinkedList<>();
 
+    public ClientEntity[] getNeighbouringEntitiesNESW(int tileArray) {
+        iterationArray[0] = getTileEntityAt(tileArray, 0, 1);
+        iterationArray[1] = getTileEntityAt(tileArray, 1, 0);
+        iterationArray[2] = getTileEntityAt(tileArray, 0, -1);
+        iterationArray[3] = getTileEntityAt(tileArray, -1, 0);
+        iterationArray[4] = null;
+        iterationArray[5] = null;
+        iterationArray[6] = null;
+        iterationArray[7] = null;
+        return iterationArray;
+    }
+
     public ClientEntity[] getNeighbouringEntities(int tileArray) {
         iterationArray[0] = getTileEntityAt(tileArray, 0, 1);       // N
         iterationArray[1] = getTileEntityAt(tileArray, 1, 0);       // E
@@ -309,19 +316,6 @@ public class ClientChunk {
         iterationArray[7] = getTileEntityAt(tileArray, -1, 1);      // NW
 
         return iterationArray;
-    }
-
-    public void generateAmbientOcclusionBorders() {
-        // ignores tileEntityGrid
-        for(int i = 0; i < ROW_TILES; i++) {
-            getAmbientOcclusionAt(i);
-            getAmbientOcclusionAt(ROW_TILES * ROW_TILES - i - 1);
-        }
-
-        for(int i = 0; i < ROW_TILES - 2; i++) {
-            getAmbientOcclusionAt(ROW_TILES + i * ROW_TILES);
-            getAmbientOcclusionAt(ROW_TILES + i * ROW_TILES + ROW_TILES - 1);
-        }
     }
 
     public void generateAmbientOcclusion(boolean skipGrid) {

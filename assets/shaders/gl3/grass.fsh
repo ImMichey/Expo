@@ -33,7 +33,7 @@ void main() {
         }
 
         if(ambientOcclusion > 0.0 && tileColor.a > 0.0) {
-            float factor = 5.25; // Ambient Occlusion alpha
+            float factor = 0.25; // Ambient Occlusion alpha
             float _r = tileColor.r - (tileColor.r * data.a * factor);
             float _g = tileColor.g - (tileColor.g * data.a * factor);
             float _b = tileColor.b - (tileColor.b * data.a * factor);

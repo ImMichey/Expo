@@ -19,8 +19,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -43,8 +41,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "foodData": {
                     "hungerRestore": 5.0,
@@ -204,8 +200,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -250,8 +244,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "TILE",
@@ -274,8 +266,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "TILE",
@@ -298,8 +288,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "TILE",
@@ -353,8 +341,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -377,8 +363,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "foodData": {
                     "hungerRestore": 15.0,
@@ -405,8 +389,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -429,8 +411,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -453,8 +433,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -477,8 +455,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -501,8 +477,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "foodData": {
                     "hungerRestore": 6.0,
@@ -529,8 +503,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "foodData": {
                     "hungerRestore": 8.0,
@@ -557,9 +529,7 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "toolType": "ITEM",
-                "durability": -1
+                "toolType": "ITEM"
             }
         },
         {
@@ -581,8 +551,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "UNRESTRICTED",
@@ -639,8 +607,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -663,8 +629,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "TILE",
@@ -695,8 +659,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM"
             }
         },
@@ -745,8 +707,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "TILE",
@@ -770,8 +730,6 @@
                 }
             },
             "logic": {
-                "stackSize": 100,
-                "durability": -1,
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "TILE",
