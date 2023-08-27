@@ -51,9 +51,9 @@ public class ClientWorld {
 
     /** Time */
     public float worldTime;
-    public final float MAX_SHADOW_X = 1.8f;
+    public final float MAX_SHADOW_X = 1.65f;
     public final float MIN_SHADOW_Y = 0.6f;
-    public final float MAX_SHADOW_Y = 1.5f;
+    public final float MAX_SHADOW_Y = 1.4f;
     public final float SHADOW_ALPHA_TRANSITION_DURATION = 3.0f;
     public final Interpolation SHADOW_ALPHA_INTERPOLATION = Interpolation.fade;
     public float worldSunShadowX = MAX_SHADOW_X;
@@ -918,7 +918,7 @@ public class ClientWorld {
         for(ClientChunk chunk : drawChunks) {
             if(chunk != null && chunk.visibleRender) {
                 for(int k = 0; k < chunk.biomes.length; k++) {
-                    boolean isWaterTile = TileLayerType.isWater(chunk.dynamicTiles[k][1].emulatingType);
+                    boolean isWaterTile = TileLayerType.isWater(chunk.dynamicTiles[k][2].emulatingType);
 
                     if(isWaterTile) {
                         int tx = k % ROW_TILES;
@@ -929,10 +929,10 @@ public class ClientWorld {
                         float normX = (wx % textureSize) / textureSize;
                         float normY = (wy % textureSize) / textureSize;
 
-                        if(chunk.layer1Displacement[k] != null) {
+                        if(chunk.waterDisplacement[k] != null && chunk.dynamicTiles[k][2].texture.length > 1) {
                             float interpolated = clientChunkGrid.interpolation;
 
-                            var values = chunk.layer1Displacement[k];
+                            var values = chunk.waterDisplacement[k];
 
                             {
                                 float x0 = interpolated * (int) values[0].key;
@@ -946,6 +946,7 @@ public class ClientWorld {
                                         _normX + uvAdjustedHalf - x0 * uvAdjustedHalf * halfTileInverse,
                                         _normY + uvAdjustedHalf - y0 * uvAdjustedHalf * halfTileInverse);
                             }
+
 
                             {
                                 float x1 = interpolated * (int) values[1].key;
@@ -1028,8 +1029,11 @@ public class ClientWorld {
                             color = chunk.grassColor[i];
                         }
 
-                        l1.draw(rc, chunk.layer1Displacement == null ? null : chunk.layer1Displacement[i], color, chunk.ambientOcclusion[i]);
-                        l2.draw(rc, null, 0f, chunk.ambientOcclusion[i]);
+                        if(!ExpoAssets.get().getTileSheet().isFullTile(l2.layerIds[0])) {
+                            l1.draw(rc, null, color, chunk.ambientOcclusion[i]);
+                        }
+
+                        l2.draw(rc, chunk.waterDisplacement == null ? null : chunk.waterDisplacement[i], 0f, chunk.ambientOcclusion[i]);
                     }
                 }
             }

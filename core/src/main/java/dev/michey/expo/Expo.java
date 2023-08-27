@@ -159,6 +159,8 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_oak_plank", false, 0, 288);
 			ExpoAssets.get().slice("tile_soil_farmland", false, 0, 320);
 			ExpoAssets.get().slice("tile_dirt", false, 0, 352);
+			ExpoAssets.get().slice("tile_water_sandy", false, 0, 384);
+			ExpoAssets.get().slice("tile_oakplankwall", false, 0, 416);
 		}
 
 		boolean patch = false;

@@ -11,12 +11,14 @@ public enum TileLayerType {
     DESERT(4,           new int[] {23, 44},     new String[] {"DESERT", "SAND"}),
     GRASS(5,            new int[] {1, 22},      new String[] {"GRASS", "FOREST"}),
     FOREST(6,           new int[] {112, 133},   new String[] {"FOREST", "GRASS"}),
-    WATER(7,            new int[] {46, 67},     new String[] {"WATER"}),
-    WATER_DEEP(8,       new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER"}),
+    WATER(7,            new int[] {46, 67},     new String[] {"WATER", "WATER_SANDY"}),
+    WATER_DEEP(8,       new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER", "WATER_SANDY"}),
     ROCK(9,             new int[] {156, 177},   new String[] {"ROCK"}),
     SOIL_FARMLAND(10,   new int[] {178, 199},   new String[] {"SOIL_FARMLAND"}),
     OAK_PLANK(11,       new int[] {200, 221},   new String[] {"OAK_PLANK"}),
     DIRT(12,            new int[] {222, 243},   new String[] {"DIRT"}),
+    WATER_SANDY(13,     new int[] {244, 265},   new String[] {"WATER_SANDY", "WATER"}),
+    OAKPLANKWALL(14,  new int[] {266, 287},   new String[] {"OAKPLANKWALL"}),
     ;
 
     public final int SERIALIZATION_ID;
@@ -29,6 +31,7 @@ public enum TileLayerType {
         ELEVATION_TEXTURE_MAP = new HashMap<>();
         ELEVATION_TEXTURE_MAP.put(ROCK, "tile_rock_elevation");
         ELEVATION_TEXTURE_MAP.put(DIRT, "tile_dirt_elevation");
+        ELEVATION_TEXTURE_MAP.put(OAKPLANKWALL, "tile_oakplankwall_elevation");
     }
 
     TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA) {
@@ -51,6 +54,8 @@ public enum TileLayerType {
             case 10 -> SOIL_FARMLAND;
             case 11 -> OAK_PLANK;
             case 12 -> DIRT;
+            case 13 -> WATER_SANDY;
+            case 14 -> OAKPLANKWALL;
             default -> EMPTY;
         };
     }
@@ -80,7 +85,14 @@ public enum TileLayerType {
 
     public static boolean isWater(TileLayerType type) {
         return switch (type) {
-            case WATER, WATER_DEEP -> true;
+            case WATER, WATER_DEEP, WATER_SANDY -> true;
+            default -> false;
+        };
+    }
+
+    public static boolean isWaterBiome(BiomeType type) {
+        return switch (type) {
+            case OCEAN, OCEAN_DEEP, PUDDLE, LAKE, RIVER -> true;
             default -> false;
         };
     }
@@ -103,11 +115,11 @@ public enum TileLayerType {
     public static TileLayerType biomeToLayer1(BiomeType type) {
         return switch (type) {
             case FOREST, DENSE_FOREST, PLAINS, WHEAT_FIELDS -> FOREST;
-            //case PLAINS, WHEAT_FIELDS -> GRASS;
+            case LAKE, RIVER, PUDDLE -> SOIL;
+            case OCEAN, OCEAN_DEEP, BEACH -> SAND;
             case DESERT -> DESERT;
-            case BEACH -> SAND;
-            case LAKE, RIVER, OCEAN, PUDDLE -> WATER;
-            case OCEAN_DEEP -> WATER_DEEP;
+            //case LAKE, RIVER, OCEAN, PUDDLE -> WATER;
+            //case OCEAN_DEEP -> WATER_DEEP;
             case ROCK -> ROCK;
             case DIRT -> DIRT;
             default -> EMPTY;
@@ -115,7 +127,12 @@ public enum TileLayerType {
     }
 
     public static TileLayerType biomeToLayer2(BiomeType type) {
-        return EMPTY;
+        return switch (type) {
+            case OCEAN -> WATER_SANDY;
+            case LAKE, RIVER, PUDDLE -> WATER;
+            case OCEAN_DEEP -> WATER_DEEP;
+            default -> EMPTY;
+        };
     }
 
     public static TileLayerType biomeToLayer(BiomeType type, int layer) {

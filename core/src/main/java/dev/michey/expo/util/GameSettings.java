@@ -15,6 +15,7 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public class GameSettings {
 
     private static GameSettings INSTANCE;
+    private final String SETTINGS_FILE_NAME = "settings.json";
 
     // Window variables
     public int preferredWidth = 1280;
@@ -50,7 +51,7 @@ public class GameSettings {
     public int lightQuality = 2;
 
     public GameSettings() {
-        var result = ExpoFileCreator.createFileStructure(new ExpoFile(ExpoFile.FileType.CONFIG, "settings.json", asJson()));
+        var result = ExpoFileCreator.createFileStructure(new ExpoFile(ExpoFile.FileType.CONFIG, SETTINGS_FILE_NAME, asJson()));
 
         if(!result.key) {
             log("Failed to create GameSettings file.");
@@ -69,7 +70,7 @@ public class GameSettings {
         ExpoLogger.log("Flushing GameSettings updates to file.");
 
         try {
-            Files.writeString(new File(ExpoLogger.getLocalPath() + File.separator + "settings.json").toPath(), asJson().toString(4), StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(new File(ExpoLogger.getLocalPath() + File.separator + SETTINGS_FILE_NAME).toPath(), asJson().toString(4), StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }

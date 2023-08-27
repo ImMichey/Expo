@@ -175,10 +175,12 @@ public class ExpoClientContainer {
             client.getPacketListener().evaluatePackets();
         }
 
+        /*
         if(Gdx.input.isKeyJustPressed(Input.Keys.F9) && DEV_MODE && ExpoServerContainer.get() != null) {
             GameConsole.get().addConsoleMessage(new ConsoleMessage("/quit", true));
             GameConsole.get().addConsoleMessage(new ConsoleMessage("/world dev-world-" + System.currentTimeMillis(), true));
         }
+        */
     }
 
     public String readableFileSize(long size) {

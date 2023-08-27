@@ -76,53 +76,6 @@ public class ServerTile {
         */
     }
 
-    /*
-    public void generateAO() {
-        if(hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE)) {
-            Arrays.fill(ambientOcclusion, 1.0f);
-            return;
-        }
-
-        ServerTile[] neighbours = getNeighbouringTiles();
-        boolean n = neighbours[5] != null && neighbours[5].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-        boolean e = neighbours[3] != null && neighbours[3].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-        boolean s = neighbours[1] != null && neighbours[1].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-        boolean w = neighbours[7] != null && neighbours[7].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-        boolean ne = neighbours[4] != null && neighbours[4].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-        boolean se = neighbours[2] != null && neighbours[2].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-        boolean sw = neighbours[0] != null && neighbours[0].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-        boolean nw = neighbours[6] != null && neighbours[6].hasTileBasedEntityB(ServerEntityType.DYNAMIC_3D_TILE);
-
-        // [0] = Bottom Left
-        if(s || w || sw) {
-            ambientOcclusion[0] = 1.0f;
-        } else {
-            ambientOcclusion[0] = 0.0f;
-        }
-
-        // [1] = Top Left
-        if(n || w || nw) {
-            ambientOcclusion[1] = 1.0f;
-        } else {
-            ambientOcclusion[1] = 0.0f;
-        }
-
-        // [2] = Top Right
-        if(n || e || ne) {
-            ambientOcclusion[2] = 1.0f;
-        } else {
-            ambientOcclusion[2] = 0.0f;
-        }
-
-        // [3] = Bottom Right
-        if(s || e || se) {
-            ambientOcclusion[3] = 1.0f;
-        } else {
-            ambientOcclusion[3] = 0.0f;
-        }
-    }
-    */
-
     public void updateLayer1(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer1(biome) : type;
         dynamicTileParts[1].update(use);
@@ -134,7 +87,7 @@ public class ServerTile {
             dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
         }
 
-        if(use == TileLayerType.ROCK || use == TileLayerType.DIRT) {
+        if(use == TileLayerType.ROCK || use == TileLayerType.DIRT || use == TileLayerType.OAKPLANKWALL) {
             int x = tileArray % ROW_TILES;
             int y = tileArray / ROW_TILES;
 
@@ -194,7 +147,7 @@ public class ServerTile {
         int[] td = dynamicTileParts[1].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[1].layerIds;
 
-        if(dynamicTileParts[1].emulatingType != TileLayerType.ROCK && dynamicTileParts[1].emulatingType != TileLayerType.DIRT) {
+        if(dynamicTileParts[1].emulatingType != TileLayerType.ROCK && dynamicTileParts[1].emulatingType != TileLayerType.DIRT && dynamicTileParts[1].emulatingType != TileLayerType.OAKPLANKWALL) {
             if(td.length == 1) {
                 dynamicTileParts[1].setTileIds(new int[] {td[0]});
             } else {
@@ -207,7 +160,18 @@ public class ServerTile {
 
     /** This method is called when an adjacent layer 2 tile has been updated and this tile potentially needs to adjust its texture. */
     public boolean updateLayer2Adjacent() {
-        return false;
+        int[] td = dynamicTileParts[2].emulatingType.TILE_ID_DATA;
+        int[] old = dynamicTileParts[2].layerIds;
+
+        if(dynamicTileParts[2].emulatingType != TileLayerType.ROCK && dynamicTileParts[2].emulatingType != TileLayerType.DIRT) {
+            if(td.length == 1) {
+                dynamicTileParts[2].setTileIds(new int[] {td[0]});
+            } else {
+                dynamicTileParts[2].setTileIds(runTextureGrab(td[0], 2));
+            }
+        }
+
+        return !Arrays.equals(old, dynamicTileParts[2].layerIds);
     }
 
     public static int[] runTextureGrab(int minTile, int[] indices) {

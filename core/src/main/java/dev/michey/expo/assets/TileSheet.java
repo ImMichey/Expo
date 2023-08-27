@@ -36,6 +36,8 @@ public class TileSheet {
         multiEntry("tile_soil_farmland", 22);
         multiEntry("tile_oak_plank", 22);
         multiEntry("tile_dirt", 22);
+        multiEntry("tile_water_sandy", 22);
+        multiEntry("tile_oakplankwall", 22);
 
         // Variations
         variationEntry("tile_soil", 0, 2);

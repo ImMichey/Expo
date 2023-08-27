@@ -22,7 +22,7 @@ public class ExpoFileCreator {
         for(int i = 0; i < expoFiles.length; i++) {
             ExpoFile ef = expoFiles[i];
             int oldSuccessful = successful;
-            File f = new File(ef.path == null ? (((basePath == null || basePath.length() == 0) ? "" : (basePath + File.separator)) + ef.name) : ef.path);
+            File f = new File(ef.path == null ? (((basePath == null || basePath.isEmpty()) ? "" : (basePath + File.separator)) + ef.name) : ef.path);
             log("    " + f.getAbsolutePath());
 
             if(ef.fileType == ExpoFile.FileType.FOLDER) {

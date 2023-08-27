@@ -737,6 +737,45 @@
                     "floorType": "OAK_PLANK"
                 }
             }
+        },
+        {
+            "identifier": "item_birch_log",
+            "id": 30,
+            "displayName": "Birch Log",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_birch_log"
+                },
+                "held": {
+                    "texture": "item_birch_log"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_oak_plank_wall",
+            "id": 31,
+            "displayName": "Oak Plank Wall",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_oak_plank_wall"
+                },
+                "held": {
+                    "texture": "item_oak_plank_wall"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_1",
+                    "floorType": "OAK_PLANK_WALL"
+                }
+            }
         }
     ]
 }

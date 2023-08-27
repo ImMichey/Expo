@@ -33,6 +33,9 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
         } else if(emulatingType == TileLayerType.DIRT) {
             setDamageableWith(ToolType.SHOVEL);
             health = 50.0f;
+        } else if(emulatingType == TileLayerType.OAKPLANKWALL) {
+            setDamageableWith(ToolType.AXE);
+            health = 50.0f;
         }
     }
 

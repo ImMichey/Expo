@@ -40,12 +40,12 @@ public class ClientDynamicTilePart {
 
     public void generateTextures() {
         int size = layerIds.length;
-        if(emulatingType != TileLayerType.WATER && size == 4) {
+        if((emulatingType != TileLayerType.WATER && emulatingType != TileLayerType.WATER_SANDY) && size == 4) {
             size = 1;
         }
         texture = new TextureRegion[size];
 
-        if(emulatingType == TileLayerType.WATER) {
+        if(emulatingType == TileLayerType.WATER || emulatingType == TileLayerType.WATER_SANDY) {
             for(int i = 0; i < texture.length; i++) {
                 texture[i] = ExpoAssets.get().getTileSheet().getTilesetTextureMap().get(layerIds[i]);
             }

@@ -859,14 +859,6 @@ public class PolygonTileBatch implements PolygonBatch {
             triangles[triangleIndex++] = (short)startVertex;
         }
 
-        /*
-        triangles[triangleIndex++] = (short)startVertex;
-        triangles[triangleIndex++] = (short)(startVertex + 1);
-        triangles[triangleIndex++] = (short)(startVertex + 2);
-        triangles[triangleIndex++] = (short)(startVertex + 2);
-        triangles[triangleIndex++] = (short)(startVertex + 3);
-        triangles[triangleIndex++] = (short)startVertex;
-         */
         this.triangleIndex = triangleIndex;
 
         final float fx2 = x + width;

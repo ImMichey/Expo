@@ -27,6 +27,7 @@ foliage/entity_oak_tree/entity_large_tree_leaves.png
 foliage/entity_oak_tree/eot_leaves.png
 foliage/entity_oak_tree/eot_leaves_big.png
 foliage/entity_ancient_tree/entity_ancient_tree_leaves.png
+foliage/entity_birch_tree/birchtreeleaves.png
 water/square16x16.png
 foliage/entity_blueberrybush/ebbb0.png
 foliage/entity_blueberrybush/ebbb1.png

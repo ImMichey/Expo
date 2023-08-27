@@ -13,7 +13,7 @@ public enum BiomeType {
     DESERT(8, "Desert", new float[] {243f/255f, 232f/255f, 212f/255f, 1.0f}),
     DENSE_FOREST(9, "Dense Forest", new float[] {57f/255f, 113f/255f, 35f/255f, 1.0f}),
     ROCK(10, "Rock", new float[] {71f/255f, 71f/255f, 76f/255f, 1.0f}),
-    WHEAT_FIELDS(11, "WheatFields", new float[] {140f/255f, 205f/255f, 76f/255f, 1.0f}),
+    WHEAT_FIELDS(11, "Wheat Fields", new float[] {140f/255f, 205f/255f, 76f/255f, 1.0f}),
     PUDDLE(12, "Puddle", new float[] {88f/255f, 158f/255f, 220f/255f, 1.0f}),
     DIRT(13, "Dirt", new float[] {78f/255f, 67f/255f, 55f/255f, 1.0f}),
     ;
