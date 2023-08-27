@@ -264,6 +264,8 @@ public class ExpoClientPacketReader {
                 int amount = p.itemAmounts[i];
                 ExpoClientContainer.get().getPlayerUI().addPickupLine(id, amount);
             }
+
+            ClientPlayer.getLocalPlayer().playPickupAnimation();
         } else if(o instanceof P37_EntityTeleport p) {
             ClientEntity entity = entityFromId(p.entityId);
 
