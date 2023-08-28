@@ -217,7 +217,7 @@ public class GameConsole {
 
     private void generateFonts() {
         //FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/JetBrainsMono-Bold.ttf"));
-        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/m5x7.ttf"));
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Habbo.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
         param.size = 16;
         consoleFont = gen.generateFont(param);

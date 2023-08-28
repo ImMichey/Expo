@@ -175,7 +175,7 @@ public class RenderContext {
         globalGlyph = new GlyphLayout();
 
         {
-            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/m5x7.ttf"));
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Habbo.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             m5x7_all = new BitmapFont[5];
             m5x7_border_all = new BitmapFont[5];
