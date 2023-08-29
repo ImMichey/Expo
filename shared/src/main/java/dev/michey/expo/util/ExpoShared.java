@@ -71,6 +71,9 @@ public class ExpoShared {
     public static final int CRAFTING_CATEGORY_TOOLS = 1;
     public static final int CRAFTING_CATEGORY_FOOD = 2;
 
+    public static final int PLAYER_ANIMATION_ID_PICKUP = 0;
+    public static final int PLAYER_ANIMATION_ID_PLACE = 1;
+
     /** Global random */
     public static final Random RANDOM = new Random();
 
@@ -159,6 +162,12 @@ public class ExpoShared {
         return m || p;
     }
 
+
+    // Per float array:
+    //  [0] = xStart
+    //  [1] = yStart
+    //  [2] = xEnd
+    //  [3] = yEnd
     public static boolean overlap(float[] vertices1, float[] vertices2) {
         float drawStartX = vertices2[0];
         float drawStartY = vertices2[1];

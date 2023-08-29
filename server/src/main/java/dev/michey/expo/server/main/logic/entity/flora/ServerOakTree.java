@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.entity.flora;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -14,7 +15,10 @@ import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.SpawnItem;
+import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
+
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
@@ -97,10 +101,24 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                 if(variant == 4) {
                     reach = 120;
                 }
+                float factor = fallingDirectionRight ? 1 : -1;
 
-                spawnItemsAlongLine(posX + (20 * (fallingDirectionRight ? 1 : -1)), posY, reach * (fallingDirectionRight ? 1 : -1), 0, 10.0f,
+                spawnItemsAlongLine(posX + (20 * factor), posY, reach * factor, 0, 10.0f,
                         new SpawnItem("item_oak_log", 2, 5),
                         new SpawnItem("item_acorn", 1, 2));
+
+                float _x1 = posX + 20f * factor;
+                float _x2 = posX + (20f + reach) * factor;
+                float x1 = factor == 1 ? _x1 : _x2;
+                float x2 = factor == 1 ? _x2 : _x1;
+
+                float[] damageAreaVertices = new float[] {
+                        x1,
+                        posY,
+                        x2,
+                        posY + 10f
+                };
+                applyDamageToArea(damageAreaVertices, 40, 32.0f, 0.25f, true, false);
             }
         }
     }

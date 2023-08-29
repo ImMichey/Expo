@@ -102,8 +102,18 @@ wood_cut_2.wav
 wood_cut_3.wav
 wood_cut_4.wav
 
+#wood_hit;true;0.9-1.1;SFX;2.0
+wood_hit_1.wav
+wood_hit_2.wav
+wood_hit_3.wav
+wood_hit_4.wav
+wood_hit_5.wav
+
 #wood_break;true;0.9-1.1;SFX;1.0
 wood_break_1.wav
+
+#wet_death;true;0.9-1.1;SFX;1.0
+wet_death_1.wav
 
 #inv_open;true;0.9-1.1;SFX;1.0
 inv_open_1.wav
@@ -113,6 +123,9 @@ click_1.wav
 
 #player_death;true;0.9-1.1;SFX;1.0
 player_death_1.wav
+
+#bonk;true;0.9-1.1;SFX;1.0
+bonk_1.wav
 
 #pop;true;0.9-1.1;SFX;1.0
 pop_1.wav

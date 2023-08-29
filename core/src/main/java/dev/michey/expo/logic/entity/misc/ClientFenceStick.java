@@ -94,7 +94,7 @@ public class ClientFenceStick extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        playEntitySound("wood_cut");
+        playEntitySound("wood_hit");
 
         new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                 .amount(3, 7)

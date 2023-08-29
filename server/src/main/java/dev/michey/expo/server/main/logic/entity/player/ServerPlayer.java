@@ -439,7 +439,6 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public void parsePunchPacket(P16_PlayerPunch p) {
         if(!punching) {
-
             punching = true;
             float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
             float attackRange = PLAYER_DEFAULT_RANGE;
@@ -567,7 +566,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 ServerPackets.p32ChunkDataSingle(tile, 0);
 
                 for(ServerTile st : tile.getNeighbouringTiles()) {
-                    if(st.updateLayer0Adjacent()) {
+                    if(st.updateLayer0Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
                         ServerPackets.p32ChunkDataSingle(st, 0);
                         if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
                     }
@@ -586,8 +585,27 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 ServerPackets.p32ChunkDataSingle(tile, 1);
 
                 for(ServerTile st : tile.getNeighbouringTiles()) {
-                    if(st.updateLayer1Adjacent()) {
+                    if(st.updateLayer1Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
                         ServerPackets.p32ChunkDataSingle(st, 1);
+                        if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                    }
+                }
+            }
+
+            { // Update inventory
+                useItemAmount(item);
+            }
+        } else if(p.type == PlaceType.FLOOR_2) {
+            // Update tile timestamp
+            chunk.lastTileUpdate = System.currentTimeMillis();
+
+            { // Update tile data
+                tile.updateLayer2(p.floorType.TILE_LAYER_TYPE);
+                ServerPackets.p32ChunkDataSingle(tile, 2);
+
+                for(ServerTile st : tile.getNeighbouringTiles()) {
+                    if(st.updateLayer2Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
+                        ServerPackets.p32ChunkDataSingle(st, 2);
                         if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
                     }
                 }
@@ -714,7 +732,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                         ServerPackets.p32ChunkDataSingle(tile, 0);
 
                         for(ServerTile neighbour : tile.getNeighbouringTiles()) {
-                            if(neighbour.updateLayer0Adjacent()) {
+                            if(neighbour.updateLayer0Adjacent(false)) {
                                 ServerPackets.p32ChunkDataSingle(neighbour, 0);
                                 if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
                             }
@@ -724,7 +742,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                         ServerPackets.p32ChunkDataSingle(tile, 1);
 
                         for(ServerTile neighbour : tile.getNeighbouringTiles()) {
-                            if(neighbour.updateLayer1Adjacent()) {
+                            if(neighbour.updateLayer1Adjacent(false)) {
                                 ServerPackets.p32ChunkDataSingle(neighbour, 1);
                                 if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
                             }

@@ -84,6 +84,7 @@ public class ServerItem extends ServerEntity implements PhysicsEntity {
 
                 if(result.changeResult.changePresent) {
                     ServerPackets.p24PositionalSound("pop", posX, posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
+                    ServerPackets.p38PlayerAnimation(closestPlayer.entityId, ExpoShared.PLAYER_ANIMATION_ID_PICKUP, PacketReceiver.whoCanSee(closestPlayer));
 
                     if(result.fullTransfer) {
                         ServerPackets.p36PlayerReceiveItem(new int[] {itemContainer.itemId}, new int[] {total}, PacketReceiver.player(closestPlayer));

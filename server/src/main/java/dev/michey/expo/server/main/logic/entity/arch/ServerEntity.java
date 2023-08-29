@@ -14,24 +14,22 @@ import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
-import dev.michey.expo.server.util.GenerationUtils;
-import dev.michey.expo.server.util.PacketReceiver;
-import dev.michey.expo.server.util.ServerPackets;
-import dev.michey.expo.server.util.SpawnItem;
+import dev.michey.expo.server.util.*;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public abstract class ServerEntity {
 
@@ -375,6 +373,45 @@ public abstract class ServerEntity {
 
     public void setDamageableWith(ToolType... types) {
         damageableWith = types;
+    }
+
+    public void applyDamageToArea(float[] damageAreaVertices, float damage, float knockbackStrength, float knockbackDuration, boolean useEntityOriginX, boolean useEntityOriginY) {
+        // Apply damage to proximity entities
+        Collection<ServerEntity> check = getDimension().getEntityManager().getAllDamageableEntities();
+        Vector2 dirVector = new Vector2();
+
+        float originX = (damageAreaVertices[2] - damageAreaVertices[0]) * 0.5f + damageAreaVertices[0];
+        float originY = (damageAreaVertices[3] - damageAreaVertices[1]) * 0.5f + damageAreaVertices[1];
+
+        for(ServerEntity se : check) {
+            if(se.entityId == entityId) continue;
+            if(se.invincibility > 0) continue;
+            EntityHitbox hitbox = ((DamageableEntity) se).getEntityHitbox();
+
+            float[] entityVertices = hitbox.toWorld(se.posX, se.posY);
+            boolean isHit = ExpoShared.overlap(damageAreaVertices, entityVertices);
+
+            if(isHit) {
+                float preDamageHp = se.health;
+                boolean applied = se.applyDamageWithPacket(this, damage);
+
+                if(applied) {
+                    // Sound effect
+                    ServerPackets.p24PositionalSound("bonk", se.posX, se.posY, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(se));
+
+                    // Knockback
+                    if(preDamageHp > se.health) {
+                        se.applyKnockback(knockbackStrength, knockbackDuration, dirVector.set(se.posX, se.posY)
+                                .sub(useEntityOriginX ? se.posX : originX, useEntityOriginY ? se.posY : originY).nor());
+                    }
+
+                    // Player packet
+                    if(se instanceof ServerPlayer player) {
+                        ServerPackets.p23PlayerLifeUpdate(player.health, player.hunger, PacketReceiver.player(player));
+                    }
+                }
+            }
+        }
     }
 
     public ServerTile getCurrentTile() {

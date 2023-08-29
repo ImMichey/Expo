@@ -4,26 +4,27 @@ import java.util.HashMap;
 
 public enum TileLayerType {
 
-    EMPTY(0,            new int[] {-1},         new String[] {"EMPTY"}),
-    SOIL(1,             new int[] {0},          new String[] {"SOIL"}),
-    SOIL_HOLE(2,        new int[] {90, 111},    new String[] {"SOIL_HOLE"}),
-    SAND(3,             new int[] {23, 44},     new String[] {"SAND", "DESERT"}),
-    DESERT(4,           new int[] {23, 44},     new String[] {"DESERT", "SAND"}),
-    GRASS(5,            new int[] {1, 22},      new String[] {"GRASS", "FOREST"}),
-    FOREST(6,           new int[] {112, 133},   new String[] {"FOREST", "GRASS"}),
-    WATER(7,            new int[] {46, 67},     new String[] {"WATER", "WATER_SANDY"}),
-    WATER_DEEP(8,       new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER", "WATER_SANDY"}),
-    ROCK(9,             new int[] {156, 177},   new String[] {"ROCK"}),
-    SOIL_FARMLAND(10,   new int[] {178, 199},   new String[] {"SOIL_FARMLAND"}),
-    OAK_PLANK(11,       new int[] {200, 221},   new String[] {"OAK_PLANK"}),
-    DIRT(12,            new int[] {222, 243},   new String[] {"DIRT"}),
-    WATER_SANDY(13,     new int[] {244, 265},   new String[] {"WATER_SANDY", "WATER"}),
-    OAKPLANKWALL(14,  new int[] {266, 287},   new String[] {"OAKPLANKWALL"}),
+    EMPTY(0,            new int[] {-1},         new String[] {"EMPTY"},                                 false),
+    SOIL(1,             new int[] {0},          new String[] {"SOIL"},                                  false),
+    SOIL_HOLE(2,        new int[] {90, 111},    new String[] {"SOIL_HOLE"},                             false),
+    SAND(3,             new int[] {23, 44},     new String[] {"SAND", "DESERT"},                        false),
+    DESERT(4,           new int[] {23, 44},     new String[] {"DESERT", "SAND"},                        false),
+    GRASS(5,            new int[] {1, 22},      new String[] {"GRASS", "FOREST"},                       false),
+    FOREST(6,           new int[] {112, 133},   new String[] {"FOREST", "GRASS"},                       false),
+    WATER(7,            new int[] {46, 67},     new String[] {"WATER", "WATER_SANDY"},                  false),
+    WATER_DEEP(8,       new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER", "WATER_SANDY"},    false),
+    ROCK(9,             new int[] {156, 177},   new String[] {"ROCK"},                                  true),
+    SOIL_FARMLAND(10,   new int[] {178, 199},   new String[] {"SOIL_FARMLAND"},                         false),
+    OAK_PLANK(11,       new int[] {200, 221},   new String[] {"OAK_PLANK"},                             false),
+    DIRT(12,            new int[] {222, 243},   new String[] {"DIRT"},                                  true),
+    WATER_SANDY(13,     new int[] {244, 265},   new String[] {"WATER_SANDY", "WATER"},                  false),
+    OAKPLANKWALL(14,    new int[] {266, 287},   new String[] {"OAKPLANKWALL"},                          true),
     ;
 
     public final int SERIALIZATION_ID;
     public final int[] TILE_ID_DATA;
     public final String[] TILE_CONNECTION_DATA;
+    public final boolean TILE_IS_WALL;
 
     public static final HashMap<TileLayerType, String> ELEVATION_TEXTURE_MAP;
 
@@ -34,10 +35,11 @@ public enum TileLayerType {
         ELEVATION_TEXTURE_MAP.put(OAKPLANKWALL, "tile_oakplankwall_elevation");
     }
 
-    TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA) {
+    TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA, boolean TILE_IS_WALL) {
         this.SERIALIZATION_ID = SERIALIZATION_ID;
         this.TILE_ID_DATA = TILE_ID_DATA;
         this.TILE_CONNECTION_DATA = TILE_CONNECTION_DATA;
+        this.TILE_IS_WALL = TILE_IS_WALL;
     }
 
     public static TileLayerType serialIdToType(int id) {
@@ -120,14 +122,14 @@ public enum TileLayerType {
             case DESERT -> DESERT;
             //case LAKE, RIVER, OCEAN, PUDDLE -> WATER;
             //case OCEAN_DEEP -> WATER_DEEP;
-            case ROCK -> ROCK;
-            case DIRT -> DIRT;
             default -> EMPTY;
         };
     }
 
     public static TileLayerType biomeToLayer2(BiomeType type) {
         return switch (type) {
+            case ROCK -> ROCK;
+            case DIRT -> DIRT;
             case OCEAN -> WATER_SANDY;
             case LAKE, RIVER, PUDDLE -> WATER;
             case OCEAN_DEEP -> WATER_DEEP;

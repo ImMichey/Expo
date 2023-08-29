@@ -83,12 +83,15 @@ public class ClientSelector extends ClientEntity {
 
         TileLayerType t0 = chunk.dynamicTiles[selectionTileArray][0].emulatingType;
         TileLayerType t1 = chunk.dynamicTiles[selectionTileArray][1].emulatingType;
+        TileLayerType t2 = chunk.dynamicTiles[selectionTileArray][2].emulatingType;
         boolean layer0Soil = t0 == TileLayerType.SOIL;
         boolean layer0Farmland = t0 == TileLayerType.SOIL_FARMLAND;
         boolean layer0Hole = t0 == TileLayerType.SOIL_HOLE;
         boolean layer1Grass = t1 == TileLayerType.FOREST;
         boolean layer1Sand = t1 == TileLayerType.SAND;
         boolean layer1Empty = t1 == TileLayerType.EMPTY;
+        boolean layer2Empty = t2 == TileLayerType.EMPTY;
+        boolean layer1Wall = t1.TILE_IS_WALL;
 
         if(currentSelectorType == SelectorType.DIG_SHOVEL) {
             if(layer1Grass || layer1Sand) {
@@ -128,7 +131,11 @@ public class ClientSelector extends ClientEntity {
                             eligible = true;
                         }
                     } else if(placeData.type == PlaceType.FLOOR_1) {
-                        if(layer0Soil && layer1Empty) {
+                        if(layer0Soil && layer1Empty && layer2Empty) {
+                            eligible = true;
+                        }
+                    } else if(placeData.type == PlaceType.FLOOR_2) {
+                        if(layer2Empty && !layer1Wall) {
                             eligible = true;
                         }
                     }

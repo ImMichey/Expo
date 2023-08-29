@@ -772,7 +772,7 @@
                 "toolType": "ITEM",
                 "placeData": {
                     "alignment": "TILE",
-                    "type": "FLOOR_1",
+                    "type": "FLOOR_2",
                     "floorType": "OAK_PLANK_WALL"
                 }
             }

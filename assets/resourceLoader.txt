@@ -26,6 +26,9 @@ foliage/entity_grass/entity_grass_8_shadow.png
 foliage/entity_oak_tree/entity_large_tree_leaves.png
 foliage/entity_oak_tree/eot_leaves.png
 foliage/entity_oak_tree/eot_leaves_big.png
+foliage/entity_oak_tree/eot_leavesN.png
+foliage/entity_oak_tree/eot_leavesN_yellow.png
+foliage/entity_oak_tree/eot_leavesN_orange.png
 foliage/entity_ancient_tree/entity_ancient_tree_leaves.png
 foliage/entity_birch_tree/birchtreeleaves.png
 water/square16x16.png

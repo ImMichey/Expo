@@ -69,10 +69,13 @@ public class Expo implements ApplicationListener {
 		if(gameSettings.enableDebugMode) DEV_MODE = true;
 		if(gameSettings.zoomLevel == 0) {
 			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.5f;
+			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 4;
 		} else if(gameSettings.zoomLevel == 1) {
 			ClientStatic.DEFAULT_CAMERA_ZOOM = 1f / 3f;
+			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 3;
 		} else if(gameSettings.zoomLevel == 2) {
 			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.25f;
+			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 2;
 		}
 		if(!DEV_MODE) {
 			ExpoLogger.enableDualLogging("clientlogs");

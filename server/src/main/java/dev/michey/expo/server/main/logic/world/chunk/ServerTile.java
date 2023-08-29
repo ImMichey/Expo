@@ -58,6 +58,23 @@ public class ServerTile {
         }
     }
 
+    private void setTileWall(TileLayerType use, int layer) {
+        int x = tileArray % ROW_TILES;
+        int y = tileArray / ROW_TILES;
+
+        ServerDynamic3DTile entity = new ServerDynamic3DTile();
+        entity.posX = ExpoShared.tileToPos(tileX);
+        entity.posY = ExpoShared.tileToPos(tileY);
+        entity.setStaticEntity();
+        entity.layerIds = dynamicTileParts[layer].layerIds;
+        entity.emulatingType = use;
+
+        ServerWorld.get().registerServerEntity(chunk.getDimension().getDimensionName(), entity);
+        entity.attachToTile(chunk, x, y);
+
+        dynamicTileParts[layer].setTileIds(new int[] {-1});
+    }
+
     public void updateLayer0(TileLayerType type) {
         TileLayerType use = type == null ? TileLayerType.biomeToLayer0(biome) : type;
         dynamicTileParts[0].update(use);
@@ -69,11 +86,9 @@ public class ServerTile {
             dynamicTileParts[0].setTileIds(runTextureGrab(td[0], 0));
         }
 
-        /*
-        for(var x : chunk.getDimension().getChunkHandler().getGenSettings().getNoiseSettings().postProcessList.values()) {
-            x.postProcessorLogic.getLayerType()
+        if(use.TILE_IS_WALL) {
+            setTileWall(use, 0);
         }
-        */
     }
 
     public void updateLayer1(TileLayerType type) {
@@ -87,21 +102,8 @@ public class ServerTile {
             dynamicTileParts[1].setTileIds(runTextureGrab(td[0], 1));
         }
 
-        if(use == TileLayerType.ROCK || use == TileLayerType.DIRT || use == TileLayerType.OAKPLANKWALL) {
-            int x = tileArray % ROW_TILES;
-            int y = tileArray / ROW_TILES;
-
-            ServerDynamic3DTile entity = new ServerDynamic3DTile();
-            entity.posX = ExpoShared.tileToPos(tileX);
-            entity.posY = ExpoShared.tileToPos(tileY);
-            entity.setStaticEntity();
-            entity.layerIds = dynamicTileParts[1].layerIds;
-            entity.emulatingType = use;
-
-            ServerWorld.get().registerServerEntity(chunk.getDimension().getDimensionName(), entity);
-            entity.attachToTile(chunk, x, y);
-
-            dynamicTileParts[1].setTileIds(new int[] {-1});
+        if(use.TILE_IS_WALL) {
+            setTileWall(use, 1);
         }
     }
 
@@ -115,27 +117,37 @@ public class ServerTile {
         } else {
             dynamicTileParts[2].setTileIds(runTextureGrab(td[0], 2));
         }
+
+        if(use.TILE_IS_WALL) {
+            setTileWall(use, 2);
+        }
     }
 
-    public boolean updateLayerAdjacent(int layer) {
+    public boolean updateLayerAdjacent(int layer, boolean updateDynamicTilesFlag) {
         if(layer == 0) {
-            return updateLayer0Adjacent();
+            return updateLayer0Adjacent(updateDynamicTilesFlag);
         } else if(layer == 1) {
-            return updateLayer1Adjacent();
+            return updateLayer1Adjacent(updateDynamicTilesFlag);
         }
 
-        return updateLayer2Adjacent();
+        return updateLayer2Adjacent(updateDynamicTilesFlag);
     }
 
     /** This method is called when an adjacent layer 0 tile has been updated and this tile potentially needs to adjust its texture. */
-    public boolean updateLayer0Adjacent() {
+    public boolean updateLayer0Adjacent(boolean updateDynamicTilesFlag) {
         int[] td = dynamicTileParts[0].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[0].layerIds;
 
-        if(td.length == 1) {
-            dynamicTileParts[0].setTileIds(new int[] {td[0]});
-        } else {
-            dynamicTileParts[0].setTileIds(runTextureGrab(td[0], 0));
+        if(!dynamicTileParts[0].emulatingType.TILE_IS_WALL) {
+            if(td.length == 1) {
+                dynamicTileParts[0].setTileIds(new int[] {td[0]});
+            } else {
+                dynamicTileParts[0].setTileIds(runTextureGrab(td[0], 0));
+            }
+        }
+
+        if(updateDynamicTilesFlag) {
+            updateDynamic3DTile(0);
         }
 
         return !Arrays.equals(old, dynamicTileParts[0].layerIds);
@@ -143,11 +155,11 @@ public class ServerTile {
 
     /** This method is called when an adjacent layer 1 tile has been updated and this tile potentially needs to adjust its texture.
      * Returns whether an update packet is needed or not. */
-    public boolean updateLayer1Adjacent() {
+    public boolean updateLayer1Adjacent(boolean updateDynamicTilesFlag) {
         int[] td = dynamicTileParts[1].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[1].layerIds;
 
-        if(dynamicTileParts[1].emulatingType != TileLayerType.ROCK && dynamicTileParts[1].emulatingType != TileLayerType.DIRT && dynamicTileParts[1].emulatingType != TileLayerType.OAKPLANKWALL) {
+        if(!dynamicTileParts[1].emulatingType.TILE_IS_WALL) {
             if(td.length == 1) {
                 dynamicTileParts[1].setTileIds(new int[] {td[0]});
             } else {
@@ -155,15 +167,19 @@ public class ServerTile {
             }
         }
 
+        if(updateDynamicTilesFlag) {
+            updateDynamic3DTile(1);
+        }
+
         return !Arrays.equals(old, dynamicTileParts[1].layerIds);
     }
 
     /** This method is called when an adjacent layer 2 tile has been updated and this tile potentially needs to adjust its texture. */
-    public boolean updateLayer2Adjacent() {
+    public boolean updateLayer2Adjacent(boolean updateDynamicTilesFlag) {
         int[] td = dynamicTileParts[2].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[2].layerIds;
 
-        if(dynamicTileParts[2].emulatingType != TileLayerType.ROCK && dynamicTileParts[2].emulatingType != TileLayerType.DIRT) {
+        if(!dynamicTileParts[2].emulatingType.TILE_IS_WALL) {
             if(td.length == 1) {
                 dynamicTileParts[2].setTileIds(new int[] {td[0]});
             } else {
@@ -171,7 +187,21 @@ public class ServerTile {
             }
         }
 
+        if(updateDynamicTilesFlag) {
+            updateDynamic3DTile(2);
+        }
+
         return !Arrays.equals(old, dynamicTileParts[2].layerIds);
+    }
+
+    private void updateDynamic3DTile(int layer) {
+        ServerDynamic3DTile entity = getDynamic3DTile();
+
+        if(entity != null) {
+            entity.layerIds = runTextureGrab(entity.emulatingType.TILE_ID_DATA[0], layer);
+            entity.checkForBoundingBox();
+            ServerPackets.p30EntityDataUpdate(entity.entityId, new Object[] {entity.layerIds, entity.emulatingType.SERIALIZATION_ID}, PacketReceiver.whoCanSee(entity));
+        }
     }
 
     public static int[] runTextureGrab(int minTile, int[] indices) {
@@ -454,6 +484,18 @@ public class ServerTile {
         if(isType(TileLayerType.SAND, 1) || isType(TileLayerType.DESERT, 1)) return 2;
         if(isType(TileLayerType.SOIL, 0)) return 0;
         return -1;
+    }
+
+    public ServerDynamic3DTile getDynamic3DTile() {
+        if(!chunk.hasTileBasedEntities()) return null;
+        int entityId = chunk.getTileBasedEntityIdGrid()[tileArray];
+        if(entityId == -1) return null;
+        ServerEntity found = ServerWorld.get().getDimension(chunk.getDimension().getDimensionName()).getEntityManager().getEntityById(entityId);
+        if(found == null) return null;
+        if(found.getEntityType() == ServerEntityType.DYNAMIC_3D_TILE) {
+            return (ServerDynamic3DTile) found;
+        }
+        return null;
     }
 
     public ServerEntity hasTileBasedEntity(ServerEntityType type) {

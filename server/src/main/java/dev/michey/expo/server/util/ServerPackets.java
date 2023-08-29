@@ -369,6 +369,14 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P38_PlayerAnimation packet via UDP protocol. */
+    public static void p38PlayerAnimation(int entityId, int animationId, PacketReceiver receiver) {
+        P38_PlayerAnimation p = new P38_PlayerAnimation();
+        p.entityId = entityId;
+        p.animationId = animationId;
+        udp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

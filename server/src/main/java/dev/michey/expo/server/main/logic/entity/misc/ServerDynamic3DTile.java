@@ -62,8 +62,8 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
         int tx = ExpoShared.posToTile(posX);
         int ty = ExpoShared.posToTile(posY);
         ServerTile tile = getChunkGrid().getTile(tx, ty);
-        tile.dynamicTileParts[1].update(TileLayerType.EMPTY);
-        ServerPackets.p32ChunkDataSingle(tile, 1);
+        tile.dynamicTileParts[2].update(TileLayerType.EMPTY);
+        ServerPackets.p32ChunkDataSingle(tile, 2);
 
         // Update neighbours
         ServerTile[] neighbours = tile.getNeighbouringTiles();
@@ -77,7 +77,7 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
 
                     if(found instanceof ServerDynamic3DTile x) {
                         if(x.emulatingType == emulatingType) {
-                            x.layerIds = neighbour.runTextureGrab(x.emulatingType.TILE_ID_DATA[0], 1);
+                            x.layerIds = neighbour.runTextureGrab(x.emulatingType.TILE_ID_DATA[0], 2);
                             x.checkForBoundingBox();
                             ServerPackets.p30EntityDataUpdate(x.entityId, new Object[] {x.layerIds, x.emulatingType.SERIALIZATION_ID}, PacketReceiver.whoCanSee(x));
                         }

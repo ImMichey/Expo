@@ -1,6 +1,5 @@
 package dev.michey.expo.server.util;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.util.Location;
 
 public class ServerUtils {

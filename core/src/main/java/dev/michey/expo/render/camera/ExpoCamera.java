@@ -28,9 +28,14 @@ public class ExpoCamera {
     public float zoomDelta;
     public boolean doZoomAnimation;
 
+    public int baseZoomLevelIndex;
+    public int currentZoomLevelIndex;
+
     public ExpoCamera() {
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
+        baseZoomLevelIndex = ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX;
+        currentZoomLevelIndex = baseZoomLevelIndex;
 
         camera = new OrthographicCamera(100, 100 * (h / w));
 
@@ -102,6 +107,20 @@ public class ExpoCamera {
 
     public void center(float x, float y) {
         camera.position.set(x, y, 0);
+    }
+
+    public void resetZoom() {
+        camera.zoom = ClientStatic.DEFAULT_CAMERA_ZOOM;
+        currentZoomLevelIndex = baseZoomLevelIndex;
+    }
+
+    public void cycleZoom() {
+        currentZoomLevelIndex--;
+        if(currentZoomLevelIndex < 0) {
+            currentZoomLevelIndex = ClientStatic.CAMERA_ZOOM_LEVELS.length - 1;
+        }
+
+        camera.zoom = ClientStatic.CAMERA_ZOOM_LEVELS[currentZoomLevelIndex];
     }
 
     private void cameraLerpTowards(float x, float y) {

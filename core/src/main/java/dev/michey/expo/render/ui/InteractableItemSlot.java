@@ -82,7 +82,7 @@ public class InteractableItemSlot extends InteractableUIElement {
                     float fullW = parent.slotW - space * parent.uiScale * 2;
 
                     r.hudBatch.setColor(26f / 255f, 16f / 255f, 16f / 255f, 1.0f);
-                    r.hudBatch.draw(parent.whiteSquare, this.x + space * parent.uiScale, this.y + yOffset, fullW, thickness * parent.uiScale);
+                    r.hudBatch.draw(parent.whiteSquare, (int) (this.x + space * parent.uiScale), (int) (this.y + yOffset), fullW, thickness * parent.uiScale);
 
                     if(percentage > 0.66f) {
                         r.hudBatch.setColor(35f / 255f, 187f / 255f, 67f / 255f, 1f);
@@ -93,7 +93,7 @@ public class InteractableItemSlot extends InteractableUIElement {
                     }
 
                     float percToPx = fullW * percentage;
-                    r.hudBatch.draw(parent.whiteSquare, this.x + space * parent.uiScale, this.y + yOffset, percToPx, thickness * parent.uiScale);
+                    r.hudBatch.draw(parent.whiteSquare, (int) (this.x + space * parent.uiScale), (int) (this.y + yOffset), percToPx, thickness * parent.uiScale);
 
                     r.hudBatch.setColor(Color.WHITE);
                 }

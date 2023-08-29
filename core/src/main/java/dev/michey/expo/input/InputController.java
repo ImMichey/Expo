@@ -184,7 +184,8 @@ public class InputController {
                 case Input.Keys.F10 -> RenderContext.get().takeScreenshot();
                 case Input.Keys.TAB -> ExpoClientContainer.get().getPlayerUI().toggleTablist();
                 case Input.Keys.ENTER -> ExpoClientChat.get().toggleFocus(true);
-                case Input.Keys.Z, Input.Keys.Y -> RenderContext.get().expoCamera.camera.zoom = ClientStatic.DEFAULT_CAMERA_ZOOM;
+                case Input.Keys.Z, Input.Keys.Y -> RenderContext.get().expoCamera.resetZoom();
+                case Input.Keys.T -> RenderContext.get().expoCamera.cycleZoom();
             }
         }
     }

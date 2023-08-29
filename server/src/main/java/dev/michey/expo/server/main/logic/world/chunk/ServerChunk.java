@@ -371,7 +371,7 @@ public class ServerChunk {
             for(ServerTile st : list) {
                 for(ServerTile neighbours : st.getNeighbouringTiles()) {
                     if(neighbours == null) continue;
-                    if(neighbours.updateLayerAdjacent(i)) ServerPackets.p32ChunkDataSingle(neighbours, i);
+                    if(neighbours.updateLayerAdjacent(i, false)) ServerPackets.p32ChunkDataSingle(neighbours, i);
                 }
             }
         }

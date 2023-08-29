@@ -25,4 +25,7 @@ public class ClientStatic {
 
     public static final Color COLOR_DAMAGE_TINT = Color.valueOf("#ca3636");
 
+    public static final float[] CAMERA_ZOOM_LEVELS = new float[] {0.1f, 0.2f, 0.25f, 1f / 3f, 0.5f, 1.0f};
+    public static int DEFAULT_CAMERA_ZOOM_INDEX = 4;
+
 }

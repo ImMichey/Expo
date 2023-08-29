@@ -264,13 +264,23 @@ public class ExpoClientPacketReader {
                 int amount = p.itemAmounts[i];
                 ExpoClientContainer.get().getPlayerUI().addPickupLine(id, amount);
             }
-
-            ClientPlayer.getLocalPlayer().playPickupAnimation();
         } else if(o instanceof P37_EntityTeleport p) {
             ClientEntity entity = entityFromId(p.entityId);
 
             if(entity != null) {
                 entity.applyTeleportUpdate(p.x, p.y);
+            }
+        } else if(o instanceof P38_PlayerAnimation p) {
+            ClientEntity entity = entityFromId(p.entityId);
+
+            if(entity != null) {
+                ClientPlayer player = (ClientPlayer) entity;
+
+                if(p.animationId == PLAYER_ANIMATION_ID_PICKUP) {
+                    player.playPickupAnimation();
+                } else if(p.animationId == PLAYER_ANIMATION_ID_PLACE) {
+                    player.playPunchAnimation();
+                }
             }
         }
     }
