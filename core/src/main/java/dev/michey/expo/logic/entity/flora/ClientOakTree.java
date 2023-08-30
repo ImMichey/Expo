@@ -34,7 +34,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
     private float[] interactionPointArray;
 
     private final float leavesDisplacement = -MathUtils.random(0, 4);
-    private final float colorMix = MathUtils.random(0.1f);
+    private final float colorMix = MathUtils.random(0.175f);
 
     private float playerBehindDelta = 1.0f;
     private float resetShadowFadeTimer;
@@ -257,7 +257,10 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
         if(!cut) {
             contactAnimator.tick(delta);
             foliageAnimator.resetWind();
-            leafParticleEmitter.tick(delta);
+
+            if(visibleToRenderEngine) {
+                leafParticleEmitter.tick(delta);
+            }
 
             ClientPlayer local = ClientPlayer.getLocalPlayer();
             boolean playerBehind;

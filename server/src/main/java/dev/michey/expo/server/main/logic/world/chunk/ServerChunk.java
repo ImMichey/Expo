@@ -221,9 +221,15 @@ public class ServerChunk {
                 for(EntityPopulator populator : populators) {
                     List<Point> points = new PoissonDiskSampler(0, 0, CHUNK_SIZE, CHUNK_SIZE, populator.poissonDiskSamplerDistance).sample(wx, wy);
 
+                    float chanceFactor = 1.0f;
+
+                    if(populator.type == ServerEntityType.OAK_TREE && MathUtils.random() <= 0.125f) {
+                        chanceFactor = 0.25f;
+                    }
+
                     for(Point p : points) {
                         if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(p.absoluteX), ExpoShared.posToTile(p.absoluteY)) != t) continue;
-                        boolean spawn = MathUtils.random() < populator.spawnChance;
+                        boolean spawn = MathUtils.random() < (populator.spawnChance * chanceFactor);
 
                         if(spawn) {
                             EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
@@ -245,7 +251,7 @@ public class ServerChunk {
                                     registerMap.add(generatedEntity);
 
                                     if(populator.spreadBetweenEntities != null) {
-                                        boolean spread = MathUtils.random() < populator.spreadChance;
+                                        boolean spread = MathUtils.random() < (populator.spreadChance * chanceFactor);
 
                                         if(spread) {
                                             int amount = MathUtils.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
