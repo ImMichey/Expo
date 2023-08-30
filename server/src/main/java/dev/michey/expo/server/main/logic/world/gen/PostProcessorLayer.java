@@ -11,7 +11,8 @@ public class PostProcessorLayer implements PostProcessorLogic {
     public TileLayerType[] checkTypes;
     public int processLayer;
     public TileLayerType replacementType;
-    public float threshold;
+    public float thresholdA;
+    public float thresholdB;
 
     // Optional
     public float secondOptionThreshold;
@@ -21,9 +22,10 @@ public class PostProcessorLayer implements PostProcessorLogic {
         // KryoNet
     }
 
-    public PostProcessorLayer(String noiseName, float threshold, String[] replacementKeys, String replaceType, String replaceWith, float thresholdSecond, String thresholdReplace) {
+    public PostProcessorLayer(String noiseName, float thresholdA, float thresholdB, String[] replacementKeys, String replaceType, String replaceWith, float thresholdSecond, String thresholdReplace) {
         this.noiseName = noiseName;
-        this.threshold = threshold;
+        this.thresholdA = thresholdA;
+        this.thresholdB = thresholdB;
 
         boolean listAll = replacementKeys.length > 0 && replacementKeys[0].equals("*");
         TileLayerType[] all = TileLayerType.values();
@@ -52,7 +54,8 @@ public class PostProcessorLayer implements PostProcessorLogic {
 
     @Override
     public TileLayerType getLayerType(TileLayerType existingLayerType, float noiseValue) {
-        if(noiseValue < threshold) return null;
+        if(noiseValue < thresholdA) return null;
+        if(noiseValue > thresholdB) return null;
 
         for(TileLayerType check : checkTypes) {
             if(check == existingLayerType) {
@@ -71,7 +74,8 @@ public class PostProcessorLayer implements PostProcessorLogic {
                 ", checkTypes=" + Arrays.toString(checkTypes) +
                 ", processLayer=" + processLayer +
                 ", replacementType=" + replacementType +
-                ", threshold=" + threshold +
+                ", thresholdA=" + thresholdA +
+                ", thresholdB=" + thresholdB +
                 ", secondOptionThreshold=" + secondOptionThreshold +
                 ", secondOptionType=" + secondOptionType +
                 '}';

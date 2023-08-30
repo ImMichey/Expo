@@ -22,25 +22,6 @@
                         }
                     },
                     {
-                        "name": "lakes",
-                        "octaves": 5,
-                        "type": 5,
-                        "frequency": 0.0123,
-                        "noiseOffset": 1,
-                        "logic": {
-                            "check": [
-                                "*",
-                                "!OCEAN",
-                                "!OCEAN_DEEP"
-                            ],
-                            "threshold": 0.76,
-                            "replaceType": "BIOME",
-                            "replaceWith": "LAKE",
-                            "thresholdSecond": 0.832,
-                            "thresholdReplace": "OCEAN_DEEP"
-                        }
-                    },
-                    {
                         "name": "dirt",
                         "octaves": 5,
                         "type": 5,
@@ -106,7 +87,6 @@
                             "replaceWith": "WHEAT_FIELDS"
                         }
                     },
-
                     {
                         "name": "dirt_tiny_formation",
                         "octaves": 4,
@@ -124,6 +104,25 @@
                             "replaceType": "BIOME",
                             "replaceWith": "DIRT",
                             "priority": -200
+                        }
+                    },
+                    {
+                        "name": "lakes",
+                        "octaves": 5,
+                        "type": 5,
+                        "frequency": 0.008,
+                        "noiseOffset": 1,
+                        "logic": {
+                            "check": [
+                                "*",
+                                "!OCEAN",
+                                "!OCEAN_DEEP"
+                            ],
+                            "threshold": 0.78,
+                            "replaceType": "BIOME",
+                            "replaceWith": "LAKE",
+                            "thresholdSecond": 0.835,
+                            "thresholdReplace": "OCEAN_DEEP"
                         }
                     }
                 ],
@@ -143,12 +142,6 @@
                         "type": 9,
                         "frequency": 0.012
                     }
-                },
-                "rivers": {
-                    "octaves": 1,
-                    "type": 5,
-                    "frequency": 0.003,
-                    "fractalType": 2
                 },
                 "biomes": [
                     {
@@ -400,7 +393,7 @@
                         {
                             "type": "GRASS",
                             "static": true,
-                            "chance": 0.12,
+                            "chance": 0.14,
                             "pds": 20,
                             "spreadData": {
                                 "spread": [1, 6],
@@ -414,8 +407,8 @@
                         {
                             "type": "OAK_TREE",
                             "static": true,
-                            "chance": 0.25,
-                            "pds": 28,
+                            "chance": 0.32,
+                            "pds": 35,
                             "priority": 100,
                             "spreadData": {
                                 "spread": [1, 5],
@@ -504,10 +497,10 @@
                         {
                             "type": "GRASS",
                             "static": true,
-                            "chance": 0.1,
-                            "pds": 18,
+                            "chance": 0.12,
+                            "pds": 20,
                             "spreadData": {
-                                "spread": [1, 7],
+                                "spread": [1, 6],
                                 "spreadChance": 1.0,
                                 "spreadDis": [8.0, 18.0],
                                 "spreadType": ["GRASS"],
@@ -518,8 +511,8 @@
                         {
                             "type": "OAK_TREE",
                             "static": true,
-                            "chance": 0.03,
-                            "pds": 16,
+                            "chance": 0.125,
+                            "pds": 28,
                             "priority": 100,
                             "spreadData": {
                                 "spread": [1, 5],

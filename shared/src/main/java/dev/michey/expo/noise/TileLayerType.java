@@ -120,8 +120,6 @@ public enum TileLayerType {
             case LAKE, RIVER, PUDDLE -> SOIL;
             case OCEAN, OCEAN_DEEP, BEACH -> SAND;
             case DESERT -> DESERT;
-            //case LAKE, RIVER, OCEAN, PUDDLE -> WATER;
-            //case OCEAN_DEEP -> WATER_DEEP;
             default -> EMPTY;
         };
     }

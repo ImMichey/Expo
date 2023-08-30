@@ -223,8 +223,8 @@ public class ServerChunk {
 
                     float chanceFactor = 1.0f;
 
-                    if(populator.type == ServerEntityType.OAK_TREE && MathUtils.random() <= 0.125f) {
-                        chanceFactor = 0.25f;
+                    if(populator.type == ServerEntityType.OAK_TREE && MathUtils.random() <= 0.075f) {
+                        chanceFactor = 0.33f;
                     }
 
                     for(Point p : points) {

@@ -34,7 +34,7 @@ public class WorldGenNoiseSettings {
     }
 
     public void parsePostProcessors(JSONArray array) {
-        if(array.length() == 0) return;
+        if(array.isEmpty()) return;
         postProcessList = new LinkedList<>();
 
         for(int i = 0; i < array.length(); i++) {
@@ -47,15 +47,25 @@ public class WorldGenNoiseSettings {
             String _replaceWith = logicObject.getString("replaceWith");
             float _secondOptionThreshold = logicObject.has("thresholdSecond") ? logicObject.getFloat("thresholdSecond") : -1.0f;
             String _secondOptionReplace = logicObject.has("thresholdReplace") ? logicObject.getString("thresholdReplace") : null;
-            float _threshold = logicObject.getFloat("threshold");
+            float _thresholdA = 0;
+            float _thresholdB = 0;
+
+            if(logicObject.has("thresholdA") && logicObject.has("thresholdB")) {
+                _thresholdA = logicObject.getFloat("thresholdA");
+                _thresholdB = logicObject.getFloat("thresholdB");
+            } else {
+                _thresholdA = logicObject.getFloat("threshold");
+                _thresholdB = 1.0f;
+            }
+
             int priority = logicObject.has("priority") ? logicObject.getInt("priority") : 0;
 
             PostProcessorLogic logic;
 
             if(_type.equals("BIOME")) {
-                logic = new PostProcessorBiome(o.getString("name"), _threshold, _logicKeys, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
+                logic = new PostProcessorBiome(o.getString("name"), _thresholdA, _thresholdB, _logicKeys, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
             } else {
-                logic = new PostProcessorLayer(o.getString("name"), _threshold, _logicKeys, _type, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
+                logic = new PostProcessorLayer(o.getString("name"), _thresholdA, _thresholdB, _logicKeys, _type, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
             }
 
             postProcessList.add(new NoisePostProcessor(priority, new NoiseWrapper(o.getString("name"),

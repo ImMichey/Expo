@@ -12,7 +12,8 @@ public class PostProcessorBiome implements PostProcessorLogic {
     public String noiseName;
     public BiomeType[] checkBiomes;
     public BiomeType replacementType;
-    public float threshold;
+    public float thresholdA;
+    public float thresholdB;
 
     // Optional
     public float secondOptionThreshold;
@@ -22,9 +23,10 @@ public class PostProcessorBiome implements PostProcessorLogic {
         // KryoNet
     }
 
-    public PostProcessorBiome(String noiseName, float threshold, String[] replacementKeys, String replaceWith, float thresholdSecond, String thresholdReplace) {
+    public PostProcessorBiome(String noiseName, float thresholdA, float thresholdB, String[] replacementKeys, String replaceWith, float thresholdSecond, String thresholdReplace) {
         this.noiseName = noiseName;
-        this.threshold = threshold;
+        this.thresholdA = thresholdA;
+        this.thresholdB = thresholdB;
 
         LinkedList<BiomeType> biomeList = new LinkedList<>();
 
@@ -52,7 +54,8 @@ public class PostProcessorBiome implements PostProcessorLogic {
 
     @Override
     public BiomeType getBiome(BiomeType existingBiome, float noiseValue) {
-        if(noiseValue < threshold) return null;
+        if(noiseValue < thresholdA) return null;
+        if(noiseValue > thresholdB) return null;
 
         for(BiomeType check : checkBiomes) {
             if(check == existingBiome) {

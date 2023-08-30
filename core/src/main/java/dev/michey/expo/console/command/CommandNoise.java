@@ -83,6 +83,7 @@ public class CommandNoise extends AbstractConsoleCommand {
             }
 
             ExpoLogger.log("Entries: " + avgList.size());
+            /*
             avgList.sort(Float::compare);
 
             StringBuilder builder = new StringBuilder();
@@ -95,6 +96,7 @@ public class CommandNoise extends AbstractConsoleCommand {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            */
 
             FileHandle fh = Gdx.files.local("noiseCmd/_" + System.currentTimeMillis() + ".png");
             PixmapIO.writePNG(fh, pixmap);
