@@ -13,7 +13,7 @@ public class ExpoShared {
     public static final int DEFAULT_SERVER_TICK_RATE = 60;
     public static final int CLIENT_TIMEOUT_THRESHOLD = 5000;
     public static final long UNLOAD_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.seconds(5); // 5 seconds
-    public static final long SAVE_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.minutes(3); // 3 minutes
+    public static final long SAVE_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.seconds(5); // 3 minutes
     public static final int DEFAULT_WRITE_BUFFER_SIZE = 1_048_576 * 4; // 4 MB
     public static final int DEFAULT_OBJECT_BUFFER_SIZE = 1_048_576 * 4; // 4 MB
     public static final int SERVER_PROTOCOL_VERSION = 1;

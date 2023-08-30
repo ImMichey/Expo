@@ -2,13 +2,21 @@ package dev.michey.expo.server.main.logic.world.dimension;
 
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
+import dev.michey.expo.server.util.PacketReceiver;
+import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,12 +28,14 @@ public class ServerDimensionEntityManager {
     private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
+    private final HashMap<Integer, List<ServerItem>> mergeItemMap;
 
     public ServerDimensionEntityManager() {
         idEntityMap = new HashMap<>();
         typeEntityListMap = new HashMap<>();
         damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();
+        mergeItemMap = new HashMap<>();
 
         for(ServerEntityType type : ServerEntityType.values()) {
             typeEntityListMap.put(type, new LinkedList<>());
@@ -63,6 +73,135 @@ public class ServerDimensionEntityManager {
                 }
             }
         }
+
+        runItemMerge(delta);
+    }
+
+    private void runItemMerge(float delta) {
+        mergeItemMap.clear();
+
+        for(ServerEntity itemEntity : typeEntityListMap.get(ServerEntityType.ITEM)) {
+            ServerItem item = (ServerItem) itemEntity;
+
+            if(item.pickupImmunity > 0) {
+                continue;
+            }
+
+            // ################################################################################### PLAYER HOOK START
+            ServerPlayer closestPlayer = getClosestPlayer(item, 20.0f);
+
+            if(closestPlayer != null) {
+                int lastId = closestPlayer.getCurrentItemId();
+
+                int total = item.itemContainer.itemAmount;
+                var result = closestPlayer.playerInventory.addItem(item.itemContainer);
+                ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(result.changeResult, PacketReceiver.player(closestPlayer));
+
+                if(result.changeResult.changePresent) {
+                    ServerPackets.p24PositionalSound("pop", item.posX, item.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(item));
+                    ServerPackets.p38PlayerAnimation(closestPlayer.entityId, ExpoShared.PLAYER_ANIMATION_ID_PICKUP, PacketReceiver.whoCanSee(closestPlayer));
+
+                    if(result.fullTransfer) {
+                        ServerPackets.p36PlayerReceiveItem(new int[] {item.itemContainer.itemId}, new int[] {total}, PacketReceiver.player(closestPlayer));
+                        item.killEntityWithPacket();
+                    } else {
+                        item.itemContainer.itemAmount = result.remainingAmount;
+                        ServerPackets.p36PlayerReceiveItem(new int[] {item.itemContainer.itemId}, new int[] {total - result.remainingAmount}, PacketReceiver.player(closestPlayer));
+                        ServerPackets.p30EntityDataUpdate(item.entityId, new Object[] {item.itemContainer.itemAmount, true}, PacketReceiver.whoCanSee(item));
+                    }
+
+                    if(lastId != closestPlayer.getCurrentItemId()) {
+                        closestPlayer.heldItemPacket(PacketReceiver.whoCanSee(closestPlayer));
+                    }
+                }
+                continue;
+            }
+            // ################################################################################### PLAYER HOOK END
+
+            int itemId = item.itemContainer.itemId;
+            int maxStackSize = ItemMapper.get().getMapping(item.itemContainer.itemId).logic.maxStackSize;
+
+            if(maxStackSize == item.itemContainer.itemAmount) {
+                continue;
+            }
+
+            mergeItemMap.computeIfAbsent(itemId, k -> new LinkedList<>());
+            mergeItemMap.get(itemId).add(item);
+            item.blockedForMerge = false;
+        }
+
+        for(int itemId : mergeItemMap.keySet()) {
+            List<ServerItem> itemsInCategory = mergeItemMap.get(itemId);
+
+            for(ServerItem item : itemsInCategory) {
+                var match = findClosestItem(item, itemsInCategory);
+
+                if(match != null) {
+                    ServerItem target = match.key;
+                    float dst = match.value;
+
+                    if(dst <= 3.0f) {
+                        if(!item.blockedForMerge && !target.blockedForMerge) {
+                            // Merging distance.
+                            item.blockedForMerge = true;
+                            target.blockedForMerge = true;
+
+                            int maxTransfer = ItemMapper.get().getMapping(item.itemContainer.itemId).logic.maxStackSize;
+                            int possibleTransfer = maxTransfer - item.itemContainer.itemAmount;
+                            int availableTransfer = target.itemContainer.itemAmount;
+
+                            if(availableTransfer <= possibleTransfer) {
+                                // Transfer fully, delete other entity
+                                item.itemContainer.itemAmount += availableTransfer;
+                                target.killEntityWithPacket(EntityRemovalReason.MERGE);
+                            } else {
+                                // Transfer partially, update both stacks
+                                item.itemContainer.itemAmount += possibleTransfer;
+                                target.itemContainer.itemAmount -= possibleTransfer;
+                                ServerPackets.p30EntityDataUpdate(target.entityId, new Object[] {target.itemContainer.itemAmount, false}, PacketReceiver.whoCanSee(target));
+                                target.lifetime = 0;
+                            }
+
+                            ServerPackets.p30EntityDataUpdate(item.entityId, new Object[] {item.itemContainer.itemAmount, false}, PacketReceiver.whoCanSee(item));
+                            item.lifetime = 0;
+                            ServerPackets.p24PositionalSound("pop", item);
+                        }
+                    } else {
+                        // Approximation distance.
+                        Vector2 v = new Vector2(target.posX, target.posY).sub(item.posX, item.posY).nor();
+                        float mergeSpeed = 12.0f;
+
+                        var result = item.physicsBody.move(v.x * delta * mergeSpeed, v.y * delta * mergeSpeed, PhysicsBoxFilters.playerCollisionFilter);
+
+                        item.posX = result.goalX - item.physicsBody.xOffset;
+                        item.posY = result.goalY - item.physicsBody.yOffset;
+
+                        ServerPackets.p6EntityPosition(item.entityId, item.posX, item.posY, PacketReceiver.whoCanSee(item));
+                    }
+                }
+            }
+        }
+    }
+
+    private Pair<ServerItem, Float> findClosestItem(ServerItem sourceItem, List<ServerItem> categoryItems) {
+        ServerItem found = null;
+        float dis = Float.MAX_VALUE;
+        float MAX_DIS = 20.0f;
+
+        for(ServerItem item : categoryItems) {
+            if(sourceItem.entityId == item.entityId) continue;
+            float dst = Vector2.dst(item.posX, item.posY, sourceItem.posX, sourceItem.posY);
+
+            if(dst <= MAX_DIS) {
+                if(dst < dis) {
+                    dis = dst;
+                    found = item;
+                }
+            }
+        }
+
+        if(found == null) return null;
+        return new Pair<>(found, dis);
     }
 
     public void addEntitySafely(ServerEntity entity) {

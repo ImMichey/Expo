@@ -278,7 +278,7 @@ public class ServerChunkGrid {
                 String key = iterator.next();
                 var pair = inactiveChunkMap.get(key);
 
-                if(now - pair.value > 0) { // reached inactive state
+                if(now - pair.value > 0) { // reached save state
                     iterator.remove();
                     pair.key.onSave();
                 }

@@ -278,6 +278,11 @@ public abstract class ClientEntity {
 
         TileLayerType t0 = c.dynamicTiles[tileArray][0].emulatingType;
         TileLayerType t1 = c.dynamicTiles[tileArray][1].emulatingType;
+        TileLayerType t2 = c.dynamicTiles[tileArray][2].emulatingType;
+
+        if(TileLayerType.isWater(t2)) {
+            return "step_water";
+        }
 
         if(t0 == TileLayerType.SOIL_HOLE || t0 == TileLayerType.SOIL_FARMLAND) {
             return isRaining() ? "step_mud" : "step_dirt";
@@ -293,10 +298,6 @@ public abstract class ClientEntity {
 
         if(t1 == TileLayerType.SAND || t1 == TileLayerType.DESERT) {
             return "step_sand";
-        }
-
-        if(BiomeType.isWater(c.biomes[tileArray])) {
-            return "step_water";
         }
 
         return isRaining() ? "step_mud" : "step_dirt";

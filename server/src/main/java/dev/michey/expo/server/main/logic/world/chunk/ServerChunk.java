@@ -512,7 +512,7 @@ public class ServerChunk {
 
     public void save() {
         try {
-            // log("Saving " + chunkIdentifier());
+            //log("Saving " + chunkIdentifier() + " -> " + inactiveEntities.size() + " inactive entities to save");
             Files.writeString(getChunkFile().toPath(), chunkToSavableString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             log("Failed to save " + chunkIdentifier());

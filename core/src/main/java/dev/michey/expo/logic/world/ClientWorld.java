@@ -772,9 +772,14 @@ public class ClientWorld {
             ClientChunk requireChunk = clientChunkGrid.getChunk(next.requiresChunkX, next.requiresChunkY);
 
             if(requireChunk != null && (requireChunk.ranAmbientOcclusion || (requireChunk.getInitializationTileCount() == 0 && !requireChunk.ranAmbientOcclusion))) {
-                iterator.remove();
-                for(int index : next.updateTileArray) {
-                    clientChunkGrid.getChunk(next.updateChunkX, next.updateChunkY).updateAmbientOcclusion(index, false, true);
+                ClientChunk wantToUpdateChunk = clientChunkGrid.getChunk(next.updateChunkX, next.updateChunkY);
+
+                if(wantToUpdateChunk != null) {
+                    iterator.remove();
+
+                    for(int index : next.updateTileArray) {
+                        wantToUpdateChunk.updateAmbientOcclusion(index, false, true);
+                    }
                 }
             }
         }

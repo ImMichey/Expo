@@ -63,10 +63,11 @@ public class ServerPackets {
 
     /** Sends the P4_EntityDelete packet via TCP protocol. */
     public static void p4EntityDelete(int entityId, EntityRemovalReason reason, PacketReceiver receiver) {
+        //ExpoLogger.log("p4EntityDelete " + entityId + " " + reason);
         P4_EntityDelete p = new P4_EntityDelete();
         p.entityId = entityId;
         p.reason = reason;
-        udp(p, receiver);
+        tcp(p, receiver);
     }
 
     /** Sends the P6_EntityPosition packet via UDP protocol. */
@@ -90,7 +91,7 @@ public class ServerPackets {
         P8_EntityDeleteStack p = new P8_EntityDeleteStack();
         p.entityList = entityList;
         p.reasons = reasons;
-        udp(p, receiver);
+        tcp(p, receiver);
     }
 
     /** Sends the P9_PlayerCreate packet via TCP protocol. */

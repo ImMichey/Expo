@@ -65,12 +65,13 @@ public class ExpoClientPacketReader {
             ClientEntity entity = ClientEntityManager.get().createFromPacket(p);
             ClientEntityManager.get().addEntity(entity);
         } else if(o instanceof P4_EntityDelete p) {
-            // log("Removing Entity object " + p.entityId);
+            //log("Removing Entity object " + p.entityId);
             ClientEntity entity = entityFromId(p.entityId);
             if(entity == null) return;
 
             entity.removalReason = p.reason;
             ClientEntityManager.get().removeEntity(p.entityId);
+            //ExpoLogger.log("REMOVING: " + entity.getEntityType().name() + "-> " + p.entityId);
         } else if(o instanceof P6_EntityPosition p) {
             ClientEntity entity = entityFromId(p.entityId);
             if(entity != null) entity.applyPositionUpdate(p.xPos, p.yPos);

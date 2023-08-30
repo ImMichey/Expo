@@ -42,7 +42,7 @@ public class ClientEntityManager {
     private int clientEntityId = -1;
 
     /** Method helper */
-    private final List<List<ClientEntity>> listOfEntities;
+    public final List<List<ClientEntity>> listOfEntities;
 
     /** Selectable entities */
     private final HashMap<ClientEntity, Object[]> selectableEntities;
@@ -106,6 +106,8 @@ public class ClientEntityManager {
                 }
 
                 toAdd.onCreation();
+            } else {
+                ExpoLogger.log("Entity addition clash: " + toAdd.getEntityType() + "/" + toAdd.entityId);
             }
         }
 
@@ -116,7 +118,10 @@ public class ClientEntityManager {
             int entityId = operationIterator.next();
 
             ClientEntity entity = idEntityMap.get(entityId);
-            if(entity == null) continue;
+            if(entity == null) {
+                ExpoLogger.log("Entity removal clash: " + entityId + " (not existing)");
+                continue;
+            }
 
             boolean poll = true;
 
@@ -358,8 +363,6 @@ public class ClientEntityManager {
     }
 
     public List<List<ClientEntity>> getEntitiesByType(ClientEntityType... types) {
-        listOfEntities.clear();
-
         for(ClientEntityType type : types) {
             listOfEntities.add(getEntitiesByType(type));
         }
@@ -368,8 +371,6 @@ public class ClientEntityManager {
     }
 
     public List<List<ClientEntity>> getEntitiesByType(List<ClientEntityType> list) {
-        listOfEntities.clear();
-
         for(ClientEntityType type : list) {
             listOfEntities.add(getEntitiesByType(type));
         }

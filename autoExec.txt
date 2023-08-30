@@ -1,5 +1,6 @@
-/delsave dev
+#/delsave dev
 /world dev
+#/connect 167.86.107.202
 #/time 0
 #/connect localhost
 #/noise

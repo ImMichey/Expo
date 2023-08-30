@@ -71,6 +71,8 @@ public class ContactAnimator {
                         }
                     }
                 }
+
+                parent.entityManager().listOfEntities.clear();
             }
 
             if(doSquish) {
