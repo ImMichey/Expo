@@ -449,16 +449,6 @@ public class ClientEntityManager {
             if(entities[0] != null && entities[1] != null && entities[2] != null && entities[3] != null) {
                 return null;
             }
-
-            /*
-            if(dyn.layerIds.length == 4) {
-                for(int id : dyn.layerIds) {
-                    if(id >= (minus + 18) && id <= (minus + 21)) {
-                        return null;
-                    }
-                }
-            }
-            */
         }
 
         ClientPlayer player = ClientPlayer.getLocalPlayer();

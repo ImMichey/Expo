@@ -160,7 +160,7 @@ public class ClientPlayer extends ClientEntity {
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
-        disableTextureCentering = true;
+        //disableTextureCentering = true;
 
         if(player) {
             RenderContext.get().expoCamera.center(clientPosX, clientPosY);
@@ -627,8 +627,8 @@ public class ClientPlayer extends ClientEntity {
         // Draw punch (debug for now)
         if(punchAnimation || drawLooseArm) {
             int px = punchAnimation ? (punchDirection == 1 ? 8 : 0) : (playerDirection == 1 ? 8 : 0);
-            float x = clientPosX + px;
-            float y = clientPosY + offsetY;
+            float x = finalDrawPosX + px;
+            float y = finalDrawPosY + offsetY;
             float originX = tex_punch_arm.getRegionWidth() * 0.5f;
             float originY = tex_punch_arm.getRegionHeight() - 1;
             float width = tex_punch_arm.getRegionWidth();
@@ -639,21 +639,21 @@ public class ClientPlayer extends ClientEntity {
 
             rc.batch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
         } else {
-            rc.batch.draw(draw_tex_arm_right, clientPosX + offsetXR, clientPosY + offsetY);
+            rc.batch.draw(draw_tex_arm_right, finalDrawPosX + offsetXR, finalDrawPosY + offsetY);
         }
 
         if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
-            rc.batch.draw(draw_tex_base, clientPosX, clientPosY);
+            rc.batch.draw(draw_tex_base, finalDrawPosX, finalDrawPosY);
             if(pickupAnimation) {
-                rc.batch.draw(draw_tex_arm_left, clientPosX + offsetXL - (flipped ? 2 : 0), clientPosY + offsetY - 2);
+                rc.batch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL - (flipped ? 2 : 0), finalDrawPosY + offsetY - 2);
             } else {
-                rc.batch.draw(draw_tex_arm_left, clientPosX + offsetXL, clientPosY + offsetY);
+                rc.batch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL, finalDrawPosY + offsetY);
             }
 
             if(holdingArmorHeadId != -1) {
                 ItemMapping map = ItemMapper.get().getMapping(holdingArmorHeadId);
                 int dir = punchAnimation ? punchDirection : playerDirection;
-                rc.batch.draw(holdingArmorHeadTexture, clientPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, clientPosY + 13 + offsetY + map.armorRender.offsetY);
+                rc.batch.draw(holdingArmorHeadTexture, finalDrawPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, finalDrawPosY + 13 + offsetY + map.armorRender.offsetY);
             }
 
             if(damageTint) rc.batch.setColor(Color.WHITE);
@@ -663,7 +663,7 @@ public class ClientPlayer extends ClientEntity {
 
         { // Draw player blink
             if(playerBlinkDelta < 0) {
-                rc.batch.draw(tex_blink, clientPosX + 5 - (direction() == 0 ? 4 : 0), clientPosY + offsetY + 13);
+                rc.batch.draw(tex_blink, finalDrawPosX + 5 - (direction() == 0 ? 4 : 0), finalDrawPosY + offsetY + 13);
             }
         }
 
@@ -686,7 +686,7 @@ public class ClientPlayer extends ClientEntity {
             rc.useArrayBatch();
 
             { // Base body shadow
-                Affine2 shadowBase = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
+                Affine2 shadowBase = ShadowUtils.createSimpleShadowAffine(finalDrawPosX, finalDrawPosY);
                 rc.arraySpriteBatch.drawGradient(draw_tex_shadow_base, draw_tex_shadow_base.getRegionWidth(), draw_tex_shadow_base.getRegionHeight(), shadowBase);          // check
             }
 
@@ -701,7 +701,7 @@ public class ClientPlayer extends ClientEntity {
                     float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
 
                     int dir = punchAnimation ? punchDirection : playerDirection;
-                    Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX, clientPosY, dir == 1 ? 0 : -1, 13 + offsetY);
+                    Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, dir == 1 ? 0 : -1, 13 + offsetY);
                     rc.arraySpriteBatch.drawGradientCustomColor(holdingArmorHeadTexture, holdingArmorHeadTexture.getRegionWidth(), holdingArmorHeadTexture.getRegionHeight(), shadowBase, topColor, bottomColor);
                 }
             }
@@ -729,8 +729,8 @@ public class ClientPlayer extends ClientEntity {
                     float shadowFixY = h * 0.5f * (1f - map.heldRender.scaleY);
 
                     Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(
-                            clientPosX,
-                            clientPosY,
+                            finalDrawPosX,
+                            finalDrawPosY,
                             shadowFixX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
                             shadowFixY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse),
                             holdingItemSprite.getOriginX() - shadowFixX,
@@ -792,7 +792,7 @@ public class ClientPlayer extends ClientEntity {
                 float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
                 float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
 
-                Affine2 shadowLeftArm = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX, clientPosY, _usex, _usey);
+                Affine2 shadowLeftArm = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, _usex, _usey);
                 rc.arraySpriteBatch.drawGradientCustomColor(draw_tex_arm_left, draw_tex_arm_left.getRegionWidth(), draw_tex_arm_left.getRegionHeight(), shadowLeftArm, topColor, bottomColor);
             }
 
@@ -826,7 +826,7 @@ public class ClientPlayer extends ClientEntity {
                     float originX = tex_punch_arm.getRegionWidth() * 0.5f;
                     float originY = tex_punch_arm.getRegionHeight() - 1;
 
-                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(clientPosX, clientPosY, direction() == 1 ? 8 : 0, offsetY, originX, originY, getFinalArmRotation());
+                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(finalDrawPosX, finalDrawPosY, direction() == 1 ? 8 : 0, offsetY, originX, originY, getFinalArmRotation());
                     rc.arraySpriteBatch.drawGradientCustomColor(tex_shadow_punch_arm, tex_shadow_punch_arm.getRegionWidth(), tex_shadow_punch_arm.getRegionHeight(), shadowRightArm, topColor, bottomColor);
                 } else {
                     float t = 0f + n * 10;
@@ -835,7 +835,7 @@ public class ClientPlayer extends ClientEntity {
                     float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
                     float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
 
-                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX, clientPosY, offsetXR, offsetY);
+                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, offsetXR, offsetY);
                     rc.arraySpriteBatch.drawGradientCustomColor(tex_shadow_arm_right, tex_shadow_arm_right.getRegionWidth(), tex_shadow_arm_right.getRegionHeight(), shadowRightArm, topColor, bottomColor);
                 }
             }
@@ -912,8 +912,8 @@ public class ClientPlayer extends ClientEntity {
                 float rfy = h * 0.5f;
 
                 holdingItemSprite.setPosition(
-                        clientPosX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
-                        clientPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
+                        finalDrawPosX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
+                        finalDrawPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
                 );
 
                 holdingItemSprite.draw(rc.batch);
@@ -935,7 +935,7 @@ public class ClientPlayer extends ClientEntity {
         if(holdingItemId == -1) return;
         ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
         holdingItemSprite = new Sprite(mapping.heldRender.textureRegion);
-        holdingItemSprite.setPosition(clientPosX, clientPosY);
+        holdingItemSprite.setPosition(finalDrawPosX, finalDrawPosY);
         holdingItemSprite.setScale(mapping.heldRender.scaleX, mapping.heldRender.scaleY);
         holdingItemSprite.setOrigin(
                 holdingItemSprite.getWidth() * 0.5f,
@@ -944,11 +944,11 @@ public class ClientPlayer extends ClientEntity {
     }
 
     public float toMouthX() {
-        return clientPosX + (direction() == 1 ? 6.5f : 2.5f);
+        return finalDrawPosX + (direction() == 1 ? 6.5f : 2.5f);
     }
 
     public float toMouthY() {
-        return clientPosY + 10.5f + offsetY;
+        return finalDrawPosY + 10.5f + offsetY;
     }
 
     private float getFinalArmRotation() {

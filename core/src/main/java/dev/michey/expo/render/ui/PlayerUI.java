@@ -719,7 +719,7 @@ public class PlayerUI {
                 BitmapFont useFont = rc.m5x7_border_use;
                 glyphLayout.setText(useFont, player.username);
 
-                Vector2 hudPos = ClientUtils.entityPosToHudPos(player.clientPosX + 5, player.clientPosY + 32);
+                Vector2 hudPos = ClientUtils.entityPosToHudPos(player.clientPosX, player.clientPosY + 32);
                 int usx = (int) (hudPos.x - glyphLayout.width * 0.5f);
                 int usy = (int) (hudPos.y + glyphLayout.height);
                 useFont.draw(rc.hudBatch, player.username, usx, usy);

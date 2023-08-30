@@ -45,8 +45,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public PlayerSaveFile playerSaveFile;
     public String username;
 
-    public float playerSpeed = 66f;
-    public final float sprintMultiplier = 1.5f;
+    public float playerSpeed = 56f;
+    public final float sprintMultiplier = 1.6f;
     public int xDir = 0;
     public int yDir = 0;
     public boolean sprinting;
@@ -100,7 +100,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     @Override
     public void onCreation() {
         // add physics body of player to world
-        physicsBody = new EntityPhysicsBox(this, 2, 0, 6, 6);
+        physicsBody = new EntityPhysicsBox(this, -3, 0, 6, 6);
         hitbox = EntityHitboxMapper.get().getFor(ServerEntityType.PLAYER);
     }
 
@@ -314,7 +314,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     if(hitEntities.contains(se.entityId)) continue;
                     EntityHitbox hitbox = ((DamageableEntity) se).getEntityHitbox();
 
-                    float ox = posX + 5f;
+                    float ox = posX;
                     float oy = posY + 7f;
 
                     if(ServerUtils.rectIsInArc(ox, oy, hitbox.xOffset + se.posX, hitbox.yOffset + se.posY, hitbox.width, hitbox.height, usePunchRange, convertedStartAngle, convertedAngle, usePunchDirection, usePunchSpan)) {
@@ -815,7 +815,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     public float toFeetCenterX() {
-        return posX + 5.0f;
+        return posX;
     }
 
     public float toFeetCenterY() {
