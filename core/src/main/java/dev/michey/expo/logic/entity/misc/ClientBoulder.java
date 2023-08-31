@@ -1,16 +1,17 @@
 package dev.michey.expo.logic.entity.misc;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientRock extends ClientEntity implements SelectableEntity {
+public class ClientBoulder extends ClientEntity implements SelectableEntity {
 
     private int variant;
     private TextureRegion texture;
@@ -21,8 +22,13 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
 
     @Override
     public void onCreation() {
-        texture = tr("entity_rockn_" + variant);
-        ao = tr("entity_rock_ao_" + variant);
+        String texName = "entity_boulder";
+
+        if(variant == 2) {
+            texName += "_coal";
+        }
+        texture = tr(texName);
+        ao = tr("entity_boulder_ao");
         shadowMask = texture;
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
@@ -32,6 +38,10 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("stone_hit");
+
+        if(selected && newHealth <= 0) {
+            CameraShake.invoke(1.0f, 0.33f);
+        }
     }
 
     @Override
@@ -72,7 +82,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth(2);
+            updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
@@ -95,7 +105,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity {
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.ROCK;
+        return ClientEntityType.BOULDER;
     }
 
 }

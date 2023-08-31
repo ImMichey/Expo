@@ -43,6 +43,7 @@ public enum ClientEntityType {
     MAGGOT(23, "Maggot", ServerEntityType.MAGGOT),
     FENCE_STICK(24, "FenceStick", ServerEntityType.FENCE_STICK),
     CROP_WHEAT(25, "CropWheat", ServerEntityType.CROP_WHEAT),
+    BOULDER(26, "Boulder", ServerEntityType.BOULDER),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -103,6 +104,7 @@ public enum ClientEntityType {
             case 23 -> new ClientMaggot();
             case 24 -> new ClientFenceStick();
             case 25 -> new ClientCropWheat();
+            case 26 -> new ClientBoulder();
             default -> null;
         };
     }

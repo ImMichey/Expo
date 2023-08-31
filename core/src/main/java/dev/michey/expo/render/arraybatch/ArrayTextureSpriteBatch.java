@@ -1350,6 +1350,55 @@ public class ArrayTextureSpriteBatch implements Batch {
     }
 
     public static final float TRANSPARENT_BITS = Color.toFloatBits(0f, 0f, 0f, 0f);
+    public static final float SEMI_TRANSPARENT_BITS = Color.toFloatBits(0f, 0f, 0f, 0.5f);
+
+    public void drawGradientInverted(TextureRegion region, float x, float y) {
+        if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before draw.");
+
+        float[] vertices = this.vertices;
+
+        flushIfFull();
+
+        final float ti = activateTexture(region.getTexture());
+
+        final float fx2 = x + region.getRegionWidth();
+        final float fy2 = y + region.getRegionHeight();
+        final float u = region.getU() * subImageScaleWidth;
+        final float v = region.getV2() * subImageScaleHeight;
+        final float u2 = region.getU2() * subImageScaleWidth;
+        final float v2 = region.getV() * subImageScaleHeight;
+
+        float top = BLACK_BITS;
+        float bottom = Color.WHITE_FLOAT_BITS;
+
+        vertices[idx++] = x;
+        vertices[idx++] = y;
+        vertices[idx++] = bottom;
+        vertices[idx++] = u;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = x;
+        vertices[idx++] = fy2;
+        vertices[idx++] = top;
+        vertices[idx++] = u;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2;
+        vertices[idx++] = fy2;
+        vertices[idx++] = top;
+        vertices[idx++] = u2;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2;
+        vertices[idx++] = y;
+        vertices[idx++] = bottom;
+        vertices[idx++] = u2;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
+    }
 
     public void drawGradient(TextureRegion region, float width, float height, Affine2 transform) {
         if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before drawGradient.");

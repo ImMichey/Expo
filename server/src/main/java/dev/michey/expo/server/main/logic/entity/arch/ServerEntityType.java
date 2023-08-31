@@ -38,6 +38,7 @@ public enum ServerEntityType {
     MAGGOT(23, "Maggot", false),
     FENCE_STICK(24, "FenceStick", true),
     CROP_WHEAT(25, "CropWheat", true),
+    BOULDER(26, "Boulder", true),
     ;
 
     public final int ENTITY_ID;
@@ -78,6 +79,7 @@ public enum ServerEntityType {
             case 23 -> new ServerMaggot();
             case 24 -> new ServerFenceStick();
             case 25 -> new ServerCropWheat();
+            case 26 -> new ServerBoulder();
             default -> null;
         };
     }
@@ -110,6 +112,7 @@ public enum ServerEntityType {
             case "MAGGOT" -> new ServerMaggot();
             case "FENCESTICK", "FENCE_STICK", "STICKFENCE", "STICK_FENCE" -> new ServerFenceStick();
             case "CROPWHEAT", "CROP_WHEAT", "WHEATCROP", "WHEAT_CROP" -> new ServerCropWheat();
+            case "BOULDER" -> new ServerBoulder();
             default -> null;
         };
     }
