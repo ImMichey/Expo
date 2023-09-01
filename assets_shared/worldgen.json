@@ -241,6 +241,20 @@
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
                             }
+                        },
+                        {
+                            "type": "BOULDER",
+                            "static": true,
+                            "chance": 0.02,
+                            "pds": 24,
+                            "spreadData": {
+                                "spread": [1, 3],
+                                "spreadChance": 0.66,
+                                "spreadDis": [12.0, 28.0],
+                                "spreadType": ["ROCK"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
                         }
                     ]
                 },
@@ -286,6 +300,20 @@
                                 "spread": [1, 1],
                                 "spreadChance": 0.25,
                                 "spreadDis": [16.0, 24.0],
+                                "spreadType": ["ROCK"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        },
+                        {
+                            "type": "BOULDER",
+                            "static": true,
+                            "chance": 0.02,
+                            "pds": 24,
+                            "spreadData": {
+                                "spread": [1, 3],
+                                "spreadChance": 0.66,
+                                "spreadDis": [12.0, 28.0],
                                 "spreadType": ["ROCK"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
@@ -489,6 +517,20 @@
                                 "spread": [1, 1],
                                 "spreadChance": 0.25,
                                 "spreadDis": [16.0, 24.0],
+                                "spreadType": ["ROCK"],
+                                "spreadStatic": true,
+                                "spreadOffsets": [0.0, 0.0]
+                            }
+                        },
+                        {
+                            "type": "BOULDER",
+                            "static": true,
+                            "chance": 0.02,
+                            "pds": 24,
+                            "spreadData": {
+                                "spread": [1, 3],
+                                "spreadChance": 0.66,
+                                "spreadDis": [12.0, 28.0],
                                 "spreadType": ["ROCK"],
                                 "spreadStatic": true,
                                 "spreadOffsets": [0.0, 0.0]
