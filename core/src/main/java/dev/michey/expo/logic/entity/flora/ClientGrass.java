@@ -12,12 +12,13 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientGrass extends ClientEntity implements SelectableEntity {
+public class ClientGrass extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     private final FoliageAnimator foliageAnimator = new FoliageAnimator();
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
@@ -126,10 +127,16 @@ public class ClientGrass extends ClientEntity implements SelectableEntity {
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
+
             rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
             rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment + 2, grass.getWidth(), grass.getHeight() * contactAnimator.squish * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
     }
 
     @Override

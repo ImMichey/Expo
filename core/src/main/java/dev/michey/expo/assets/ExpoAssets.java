@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.log.ExpoLogger;
 
+import java.io.File;
+
 import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ExpoAssets {
@@ -83,18 +85,19 @@ public class ExpoAssets {
         return itemSheet;
     }
 
+    private static final String OUTPUT_SPLIT_FOLDER = "D:\\2021_09_25\\_SavedData\\SavedData06_12_19\\ExpoRes\\tiles\\_convertedSheetToTile" + File.separator;
+
     public void slice(String tileName, boolean singleTile, int startX, int startY, int yTileHeight) {
         TextureRegion tiles = textureRegion("tileset");
         Texture tex = tiles.getTexture();
         if(!tex.getTextureData().isPrepared()) tex.getTextureData().prepare();
         Pixmap pixmap = tex.getTextureData().consumePixmap();
-        Gdx.files.external("convertedTiles").mkdirs();
 
         if(singleTile) {
             TextureRegion tileSingle = new TextureRegion(tiles, startX, startY, 16, yTileHeight);
             Pixmap localPixmap = new Pixmap(16, yTileHeight, pixmap.getFormat());
             localPixmap.drawPixmap(pixmap, 0, 0, tileSingle.getRegionX(), tileSingle.getRegionY(), 16, yTileHeight);
-            FileHandle fh = Gdx.files.external("convertedTiles/" + tileName + ".png");
+            FileHandle fh = Gdx.files.absolute(OUTPUT_SPLIT_FOLDER + tileName + ".png");
             PixmapIO.writePNG(fh, localPixmap);
             localPixmap.dispose();
         } else {
@@ -142,7 +145,7 @@ public class ExpoAssets {
                 TextureRegion toConsume = slices[i];
                 Pixmap localPixmap = new Pixmap(toConsume.getRegionWidth(), toConsume.getRegionHeight(), pixmap.getFormat());
                 localPixmap.drawPixmap(pixmap, 0, 0, toConsume.getRegionX(), toConsume.getRegionY(), toConsume.getRegionWidth(), toConsume.getRegionHeight());
-                FileHandle fh = Gdx.files.external("convertedTiles/" + tileName + "_" + i + ".png");
+                FileHandle fh = Gdx.files.absolute(OUTPUT_SPLIT_FOLDER + tileName + "_" + i + ".png");
                 PixmapIO.writePNG(fh, localPixmap);
                 localPixmap.dispose();
             }

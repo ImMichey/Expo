@@ -10,6 +10,7 @@ import dev.michey.expo.console.ConsoleMessage;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.localserver.ExpoServerLocal;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.render.RenderContext;

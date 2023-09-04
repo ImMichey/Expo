@@ -9,19 +9,21 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class TileMergerX {
+public class TileMergerV2 {
 
     private Pixmap allTilesPixmap;
+
+    private static final String OUTPUT_PATCH_FOLDER = "D:\\2021_09_25\\_SavedData\\SavedData06_12_19\\ExpoRes\\tiles\\_convertedPatchedTiles" + File.separator;
 
     public void prepare() {
         TextureRegion tiles = ExpoAssets.get().findTile("tile_rock_1");
         Texture tex = tiles.getTexture();
         if(!tex.getTextureData().isPrepared()) tex.getTextureData().prepare();
         allTilesPixmap = tex.getTextureData().consumePixmap();
-        Gdx.files.external("convertedMergedTiles").mkdirs();
     }
 
     public void createFreshTile(int[] layerIds, String elevationTextureName, int variation) {
@@ -98,6 +100,7 @@ public class TileMergerX {
         }
 
         if(elevationTextureName != null) {
+            ExpoLogger.log(elevationTextureName);
             TextureRegion elevationTexture = ExpoAssets.get().findTile(elevationTextureName);
             pixmap.drawPixmap(allTilesPixmap,
                     0, 16,
@@ -114,18 +117,58 @@ public class TileMergerX {
     public HashMap<String, int[]> createAllPossibleVariations() {
         HashMap<String, int[]> possibleVariations = new HashMap<>();
 
-        for(int i = 0; i < 256; i++) { // 2^8
-            int tid = i / 16;
-            int tis = i % 16;
+        int[][] handmade = new int[][] {
+                new int[] {0},
+                new int[] {1},
+                new int[] {20, 5, 18, 11},
+                new int[] {20, 5, 14, 19},
+                new int[] {20, 5, 14, 11},
+                new int[] {20, 5, 6, 3},
+                new int[] {20, 9, 6, 7},
+                new int[] {20, 21, 18, 19},
+                new int[] {20, 21, 18, 11},
+                new int[] {20, 21, 14, 19},
+                new int[] {20, 21, 14, 11},
+                new int[] {20, 21, 6, 3},
+                new int[] {20, 9, 18, 15},
+                new int[] {20, 9, 14, 15},
+                new int[] {20, 5, 18, 19},
+                new int[] {16, 17, 18, 15},
+                new int[] {16, 17, 14, 15},
+                new int[] {16, 17, 6, 7},
+                new int[] {16, 13, 18, 19},
+                new int[] {16, 13, 18, 11},
+                new int[] {16, 13, 14, 19},
+                new int[] {16, 13, 14, 11},
+                new int[] {16, 13, 6, 3},
+                new int[] {12, 17, 10, 15},
+                new int[] {12, 17, 2, 7},
+                new int[] {12, 13, 10, 19},
+                new int[] {12, 13, 10, 11},
+                new int[] {12, 13, 2, 3},
+                new int[] {8, 21, 18, 19},
+                new int[] {8, 21, 18, 11},
+                new int[] {8, 21, 14, 19},
+                new int[] {8, 21, 14, 11},
+                new int[] {8, 21, 6, 3},
+                new int[] {8, 9, 18, 15},
+                new int[] {8, 9, 14, 15},
+                new int[] {8, 9, 6, 7},
+                new int[] {8, 5, 18, 19},
+                new int[] {8, 5, 18, 11},
+                new int[] {8, 5, 14, 19},
+                new int[] {8, 5, 6, 3},
+                new int[] {4, 21, 10, 19},
+                new int[] {4, 21, 10, 11},
+                new int[] {4, 21, 2, 3},
+                new int[] {4, 9, 10, 15},
+                new int[] {4, 9, 2, 7},
+                new int[] {4, 5, 10, 19},
+                new int[] {4, 5, 10, 11},
+                new int[] {4, 5, 2, 3}
+        };
 
-            int[] ids = ServerTile.runTextureGrab(0, new int[] {tis, tid});
-            possibleVariations.put(Arrays.toString(ids), ids);
-        }
-
-        ExpoLogger.log("Found " + possibleVariations.size() + " possible variations.");
-        for(String k : possibleVariations.keySet()) {
-            ExpoLogger.log(k);
-        }
+        for(int[] v : handmade) possibleVariations.put(Arrays.toString(v), v);
         return possibleVariations;
     }
 
@@ -138,7 +181,7 @@ public class TileMergerX {
     }
 
     public void writeToFile(Pixmap localPixmap, String name) {
-        FileHandle fh = Gdx.files.external("convertedMergedTiles/" + name + ".png");
+        FileHandle fh = Gdx.files.absolute(OUTPUT_PATCH_FOLDER + name + ".png");
         PixmapIO.writePNG(fh, localPixmap);
     }
 

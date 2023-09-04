@@ -4,21 +4,25 @@ import java.util.HashMap;
 
 public enum TileLayerType {
 
-    EMPTY(0,            new int[] {-1},         new String[] {"EMPTY"},                                 false),
-    SOIL(1,             new int[] {0},          new String[] {"SOIL"},                                  false),
-    SOIL_HOLE(2,        new int[] {90, 111},    new String[] {"SOIL_HOLE"},                             false),
-    SAND(3,             new int[] {23, 44},     new String[] {"SAND", "DESERT"},                        false),
-    DESERT(4,           new int[] {23, 44},     new String[] {"DESERT", "SAND"},                        false),
-    GRASS(5,            new int[] {1, 22},      new String[] {"GRASS", "FOREST"},                       false),
-    FOREST(6,           new int[] {112, 133},   new String[] {"FOREST", "GRASS"},                       false),
-    WATER(7,            new int[] {46, 67},     new String[] {"WATER", "WATER_SANDY"},                  false),
-    WATER_DEEP(8,       new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER", "WATER_SANDY"},    false),
-    ROCK(9,             new int[] {156, 177},   new String[] {"ROCK"},                                  true),
-    SOIL_FARMLAND(10,   new int[] {178, 199},   new String[] {"SOIL_FARMLAND"},                         false),
-    OAK_PLANK(11,       new int[] {200, 221},   new String[] {"OAK_PLANK"},                             false),
-    DIRT(12,            new int[] {222, 243},   new String[] {"DIRT"},                                  true),
-    WATER_SANDY(13,     new int[] {244, 265},   new String[] {"WATER_SANDY", "WATER"},                  false),
-    OAKPLANKWALL(14,    new int[] {266, 287},   new String[] {"OAKPLANKWALL"},                          true),
+    EMPTY(0,                new int[] {-1},         new String[] {"EMPTY"},                                 false),
+    SOIL(1,                 new int[] {0},          new String[] {"SOIL"},                                  false),
+    SOIL_HOLE(2,            new int[] {90, 111},    new String[] {"SOIL_HOLE"},                             false),
+    SAND(3,                 new int[] {23, 44},     new String[] {"SAND", "DESERT"},                        false),
+    DESERT(4,               new int[] {23, 44},     new String[] {"DESERT", "SAND"},                        false),
+    GRASS(5,                new int[] {1, 22},      new String[] {"GRASS", "FOREST"},                       false),
+    FOREST(6,               new int[] {112, 133},   new String[] {"FOREST", "GRASS"},                       false),
+    WATER(7,                new int[] {46, 67},     new String[] {"WATER", "WATER_SANDY"},                  false),
+    WATER_DEEP(8,           new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER", "WATER_SANDY", "WATER_OVERLAY"},    false),
+    ROCK(9,                 new int[] {156, 177},   new String[] {"ROCK"},                                  true),
+    SOIL_FARMLAND(10,       new int[] {178, 199},   new String[] {"SOIL_FARMLAND"},                         false),
+    OAK_PLANK(11,           new int[] {200, 221},   new String[] {"OAK_PLANK"},                             false),
+    DIRT(12,                new int[] {222, 243},   new String[] {"DIRT"},                                  true),
+    WATER_SANDY(13,         new int[] {244, 265},   new String[] {"WATER_SANDY", "WATER"},                  false),
+    OAKPLANKWALL(14,        new int[] {266, 287},   new String[] {"OAKPLANKWALL"},                          true),
+    WATER_OVERLAY(15,       new int[] {288, 309},   new String[] {"WATER_OVERLAY", "WATER_DEEP"},           false),
+    SAND_WATERLOGGED(16,    new int[] {310, 331},   new String[] {"SAND_WATERLOGGED"},                      false),
+    SOIL_DEEP_WATERLOGGED(17,new int[] {332, 353},  new String[] {"SOIL_DEEP_WATERLOGGED"},                 false),
+    SOIL_WATERLOGGED(18,    new int[] {354},        new String[] {"SOIL_WATERLOGGED"},                      false),
     ;
 
     public final int SERIALIZATION_ID;
@@ -58,6 +62,10 @@ public enum TileLayerType {
             case 12 -> DIRT;
             case 13 -> WATER_SANDY;
             case 14 -> OAKPLANKWALL;
+            case 15 -> WATER_OVERLAY;
+            case 16 -> SAND_WATERLOGGED;
+            case 17 -> SOIL_DEEP_WATERLOGGED;
+            case 18 -> SOIL_WATERLOGGED;
             default -> EMPTY;
         };
     }
@@ -87,7 +95,7 @@ public enum TileLayerType {
 
     public static boolean isWater(TileLayerType type) {
         return switch (type) {
-            case WATER, WATER_DEEP, WATER_SANDY -> true;
+            case WATER, WATER_DEEP, WATER_SANDY, WATER_OVERLAY, SAND_WATERLOGGED, SOIL_DEEP_WATERLOGGED, SOIL_WATERLOGGED -> true;
             default -> false;
         };
     }
@@ -111,15 +119,18 @@ public enum TileLayerType {
     }
 
     public static TileLayerType biomeToLayer0(BiomeType type) {
-        return SOIL;
+        return switch (type) {
+            case PUDDLE, LAKE, RIVER, OCEAN -> SOIL_WATERLOGGED;
+            default -> SOIL;
+        };
     }
 
     public static TileLayerType biomeToLayer1(BiomeType type) {
         return switch (type) {
             case FOREST, DENSE_FOREST, PLAINS, WHEAT_FIELDS -> FOREST;
-            case LAKE, RIVER, PUDDLE -> SOIL;
-            case OCEAN, OCEAN_DEEP, BEACH -> SAND;
-            case DESERT -> DESERT;
+            case BEACH -> SAND;
+            case OCEAN_DEEP -> SOIL_DEEP_WATERLOGGED;
+            case PUDDLE, LAKE, RIVER, OCEAN -> SOIL_WATERLOGGED;
             default -> EMPTY;
         };
     }
@@ -128,9 +139,10 @@ public enum TileLayerType {
         return switch (type) {
             case ROCK -> ROCK;
             case DIRT -> DIRT;
-            case OCEAN -> WATER_SANDY;
-            case LAKE, RIVER, PUDDLE -> WATER;
-            case OCEAN_DEEP -> WATER_DEEP;
+            case RIVER, PUDDLE, OCEAN_DEEP, OCEAN, LAKE -> WATER_OVERLAY;
+            //case OCEAN -> WATER_SANDY;
+            //case LAKE, RIVER, PUDDLE -> WATER;
+            //case OCEAN_DEEP -> WATER_DEEP;
             default -> EMPTY;
         };
     }

@@ -14,11 +14,11 @@ import dev.michey.expo.util.ParticleColorMap;
 public class ClientLilypad extends ClientEntity implements SelectableEntity {
 
     private int variant;
-    private TextureRegion texture;
+    public TextureRegion texture;
     private TextureRegion selectionTexture;
     private float[] interactionPointArray;
     private float animationDelta = MathUtils.random(100f);
-    private float animationSine;
+    public float animationSine;
 
     private float SPEED = 5.0f;
     private float STRENGTH = 1.0f;

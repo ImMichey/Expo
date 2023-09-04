@@ -44,6 +44,10 @@ public class ImGuiExpo {
     private final float[] currentColor = new float[3];
     private final ImBoolean checkPrecisePositionData = new ImBoolean(false);
     private final ImBoolean checkSlotIndices = new ImBoolean(false);
+    // ===== WATER =====
+    private final float[] waterReflectionSpeed = new float[1];
+    private final float[] waterSkewX = new float[1];
+    private final float[] waterSkewY = new float[1];
     private final float[] waterSpeed = new float[1];
     private final float[] waterAlpha = new float[1];
     private final float[] contrast = new float[1];
@@ -115,6 +119,10 @@ public class ImGuiExpo {
             sunriseColor[0] = w.COLOR_AMBIENT_SUNRISE.r;
             sunriseColor[1] = w.COLOR_AMBIENT_SUNRISE.g;
             sunriseColor[2] = w.COLOR_AMBIENT_SUNRISE.b;
+
+            waterReflectionSpeed[0] = r.waterReflectionSpeed;
+            waterSkewX[0] = r.waterSkewX;
+            waterSkewY[0] = r.waterSkewY;
 
             waterColor[0] = r.waterColor[0];
             waterColor[1] = r.waterColor[1];
@@ -414,6 +422,10 @@ public class ImGuiExpo {
             ImGui.separator();
 
             if(ImGui.treeNode("Water")) {
+                if(ImGui.sliderFloat("Water Reflection Speed", waterReflectionSpeed, 1.0f, 128.0f)) r.waterReflectionSpeed = waterReflectionSpeed[0];
+                if(ImGui.sliderFloat("Water Reflection Skew X", waterSkewX, 0.5f, 10.0f)) r.waterSkewX = waterSkewX[0];
+                if(ImGui.sliderFloat("Water Reflection Skew Y", waterSkewY, 0.5f, 10.0f)) r.waterSkewY = waterSkewY[0];
+
                 if(ImGui.sliderFloat("Water Alpha", waterAlpha, 0.0f, 1.0f)) {
                     r.waterAlpha = waterAlpha[0];
                 }

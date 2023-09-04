@@ -71,9 +71,12 @@ public class RenderContext {
     public float waterSpeed = 0.4f;
     public float brightness = 0.5f;
     public float contrast = 0.5f;
-    public float[] waterColor = new float[] {0.0f, 194f / 255f, 1.0f};
+    public float[] waterColor = new float[] {0f / 255f, 147f / 255f, 255f / 255f};
     public float waterDelta;
-    public float waterAlpha = 0.17f;
+    public float waterAlpha = 0.52f;
+    public float waterSkewX = 6.25f;
+    public float waterSkewY = 6.25f;
+    public float waterReflectionSpeed = 26.0f;
 
     /** Shaders */
     public ShaderProgram DEFAULT_GLES3_SHADER;          // Should be used by all regular batches.
@@ -84,6 +87,8 @@ public class RenderContext {
     public ShaderProgram waterShader;
     public ShaderProgram outlineShader;
     public ShaderProgram grassShader;
+    public ShaderProgram waterDistortionShader;
+    public ShaderProgram simplePassthroughShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -295,6 +300,8 @@ public class RenderContext {
         waterShader = compileShader("gl3/water");
         outlineShader = compileShader("gl3/outline");
         grassShader = compileShader("gl3/grass");
+        waterDistortionShader = compileShader("gl3/water_distortion");
+        simplePassthroughShader = compileShader("gl3/simple_passthrough");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         lightEngine = new ExpoLightEngine();
@@ -526,6 +533,14 @@ public class RenderContext {
 
     public TextureRegion getNumberOutline(int number) {
         return numbersOutline[number];
+    }
+
+    public String dump() {
+        return "batch: " + batch.maxSpritesInBatch +
+                " arraySpriteBatch" + arraySpriteBatch.maxSpritesInBatch +
+                " polygonTileBatch" + polygonTileBatch.maxTrianglesInBatch +
+                " hudBatch" + hudBatch.maxSpritesInBatch
+                ;
     }
 
     private ShaderProgram compileShader(String key) {

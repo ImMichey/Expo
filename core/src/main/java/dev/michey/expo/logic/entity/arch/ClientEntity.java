@@ -71,6 +71,7 @@ public abstract class ClientEntity {
     public float finalTextureStartX, finalTextureStartY;        // The world position where the texture is starting visually
     public float finalTextureRootX, finalTextureRootY;          // The world position where the texture has its root visually (feet)
     public float finalSelectionDrawPosX, finalSelectionDrawPosY;// The world position where to draw the selection texture at
+    public boolean drawReflection = false;
 
     /** ClientEntity base methods */
     public abstract void onCreation();
@@ -370,6 +371,10 @@ public abstract class ClientEntity {
         if(rc.verticesInBounds(vertices)) {
             rc.arraySpriteBatch.drawGradientCustomVertices(texture, texture.getRegionWidth(), texture.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
+    }
+
+    public void calculateReflection() {
+
     }
 
     public void readEntityDataUpdate(Object[] payload) {

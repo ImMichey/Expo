@@ -60,27 +60,60 @@ public class ClientDynamicTilePart {
         }
     }
 
+    public boolean isFullTile() {
+        return switch (layerIds[0]) {
+            case 1, 23, 112, 133, 156, 288 -> true;
+            default -> false;
+        };
+    }
+
     private static final float[] n = new float[] {0, 0, 0, 0};
 
-    public void draw(RenderContext r, Pair[] displacementPairs, float grassColor, float[] ambientOcclusion) {
+    public void drawWater(RenderContext r, Pair[] displacementPairs) {
         if(texture.length == 1) {
             if(texture[0] == null) return;
 
-            r.polygonTileBatch.draw(texture[0], x, y, 16, 16, grassColor, ambientOcclusion);
+            r.batch.draw(texture[0], x, y, 16, 16);
         } else {
             if(displacementPairs == null) {
-                r.polygonTileBatch.draw(texture[0], x, y, 8, 8, grassColor, n);
-                r.polygonTileBatch.draw(texture[1], x + 8, y, 8, 8, grassColor, n);
-                r.polygonTileBatch.draw(texture[2], x , y + 8, 8, 8, grassColor, n);
-                r.polygonTileBatch.draw(texture[3], x + 8, y + 8, 8, 8, grassColor, n);
+                r.batch.draw(texture[0], x, y, 8, 8);
+                r.batch.draw(texture[1], x + 8, y, 8, 8);
+                r.batch.draw(texture[2], x , y + 8, 8, 8);
+                r.batch.draw(texture[3], x + 8, y + 8, 8, 8);
             } else {
                 float val = ExpoClientContainer.get().getClientWorld().getClientChunkGrid().interpolation;
 
-                r.polygonTileBatch.draw(texture[0], x + val * (int) displacementPairs[0].key, y + val * (int) displacementPairs[0].value, 8, 8, grassColor, n);
-                r.polygonTileBatch.draw(texture[1], x + 8 + val * (int) displacementPairs[1].key, y + val * (int) displacementPairs[1].value, 8, 8, grassColor, n);
-                r.polygonTileBatch.draw(texture[2], x + val * (int) displacementPairs[2].key, y + 8 + val * (int) displacementPairs[2].value, 8, 8, grassColor, n);
-                r.polygonTileBatch.draw(texture[3], x + 8 + val * (int) displacementPairs[3].key, y + 8 + val * (int) displacementPairs[3].value, 8, 8, grassColor, n);
+                r.batch.draw(texture[0], x + val * (int) displacementPairs[0].key, y + val * (int) displacementPairs[0].value, 8, 8);
+                r.batch.draw(texture[1], x + 8 + val * (int) displacementPairs[1].key, y + val * (int) displacementPairs[1].value, 8, 8);
+                r.batch.draw(texture[2], x + val * (int) displacementPairs[2].key, y + 8 + val * (int) displacementPairs[2].value, 8, 8);
+                r.batch.draw(texture[3], x + 8 + val * (int) displacementPairs[3].key, y + 8 + val * (int) displacementPairs[3].value, 8, 8);
             }
+        }
+    }
+
+    public void drawSimple() {
+        RenderContext r = RenderContext.get();
+
+        if(texture.length == 1) {
+            if(texture[0] == null) return;
+            r.batch.draw(texture[0], x, y, 16, 16);
+        } else {
+            r.batch.draw(texture[0], x, y, 8, 8);
+            r.batch.draw(texture[1], x + 8, y, 8, 8);
+            r.batch.draw(texture[2], x , y + 8, 8, 8);
+            r.batch.draw(texture[3], x + 8, y + 8, 8, 8);
+        }
+    }
+
+    public void draw(RenderContext r, float grassColor, float[] ambientOcclusion) {
+        if(texture.length == 1) {
+            if(texture[0] == null) return;
+            r.polygonTileBatch.draw(texture[0], x, y, 16, 16, grassColor, ambientOcclusion);
+        } else {
+            r.polygonTileBatch.draw(texture[0], x, y, 8, 8, grassColor, n);
+            r.polygonTileBatch.draw(texture[1], x + 8, y, 8, 8, grassColor, n);
+            r.polygonTileBatch.draw(texture[2], x , y + 8, 8, 8, grassColor, n);
+            r.polygonTileBatch.draw(texture[3], x + 8, y + 8, 8, 8, grassColor, n);
         }
     }
 

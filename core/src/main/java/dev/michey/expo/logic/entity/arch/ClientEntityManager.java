@@ -13,6 +13,7 @@ import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
@@ -106,6 +107,10 @@ public class ClientEntityManager {
                 }
 
                 toAdd.onCreation();
+
+                if(toAdd instanceof ReflectableEntity reflectableEntity) {
+                    toAdd.calculateReflection();
+                }
             } else {
                 ExpoLogger.log("Entity addition clash: " + toAdd.getEntityType() + "/" + toAdd.entityId);
             }
@@ -323,9 +328,6 @@ public class ClientEntityManager {
 
         if(rc.batch.isDrawing()) rc.batch.end();
         if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
-        if(Gdx.input.isKeyJustPressed(Input.Keys.O)) {
-            ClientUtils.takeScreenshot("entityTest");
-        }
         rc.batch.setShader(null);
         rc.arraySpriteBatch.setShader(null);
     }

@@ -899,6 +899,54 @@ public class ArrayTextureSpriteBatch implements Batch {
         vertices[idx++] = ti;
     }
 
+    public void drawTest (TextureRegion region, float x, float y, float width, float height) {
+
+        if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before draw.");
+
+        float[] vertices = this.vertices;
+
+        flushIfFull();
+
+        final float ti = activateTexture(region.getTexture());
+
+        final float fx2 = x + width;
+        final float fy2 = y + height;
+        final float u = region.getU() * subImageScaleWidth;
+        final float v = region.getV() * subImageScaleHeight;
+        final float u2 = region.getU2() * subImageScaleWidth;
+        final float v2 = region.getV2() * subImageScaleHeight;
+
+        float color = this.colorPacked;
+
+        vertices[idx++] = x;
+        vertices[idx++] = y;
+        vertices[idx++] = color;
+        vertices[idx++] = u;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = x;
+        vertices[idx++] = fy2;
+        vertices[idx++] = color;
+        vertices[idx++] = u;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2;
+        vertices[idx++] = fy2;
+        vertices[idx++] = color;
+        vertices[idx++] = u2;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2;
+        vertices[idx++] = y;
+        vertices[idx++] = color;
+        vertices[idx++] = u2;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
+    }
+
     public void drawCustomVertices(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
                       float scaleX, float scaleY, float rotation, float vertices1, float vertices2) {
 

@@ -14,6 +14,8 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.flora.ClientLilypad;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -25,6 +27,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -333,6 +336,24 @@ public class ClientWorld {
         }
     }
 
+    private void drawShadowFbo(RenderContext r, ShaderProgram shader, Texture lookupTexture) {
+        r.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        if(shader != null) {
+            shader.bind();
+
+            Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE1);
+            lookupTexture.bind(1);
+            shader.setUniformi("u_lookup", 1);
+
+            Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE0);
+        }
+
+        r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
+        drawFboTexture(r.shadowFbo, shader);
+        r.batch.setColor(Color.WHITE);
+    }
+
     public void renderWorld() {
         RenderContext r = RenderContext.get();
         offset = 0;
@@ -342,25 +363,78 @@ public class ClientWorld {
         r.batch.setShader(r.DEFAULT_GLES3_SHADER);
 
         {
-            // Draw tiles to tiles FBO.
+            // Draw shadows to shadow FBO.
+            r.shadowFbo.begin();
+                transparentScreen();
+                clientEntityManager.renderEntityShadows(r.delta);
+                ClientUtils.takeScreenshot("0-shadowFbo", Input.Keys.G);
+            r.shadowFbo.end();
+        }
+
+        {
+            // Draw non-water tiles to tiles FBO.
             r.tilesFbo.begin();
                 transparentScreen();
-                renderChunkTiles();
+                renderChunkTiles(false);
+                ClientUtils.takeScreenshot("00-post", Input.Keys.G);
+                drawShadowFbo(r, r.simplePassthroughShader, r.tilesFbo.getColorBufferTexture());
+                ClientUtils.takeScreenshot("1-tilesFbo", Input.Keys.G);
             r.tilesFbo.end();
+        }
+
+        {
+            // Draw water tiles, reflections and shadows to waterTilesFbo.
+            r.waterTilesFbo.begin();
+                transparentScreen();
+                renderWaterTiles();
+                drawShadowFbo(r, r.simplePassthroughShader, r.waterTilesFbo.getColorBufferTexture());
+                ClientUtils.takeScreenshot("2-waterTilesFbo", Input.Keys.G);
+            r.waterTilesFbo.end();
+        }
+
+        {
+            // Draw waterTilesFbo to waterReflectionFbo with shader.
+            r.waterReflectionFbo.begin();
+                transparentScreen();
+
+                r.waterDistortionShader.bind();
+                r.waterDistortionShader.setUniformf("u_time", r.deltaTotal * r.waterReflectionSpeed);
+                r.waterDistortionShader.setUniformf("u_screenSize", Gdx.graphics.getWidth() * r.expoCamera.camera.zoom, Gdx.graphics.getHeight() * r.expoCamera.camera.zoom);
+                r.waterDistortionShader.setUniformf("u_cameraPos", r.cameraX, r.cameraY);
+                r.waterDistortionShader.setUniformf("u_waterSkewX", r.waterSkewX);
+                r.waterDistortionShader.setUniformf("u_waterSkewY", r.waterSkewY);
+
+                drawFboTexture(r.waterTilesFbo, r.waterDistortionShader);
+                ClientUtils.takeScreenshot("3-waterReflectionFbo", Input.Keys.G);
+            r.waterReflectionFbo.end();
         }
 
         { // Draw tiles to main FBO.
             r.mainFbo.begin();
                 transparentScreen();
                 r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                drawFboTexture(r.waterReflectionFbo, null);
                 drawFboTexture(r.tilesFbo, null);
                 r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
-                if(Gdx.input.isKeyJustPressed(Input.Keys.G)) {
-                    ClientUtils.takeScreenshot("post");
-                }
             r.mainFbo.end();
         }
 
+        { // Draw water overlay tiles to tiles FBO and re-draw one final time.
+            r.tilesFbo.begin();
+                transparentScreen();
+                renderChunkTiles(true);
+
+                drawShadowFbo(r, r.simplePassthroughShader, r.tilesFbo.getColorBufferTexture());
+                ClientUtils.takeScreenshot("4-tilesFboAgain", Input.Keys.G);
+            r.tilesFbo.end();
+
+            r.mainFbo.begin();
+                drawFboTexture(r.tilesFbo, null);
+            ClientUtils.takeScreenshot("5-final", Input.Keys.G);
+            r.mainFbo.end();
+        }
+
+        /*
         {
             // Draw shadows to shadow FBO.
             r.shadowFbo.begin();
@@ -368,6 +442,7 @@ public class ClientWorld {
                 clientEntityManager.renderEntityShadows(r.delta);
             r.shadowFbo.end();
         }
+         */
 
         {
             // Draw entities to entity FBO.
@@ -380,9 +455,11 @@ public class ClientWorld {
         {
             // Draw shadow FBO to main FBO.
             r.mainFbo.begin();
+                /*
                 r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
                 drawFboTexture(r.shadowFbo, null);
                 r.batch.setColor(Color.WHITE);
+                 */
                 r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
                 drawFboTexture(r.entityFbo, null);
                 r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
@@ -427,6 +504,7 @@ public class ClientWorld {
                 r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE, TILE_SIZE);
                 r.chunkRenderer.end();
 
+                /*
                 var tileMap = ExpoAssets.get().getTileSheet().getTilesetTextureMap();
                 int amount = tileMap.size();
 
@@ -478,6 +556,8 @@ public class ClientWorld {
                 }
 
                 r.hudBatch.end();
+
+                 */
             }
 
             // Render debug shapes
@@ -891,10 +971,57 @@ public class ClientWorld {
         return worldTime >= ExpoTime.DAY && worldTime < ExpoTime.SUNSET;
     }
 
-    private void drawWater() {
+    private void drawWaterRemake() {
         RenderContext r = RenderContext.get();
 
+        r.waterDelta += r.delta * r.waterSpeed;
+
+        r.waterShader.bind();
+        r.waterShader.setUniformf("u_time", r.waterDelta);
+
+        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE1);
+        r.displacementTexture.bind(1);
+        r.waterShader.setUniformi("u_displacement", 1);
+
+        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE0);
+
+        r.batch.begin();
+        r.batch.setShader(r.waterShader);
+        r.batch.setColor(r.waterColor[0], r.waterColor[1], r.waterColor[2], r.waterAlpha);
+
+        r.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        float textureSize = r.waterNoiseTexture.getWidth();
+        float uvAdjusted = 16.0f / textureSize;
+
+        for(ClientChunk chunk : drawChunks) {
+            if(chunk != null && chunk.visibleRender && chunk.chunkContainsWater) {
+                for(int i = 0; i < chunk.dynamicTiles.length; i++) {
+                    ClientDynamicTilePart[] tiles = chunk.dynamicTiles[i];
+                    ClientDynamicTilePart l2 = tiles[2];
+                    boolean waterTile = TileLayerType.isWater(l2.emulatingType);
+                    if(!waterTile) continue;
+
+                    int tx = i % ROW_TILES;
+                    int ty = i / ROW_TILES;
+                    float wx = chunk.chunkDrawBeginX + ExpoShared.tileToPos(tx);
+                    float wy = chunk.chunkDrawBeginY + ExpoShared.tileToPos(ty);
+
+                    float normX = (wx % textureSize) / textureSize;
+                    float normY = (wy % textureSize) / textureSize;
+
+                    r.batch.draw(r.waterNoiseTexture, wx, wy, TILE_SIZE, TILE_SIZE, normX, normY, normX + uvAdjusted, normY + uvAdjusted);
+                }
+            }
+        }
+
         r.batch.end();
+        r.batch.setShader(r.DEFAULT_GLES3_SHADER);
+        r.batch.setColor(Color.WHITE);
+    }
+
+    private void drawWater() {
+        RenderContext r = RenderContext.get();
 
         r.waterDelta += r.delta * r.waterSpeed;
 
@@ -1007,7 +1134,65 @@ public class ClientWorld {
         r.batch.setColor(Color.WHITE);
     }
 
-    private void renderChunkTiles() {
+    private void renderWaterTiles() {
+        if(ClientPlayer.getLocalPlayer() == null) return;
+        RenderContext rc = RenderContext.get();
+
+        rc.batch.begin();
+        rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
+        rc.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        for(ClientChunk chunk : drawChunks) {
+            if(chunk == null || !chunk.visibleRender) continue;
+
+            for(int i = 0; i < chunk.dynamicTiles.length; i++) {
+                ClientDynamicTilePart[] tiles = chunk.dynamicTiles[i];
+                ClientDynamicTilePart l2 = tiles[2];
+                boolean waterTile = TileLayerType.isWater(l2.emulatingType);
+                if(!waterTile) continue;
+
+                ClientDynamicTilePart l0 = tiles[0];
+                ClientDynamicTilePart l1 = tiles[1];
+
+                if(!l1.isFullTile()) {
+                    l0.drawSimple();
+                }
+
+                if(!l2.isFullTile() ||
+                        l1.emulatingType == TileLayerType.SAND_WATERLOGGED ||
+                        l1.emulatingType == TileLayerType.SOIL_DEEP_WATERLOGGED ||
+                        l1.emulatingType == TileLayerType.SOIL_WATERLOGGED) {
+                    l1.drawSimple();
+                }
+
+                // We skip layer2, because water overlay tiles are rendered in the regular tile fbo
+            }
+        }
+
+        {
+            // Draw reflections
+            rc.batch.end();
+            rc.arraySpriteBatch.begin();
+            rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 0.666f);
+
+            for(ClientEntity entity : clientEntityManager.allEntities()) {
+                // TODO: Possible optimization, check for visibleForRender && chunk.visible before drawing
+                if(!entity.drawReflection) continue;
+                ReflectableEntity reflectableEntity = (ReflectableEntity) entity;
+                reflectableEntity.renderReflection(rc, rc.delta);
+            }
+
+            rc.arraySpriteBatch.setColor(Color.WHITE);
+            rc.arraySpriteBatch.end();
+            rc.batch.begin();
+        }
+
+        rc.batch.end();
+
+        drawWaterRemake();
+    }
+
+    private void renderChunkTiles(boolean waterOverlayOnly) {
         if(ClientPlayer.getLocalPlayer() != null) {
             RenderContext rc = RenderContext.get();
 
@@ -1017,36 +1202,52 @@ public class ClientWorld {
 
             for(ClientChunk chunk : drawChunks) {
                 if(chunk != null && chunk.visibleRender) {
-                    for(int i = 0; i < chunk.dynamicTiles.length; i++) {
-                        ClientDynamicTilePart[] tiles = chunk.dynamicTiles[i];
+                    if(waterOverlayOnly) {
+                        for(int i = 0; i < chunk.dynamicTiles.length; i++) {
+                            ClientDynamicTilePart l2 = chunk.dynamicTiles[i][2];
 
-                        ClientDynamicTilePart l0 = tiles[0];
-                        ClientDynamicTilePart l1 = tiles[1];
-                        ClientDynamicTilePart l2 = tiles[2];
-
-                        if(!ExpoAssets.get().getTileSheet().isFullTile(l1.layerIds[0])) {
-                            l0.draw(rc, null, 0f, chunk.ambientOcclusion[i]);
+                            if(TileLayerType.isWater(l2.emulatingType) && !l2.isFullTile()) {
+                                l2.draw(rc, 0f, chunk.ambientOcclusion[i]);
+                            }
                         }
+                    } else {
+                        for(int i = 0; i < chunk.dynamicTiles.length; i++) {
+                            ClientDynamicTilePart[] tiles = chunk.dynamicTiles[i];
+                            ClientDynamicTilePart l2 = tiles[2];
+                            boolean waterTile = TileLayerType.isWater(l2.emulatingType);
 
-                        float color = 0;
+                            if(waterTile) {
+                                // Skip because water tiles are drawn to a separate buffer
+                                continue;
+                            }
 
-                        if(l1.emulatingType == TileLayerType.FOREST) {
-                            color = chunk.grassColor[i];
+                            ClientDynamicTilePart l0 = tiles[0];
+                            ClientDynamicTilePart l1 = tiles[1];
+
+                            if(!l1.isFullTile() && !l2.isFullTile()) {
+                                l0.draw(rc, 0f, chunk.ambientOcclusion[i]);
+                            }
+
+                            float color = 0;
+
+                            if(l1.emulatingType == TileLayerType.FOREST) {
+                                color = chunk.grassColor[i];
+                            }
+
+                            if(!l2.isFullTile()) {
+                                l1.draw(rc, color, chunk.ambientOcclusion[i]);
+                            }
+
+                            l2.draw(rc, 0f, chunk.ambientOcclusion[i]);
                         }
-
-                        if(!ExpoAssets.get().getTileSheet().isFullTile(l2.layerIds[0])) {
-                            l1.draw(rc, null, color, chunk.ambientOcclusion[i]);
-                        }
-
-                        l2.draw(rc, chunk.waterDisplacement == null ? null : chunk.waterDisplacement[i], 0f, chunk.ambientOcclusion[i]);
                     }
                 }
             }
 
-            rc.polygonTileBatch.setShader(rc.DEFAULT_GLES3_SHADER);
             rc.polygonTileBatch.end();
-            rc.batch.begin();
-            drawWater();
+
+            //drawWaterRemake();
+            //drawWater();
         }
     }
 

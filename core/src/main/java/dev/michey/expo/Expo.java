@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.assets.TileMergerX;
+import dev.michey.expo.assets.TileMergerV2;
 import dev.michey.expo.debug.DebugGL;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
@@ -37,7 +37,6 @@ import org.lwjgl.glfw.GLFW;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
@@ -67,6 +66,7 @@ public class Expo implements ApplicationListener {
 	public Expo(GameSettings gameSettings) {
 		// Enable logging to file + console for debugging
 		if(gameSettings.enableDebugMode) DEV_MODE = true;
+
 		if(gameSettings.zoomLevel == 0) {
 			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.5f;
 			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 4;
@@ -77,6 +77,7 @@ public class Expo implements ApplicationListener {
 			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.25f;
 			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 2;
 		}
+
 		if(!DEV_MODE) {
 			ExpoLogger.enableDualLogging("clientlogs");
 		} else {
@@ -164,43 +165,59 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_dirt", false, 0, 352);
 			ExpoAssets.get().slice("tile_water_sandy", false, 0, 384);
 			ExpoAssets.get().slice("tile_oakplankwall", false, 0, 416);
+			ExpoAssets.get().slice("tile_water_overlay", false, 0, 448);
+			ExpoAssets.get().slice("tile_sand_waterlogged", false, 0, 480);
+			ExpoAssets.get().slice("tile_soil_deep_waterlogged", false, 0, 512);
+			ExpoAssets.get().slice("tile_soil_waterlogged", true, 0, 544);
 		}
 
 		boolean patch = false;
 
 		if(patch && DEV_MODE) {
-			TileMergerX merger = new TileMergerX();
+			TileMergerV2 merger = new TileMergerV2();
 			merger.prepare();
 			var possibilities = merger.createAllPossibleVariations();
 
 			for(TileLayerType tlt : TileLayerType.values()) {
 				int minTile = tlt.TILE_ID_DATA[0];
 				if(tlt.TILE_ID_DATA[0] == -1) continue;
-				if(tlt.TILE_ID_DATA.length == 1 && tlt.TILE_ID_DATA[0] != 0) continue;
 
 				String elevationName = TileLayerType.ELEVATION_TEXTURE_MAP.get(tlt);
 
-				for(int[] ids : possibilities.values()) {
-					int[] newIds = new int[ids.length];
+				if(tlt.TILE_ID_DATA.length == 1) {
+					merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, -1);
 
-					for(int i = 0; i < newIds.length; i++) {
-						newIds[i] = ids[i] + minTile;
-					}
+					if(ExpoAssets.get().getTileSheet().hasVariation(tlt.TILE_ID_DATA[0])) {
+						int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(tlt.TILE_ID_DATA[0]);
+						ExpoLogger.log("Variations for " + tlt.TILE_ID_DATA[0] + ": " + variations);
 
-					if(elevationName == null) {
-						merger.createFreshTile(newIds, null, -1);
-
-						if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
-							int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
-							ExpoLogger.log("Variations for " + newIds[0] + ": " + variations);
-
-							for(int var = 0; var < variations; var++) {
-								merger.createFreshTile(newIds, null, var);
-							}
+						for(int var = 0; var < variations; var++) {
+							merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, var);
 						}
-					} else {
-						for(int ev = 1; ev <= 4; ev++) {
-							merger.createFreshTile(newIds, elevationName + "_" + ev, -1);
+					}
+				} else {
+					for(int[] ids : possibilities.values()) {
+						int[] newIds = new int[ids.length];
+
+						for(int i = 0; i < newIds.length; i++) {
+							newIds[i] = ids[i] + minTile;
+						}
+
+						if(elevationName == null) {
+							merger.createFreshTile(newIds, null, -1);
+
+							if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
+								int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
+								ExpoLogger.log("Variations for " + newIds[0] + ": " + variations);
+
+								for(int var = 0; var < variations; var++) {
+									merger.createFreshTile(newIds, null, var);
+								}
+							}
+						} else {
+							for(int ev = 1; ev <= 4; ev++) {
+								merger.createFreshTile(newIds, elevationName + "_" + ev, -1);
+							}
 						}
 					}
 				}

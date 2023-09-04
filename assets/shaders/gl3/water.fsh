@@ -47,7 +47,7 @@ void main() {
     pixelColor.g += (1.0 - pixelColor.g) * 0.25;
     pixelColor.b += (1.0 - pixelColor.b) * 0.25;
 
-    if(pixelColor.r > 0.81) {
+    if(pixelColor.r > 0.925) {
         pixelColor.rgb = vec3(1.0);
     }
 

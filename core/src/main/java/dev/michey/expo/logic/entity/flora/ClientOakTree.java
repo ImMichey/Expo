@@ -12,6 +12,7 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.util.ExpoShared;
@@ -19,7 +20,7 @@ import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 import dev.michey.expo.util.ParticleEmitter;
 
-public class ClientOakTree extends ClientEntity implements SelectableEntity {
+public class ClientOakTree extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     private ContactAnimator contactAnimator;
     private FoliageAnimator foliageAnimator;
@@ -333,6 +334,14 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity {
                 rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
+        }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY + 2, trunk.getRegionWidth(), trunk.getRegionHeight() * -1);
+        if(!cut) {
+            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
 

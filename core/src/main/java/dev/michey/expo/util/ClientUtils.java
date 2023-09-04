@@ -42,4 +42,10 @@ public class ClientUtils {
         }).start();
     }
 
+    public static void takeScreenshot(String name, int onKeyCode) {
+        if(Gdx.input.isKeyJustPressed(onKeyCode)) {
+            takeScreenshot(name);
+        }
+    }
+
 }

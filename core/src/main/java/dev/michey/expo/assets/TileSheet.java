@@ -11,9 +11,6 @@ public class TileSheet {
 
     private final ExpoAssets assets;
 
-    public final TextureRegion baseSoil;
-    public final TextureRegion notSet;
-
     private final HashMap<Integer, TextureRegion> tilesetTextureMap;
     private final HashMap<Integer, TextureRegion[]> tilesetVariationTextureMap;
     private int currentId;
@@ -23,10 +20,10 @@ public class TileSheet {
         tilesetTextureMap = new HashMap<>();
         tilesetVariationTextureMap = new HashMap<>();
 
-        baseSoil = singleEntry("tile_soil");
+        singleEntry("tile_soil");
         multiEntry("tile_grass", 22);
         multiEntry("tile_sand", 22);
-        notSet = singleEntry("tile_not_set");
+        singleEntry("tile_not_set");
         multiEntry("tile_ocean", 22);
         multiEntry("tile_ocean_deep", 22);
         multiEntry("tile_soil_hole", 22);
@@ -38,11 +35,14 @@ public class TileSheet {
         multiEntry("tile_dirt", 22);
         multiEntry("tile_water_sandy", 22);
         multiEntry("tile_oakplankwall", 22);
+        multiEntry("tile_water_overlay", 22);
+        multiEntry("tile_sand_waterlogged", 22);
+        multiEntry("tile_soil_deep_waterlogged", 22);
+        singleEntry("tile_soil_waterlogged");
 
         // Variations
         variationEntry("tile_soil", 0, 2);
         variationEntry("tile_grass", 1, 9);
-        variationEntry("tile_forest", 112, 9);
     }
 
     private void variationEntry(String name, int forId, int amount) {
@@ -85,13 +85,6 @@ public class TileSheet {
 
     public boolean hasVariation(int id) {
         return tilesetVariationTextureMap.containsKey(id);
-    }
-
-    public boolean isFullTile(int tileId) {
-        return switch (tileId) {
-            case 1, 23, 112, 133, 156 -> true;
-            default -> false;
-        };
     }
 
 }
