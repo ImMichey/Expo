@@ -1,6 +1,6 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
-import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.LinkedList;
@@ -73,7 +73,7 @@ public class PoissonDiskSampler
      * @return The sample set.
      */
     @SuppressWarnings("unchecked")
-    public List<Point> sample(float absoluteX, float absoluteY)
+    public List<Point> sample(float absoluteX, float absoluteY, GenerationRandom rnd)
     {
         List<Point> activeList = new LinkedList<>();
         List<Point> pointList = new LinkedList<>();
@@ -87,18 +87,18 @@ public class PoissonDiskSampler
             }
         }
 
-        addFirstPoint(grid, activeList, pointList);
+        addFirstPoint(grid, activeList, pointList, rnd);
 
         while (!activeList.isEmpty() && (pointList.size() < MAX_POINTS))
         {
-            int listIndex = MathUtils.random(activeList.size() - 1);
+            int listIndex = rnd.random(activeList.size() - 1);
 
             Point point = activeList.get(listIndex);
             boolean found = false;
 
             for (int k = 0; k < pointsToGenerate; k++)
             {
-                found |= addNextPoint(grid, activeList, pointList, point);
+                found |= addNextPoint(grid, activeList, pointList, point, rnd);
             }
 
             if (!found)
@@ -116,11 +116,11 @@ public class PoissonDiskSampler
     }
 
     private boolean addNextPoint(List<Point>[][] grid, List<Point> activeList,
-                                 List<Point> pointList, Point point)
+                                 List<Point> pointList, Point point, GenerationRandom rnd)
     {
         boolean found = false;
         //double fraction = distribution.getDouble((int) point.x, (int) point.y);
-        Point q = generateRandomAround(point, 1 * minDist);
+        Point q = generateRandomAround(point, 1 * minDist, rnd);
 
         if ((q.x >= p0.x) && (q.x < p1.x) && (q.y > p0.y) && (q.y < p1.y))
         {
@@ -155,12 +155,12 @@ public class PoissonDiskSampler
     }
 
     private void addFirstPoint(List<Point>[][] grid, List<Point> activeList,
-                               List<Point> pointList)
+                               List<Point> pointList, GenerationRandom rnd)
     {
-        double d = MathUtils.random();
+        double d = rnd.random();
         double xr = p0.x + dimensions.x * (d);
 
-        d = MathUtils.random();
+        d = rnd.random();
         double yr = p0.y + dimensions.y * (d);
 
         Point p = new Point(xr, yr);
@@ -188,12 +188,12 @@ public class PoissonDiskSampler
      *            The point around which the random point should be.
      * @return A new point, randomly selected.
      */
-    static Point generateRandomAround(Point centre, double minDist)
+    static Point generateRandomAround(Point centre, double minDist, GenerationRandom rnd)
     {
-        double d = MathUtils.random();
+        double d = rnd.random();
         double radius = (minDist + minDist * (d));
 
-        d = MathUtils.random();
+        d = rnd.random();
         double angle = 2 * Math.PI * (d);
 
         double newX = radius * Math.sin(angle);

@@ -1,8 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -13,11 +11,9 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.*;
-import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
-import make.some.noise.Noise;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -219,17 +215,18 @@ public class ServerChunk {
                 if(populators == null || populators.isEmpty()) continue;
 
                 for(EntityPopulator populator : populators) {
-                    List<Point> points = new PoissonDiskSampler(0, 0, CHUNK_SIZE, CHUNK_SIZE, populator.poissonDiskSamplerDistance).sample(wx, wy);
+                    GenerationRandom rnd = new GenerationRandom(chunkX, chunkY, populator.type);
+                    List<Point> points = new PoissonDiskSampler(0, 0, CHUNK_SIZE, CHUNK_SIZE, populator.poissonDiskSamplerDistance).sample(wx, wy, rnd);
 
                     float chanceFactor = 1.0f;
 
-                    if(populator.type == ServerEntityType.OAK_TREE && MathUtils.random() <= 0.075f) {
+                    if(populator.type == ServerEntityType.OAK_TREE && rnd.random() <= 0.075f) {
                         chanceFactor = 0.33f;
                     }
 
                     for(Point p : points) {
                         if(dimension.getChunkHandler().getBiome(ExpoShared.posToTile(p.absoluteX), ExpoShared.posToTile(p.absoluteY)) != t) continue;
-                        boolean spawn = MathUtils.random() < (populator.spawnChance * chanceFactor);
+                        boolean spawn = rnd.random() < (populator.spawnChance * chanceFactor);
 
                         if(spawn) {
                             EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
@@ -251,10 +248,10 @@ public class ServerChunk {
                                     registerMap.add(generatedEntity);
 
                                     if(populator.spreadBetweenEntities != null) {
-                                        boolean spread = MathUtils.random() < (populator.spreadChance * chanceFactor);
+                                        boolean spread = rnd.random() < (populator.spreadChance * chanceFactor);
 
                                         if(spread) {
-                                            int amount = MathUtils.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
+                                            int amount = rnd.random(populator.spreadBetweenAmount[0], populator.spreadBetweenAmount[1]);
 
                                             if(populator.spreadUseNextTarget) {
                                                 int remaining = amount;
@@ -262,7 +259,7 @@ public class ServerChunk {
                                                 float nextOriginY = p.absoluteY;
 
                                                 while(remaining > 0) {
-                                                    Vector2 v = GenerationUtils.circularRandom(MathUtils.random(populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1]));
+                                                    Vector2 v = rnd.circularRandom(rnd.random(populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1]));
                                                     float targetX = nextOriginX + v.x;
                                                     float targetY = nextOriginY + v.y;
 
@@ -270,7 +267,7 @@ public class ServerChunk {
                                                         check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap, wx, wy);
 
                                                         if(!check.key) {
-                                                            ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
+                                                            ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[rnd.random(0, populator.spreadBetweenEntities.length - 1)]);
                                                             spreadEntity.posX = (int) targetX;
                                                             spreadEntity.posY = (int) targetY;
                                                             if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
@@ -287,7 +284,7 @@ public class ServerChunk {
                                                     remaining--;
                                                 }
                                             } else {
-                                                for(Vector2 v : GenerationUtils.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
+                                                for(Vector2 v : rnd.positions(amount, populator.spreadBetweenDistance[0], populator.spreadBetweenDistance[1])) {
                                                     float targetX = p.absoluteX + v.x + populator.spreadOffsets[0];
                                                     float targetY = p.absoluteY + v.y + populator.spreadOffsets[1];
 
@@ -295,7 +292,7 @@ public class ServerChunk {
                                                         check = causesCollision(targetX, targetY, entry, existingEntityDimensionMap, wx, wy);
 
                                                         if(!check.key) {
-                                                            ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[MathUtils.random(0, populator.spreadBetweenEntities.length - 1)]);
+                                                            ServerEntity spreadEntity = ServerEntityType.typeToEntity(populator.spreadBetweenEntities[rnd.random(0, populator.spreadBetweenEntities.length - 1)]);
                                                             spreadEntity.posX = (int) targetX;
                                                             spreadEntity.posY = (int) targetY;
                                                             if(populator.spreadAsStaticEntity) spreadEntity.setStaticEntity();
