@@ -76,6 +76,7 @@ public enum ClientEntityType {
             case -4 -> new ClientParticleFood();
             case -5 -> new ClientGhostItem();
             case -6 -> new ClientParticleOakLeaf();
+            case -7 -> new ClientPuddle();
             case -8 -> new ClientFallingTree();
             case -9 -> new ClientDamageIndicator();
             case 0 -> new ClientPlayer();

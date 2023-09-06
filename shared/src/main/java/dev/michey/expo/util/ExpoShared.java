@@ -10,7 +10,7 @@ public class ExpoShared {
 
     /** Server constants */
     public static final int DEFAULT_EXPO_SERVER_PORT = 25010;
-    public static final int DEFAULT_SERVER_TICK_RATE = 60;
+    public static final int DEFAULT_SERVER_TICK_RATE = 240;
     public static final int CLIENT_TIMEOUT_THRESHOLD = 5000;
     public static final long UNLOAD_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.seconds(5); // 5 seconds
     public static final long SAVE_CHUNKS_AFTER_MILLIS = ExpoTime.RealWorld.seconds(5); // 3 minutes

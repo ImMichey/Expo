@@ -68,15 +68,15 @@ public class RenderContext {
     /** Water data */
     public Texture waterNoiseTexture;
     public Texture displacementTexture;
-    public float waterSpeed = 0.4f;
+    public float waterSpeed = 0.8f;
     public float brightness = 0.5f;
     public float contrast = 0.5f;
-    public float[] waterColor = new float[] {0f / 255f, 147f / 255f, 255f / 255f};
+    public float[] waterColor = new float[] {0f / 255f, 166f / 255f, 255f / 255f};
     public float waterDelta;
-    public float waterAlpha = 0.52f;
-    public float waterSkewX = 6.25f;
-    public float waterSkewY = 6.25f;
-    public float waterReflectionSpeed = 26.0f;
+    public float waterAlpha = 0.6f;
+    public float waterSkewX = 1.5f;
+    public float waterSkewY = 2.25f;
+    public float waterReflectionSpeed = 8.0f;
 
     /** Shaders */
     public ShaderProgram DEFAULT_GLES3_SHADER;          // Should be used by all regular batches.

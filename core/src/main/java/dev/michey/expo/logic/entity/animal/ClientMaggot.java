@@ -7,10 +7,11 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientMaggot extends ClientEntity {
+public class ClientMaggot extends ClientEntity implements ReflectableEntity {
 
     private final ExpoAnimationHandler animationHandler;
     private boolean cachedMoving;
@@ -47,11 +48,21 @@ public class ClientMaggot extends ClientEntity {
     public void tick(float delta) {
         syncPositionWithServer();
 
+        if(doLerp) {
+            calculateReflection();
+        }
+
         if(cachedMoving != isMoving()) {
             cachedMoving = !cachedMoving;
             animationHandler.reset();
             animationHandler.switchToAnimation(cachedMoving ? "walk" : "idle");
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        TextureRegion f = animationHandler.getActiveFrame();
+        rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY, f.getRegionWidth(), f.getRegionHeight() * -1);
     }
 
     @Override

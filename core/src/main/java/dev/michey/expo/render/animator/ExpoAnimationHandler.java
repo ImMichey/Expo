@@ -25,6 +25,14 @@ public class ExpoAnimationHandler {
 
     public void tick(float delta) {
         activeAnimation.tick(delta);
+
+        if(activeAnimation.isAnimationFinished()) {
+            onAnimationFinish();
+        }
+    }
+
+    public void onAnimationFinish() {
+
     }
 
     public void flipAllAnimations(boolean x, boolean y) {

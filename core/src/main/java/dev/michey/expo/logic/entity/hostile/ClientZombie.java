@@ -8,11 +8,12 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientZombie extends ClientEntity {
+public class ClientZombie extends ClientEntity implements ReflectableEntity {
 
     private final ExpoAnimationHandler animationHandler;
     private final TextureRegion blink;
@@ -57,6 +58,10 @@ public class ClientZombie extends ClientEntity {
     public void tick(float delta) {
         syncPositionWithServer();
 
+        if(doLerp) {
+            calculateReflection();
+        }
+
         if(cachedMoving != isMoving()) {
             cachedMoving = !cachedMoving;
             animationHandler.reset();
@@ -81,6 +86,8 @@ public class ClientZombie extends ClientEntity {
         if((i == 2 || i == 7) && (lastFootstepIndex != i)) {
             lastFootstepIndex = i;
             playEntitySound(getFootstepSound());
+
+            if(isInWater()) spawnPuddle(false);
         }
 
         visibleToRenderEngine = rc.inDrawBounds(this);
@@ -125,6 +132,12 @@ public class ClientZombie extends ClientEntity {
 
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        TextureRegion f = animationHandler.getActiveFrame();
+        rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY, f.getRegionWidth(), f.getRegionHeight() * -1);
     }
 
     @Override

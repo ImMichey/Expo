@@ -38,11 +38,12 @@ public class TileSheet {
         multiEntry("tile_water_overlay", 22);
         multiEntry("tile_sand_waterlogged", 22);
         multiEntry("tile_soil_deep_waterlogged", 22);
-        singleEntry("tile_soil_waterlogged");
+        multiEntry("tile_soil_waterlogged", 22);
 
         // Variations
         variationEntry("tile_soil", 0, 2);
-        variationEntry("tile_grass", 1, 9);
+        variationEntry("tile_grass", 1, 10);
+        variationEntry("tile_forest", 112, 16);
     }
 
     private void variationEntry(String name, int forId, int amount) {

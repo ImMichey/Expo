@@ -8,11 +8,12 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientMushroomRed extends ClientEntity implements SelectableEntity {
+public class ClientMushroomRed extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     private TextureRegion texture;
     private TextureRegion selectionTexture;
@@ -90,6 +91,11 @@ public class ClientMushroomRed extends ClientEntity implements SelectableEntity 
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY, texture.getRegionWidth(), texture.getRegionHeight() * -1);
     }
 
     @Override

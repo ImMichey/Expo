@@ -143,17 +143,17 @@ public class ClientChunk {
         if(x < 0) {
             _chunkX -= 1;
             x += ROW_TILES;
-        } else if(x == ROW_TILES) {
+        } else if(x >= ROW_TILES) {
             _chunkX += 1;
-            x = 0;
+            x -= ROW_TILES;
         }
 
         if(y < 0) {
             _chunkY -= 1;
             y += ROW_TILES;
-        } else if(y == ROW_TILES) {
+        } else if(y >= ROW_TILES) {
             _chunkY += 1;
-            y = 0;
+            y -= ROW_TILES;
         }
 
         ClientChunk existingChunk = ClientChunkGrid.get().getChunk(_chunkX, _chunkY);

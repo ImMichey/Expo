@@ -7,11 +7,12 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientLilypad extends ClientEntity implements SelectableEntity {
+public class ClientLilypad extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     private int variant;
     public TextureRegion texture;
@@ -110,6 +111,11 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity {
     @Override
     public void renderShadow(RenderContext rc, float delta) {
 
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY + animationSine, texture.getRegionWidth(), texture.getRegionHeight() * -1);
     }
 
     @Override

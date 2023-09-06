@@ -6,4 +6,3 @@
 #/connect localhost
 #/noise
 #/noclip
-/time 600

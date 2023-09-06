@@ -10,6 +10,8 @@ public class ExpoAnimation {
     private final float frameDuration;
     private final float totalAnimationDuration;
     private float animationDelta;
+    private float animationDeltaSinceStart;
+    private boolean animationFinished;
 
     public ExpoAnimation(String textureName, int frames, float frameDuration) {
         textureArray = ExpoAssets.get().textureArray(textureName, frames);
@@ -18,11 +20,19 @@ public class ExpoAnimation {
     }
 
     public void tick(float delta) {
+        animationFinished = false;
         animationDelta += delta;
+        animationDeltaSinceStart += delta;
+
+        if(animationDeltaSinceStart >= totalAnimationDuration) {
+            animationFinished = true;
+            animationDeltaSinceStart -= totalAnimationDuration;
+        }
     }
 
     public void reset() {
         animationDelta = 0;
+        animationDeltaSinceStart = 0;
     }
 
     public void flip(boolean x, boolean y) {
@@ -42,7 +52,8 @@ public class ExpoAnimation {
     }
 
     public boolean isAnimationFinished() {
-        return animationDelta >= totalAnimationDuration;
+        return animationFinished;
+        //return animationDelta >= totalAnimationDuration;
     }
 
     public float getDelta() {

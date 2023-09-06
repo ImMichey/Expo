@@ -13,6 +13,7 @@ import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.camera.CameraShake;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -20,7 +21,7 @@ import dev.michey.expo.util.ExpoShared;
 
 import java.util.Arrays;
 
-public class ClientDynamic3DTile extends ClientEntity implements SelectableEntity {
+public class ClientDynamic3DTile extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     public TileLayerType emulatingType;
     public int[] layerIds;
@@ -152,6 +153,11 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY);
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY, created.getRegionWidth(), created.getRegionHeight() * -1);
     }
 
     @Override

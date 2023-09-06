@@ -10,8 +10,6 @@ import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
-import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;

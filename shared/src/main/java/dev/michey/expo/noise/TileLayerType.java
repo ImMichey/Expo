@@ -21,8 +21,8 @@ public enum TileLayerType {
     OAKPLANKWALL(14,        new int[] {266, 287},   new String[] {"OAKPLANKWALL"},                          true),
     WATER_OVERLAY(15,       new int[] {288, 309},   new String[] {"WATER_OVERLAY", "WATER_DEEP"},           false),
     SAND_WATERLOGGED(16,    new int[] {310, 331},   new String[] {"SAND_WATERLOGGED"},                      false),
-    SOIL_DEEP_WATERLOGGED(17,new int[] {332, 353},  new String[] {"SOIL_DEEP_WATERLOGGED"},                 false),
-    SOIL_WATERLOGGED(18,    new int[] {354},        new String[] {"SOIL_WATERLOGGED"},                      false),
+    SOIL_DEEP_WATERLOGGED(17,new int[] {332, 353},  new String[] {"SOIL_DEEP_WATERLOGGED", "SOIL_WATERLOGGED"},                 false),
+    SOIL_WATERLOGGED(18,    new int[] {354, 375},   new String[] {"SOIL_WATERLOGGED"},false),
     ;
 
     public final int SERIALIZATION_ID;

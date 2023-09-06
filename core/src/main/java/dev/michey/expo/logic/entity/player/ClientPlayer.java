@@ -13,11 +13,15 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.entity.arch.ClientEntityManager;
+import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
+import dev.michey.expo.logic.entity.misc.ClientPuddle;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
@@ -36,7 +40,7 @@ import dev.michey.expo.util.*;
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
-public class ClientPlayer extends ClientEntity {
+public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
     /** Last known player username. */
     public String username;
@@ -160,6 +164,7 @@ public class ClientPlayer extends ClientEntity {
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
+        drawReflection = true;
         //disableTextureCentering = true;
 
         if(player) {
@@ -462,14 +467,7 @@ public class ClientPlayer extends ClientEntity {
 
         // Player footstep sounds
         if((playerWalkIndex == 2 || playerWalkIndex == 7) && (playerWalkIndex != lastPlayerWalkIndex)) {
-            String group = getFootstepSound();
-
-            if(player) {
-                // Don't need dynamic volume + panning
-                AudioEngine.get().playSoundGroup(group);
-            } else {
-                AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
-            }
+            onFootstep();
         }
 
         lastPlayerWalkIndex = playerWalkIndex;
@@ -482,6 +480,43 @@ public class ClientPlayer extends ClientEntity {
         if(!player) {
             cachedSprinting = sprinting;
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        if(draw_tex_base == null) return;
+        boolean drawLooseArm = holdingItemId != -1;
+
+        drawHeldItemReflection(rc, false);
+
+        if(punchAnimation || drawLooseArm) {
+            float x = finalDrawPosX + (direction() == 1 ? 8 : 0);
+            float originX = tex_punch_arm.getRegionWidth() * 0.5f;
+            float originY = tex_punch_arm.getRegionHeight() - 1;
+            float width = tex_punch_arm.getRegionWidth();
+            float height = tex_punch_arm.getRegionHeight();
+            float scaleX = 1.0f;
+            float scaleY = 1.0f;
+            float rotation = getFinalArmRotation();
+
+            rc.arraySpriteBatch.draw(tex_punch_arm, x, finalDrawPosY - offsetY - 19, originX, originY, width, height, scaleX, scaleY * -1, -rotation);
+        } else {
+            rc.arraySpriteBatch.draw(draw_tex_arm_right, finalDrawPosX + offsetXR, finalDrawPosY - offsetY, draw_tex_arm_right.getRegionWidth(), draw_tex_arm_right.getRegionHeight() * -1);
+        }
+
+        rc.arraySpriteBatch.draw(draw_tex_base, finalDrawPosX, finalDrawPosY, draw_tex_base.getRegionWidth(), draw_tex_base.getRegionHeight() * -1);
+
+        if(playerBlinkDelta < 0) {
+            rc.arraySpriteBatch.draw(tex_blink, finalDrawPosX + 5 - (direction() == 0 ? 4 : 0), finalDrawPosY - offsetY - 14, tex_blink.getRegionWidth(), tex_blink.getRegionHeight());
+        }
+
+        if(pickupAnimation) {
+            rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL - (flipped ? 2 : 0), finalDrawPosY - offsetY + 2, draw_tex_arm_left.getRegionWidth(), draw_tex_arm_left.getRegionHeight() * -1);
+        } else {
+            rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL, finalDrawPosY - offsetY, draw_tex_arm_left.getRegionWidth(), draw_tex_arm_left.getRegionHeight() * -1);
+        }
+
+        drawHeldItemReflection(rc, true);
     }
 
     @Override
@@ -624,7 +659,7 @@ public class ClientPlayer extends ClientEntity {
 
         if(damageTint) rc.batch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
 
-        // Draw punch (debug for now)
+        // Draw punch
         if(punchAnimation || drawLooseArm) {
             int px = punchAnimation ? (punchDirection == 1 ? 8 : 0) : (playerDirection == 1 ? 8 : 0);
             float x = finalDrawPosX + px;
@@ -644,6 +679,7 @@ public class ClientPlayer extends ClientEntity {
 
         if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
             rc.batch.draw(draw_tex_base, finalDrawPosX, finalDrawPosY);
+
             if(pickupAnimation) {
                 rc.batch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL - (flipped ? 2 : 0), finalDrawPosY + offsetY - 2);
             } else {
@@ -670,6 +706,11 @@ public class ClientPlayer extends ClientEntity {
         if(damageTint) rc.batch.setColor(Color.WHITE);
     }
 
+    @Override
+    public void calculateReflection() {
+        drawReflection = true;
+    }
+
     public void playPickupAnimation() {
         pickupAnimation = true;
         pickupAnimationDelta = 0f;
@@ -677,6 +718,21 @@ public class ClientPlayer extends ClientEntity {
 
     public void playPunchAnimation() {
 
+    }
+
+    private void onFootstep() {
+        if(isInWater()) {
+            spawnPuddle(isSprinting());
+        }
+
+        String group = getFootstepSound();
+
+        if(player) {
+            // Don't need dynamic volume + panning
+            AudioEngine.get().playSoundGroup(group);
+        } else {
+            AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
+        }
     }
 
     @Override
@@ -838,6 +894,85 @@ public class ClientPlayer extends ClientEntity {
                     Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, offsetXR, offsetY);
                     rc.arraySpriteBatch.drawGradientCustomColor(tex_shadow_arm_right, tex_shadow_arm_right.getRegionWidth(), tex_shadow_arm_right.getRegionHeight(), shadowRightArm, topColor, bottomColor);
                 }
+            }
+        }
+    }
+
+    private void drawHeldItemReflection(RenderContext rc, boolean postArm) {
+        if(holdingItemId != -1 && holdingItemSprite != null) {
+            ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
+
+            if((map.heldRender.renderPriority && postArm) || (!map.heldRender.renderPriority && !postArm)) {
+                // rotation
+                if(punchAnimation) {
+                    if(punchDirection == 0) { // left
+                        holdingItemSprite.setRotation(currentPunchAngle + 90f - map.heldRender.rotations[0]);
+                    } else { // right
+                        holdingItemSprite.setRotation(currentPunchAngle + map.heldRender.rotations[1]);
+                    }
+
+                    if(map.heldRender.requiresFlip) {
+                        if(punchDirection == 0) {
+                            if(!holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        } else {
+                            if(holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        }
+                    }
+                } else {
+                    float desiredAngle = 0;
+                    if(holdingItemId != -1) desiredAngle += getFinalArmRotation();
+
+                    desiredAngle += (playerDirection == 0 ? (90f - map.heldRender.rotations[0]) : (map.heldRender.rotations[1]));
+
+                    if(holdingItemSprite.getRotation() != desiredAngle) {
+                        holdingItemSprite.setRotation(desiredAngle);
+                    }
+
+                    if(map.heldRender.requiresFlip) {
+                        if(playerDirection == 0) {
+                            if(!holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        } else {
+                            if(holdingItemSprite.isFlipX()) {
+                                holdingItemSprite.flip(true, false);
+                            }
+                        }
+                    }
+                }
+
+                // position
+                int dirCheck = direction();
+                Vector2 v;
+
+                if(punchAnimation || (holdingItemId != -1)) {
+                    v = GenerationUtils.circular(getFinalArmRotation(), 1);
+                } else {
+                    v = NULL_ROTATION_VECTOR;
+                }
+
+                float xshift = dirCheck == 0 ? 1 : 9;
+                float armHeight = 9;
+                float ox = map.heldRender.offsetX * map.heldRender.scaleX;
+                float oy = map.heldRender.offsetY * map.heldRender.scaleY;
+                float inverse = dirCheck == 0 ? -1 : 1;
+
+                // rotation fix
+                float w = map.heldRender.textureRegion.getRegionWidth();
+                float h = map.heldRender.textureRegion.getRegionHeight();
+                float rfx = w * 0.5f;
+                float rfy = h * 0.5f;
+
+                holdingItemSprite.setPosition(
+                        finalDrawPosX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
+                        finalDrawPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
+                );
+
+                holdingItemSprite.draw(rc.arraySpriteBatch);
             }
         }
     }

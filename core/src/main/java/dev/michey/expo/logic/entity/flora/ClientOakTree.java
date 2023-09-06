@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -41,11 +42,6 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private float resetShadowFadeTimer;
 
     private TextureRegion selectionTrunk;
-
-    // Falling animation
-    private boolean falling;
-    private float fallingRemaining;
-    private boolean fallingDirectionRight;
 
     /*
      *      [0] = LeavesWidth
@@ -341,7 +337,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     public void renderReflection(RenderContext rc, float delta) {
         rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY + 2, trunk.getRegionWidth(), trunk.getRegionHeight() * -1);
         if(!cut) {
+            rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
             rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 
@@ -395,12 +393,13 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         }
     }
 
-    private void spawnFallingTree() {
+    private void spawnFallingTree(float fallingRemaining, boolean fallingDirectionRight) {
         ClientFallingTree fallingTree = new ClientFallingTree();
 
         fallingTree.clientPosX = clientPosX - 0.5f;
         fallingTree.clientPosY = clientPosY + 12.0f;
         fallingTree.depth = fallingTree.clientPosY - 12.001f;
+        fallingTree.wakeupId = entityId;
 
         fallingTree.leavesDisplacement = leavesDisplacement;
         fallingTree.variant = variant;
@@ -414,42 +413,34 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         entityManager().addClientSideEntity(fallingTree);
     }
 
+    public void wakeup() {
+        cut = true;
+        leafParticleEmitter = null;
+
+        trunk = tr("eot_trunk_cut_" + variant);
+        trunkShadowMask = tr("eot_trunk_cut_" + variant);
+        selectionTrunk = generateSelectionTexture(trunk);
+        updateTextureBounds(cutTotalWidth(), cutTotalHeight(), 0, 0);
+
+        resetShadowFadeTimer = ServerOakTree.FALLING_ANIMATION_DURATION;
+    }
+
     @Override
     public void applyPacketPayload(Object[] payload) {
-        variant = (int) payload[0];
         cut = (boolean) payload[1];
+        variant = (int) payload[0];
 
-        falling = (boolean) payload[2];
-        fallingRemaining = (float) payload[3];
-        fallingDirectionRight = (boolean) payload[4];
-
-        if(falling) {
-            spawnFallingTree();
+        if((boolean) payload[2]) {
+            spawnFallingTree((float) payload[3], (boolean) payload[4]);
         }
     }
 
     @Override
     public void readEntityDataUpdate(Object[] payload) {
-        cut = (boolean) payload[0];
-        falling = (boolean) payload[1];
-        fallingRemaining = (float) payload[2];
-        fallingDirectionRight = (boolean) payload[3];
+        boolean isNowCut = (boolean) payload[0];
 
-        if(cut) {
-            leafParticleEmitter = null;
-
-            trunk = tr("eot_trunk_cut_" + variant);
-            trunkShadowMask = tr("eot_trunk_cut_" + variant);
-            selectionTrunk = generateSelectionTexture(trunk);
-            updateTextureBounds(cutTotalWidth(), cutTotalHeight(), 0, 0);
-
-            if(falling) {
-                resetShadowFadeTimer = ServerOakTree.FALLING_ANIMATION_DURATION;
-            }
-        }
-
-        if(falling) {
-            spawnFallingTree();
+        if(isNowCut && !cut) {
+            spawnFallingTree((float) payload[2], (boolean) payload[3]);
         }
     }
 

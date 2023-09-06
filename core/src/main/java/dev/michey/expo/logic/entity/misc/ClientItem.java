@@ -8,11 +8,12 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientItem extends ClientEntity {
+public class ClientItem extends ClientEntity implements ReflectableEntity {
 
     public int itemId;
     public int itemAmount;
@@ -125,6 +126,12 @@ public class ClientItem extends ClientEntity {
 
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        float dsp = textureWidth - textureWidth * stackX;
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX + dsp * 0.5f, finalDrawPosY + floatingPos, textureWidth * stackX, textureHeight * stackY * -1);
     }
 
     private void spawnGhostEntity(int amount) {

@@ -17,6 +17,7 @@ import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.flora.ClientLilypad;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
+import dev.michey.expo.logic.entity.misc.ClientPuddle;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -387,6 +388,7 @@ public class ClientWorld {
             r.waterTilesFbo.begin();
                 transparentScreen();
                 renderWaterTiles();
+                ClientUtils.takeScreenshot("check", Input.Keys.G);
                 drawShadowFbo(r, r.simplePassthroughShader, r.waterTilesFbo.getColorBufferTexture());
                 ClientUtils.takeScreenshot("2-waterTilesFbo", Input.Keys.G);
             r.waterTilesFbo.end();
@@ -1173,16 +1175,19 @@ public class ClientWorld {
             // Draw reflections
             rc.batch.end();
             rc.arraySpriteBatch.begin();
-            rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 0.666f);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
 
-            for(ClientEntity entity : clientEntityManager.allEntities()) {
+            for(ClientEntity entity : clientEntityManager.getDepthEntityList()) {
                 // TODO: Possible optimization, check for visibleForRender && chunk.visible before drawing
                 if(!entity.drawReflection) continue;
-                ReflectableEntity reflectableEntity = (ReflectableEntity) entity;
+                if(!(entity instanceof ReflectableEntity reflectableEntity)) continue;
                 reflectableEntity.renderReflection(rc, rc.delta);
             }
 
-            rc.arraySpriteBatch.setColor(Color.WHITE);
+            for(ClientEntity puddles : clientEntityManager.getEntitiesByType(ClientEntityType.PUDDLE)) {
+                ((ClientPuddle) puddles).renderReflection(rc, rc.delta);
+            }
+
             rc.arraySpriteBatch.end();
             rc.batch.begin();
         }

@@ -8,10 +8,11 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.ExpoLight;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientMushroomGlowing extends ClientEntity implements SelectableEntity {
+public class ClientMushroomGlowing extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     private TextureRegion texture;
     private TextureRegion selectionTexture;
@@ -26,9 +27,10 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
 
-        mushroomLight = new ExpoLight(64.0f, 32, 0.75f, 0.25f);
-        mushroomLight.color(0.0f, 0.75f, 1.0f, 1.0f);
-        mushroomLight.setPulsating(1.0f, 64.0f, 72.0f);
+        mushroomLight = new ExpoLight(64.0f, 32, 0.75f, 0.75f);
+        //mushroomLight.color(0.0f, 0.75f, 1.0f, 1.0f);
+        mushroomLight.color(1.0f, 0.6f, 0.0f, 1.0f);
+        mushroomLight.setPulsating(1.0f, 128.0f, 144.0f);
     }
 
     @Override
@@ -98,6 +100,11 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY, texture.getRegionWidth(), texture.getRegionHeight() * -1);
     }
 
     @Override

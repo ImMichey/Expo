@@ -17,15 +17,16 @@
     },
     "graphics": {
         "zoomLevel": 0,
+        "ambientOcclusion": true,
         "enableSoftShadows": true,
         "enableScreenshake": true,
         "lightQuality": 2,
+        "grassColoring": true,
         "enableShadows": true,
+        "waterReflections": true,
         "enableParticles": true,
         "enableWater": false,
-        "enableBlur": true,
-        "grassColoring": true,
-        "ambientOcclusion": true
+        "enableBlur": true
     },
     "preferredHeight": 720
 }

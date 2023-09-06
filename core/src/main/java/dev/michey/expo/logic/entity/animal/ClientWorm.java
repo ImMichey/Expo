@@ -7,10 +7,11 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientWorm extends ClientEntity {
+public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
     private final ExpoAnimationHandler animationHandler;
     private boolean cachedMoving;
@@ -20,9 +21,14 @@ public class ClientWorm extends ClientEntity {
     private boolean damageTint;
 
     public ClientWorm() {
-        animationHandler = new ExpoAnimationHandler();
+        animationHandler = new ExpoAnimationHandler() {
+            @Override
+            public void onAnimationFinish() {
+                if(isInWater()) spawnPuddle(false, flipped ? 2.5f : -2.5f, 0);
+            }
+        };
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_wormS_idle", 3, 0.25f));
-        animationHandler.addAnimation("walk", new ExpoAnimation("entity_wormS_walk", 5, 0.15f));
+        animationHandler.addAnimation("walk", new ExpoAnimation("entity_wormS_walk", 5, 0.125f));
     }
 
     @Override
@@ -53,11 +59,21 @@ public class ClientWorm extends ClientEntity {
     public void tick(float delta) {
         syncPositionWithServer();
 
+        if(doLerp) {
+            calculateReflection();
+        }
+
         if(cachedMoving != isMoving()) {
             cachedMoving = !cachedMoving;
             animationHandler.reset();
             animationHandler.switchToAnimation(cachedMoving ? "walk" : "idle");
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        TextureRegion f = animationHandler.getActiveFrame();
+        rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY, f.getRegionWidth(), f.getRegionHeight() * -1);
     }
 
     @Override

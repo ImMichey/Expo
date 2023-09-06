@@ -488,6 +488,10 @@ public class ClientEntityManager {
         return new Object[] {directMouseContact, distanceMouseEntity};
     }
 
+    public LinkedList<ClientEntity> getDepthEntityList() {
+        return depthEntityList;
+    }
+
     public static ClientEntityManager get() {
         return INSTANCE;
     }

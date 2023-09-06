@@ -100,7 +100,6 @@ public class TileMergerV2 {
         }
 
         if(elevationTextureName != null) {
-            ExpoLogger.log(elevationTextureName);
             TextureRegion elevationTexture = ExpoAssets.get().findTile(elevationTextureName);
             pixmap.drawPixmap(allTilesPixmap,
                     0, 16,

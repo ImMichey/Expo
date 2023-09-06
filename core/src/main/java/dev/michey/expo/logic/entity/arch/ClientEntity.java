@@ -8,22 +8,21 @@ import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
+import dev.michey.expo.logic.entity.misc.ClientPuddle;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
-import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 
-import java.util.LinkedList;
-
-import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
-import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public abstract class ClientEntity {
 
@@ -52,7 +51,7 @@ public abstract class ClientEntity {
     public float lastPosX;
     public float lastPosY;
     private float lastDelta;
-    private boolean doLerp;
+    public boolean doLerp;
 
     /** ClientEntity render fields */
     public float depth;
@@ -374,7 +373,77 @@ public abstract class ClientEntity {
     }
 
     public void calculateReflection() {
+        float baseX = clientPosX;
+        float baseY = clientPosY;
+        int chunkX = ExpoShared.posToChunk(baseX);
+        int chunkY = ExpoShared.posToChunk(baseY);
+        ClientChunk chunk = chunkGrid().getChunk(chunkX, chunkY);
 
+        int tileX = ExpoShared.posToTile(baseX) - ExpoShared.posToTile(ExpoShared.chunkToPos(chunkX));
+        int tileY = ExpoShared.posToTile(baseY) - ExpoShared.posToTile(ExpoShared.chunkToPos(chunkY));
+
+        int baseTileArray = tileY * ROW_TILES + tileX;
+
+        var base = chunk.getTileAt(baseTileArray, 0, 0);
+        TileLayerType baseL2 = base.key.dynamicTiles[base.value][2].emulatingType;
+
+        if(TileLayerType.isWater(baseL2)) {
+            drawReflection = true;
+            return;
+        }
+
+        int checkX = (int) (textureWidth / TILE_SIZE) + 1;
+        int checkY = (int) (textureHeight / TILE_SIZE) + 1;
+
+        for(int i = 0; i < checkX; i++) {
+            for(int j = 0; j < checkY; j++) {
+                var candidate = chunk.getTileAt(baseTileArray, i - checkX / 2, -j - 1);
+                if(candidate == null) continue;
+
+                TileLayerType l2 = candidate.key.dynamicTiles[candidate.value][2].emulatingType;
+
+                if(TileLayerType.isWater(l2)) {
+                    drawReflection = true;
+                    return;
+                }
+            }
+        }
+    }
+
+    public void spawnPuddle(boolean big) {
+        spawnPuddle(big, 0, 0);
+    }
+
+    public void spawnPuddle(boolean big, float offsetX, float offsetY) {
+        float v = big ? 6 : 5;
+
+        ClientPuddle puddle = new ClientPuddle();
+        puddle.small = !big;
+        puddle.upperPart = true;
+        puddle.clientPosX = clientPosX + offsetX;
+        puddle.clientPosY = clientPosY - v + offsetY;
+        puddle.updateDepth(v * 2);
+        ClientEntityManager.get().addClientSideEntity(puddle);
+
+        ClientPuddle puddle2 = new ClientPuddle();
+        puddle2.small = !big;
+        puddle2.clientPosX = clientPosX + offsetX;
+        puddle2.clientPosY = clientPosY - v + offsetY;
+        puddle2.updateDepth(v);
+        ClientEntityManager.get().addClientSideEntity(puddle2);
+    }
+
+    public boolean isInWater() {
+        return TileLayerType.isWater(getCurrentTileLayer()[2].emulatingType);
+    }
+
+    public ClientDynamicTilePart[] getCurrentTileLayer() {
+        int cx = posToChunk(clientPosX);
+        int cy = posToChunk(clientPosY);
+        int tileX = ExpoShared.posToTile(clientPosX) - ExpoShared.posToTile(ExpoShared.chunkToPos(cx));
+        int tileY = ExpoShared.posToTile(clientPosY) - ExpoShared.posToTile(ExpoShared.chunkToPos(cy));
+        int baseTileArray = tileY * ROW_TILES + tileX;
+        return chunkGrid().getChunk(cx, cy).dynamicTiles[baseTileArray];
     }
 
     public void readEntityDataUpdate(Object[] payload) {

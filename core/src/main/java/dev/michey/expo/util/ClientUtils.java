@@ -11,6 +11,8 @@ import dev.michey.expo.render.RenderContext;
 import java.io.File;
 import java.util.zip.Deflater;
 
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
+
 public class ClientUtils {
 
     public static void log(String message, int keycode) {
@@ -43,7 +45,7 @@ public class ClientUtils {
     }
 
     public static void takeScreenshot(String name, int onKeyCode) {
-        if(Gdx.input.isKeyJustPressed(onKeyCode)) {
+        if(Gdx.input.isKeyJustPressed(onKeyCode) && DEV_MODE) {
             takeScreenshot(name);
         }
     }

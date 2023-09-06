@@ -7,10 +7,11 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientBlueberryBush extends ClientEntity implements SelectableEntity {
+public class ClientBlueberryBush extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
@@ -91,6 +92,12 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
             Texture useTex = hasBerries ? bushFruits : bush;
             rc.arraySpriteBatch.drawCustomVertices(useTex, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, useTex.getWidth(), useTex.getHeight() * contactAnimator.squish, contactAnimator.value, contactAnimator.value);
         }
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        Texture useTex = hasBerries ? bushFruits : bush;
+        rc.arraySpriteBatch.drawCustomVertices(useTex, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment + 2, useTex.getWidth(), useTex.getHeight() * contactAnimator.squish * -1, contactAnimator.value, contactAnimator.value);
     }
 
     @Override

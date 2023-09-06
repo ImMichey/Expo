@@ -438,67 +438,68 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     public void parsePunchPacket(P16_PlayerPunch p) {
-        if(!punching) {
-            punching = true;
-            float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
-            float attackRange = PLAYER_DEFAULT_RANGE;
-            float attackDamage = PLAYER_DEFAULT_ATTACK_DAMAGE;
-            float attackSpan = PLAYER_DEFAULT_ATTACK_ANGLE_SPAN;
-            float attackKnockbackStrength = PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH;
-            float attackKnockbackDuration = PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION;
+        punching = true;
+        punchDamageApplied = false;
+        hitEntities.clear();
 
-            int id = getCurrentItemId();
+        float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
+        float attackRange = PLAYER_DEFAULT_RANGE;
+        float attackDamage = PLAYER_DEFAULT_ATTACK_DAMAGE;
+        float attackSpan = PLAYER_DEFAULT_ATTACK_ANGLE_SPAN;
+        float attackKnockbackStrength = PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH;
+        float attackKnockbackDuration = PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION;
 
-            if(id != -1) {
-                ItemMapping mapping = ItemMapper.get().getMapping(id);
-                attackSpeed = mapping.logic.attackSpeed;
-                attackRange = mapping.logic.range;
-                attackDamage = mapping.logic.attackDamage;
-                attackSpan = mapping.logic.attackAngleSpan;
-                attackKnockbackStrength = mapping.logic.attackKnockbackStrength;
-                attackKnockbackDuration = mapping.logic.attackKnockbackDuration;
-            }
+        int id = getCurrentItemId();
 
-            {
-                convertedMiddleAngle = p.punchAngle - 90f;
-                if(convertedMiddleAngle < 0) convertedMiddleAngle = 360 + convertedMiddleAngle;
-
-                if(convertedMiddleAngle >= 270f && convertedMiddleAngle <= 360f) {
-                    convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
-                    if(convertedStartAngle > 360f) convertedStartAngle -= 360f;
-                } else if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) {
-                    convertedStartAngle = convertedMiddleAngle - attackSpan / 2;
-                } else {
-                    convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
-                }
-
-                usePunchSpan = attackSpan;
-                usePunchDirection = 1;
-                if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) usePunchDirection = -1;
-                usePunchRange = attackRange;
-                usePunchDamage = attackDamage;
-                usePunchKnockbackStrength = attackKnockbackStrength;
-                usePunchKnockbackDuration = attackKnockbackDuration;
-            }
-
-            punchDeltaFinish = attackSpeed;
-            startAngle = p.punchAngle - attackSpan / 2;
-            endAngle = p.punchAngle + attackSpan / 2;
-            punchDelta = 0;
-
-            float _clientStart;
-            float _clientEnd;
-
-            if(p.punchAngle > 0) {
-                _clientStart = 0;
-                _clientEnd = 180;
-            } else {
-                _clientStart = -180;
-                _clientEnd = 0;
-            }
-
-            ServerPackets.p17PlayerPunchData(entityId, _clientStart, _clientEnd, punchDeltaFinish, PacketReceiver.whoCanSee(this));
+        if(id != -1) {
+            ItemMapping mapping = ItemMapper.get().getMapping(id);
+            attackSpeed = mapping.logic.attackSpeed;
+            attackRange = mapping.logic.range;
+            attackDamage = mapping.logic.attackDamage;
+            attackSpan = mapping.logic.attackAngleSpan;
+            attackKnockbackStrength = mapping.logic.attackKnockbackStrength;
+            attackKnockbackDuration = mapping.logic.attackKnockbackDuration;
         }
+
+        {
+            convertedMiddleAngle = p.punchAngle - 90f;
+            if(convertedMiddleAngle < 0) convertedMiddleAngle = 360 + convertedMiddleAngle;
+
+            if(convertedMiddleAngle >= 270f && convertedMiddleAngle <= 360f) {
+                convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
+                if(convertedStartAngle > 360f) convertedStartAngle -= 360f;
+            } else if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) {
+                convertedStartAngle = convertedMiddleAngle - attackSpan / 2;
+            } else {
+                convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
+            }
+
+            usePunchSpan = attackSpan;
+            usePunchDirection = 1;
+            if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) usePunchDirection = -1;
+            usePunchRange = attackRange;
+            usePunchDamage = attackDamage;
+            usePunchKnockbackStrength = attackKnockbackStrength;
+            usePunchKnockbackDuration = attackKnockbackDuration;
+        }
+
+        punchDeltaFinish = attackSpeed;
+        startAngle = p.punchAngle - attackSpan / 2;
+        endAngle = p.punchAngle + attackSpan / 2;
+        punchDelta = 0;
+
+        float _clientStart;
+        float _clientEnd;
+
+        if(p.punchAngle > 0) {
+            _clientStart = 0;
+            _clientEnd = 180;
+        } else {
+            _clientStart = -180;
+            _clientEnd = 0;
+        }
+
+        ServerPackets.p17PlayerPunchData(entityId, _clientStart, _clientEnd, punchDeltaFinish, PacketReceiver.whoCanSee(this));
     }
 
     @Override

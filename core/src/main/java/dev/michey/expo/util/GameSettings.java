@@ -47,6 +47,7 @@ public class GameSettings {
     public boolean enableSoftShadows = true;
     public boolean grassColoring = true;
     public boolean ambientOcclusion = true;
+    public boolean waterReflections = true;
     public int zoomLevel = 0;
     public int lightQuality = 2;
 
@@ -105,6 +106,7 @@ public class GameSettings {
                 .put("lightQuality", lightQuality)
                 .put("grassColoring", grassColoring)
                 .put("ambientOcclusion", ambientOcclusion)
+                .put("waterReflections", waterReflections)
                 ;
 
         return new JSONObject()
@@ -151,6 +153,7 @@ public class GameSettings {
         lightQuality = graphicJson.getInt("lightQuality");
         grassColoring = graphicJson.getBoolean("grassColoring");
         ambientOcclusion = graphicJson.getBoolean("ambientOcclusion");
+        waterReflections = graphicJson.getBoolean("waterReflections");
     }
 
     @Override

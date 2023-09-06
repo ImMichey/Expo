@@ -7,13 +7,14 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
 import java.util.Arrays;
 
-public class ClientFenceStick extends ClientEntity implements SelectableEntity {
+public class ClientFenceStick extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
     private float[] interactionPointArray;
 
@@ -157,6 +158,11 @@ public class ClientFenceStick extends ClientEntity implements SelectableEntity {
     public void applyPacketPayload(Object[] payload) {
         fenceOrientation = (int) payload[0];
         updateFenceTexture();
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.draw(fenceTexture, finalDrawPosX, finalDrawPosY, fenceTexture.getRegionWidth(), fenceTexture.getRegionHeight() * -1);
     }
 
     @Override
