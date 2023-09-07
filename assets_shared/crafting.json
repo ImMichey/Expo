@@ -4,7 +4,8 @@
             "recipe_cord",
             "recipe_oak_plank",
             "recipe_fence_stick",
-            "recipe_oak_wood_floor"
+            "recipe_oak_wood_floor",
+            "recipe_crate"
         ],
         "tools": [
             "recipe_flint_pickaxe",
@@ -167,6 +168,19 @@
                 {
                     "id": 15,
                     "amount": 1
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_crate",
+            "output": {
+                "id": 32,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 21,
+                    "amount": 6
                 }
             ]
         }

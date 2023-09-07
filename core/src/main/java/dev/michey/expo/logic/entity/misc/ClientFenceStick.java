@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -97,19 +98,7 @@ public class ClientFenceStick extends ClientEntity implements SelectableEntity, 
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("wood_hit");
 
-        new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(3, 7)
-                .scale(0.6f, 0.8f)
-                .lifetime(0.3f, 0.5f)
-                .color(ParticleColorMap.random(6))
-                .position(finalTextureStartX + 8, finalTextureStartY + 8)
-                .velocity(-24, 24, -24, 24)
-                .fadeout(0.15f)
-                .textureRange(12, 14)
-                .randomRotation()
-                .rotateWithVelocity()
-                .depth(depth - 0.0001f)
-                .spawn();
+        ParticleSheet.Common.spawnWoodHitParticles(this);
     }
 
     @Override

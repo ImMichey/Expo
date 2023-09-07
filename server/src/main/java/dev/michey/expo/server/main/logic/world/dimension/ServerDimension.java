@@ -55,7 +55,7 @@ public abstract class ServerDimension {
         chunkHandler = new ServerChunkGrid(this);
         visibilityController = new EntityMasterVisibilityController(this);
         entitySpawnManager = new EntitySpawnManager(this, EntitySpawnDatabase.get().getFor(dimensionName));
-        physicsWorld = new World<>(16f) {
+        physicsWorld = new World<>(64f) {
 
             @Override
             public void remove(Item item) {

@@ -160,7 +160,7 @@ public class ExpoAssets {
         return tilesAtlas.findRegion(name);
     }
 
-    public TextureRegion toTexture(int[] ids, String elevationName, int variation) {
+    public synchronized TextureRegion toTexture(int[] ids, String elevationName, int variation) {
         tileNameBuilder.setLength(0);
         tileNameBuilder.append('t');
 
@@ -183,7 +183,8 @@ public class ExpoAssets {
             tileNameBuilder.append(variation);
         }
 
-        return tilesAtlas.findRegion(tileNameBuilder.toString());
+        String st = tileNameBuilder.toString();
+        return tilesAtlas.findRegion(st);
     }
 
     public TextureRegion textureRegion(String name) {

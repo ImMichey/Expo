@@ -124,6 +124,25 @@
                             "thresholdSecond": 0.835,
                             "thresholdReplace": "OCEAN_DEEP"
                         }
+                    },
+                    {
+                        "name": "rivers",
+                        "octaves": 6,
+                        "type": 5,
+                        "frequency": 0.0008,
+                        "noiseOffset": 9,
+                        "logic": {
+                            "check": [
+                                "*",
+                                "!OCEAN",
+                                "!OCEAN_DEEP"
+                            ],
+                            "thresholdA": 0.499,
+                            "thresholdB": 0.5085,
+                            "replaceType": "BIOME",
+                            "replaceWith": "RIVER",
+                            "priority": 1000
+                        }
                     }
                 ],
                 "terrain": {

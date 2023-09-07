@@ -4,6 +4,7 @@ import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
 import dev.michey.expo.server.main.logic.entity.animal.ServerFirefly;
 import dev.michey.expo.server.main.logic.entity.animal.ServerMaggot;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
+import dev.michey.expo.server.main.logic.entity.container.ServerCrate;
 import dev.michey.expo.server.main.logic.entity.crop.ServerCropWheat;
 import dev.michey.expo.server.main.logic.entity.flora.*;
 import dev.michey.expo.server.main.logic.entity.hostile.ServerZombie;
@@ -39,6 +40,7 @@ public enum ServerEntityType {
     FENCE_STICK(24, "FenceStick", true),
     CROP_WHEAT(25, "CropWheat", true),
     BOULDER(26, "Boulder", true),
+    CRATE(27, "Crate", true),
     ;
 
     public final int ENTITY_ID;
@@ -80,6 +82,7 @@ public enum ServerEntityType {
             case 24 -> new ServerFenceStick();
             case 25 -> new ServerCropWheat();
             case 26 -> new ServerBoulder();
+            case 27 -> new ServerCrate();
             default -> null;
         };
     }
@@ -113,6 +116,7 @@ public enum ServerEntityType {
             case "FENCESTICK", "FENCE_STICK", "STICKFENCE", "STICK_FENCE" -> new ServerFenceStick();
             case "CROPWHEAT", "CROP_WHEAT", "WHEATCROP", "WHEAT_CROP" -> new ServerCropWheat();
             case "BOULDER" -> new ServerBoulder();
+            case "CRATE" -> new ServerCrate();
             default -> null;
         };
     }

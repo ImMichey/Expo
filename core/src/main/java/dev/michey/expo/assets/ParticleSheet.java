@@ -2,6 +2,10 @@ package dev.michey.expo.assets;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.util.ParticleBuilder;
+import dev.michey.expo.util.ParticleColorMap;
 
 import java.util.HashMap;
 
@@ -48,6 +52,26 @@ public class ParticleSheet {
 
     public TextureRegion getRandomParticle(int begin, int end) {
         return particleTextureMap.get(MathUtils.random(begin, end));
+    }
+
+    public static class Common {
+
+        public static void spawnWoodHitParticles(ClientEntity entity) {
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(3, 7)
+                    .scale(0.6f, 0.8f)
+                    .lifetime(0.3f, 0.5f)
+                    .color(ParticleColorMap.random(6))
+                    .position(entity.finalTextureStartX + 8, entity.finalTextureStartY + 8)
+                    .velocity(-24, 24, -24, 24)
+                    .fadeout(0.15f)
+                    .textureRange(12, 14)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .depth(entity.depth - 0.0001f)
+                    .spawn();
+        }
+
     }
 
 }
