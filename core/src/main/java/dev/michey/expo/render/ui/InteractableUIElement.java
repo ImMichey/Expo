@@ -40,6 +40,15 @@ public class InteractableUIElement {
         ey = y + h;
     }
 
+    public void update(float x, float y, float w, float h, float extX, float extY) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        ex = x + w + extX;
+        ey = y + h + extY;
+    }
+
     public void onHoverBegin() {
         fadeGoal = 0f;
         fadeDelta = 1.0f;

@@ -173,17 +173,17 @@ public class UIContainerInventory extends UIContainer {
         float startY = invY + 17 * ui.uiScale + (craftingOpen ? 15 * ui.uiScale : 0);
 
         for(int i = 0; i < ui.hotbarSlots.length; i++) {
-            ui.hotbarSlots[i].update(startX + (i * ui.slotW + i * ui.uiScale), startY, ui.slotW, ui.slotH);
+            ui.hotbarSlots[i].update(startX + (i * ui.slotW + i * ui.uiScale), startY, ui.slotW, ui.slotH, ui.uiScale, 0);
         }
 
         for(int i = 0; i < inventorySlots.length; i++) {
             int x = i % 9;
             int y = i / 9;
-            inventorySlots[i].update(startX + (x * ui.slotW + x * ui.uiScale), startY + 33 * ui.uiScale + y * 30 * ui.uiScale, ui.slotW, ui.slotH);
+            inventorySlots[i].update(startX + (x * ui.slotW + x * ui.uiScale), startY + 33 * ui.uiScale + y * 30 * ui.uiScale, ui.slotW, ui.slotH, ui.uiScale, 2 * ui.uiScale * (y == 2 ? 0 : 1));
         }
 
         for(int i = 0; i < inventoryArmorSlots.length; i++) {
-            inventoryArmorSlots[inventoryArmorSlots.length - 1 - i].update(invX + 4 * ui.uiScale, invY + 4 * ui.uiScale + i * 30 * ui.uiScale + (craftingOpen ? 15 * ui.uiScale : 0), ui.slotW, ui.slotH);
+            inventoryArmorSlots[inventoryArmorSlots.length - 1 - i].update(invX + 4 * ui.uiScale, invY + 4 * ui.uiScale + i * 30 * ui.uiScale + (craftingOpen ? 15 * ui.uiScale : 0), ui.slotW, ui.slotH, 0, 2 * ui.uiScale * (i == 4 ? 0 : 1));
         }
 
         if(craftingOpen) {
@@ -192,13 +192,13 @@ public class UIContainerInventory extends UIContainer {
             craftNextCategoryButton.update(invX + 409 * ui.uiScale, invY + 163 * ui.uiScale, craftNextCategoryButton.getDrawNotSelected().getRegionWidth() * ui.uiScale, craftNextCategoryButton.getDrawNotSelected().getRegionHeight() * ui.uiScale);
             for(int i = 0; i < craftGroupCategoryButtons.length; i++) {
                 var el = craftGroupCategoryButtons[i];
-                el.update(invX + 299 * ui.uiScale + i * ui.slotW + ui.uiScale * i, invY + 153 * ui.uiScale, ui.slotW, ui.slotH);
+                el.update(invX + 299 * ui.uiScale + i * ui.slotW + ui.uiScale * i, invY + 153 * ui.uiScale, ui.slotW, ui.slotH, ui.uiScale, 0);
             }
             for(int i = 0; i < craftRecipeSlots.length; i++) {
                 var el = craftRecipeSlots[i];
                 int x = i % 5;
                 int y = i / 5;
-                el.update(invX + 390 * ui.uiScale - x * ui.slotW - ui.uiScale * x, invY + 4 * ui.uiScale + y * ui.slotH + ui.uiScale * y, ui.slotW, ui.slotH);
+                el.update(invX + 390 * ui.uiScale - x * ui.slotW - ui.uiScale * x, invY + 4 * ui.uiScale + y * ui.slotH + ui.uiScale * y, ui.slotW, ui.slotH, ui.uiScale, 2 * ui.uiScale * (y == 4 ? 0 : 1));
             }
         } else {
             craftOpenButton.update(invX + 282 * ui.uiScale, invY + 63 * ui.uiScale, ui.slotW, ui.slotH);

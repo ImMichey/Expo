@@ -269,7 +269,7 @@ public class PlayerUI {
             float startY = 2;
 
             for(int i = 0; i < hotbarSlots.length; i++) {
-                hotbarSlots[i].update(startX + 4 * uiScale + (i * slotW + i * uiScale), startY + 4 * uiScale, slotW, slotH);
+                hotbarSlots[i].update(startX + 4 * uiScale + (i * slotW + i * uiScale), startY + 4 * uiScale, slotW, slotH, uiScale, 0);
             }
         }
     }

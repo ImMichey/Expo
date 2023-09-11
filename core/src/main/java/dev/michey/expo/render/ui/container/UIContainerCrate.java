@@ -104,7 +104,7 @@ public class UIContainerCrate extends UIContainer {
         float slotH = crateSlot.getRegionHeight() * ui.uiScale;
 
         for(int i = 0; i < interactableItemSlots.length; i++) {
-            interactableItemSlots[i].update(baseSlotX + i * (slotW + 1 * ui.uiScale), baseSlotY, slotW, slotH);
+            interactableItemSlots[i].update(baseSlotX + i * (slotW + 1 * ui.uiScale), baseSlotY, slotW, slotH, ui.uiScale, 0);
         }
     }
 
