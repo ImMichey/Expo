@@ -302,7 +302,8 @@ public class AudioEngine {
 
         float px = p.finalTextureCenterX;
         float dx = v.x - px;
-        return dx / maxAudibleRange;
+        float MAX_PAN = 0.5f;
+        return dx / maxAudibleRange * MAX_PAN;
     }
 
 }

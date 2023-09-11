@@ -2,50 +2,40 @@ package dev.michey.expo.render.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import dev.michey.expo.logic.inventory.ClientInventorySlot;
-import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class InteractableItemSlot extends InteractableUIElement {
 
-    public InteractableItemSlot(PlayerUI parent, int inventorySlotId) {
-        this(parent, inventorySlotId, parent.invSlotS, parent.invSlot);
+    public InteractableItemSlot(int containerId, int inventorySlotId) {
+        this(containerId, inventorySlotId, PlayerUI.get().invSlotS, PlayerUI.get().invSlot);
     }
 
-    public InteractableItemSlot(PlayerUI parent, int inventorySlotId, TextureRegion drawSelected, TextureRegion drawNotSelected) {
-        super(parent, inventorySlotId, drawSelected, drawNotSelected);
-        if(inventorySlotId == 0) selected = true;
+    public InteractableItemSlot(int containerId, int inventorySlotId, TextureRegion drawSelected, TextureRegion drawNotSelected) {
+        super(containerId, inventorySlotId, drawSelected, drawNotSelected);
     }
 
     @Override
     public void onLeftClick() {
-        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, inventorySlotId);
+        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, containerId, inventorySlotId);
     }
 
     @Override
     public void onRightClick() {
-        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, inventorySlotId);
+        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, containerId, inventorySlotId);
     }
 
-    private ClientInventorySlot toInventorySlot() {
-        PlayerInventory inventory = PlayerInventory.LOCAL_INVENTORY;
-        return inventory.getSlotAt(inventorySlotId);
-    }
-
-    public void drawContents() {
-        ClientInventorySlot inventorySlot = toInventorySlot();
-
-        if(inventorySlot.item != null) {
-            ItemMapping mapping = ItemMapper.get().getMapping(inventorySlot.item.itemId);
+    public void drawContents(ClientInventorySlot slot) {
+        if(slot.item != null) {
+            PlayerUI parent = PlayerUI.get();
+            ItemMapping mapping = ItemMapper.get().getMapping(slot.item.itemId);
             ItemRender render = mapping.uiRender;
             TextureRegion draw = render.textureRegion;
 
@@ -60,7 +50,7 @@ public class InteractableItemSlot extends InteractableUIElement {
             r.hudBatch.draw(draw, _x, _y, dw, dh);
 
             if(mapping.logic.maxStackSize > 1) {
-                int amount = inventorySlot.item.itemAmount;
+                int amount = slot.item.itemAmount;
                 String amountAsText = amount + "";
 
                 parent.glyphLayout.setText(r.m5x7_shadow_use, amountAsText);
@@ -72,10 +62,10 @@ public class InteractableItemSlot extends InteractableUIElement {
 
             if(mapping.logic.durability != -1) {
                 // Has durability.
-                boolean drawDurability = mapping.logic.durability > inventorySlot.item.itemMetadata.durability;
+                boolean drawDurability = mapping.logic.durability > slot.item.itemMetadata.durability;
 
                 if(drawDurability) {
-                    float percentage = (float) inventorySlot.item.itemMetadata.durability / mapping.logic.durability;
+                    float percentage = (float) slot.item.itemMetadata.durability / mapping.logic.durability;
                     int space = 5;
                     int thickness = 1;
                     float yOffset = 5 * parent.uiScale;
@@ -102,6 +92,7 @@ public class InteractableItemSlot extends InteractableUIElement {
     }
 
     public void drawSlotIndices() {
+        PlayerUI parent = PlayerUI.get();
         RenderContext r = RenderContext.get();
         String text = String.valueOf(inventorySlotId);
 
@@ -114,33 +105,19 @@ public class InteractableItemSlot extends InteractableUIElement {
 
     @Override
     public void onTooltip() {
-        if(toInventorySlot().item == null) {
-            if(inventorySlotId == ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) {
-                parent.drawTooltipColored("Head Armor Slot", ClientStatic.COLOR_ARMOR_TEXT);
-            } else if(inventorySlotId == ExpoShared.PLAYER_INVENTORY_SLOT_CHEST) {
-                parent.drawTooltipColored("Chest Armor Slot", ClientStatic.COLOR_ARMOR_TEXT);
-            } else if(inventorySlotId == ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES) {
-                parent.drawTooltipColored("Gloves Armor Slot", ClientStatic.COLOR_ARMOR_TEXT);
-            } else if(inventorySlotId == ExpoShared.PLAYER_INVENTORY_SLOT_LEGS) {
-                parent.drawTooltipColored("Legs Armor Slot", ClientStatic.COLOR_ARMOR_TEXT);
-            } else if(inventorySlotId == ExpoShared.PLAYER_INVENTORY_SLOT_FEET) {
-                parent.drawTooltipColored("Boots Armor Slot", ClientStatic.COLOR_ARMOR_TEXT);
-            }
-        } else {
-            ClientInventorySlot slot = toInventorySlot();
-            ItemMapping mapping = ItemMapper.get().getMapping(slot.item.itemId);
+        PlayerUI parent = PlayerUI.get();
+        ClientInventoryItem item = ClientPlayer.getLocalPlayer().playerInventory.getSlotAt(inventorySlotId).item;
+
+        if(item != null) {
+            ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
 
             if(mapping.logic.isTool()) {
-                float percentage = slot.item.itemMetadata.durability / (float) mapping.logic.durability * 100f;
+                float percentage = item.itemMetadata.durability / (float) mapping.logic.durability * 100f;
                 float[] rgb = parent.percentageToColor(percentage);
                 String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();
 
-                //String range = "  " + parent.COLOR_DESCRIPTOR2_HEX + "Range: " + (slot.item.toMapping().logic.range / 16.0f) + "m";
-                //String attackSpeed = "  " + parent.COLOR_DESCRIPTOR2_HEX + "Attack Speed: " + slot.item.toMapping().logic.attackSpeed + "s";
-                //String attackDamage = "  " + parent.COLOR_DESCRIPTOR2_HEX + "Attack/Harvest Damage: " + slot.item.toMapping().logic.attackDamage + ", " + slot.item.toMapping().logic.harvestDamage;
-
                 String[] lines = new String[] {
-                        parent.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + slot.item.itemMetadata.durability + "/" + mapping.logic.durability
+                        parent.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + item.itemMetadata.durability + "/" + mapping.logic.durability
                 };
 
                 parent.drawTooltipColored(mapping.displayName, mapping.color, lines);

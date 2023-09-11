@@ -1,6 +1,7 @@
 package dev.michey.expo.util;
 
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.server.packet.*;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -40,9 +41,10 @@ public class ClientPackets {
     }
 
     /** Sends the P18_PlayerInventoryInteraction packet via UDP protocol. */
-    public static void p18PlayerInventoryInteraction(int actionType, int slotId) {
+    public static void p18PlayerInventoryInteraction(int actionType, int containerId, int slotId) {
         P18_PlayerInventoryInteraction p = new P18_PlayerInventoryInteraction();
         p.actionType = actionType;
+        p.containerId = containerId;
         p.slotId = slotId;
         udp(p);
     }
@@ -105,6 +107,13 @@ public class ClientPackets {
         P35_PlayerCraft p = new P35_PlayerCraft();
         p.recipeIdentifier = recipeIdentifier;
         p.all = all;
+        udp(p);
+    }
+
+    /** Sends the P39_PlayerInteractEntity packet via UDP protocol. */
+    public static void p39PlayerInteractEntity() {
+        P39_PlayerInteractEntity p = new P39_PlayerInteractEntity();
+        p.entityId = ClientEntityManager.get().selectedEntity.entityId;
         udp(p);
     }
 

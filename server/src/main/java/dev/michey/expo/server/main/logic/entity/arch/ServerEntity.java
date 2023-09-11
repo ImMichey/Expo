@@ -307,6 +307,10 @@ public abstract class ServerEntity {
         return applied;
     }
 
+    public void onInteraction(ServerPlayer player) {
+
+    }
+
     public void tickKnockback(float delta) {
         if(knockbackDuration > 0) {
             knockbackDelta += delta;

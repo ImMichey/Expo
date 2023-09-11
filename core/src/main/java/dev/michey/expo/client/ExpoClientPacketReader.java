@@ -283,6 +283,9 @@ public class ExpoClientPacketReader {
                     player.playPunchAnimation();
                 }
             }
+        } else if(o instanceof P40_InventoryView p) {
+            ClientPlayer player = ClientPlayer.getLocalPlayer();
+            player.getUI().openContainerView(p.type, p.containerId, p.viewSlots);
         }
     }
 

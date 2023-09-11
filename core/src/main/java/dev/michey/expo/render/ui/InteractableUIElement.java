@@ -3,25 +3,15 @@ package dev.michey.expo.render.ui;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import dev.michey.expo.logic.inventory.ClientInventorySlot;
-import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ClientStatic;
-import dev.michey.expo.util.ExpoShared;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class InteractableUIElement {
-
-    public final PlayerUI parent;
 
     public float x, y, w, h, ex, ey;
     public boolean selected, hovered, visible;
     public int inventorySlotId;
+    public int containerId;
 
     private float fadeDelta;
     private float fadeGoal;
@@ -29,16 +19,16 @@ public class InteractableUIElement {
     private final TextureRegion drawSelected;
     private final TextureRegion drawNotSelected;
 
-    public InteractableUIElement(PlayerUI parent, int inventorySlotId) {
-        this(parent, inventorySlotId, parent.invSlotS, parent.invSlot);
+    public InteractableUIElement(int containerId, int inventorySlotId) {
+        this(containerId, inventorySlotId, PlayerUI.get().invSlotS, PlayerUI.get().invSlot);
     }
 
-    public InteractableUIElement(PlayerUI parent, int inventorySlotId, TextureRegion drawSelected, TextureRegion drawNotSelected) {
-        this.parent = parent;
+    public InteractableUIElement(int containerId, int inventorySlotId, TextureRegion drawSelected, TextureRegion drawNotSelected) {
+        this.containerId = containerId;
         this.inventorySlotId = inventorySlotId;
         this.drawSelected = drawSelected;
         this.drawNotSelected = drawNotSelected;
-        visible = true;
+        visible = false;
     }
 
     public void update(float x, float y, float w, float h) {
@@ -99,6 +89,14 @@ public class InteractableUIElement {
                 r.hudBatch.setColor(Color.WHITE);
             }
         }
+    }
+
+    public TextureRegion getDrawSelected() {
+        return drawSelected;
+    }
+
+    public TextureRegion getDrawNotSelected() {
+        return drawNotSelected;
     }
 
 }

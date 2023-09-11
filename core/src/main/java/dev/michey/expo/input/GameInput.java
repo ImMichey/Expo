@@ -5,6 +5,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
+import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.util.ClientStatic;
 
@@ -88,7 +89,7 @@ public class GameInput implements InputProcessor {
     }
 
     private boolean inventoryOpen() {
-        return ClientPlayer.getLocalPlayer() != null && ClientPlayer.getLocalPlayer().inventoryOpen;
+        return ClientPlayer.getLocalPlayer() != null && UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible;
     }
 
     private boolean consoleOpen() {

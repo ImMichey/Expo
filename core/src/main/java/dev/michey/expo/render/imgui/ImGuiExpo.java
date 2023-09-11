@@ -19,6 +19,7 @@ import dev.michey.expo.render.light.ExpoLightEngine;
 import dev.michey.expo.render.ui.InteractableItemSlot;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
@@ -473,7 +474,7 @@ public class ImGuiExpo {
                     }
 
                     ImGui.text("selectedSlot: " + PlayerInventory.LOCAL_INVENTORY.selectedSlot);
-                    ImGui.text("inventoryOpen: " + ClientPlayer.getLocalPlayer().inventoryOpen);
+                    ImGui.text("inventoryOpen: " + UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible);
 
                     InteractableUIElement iis = ExpoClientContainer.get().getPlayerUI().hoveredSlot;
 

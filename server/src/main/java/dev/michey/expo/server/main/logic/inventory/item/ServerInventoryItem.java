@@ -72,6 +72,16 @@ public class ServerInventoryItem {
         return itemMetadata.toolType == type;
     }
 
+    public boolean isArmor() {
+        return hasMetadata() && (
+                itemMetadata.toolType == ToolType.HELMET
+                        || itemMetadata.toolType == ToolType.CHESTPLATE
+                        || itemMetadata.toolType == ToolType.GLOVES
+                        || itemMetadata.toolType == ToolType.LEGS
+                        || itemMetadata.toolType == ToolType.BOOTS
+        );
+    }
+
     public ItemMapping toMapping() {
         return ItemMapper.get().getMapping(itemId);
     }

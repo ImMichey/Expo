@@ -1,12 +1,10 @@
 package dev.michey.expo.server.main.logic.inventory;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
-import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
@@ -43,65 +41,9 @@ public class ServerPlayerInventory extends ServerInventory {
     public ServerInventoryItem playerCursorItem; // can be null
 
     public ServerPlayerInventory(ServerPlayer player) {
-        super(ExpoShared.PLAYER_INVENTORY_SLOTS);
+        super(InventoryViewType.PLAYER_INVENTORY, ExpoShared.PLAYER_INVENTORY_SLOTS);
         setOwner(player);
-    }
-
-    public void fillRandom() {
-        ItemMapper mapper = ItemMapper.get();
-
-        for(ServerInventorySlot slot : slots) {
-            slot.item = new ServerInventoryItem();
-
-            if(slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_HEAD ||
-                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_CHEST ||
-                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES ||
-                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_LEGS ||
-                    slot.slotIndex == ExpoShared.PLAYER_INVENTORY_SLOT_FEET) {
-                continue;
-            }
-
-            if(MathUtils.random() <= 0.8f) {
-                ItemMapping mapping = mapper.randomMapping();
-
-                slot.item.itemId = mapping.id;
-                slot.item.itemAmount = MathUtils.random(1, mapping.logic.maxStackSize);
-
-                if(mapping.logic.toolType != null) {
-                    slot.item.itemMetadata = new ItemMetadata();
-                    slot.item.itemMetadata.toolType = mapping.logic.toolType;
-                    slot.item.itemMetadata.durability = MathUtils.random(1, mapping.logic.durability);
-                }
-            }
-        }
-
-        int[] updatedSlots = new int[slots.length];
-        for(int i = 0; i < updatedSlots.length; i++) updatedSlots[i] = i;
-
-        ServerInventoryItem[] updated = new ServerInventoryItem[slots.length];
-        for(int i = 0; i < updated.length; i++) updated[i] = slots[i].item;
-
-        ServerPackets.p19PlayerInventoryUpdate(updatedSlots, updated, PacketReceiver.player(getOwner()));
-    }
-
-    private boolean isArmorItem(ServerInventoryItem item) {
-        return item.hasMetadata() && (
-                item.itemMetadata.toolType == ToolType.HELMET
-                        || item.itemMetadata.toolType == ToolType.CHESTPLATE
-                        || item.itemMetadata.toolType == ToolType.GLOVES
-                        || item.itemMetadata.toolType == ToolType.LEGS
-                        || item.itemMetadata.toolType == ToolType.BOOTS
-        );
-    }
-
-    public void clear() {
-        for(var slot : slots) {
-            if(!slot.item.isEmpty()) {
-                slot.item.setEmpty();
-            }
-        }
-
-        ServerPackets.p19PlayerInventoryUpdate(getOwner(), PacketReceiver.player(getOwner()));
+        addInventoryViewer(player);
     }
 
     public InventoryAddItemResult addItem(ServerInventoryItem item) {

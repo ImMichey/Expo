@@ -129,7 +129,7 @@
                         "name": "rivers",
                         "octaves": 6,
                         "type": 5,
-                        "frequency": 0.0008,
+                        "frequency": 0.0012,
                         "noiseOffset": 9,
                         "logic": {
                             "check": [
@@ -137,8 +137,8 @@
                                 "!OCEAN",
                                 "!OCEAN_DEEP"
                             ],
-                            "thresholdA": 0.499,
-                            "thresholdB": 0.5085,
+                            "thresholdA": 0.5085,
+                            "thresholdB": 0.5215,
                             "replaceType": "BIOME",
                             "replaceWith": "RIVER",
                             "priority": 1000

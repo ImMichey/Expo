@@ -1,9 +1,7 @@
 package dev.michey.expo.render.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,11 +17,16 @@ import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
+import dev.michey.expo.logic.inventory.ClientInventorySlot;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.ui.container.UIContainer;
+import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
+import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
+import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
@@ -45,7 +48,8 @@ public class PlayerUI {
     public boolean tablistOpen = false;
     private float pthW, pthH;
     private float pingW, pingH;
-    private float cornerWH, borderWH;
+    public float cornerWH;
+    private float borderWH;
     public GlyphLayout glyphLayout;
 
     /** Hotbar */
@@ -60,20 +64,9 @@ public class PlayerUI {
     public final String COLOR_DESCRIPTOR_HEX = "[#5875b0]";
     public final String COLOR_DESCRIPTOR2_HEX = "[#bdc4d4]";
     private final float[] COLOR_GRADIENTS = new float[] {100f, 80f, 60f, 40f, 20f, 0f};
+
     public InteractableItemSlot[] hotbarSlots;
     public InteractableUIElement hoveredSlot = null;
-
-    /** Inventory */
-    private float invW, invH;
-    private float invX, invY;
-    public InteractableItemSlot[] inventorySlots;
-    public InteractableItemSlot[] inventoryArmorSlots;
-    public InteractableUIElement craftOpenSlot;
-    public InteractableUIElement craftButtonLeft, craftButtonRight;
-    public InteractableUIElement[] craftCategorySlots;
-    public InteractableRecipeSlot[] craftRecipeSlots;
-    private InteractableUIElement selectedCategoryButton;
-    public boolean craftingOpen = false;
 
     public List<PickupLine> pickupLines;
     public final Object PICKUP_LOCK = new Object();
@@ -95,32 +88,6 @@ public class PlayerUI {
     /** Textures */
     public final TextureRegion invSlot;             // Regular Item Slot
     public final TextureRegion invSlotS;            // Regular Item Slot (hovered)
-    public final TextureRegion craftSlot;           // Crafting Item Slot
-    public final TextureRegion craftSlotS;          // Crafting Item Slot (hovered)
-
-    public final TextureRegion invSlotHead;         // Head Item Slot
-    public final TextureRegion invSlotHeadS;        // Head Item Slot (hovered)
-    public final TextureRegion invSlotChest;        // Chest Item Slot
-    public final TextureRegion invSlotChestS;       // Chest Item Slot (hovered)
-    public final TextureRegion invSlotGloves;       // Gloves Item Slot
-    public final TextureRegion invSlotGlovesS;      // Gloves Item Slot (hovered)
-    public final TextureRegion invSlotLegs;         // Legs Item Slot
-    public final TextureRegion invSlotLegsS;        // Legs Item Slot (hovered)
-    public final TextureRegion invSlotFeet;         // Boots Item Slot
-    public final TextureRegion invSlotFeetS;        // Boots Item Slot (hovered)
-
-    public final TextureRegion craftOpen;           // Open Craft Menu Item Slot
-    public final TextureRegion craftOpenS;          // Open Craft Menu Item Slot (hovered)
-    public final TextureRegion craftArrowLeft;
-    public final TextureRegion craftArrowLeftS;
-    public final TextureRegion craftArrowRight;
-    public final TextureRegion craftArrowRightS;
-    public final TextureRegion craftCategoryMisc;
-    public final TextureRegion craftCategoryMiscS;
-    public final TextureRegion craftCategoryTools;
-    public final TextureRegion craftCategoryToolsS;
-    public final TextureRegion craftCategoryFood;
-    public final TextureRegion craftCategoryFoodS;
 
     private final TextureRegion hotbarBase;
     private final TextureRegion hotbarHealth;
@@ -138,62 +105,28 @@ public class PlayerUI {
 
     public final TextureRegion whiteSquare;
 
-    private final TextureRegion invBackground;      // Base inventory background
-    private final TextureRegion invBackgroundCrafting;
-
     private final TextureRegion tooltipTopLeft;
     private final TextureRegion tooltipTopRight;
     private final TextureRegion tooltipBottomLeft;
     private final TextureRegion tooltipBottomRight;
     private final TextureRegion tooltipBorder7x1;
     private final TextureRegion tooltipBorder1x7;
-    private final TextureRegion tooltipFiller;
-    private final TextureRegion tooltipFillerLight;
-    private final TextureRegion tooltipFillerCrafting;
+    public final TextureRegion tooltipFiller;
+    public final TextureRegion tooltipFillerLight;
+    public final TextureRegion tooltipFillerCrafting;
 
-    private boolean inventoryOpenState;
-    private boolean craftingOpenState;
+    public UIContainer currentContainer = null;
+
+    /** Singleton instance */
+    private static PlayerUI INSTANCE;
 
     public PlayerUI() {
         invSlot = tr("inv_slot");
         invSlotS = tr("inv_slotS");
-        craftSlot = tr("ui_crafting_emptyslot");
-        craftSlotS = tr("ui_crafting_emptyslot_sel");
-
-        invSlotHead = tr("ui_inventory_headslot");
-        invSlotHeadS = tr("ui_inventory_headslot_sel");
-
-        invSlotChest = tr("ui_inventory_chestslot");
-        invSlotChestS = tr("ui_inventory_chestslot_sel");
-
-        invSlotGloves = tr("ui_inventory_gloveslot");
-        invSlotGlovesS = tr("ui_inventory_gloveslot_sel");
-
-        invSlotLegs = tr("ui_inventory_legslot");
-        invSlotLegsS = tr("ui_inventory_legslot_sel");
-
-        invSlotFeet = tr("ui_inventory_bootslot");
-        invSlotFeetS = tr("ui_inventory_bootslot_sel");
-
-        craftOpen = tr("ui_crafting_open");
-        craftOpenS = tr("ui_crafting_open_sel");
-        craftArrowLeft = tr("ui_crafting_arrow_left");
-        craftArrowLeftS = tr("ui_crafting_arrow_left_sel");
-        craftArrowRight = tr("ui_crafting_arrow_right");
-        craftArrowRightS = tr("ui_crafting_arrow_right_sel");
-        craftCategoryMisc = tr("ui_crafting_category_misc");
-        craftCategoryMiscS = tr("ui_crafting_category_misc_sel");
-        craftCategoryFood = tr("ui_crafting_category_food");
-        craftCategoryFoodS = tr("ui_crafting_category_food_sel");
-        craftCategoryTools = tr("ui_crafting_category_tools");
-        craftCategoryToolsS = tr("ui_crafting_category_tools_sel");
 
         hotbarBase = tr("hotbar_base");
         hotbarHealth = tr("hotbar_health");
         hotbarHunger = tr("hotbar_hunger");
-
-        invBackground = tr("inv_bgc_");
-        invBackgroundCrafting = tr("inv_bgco");
 
         TextureRegion tab = tr("tab");
 
@@ -213,101 +146,6 @@ public class PlayerUI {
 
         glyphLayout = new GlyphLayout();
 
-        hotbarSlots = new InteractableItemSlot[9];
-
-        for(int i = 0; i < 9; i++) {
-            hotbarSlots[i] = new InteractableItemSlot(this, i);
-        }
-
-        inventorySlots = new InteractableItemSlot[27];
-
-        for(int i = 0 ; i < inventorySlots.length; i++) {
-            inventorySlots[i] = new InteractableItemSlot(this, i + 9);
-        }
-
-        inventoryArmorSlots = new InteractableItemSlot[] {
-                new InteractableItemSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_HEAD, invSlotHeadS, invSlotHead),
-                new InteractableItemSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_CHEST, invSlotChestS, invSlotChest),
-                new InteractableItemSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES, invSlotGlovesS, invSlotGloves),
-                new InteractableItemSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_LEGS, invSlotLegsS, invSlotLegs),
-                new InteractableItemSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_FEET, invSlotFeetS, invSlotFeet)
-        };
-
-        craftOpenSlot = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_OPEN, craftOpenS, craftOpen) {
-
-            @Override
-            public void onLeftClick() {
-                craftingOpen = !craftingOpen;
-                updateInventoryBounds();
-                updateHotbarPosition();
-                updateInventoryElements();
-            }
-
-            @Override
-            public void onTooltip() {
-                drawTooltipColored((craftingOpen ? "Close" : "Open") + " Crafting", ClientStatic.COLOR_CRAFT_TEXT);
-            }
-
-        };
-
-        craftButtonLeft = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_ARROW_LEFT, craftArrowLeftS, craftArrowLeft) {
-
-            @Override
-            public void onTooltip() {
-                drawTooltipColored("Previous categories", ClientStatic.COLOR_CRAFT_TEXT);
-            }
-
-        };
-
-        craftButtonRight = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_ARROW_RIGHT, craftArrowRightS, craftArrowRight) {
-
-            @Override
-            public void onTooltip() {
-                drawTooltipColored("Next categories", ClientStatic.COLOR_CRAFT_TEXT);
-            }
-
-        };
-
-        craftCategorySlots = new InteractableUIElement[4];
-        craftCategorySlots[0] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_MISC, craftCategoryMiscS, craftCategoryMisc) {
-            @Override
-            public void onTooltip() {
-                drawTooltipColored("Category: Misc", ClientStatic.COLOR_CRAFT_TEXT);
-            }
-
-            @Override
-            public void onLeftClick() {
-                showCraftingRecipes(this, ExpoShared.CRAFTING_CATEGORY_MISC);
-            }
-        };
-        craftCategorySlots[1] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_TOOLS, craftCategoryToolsS, craftCategoryTools) {
-            @Override
-            public void onTooltip() {
-                drawTooltipColored("Category: Tools", ClientStatic.COLOR_CRAFT_TEXT);
-            }
-
-            @Override
-            public void onLeftClick() {
-                showCraftingRecipes(this, ExpoShared.CRAFTING_CATEGORY_TOOLS);
-            }
-        };
-        craftCategorySlots[2] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_FOOD, craftCategoryFoodS, craftCategoryFood) {
-            @Override
-            public void onTooltip() {
-                drawTooltipColored("Category: Food", ClientStatic.COLOR_CRAFT_TEXT);
-            }
-
-            @Override
-            public void onLeftClick() {
-                showCraftingRecipes(this, ExpoShared.CRAFTING_CATEGORY_FOOD);
-            }
-        };
-        craftCategorySlots[3] = new InteractableUIElement(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_CATEGORY_3, craftSlotS, craftSlot);
-
-        craftRecipeSlots = new InteractableRecipeSlot[25];
-        for(int i = 0; i < craftRecipeSlots.length; i++) craftRecipeSlots[i] = new InteractableRecipeSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_RECIPE_BASE);
-        showCraftingRecipes(craftCategorySlots[0], ExpoShared.CRAFTING_CATEGORY_MISC);
-
         // tooltip begin
         TextureRegion tooltip = tr("ui_tooltip");
 
@@ -324,6 +162,17 @@ public class PlayerUI {
 
         chat = new ExpoClientChat(this);
 
+        INSTANCE = this;
+        UIContainerInventory.PLAYER_INVENTORY_CONTAINER = new UIContainerInventory();
+
+        hotbarSlots = new InteractableItemSlot[9];
+
+        for(int i = 0; i < 9; i++) {
+            hotbarSlots[i] = new InteractableItemSlot(ExpoShared.CONTAINER_ID_PLAYER, i);
+            hotbarSlots[i].visible = true;
+        }
+        hotbarSlots[0].selected = true;
+
         changeUiScale();
     }
 
@@ -333,36 +182,8 @@ public class PlayerUI {
         }
     }
 
-    public void showCraftingRecipes(InteractableUIElement button, int category) {
-        if(selectedCategoryButton != null) {
-            selectedCategoryButton.selected = false;
-        }
-        selectedCategoryButton = button;
-        selectedCategoryButton.selected = true;
-
-        for(var slot : craftRecipeSlots) {
-            slot.setHoldingRecipe(null);
-        }
-
-        CraftingRecipeMapping mapping = CraftingRecipeMapping.get();
-        var recipes = mapping.getCategoryMap().get(category);
-
-        int slotId = 24;
-
-        for(String s : recipes) {
-            CraftingRecipe recipe = mapping.getRecipeMap().get(s);
-            craftRecipeSlots[slotId].setHoldingRecipe(recipe);
-            slotId--;
-            if(slotId == -1) break; // Implement in future when > 25 recipes per category
-        }
-    }
-
-    private TextureRegion tr(String name) {
+    public TextureRegion tr(String name) {
         return ExpoAssets.get().textureRegion(name);
-    }
-
-    private boolean playerPresent() {
-        return ClientPlayer.getLocalPlayer() != null;
     }
 
     public void drawTooltip(int x, int y, String text) {
@@ -376,100 +197,6 @@ public class PlayerUI {
     public void drawTooltipColored(String text, Color color, String... extraLines) {
         RenderContext rc = RenderContext.get();
         drawTooltipColored((int) rc.mouseX, (int) rc.mouseY, text, color, extraLines);
-    }
-
-    public void drawTooltipCraftingRecipe(CraftingRecipe recipe) {
-        RenderContext rc = RenderContext.get();
-        int x = (int) rc.mouseX;
-        int y = (int) rc.mouseY;
-
-        x += 4 * uiScale;
-        y += 4 * uiScale;
-
-        ItemMapping mapping = ItemMapper.get().getMapping(recipe.outputId);
-        String outputText = recipe.outputAmount + "x " + mapping.displayName;
-
-        glyphLayout.setText(rc.m6x11_use, outputText);
-        float titleWidth = glyphLayout.width;
-
-        float innerWidth = 8 * uiScale + titleWidth;
-
-        glyphLayout.setText(rc.m5x7_use, "Ingredients:");
-        float ingredientsWidth = glyphLayout.width + 8 * uiScale;
-        float generalM5X7Height = glyphLayout.height;
-
-        if(ingredientsWidth > innerWidth) innerWidth = (ingredientsWidth);
-        float maxIngredientRowWidth = 0;
-
-        for(int i = 0; i < recipe.inputIds.length; i++) {
-            String ingredientRowText = recipe.inputAmounts[i] + "x " + ItemMapper.get().getMapping(recipe.inputIds[i]).displayName;
-            glyphLayout.setText(rc.m5x7_use, ingredientRowText);
-            float ingredientRowWidth = glyphLayout.width + 28 * uiScale;
-            if(ingredientRowWidth > innerWidth) innerWidth = ingredientRowWidth;
-            if(ingredientRowWidth > maxIngredientRowWidth) maxIngredientRowWidth = ingredientRowWidth;
-        }
-
-        if(titleWidth > maxIngredientRowWidth) maxIngredientRowWidth = titleWidth;
-
-        // Check if shift needed
-        float totalWidthTooltip = maxIngredientRowWidth + 9 * uiScale + cornerWH;
-        float proposedEndX = x + totalWidthTooltip;
-        float maxDisplayX = Gdx.graphics.getWidth();
-
-        if(proposedEndX >= maxDisplayX) {
-            x -= totalWidthTooltip;
-        }
-
-        rc.hudBatch.draw(tooltipFiller, x + 4 * uiScale, y + 4 * uiScale, maxIngredientRowWidth + 7 * uiScale, 43 * uiScale + recipe.inputIds.length * 24 * uiScale + (recipe.inputIds.length - 1) * 1 * uiScale);
-
-        // Draw ingredient rows
-        float _cx = x + 7 * uiScale;
-        float _cy = y + 7 * uiScale;
-        float _coy = 0;
-
-        for(int i = 0; i < recipe.inputIds.length; i++) {
-            rc.hudBatch.draw(tooltipFillerCrafting, _cx, _cy + _coy, maxIngredientRowWidth, 24 * uiScale);
-
-            int id = recipe.inputIds[i];
-            int am = recipe.inputAmounts[i];
-            boolean hasIngredient = ClientPlayer.getLocalPlayer().playerInventory.hasItem(id, am);
-
-            ItemMapping m = ItemMapper.get().getMapping(id);
-            TextureRegion ingredientTexture = m.uiRender.textureRegion;
-
-            float centeredTextureX = (24 - ingredientTexture.getRegionWidth()) * 0.5f * uiScale;
-            float centeredTextureY = (24 - ingredientTexture.getRegionHeight()) * 0.5f * uiScale;
-
-            rc.hudBatch.draw(ingredientTexture, _cx + centeredTextureX, _cy + _coy + centeredTextureY, ingredientTexture.getRegionWidth() * uiScale, ingredientTexture.getRegionHeight() * uiScale);
-
-            String ingredientText = am + "x " + m.displayName;
-            glyphLayout.setText(rc.m5x7_use, ingredientText);
-            float th = glyphLayout.height;
-
-            rc.m5x7_use.setColor(hasIngredient ? ClientStatic.COLOR_CRAFT_GREEN : ClientStatic.COLOR_CRAFT_RED);
-            rc.m5x7_use.draw(rc.hudBatch, ingredientText, _cx + 24 * uiScale, _cy + _coy + th + (24 * uiScale - th) * 0.5f);
-            rc.m5x7_use.setColor(Color.WHITE);
-
-            _coy += 24 * uiScale + 1 * uiScale;
-        }
-
-        float _iy = _cy + _coy + 5 * uiScale;
-
-        // Ingredients: text
-        rc.m5x7_use.setColor(ClientStatic.COLOR_CRAFT_INGREDIENTS);
-        rc.m5x7_use.draw(rc.hudBatch, "Ingredients:", _cx, _iy + generalM5X7Height);
-        rc.m5x7_use.setColor(Color.WHITE);
-
-        // Header line
-        float headerY = _iy + generalM5X7Height + 11 * uiScale;
-        glyphLayout.setText(rc.m6x11_use, outputText);
-        rc.m6x11_use.draw(rc.hudBatch, outputText, _cx, headerY + glyphLayout.height);
-
-        float endY = headerY + glyphLayout.height + 4 * uiScale;
-        drawBorderAt(rc, x, y, maxIngredientRowWidth + 2 * uiScale, endY - y - 9 * uiScale);
-
-        // Divider line
-        rc.hudBatch.draw(tooltipFillerLight, x + 3 * uiScale, _iy + generalM5X7Height + 4 * uiScale, maxIngredientRowWidth + 8 * uiScale, 2 * uiScale);
     }
 
     public void drawTooltipColored(int x, int y, String text, Color color, String... extraLines) {
@@ -536,60 +263,8 @@ public class PlayerUI {
         r.hudBatch.draw(tooltipBorder1x7, x + cornerSize, y + cornerSize + th + (cornerSize - 4 * uiScale), tw, 4 * uiScale);
     }
 
-    private void updateSlotVisibility() {
-        for(InteractableItemSlot slot : inventoryArmorSlots) {
-            slot.visible = inventoryOpenState;
-        }
-
-        for(InteractableItemSlot slot : inventorySlots) {
-            slot.visible = inventoryOpenState;
-        }
-
-        craftOpenSlot.visible = inventoryOpenState;
-        craftButtonRight.visible = inventoryOpenState && craftingOpen;
-        craftButtonLeft.visible = inventoryOpenState && craftingOpen;
-        for(var el : craftCategorySlots) el.visible = inventoryOpenState && craftingOpen;
-        for(var el : craftRecipeSlots) el.visible = inventoryOpenState && craftingOpen;
-    }
-
-    private void updateHotbarPosition() {
-        if(inventoryOpenState) {
-            // Inventory is now open.
-            float startX = invX + 35 * uiScale;
-            float startY = invY + 17 * uiScale + (craftingOpen ? 15 * uiScale : 0);
-
-            for(int i = 0; i < hotbarSlots.length; i++) {
-                hotbarSlots[i].update(startX + (i * slotW + i * uiScale), startY, slotW, slotH);
-            }
-
-            for(int i = 0; i < inventorySlots.length; i++) {
-                int x = i % 9;
-                int y = i / 9;
-                inventorySlots[i].update(startX + (x * slotW + x * uiScale), startY + 33 * uiScale + y * 30 * uiScale, slotW, slotH);
-            }
-
-            for(int i = 0; i < inventoryArmorSlots.length; i++) {
-                inventoryArmorSlots[inventoryArmorSlots.length - 1 - i].update(invX + 4 * uiScale, invY + 4 * uiScale + i * 30 * uiScale + (craftingOpen ? 15 * uiScale : 0), slotW, slotH);
-            }
-
-            if(craftingOpen) {
-                craftOpenSlot.update(invX + 429 * uiScale, invY + 79 * uiScale, slotW, slotH);
-                craftButtonLeft.update(invX + 285 * uiScale, invY + 163 * uiScale, craftArrowRight.getRegionWidth() * uiScale, craftArrowRight.getRegionHeight() * uiScale);
-                craftButtonRight.update(invX + 409 * uiScale, invY + 163 * uiScale, craftArrowRight.getRegionWidth() * uiScale, craftArrowRight.getRegionHeight() * uiScale);
-                for(int i = 0; i < craftCategorySlots.length; i++) {
-                    var el = craftCategorySlots[i];
-                    el.update(invX + 299 * uiScale + i * slotW + uiScale * i, invY + 153 * uiScale, slotW, slotH);
-                }
-                for(int i = 0; i < craftRecipeSlots.length; i++) {
-                    var el = craftRecipeSlots[i];
-                    int x = i % 5;
-                    int y = i / 5;
-                    el.update(invX + 390 * uiScale - x * slotW - uiScale * x, invY + 4 * uiScale + y * slotH + uiScale * y, slotW, slotH);
-                }
-            } else {
-                craftOpenSlot.update(invX + 282 * uiScale, invY + 63 * uiScale, slotW, slotH);
-            }
-        } else {
+    public void updateHotbarPosition() {
+        if(!UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible) {
             float startX = center(hotbarW);
             float startY = 2;
 
@@ -599,7 +274,7 @@ public class PlayerUI {
         }
     }
 
-    private void hoverCheck(InteractableUIElement slot) {
+    public void hoverCheck(InteractableUIElement slot) {
         if(slot.visible && uiElementInBounds(slot)) {
             if(!slot.hovered) {
                 slot.hovered = true;
@@ -621,42 +296,19 @@ public class PlayerUI {
         for(InteractableItemSlot slot : hotbarSlots) {
             hoverCheck(slot);
         }
-
-        for(InteractableItemSlot slot : inventorySlots) {
-            hoverCheck(slot);
-        }
-
-        for(InteractableItemSlot slot : inventoryArmorSlots) {
-            hoverCheck(slot);
-        }
-
-        hoverCheck(craftOpenSlot);
-        hoverCheck(craftButtonLeft);
-        hoverCheck(craftButtonRight);
-        for(var el : craftCategorySlots) hoverCheck(el);
-        for(var el : craftRecipeSlots) hoverCheck(el);
     }
 
     public void update() {
         RenderContext rc = RenderContext.get();
 
-        boolean previousInventoryOpenState = inventoryOpenState;
-        boolean previousCraftingOpenState = craftingOpenState;
-        inventoryOpenState = playerPresent() && ClientPlayer.getLocalPlayer().inventoryOpen;
-        craftingOpenState = inventoryOpenState && craftingOpen;
+        rc.blurActive = currentContainer != null && currentContainer.visible;
 
-        rc.blurActive = inventoryOpenState;
-
-        if(previousInventoryOpenState != inventoryOpenState) {
-            // Update hotbar position.
-            updateHotbarPosition();
-            updateSlotVisibility();
-        } else if(previousCraftingOpenState != craftingOpenState) {
-            updateSlotVisibility();
-        }
-
-        if(rc.mouseMoved || (previousInventoryOpenState != inventoryOpenState)) {
+        if(rc.mouseMoved) {
             updateInventoryElements();
+
+            if(currentContainer != null && currentContainer.visible) {
+                currentContainer.onMouseMove();
+            }
         }
 
         playerMinimap.updateMinimap();
@@ -800,30 +452,8 @@ public class PlayerUI {
             pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
         }
 
-        if(inventoryOpenState) {
-            // Draw inventory background
-            rc.hudBatch.draw(craftingOpen ? invBackgroundCrafting : invBackground, invX, invY, invW, invH);
-
-            // Draw inventory slots
-            drawSlots(hotbarSlots, inventorySlots, inventoryArmorSlots);
-            if(craftOpenSlot.visible) craftOpenSlot.drawBase();
-            if(craftButtonLeft.visible) craftButtonLeft.drawBase();
-            if(craftButtonRight.visible) craftButtonRight.drawBase();
-            for(var el : craftCategorySlots) if(el.visible) el.drawBase();
-            for(var el : craftRecipeSlots) if(el.visible) el.drawBase();
-
-            // Draw inventory text [244]
-            glyphLayout.setText(rc.m5x7_shadow_use, "Inventory");
-            float invTextOffsetX = ((244 * uiScale) - glyphLayout.width) * 0.5f;
-            float invTextOffsetY = glyphLayout.height + (craftingOpen ? 15 * uiScale : 0) + 156 * uiScale;
-            rc.m5x7_shadow_use.draw(rc.hudBatch, "Inventory", invX + 35 * uiScale + invTextOffsetX, invY + invTextOffsetY);
-
-            // Draw Crafting text
-            if(craftingOpen) {
-                glyphLayout.setText(rc.m5x7_shadow_use, "Crafting");
-                float cTextOffsetX = (150 * uiScale - glyphLayout.width) * 0.5f;
-                rc.m5x7_shadow_use.draw(rc.hudBatch, "Crafting", invX + 278 * uiScale + cTextOffsetX, invY + 199 * uiScale + glyphLayout.height);
-            }
+        if(currentContainer != null && currentContainer.visible) {
+            currentContainer.draw(rc, this);
         } else {
             drawHotbar(rc);
             playerMinimap.draw(rc);
@@ -859,20 +489,34 @@ public class PlayerUI {
         }
     }
 
-    private void drawSlots(InteractableItemSlot[]... slots) {
-        for(InteractableItemSlot[] array : slots) {
-            for(InteractableItemSlot slot : array) {
-                slot.drawBase();
-            }
+    public void drawSlots(ClientInventorySlot[] itemSlots, InteractableItemSlot[] uiSlots) {
+        for(InteractableItemSlot slot : uiSlots) {
+            slot.drawBase();
+        }
 
-            for(InteractableItemSlot slot : array) {
-                slot.drawContents();
-            }
+        for(int i = 0; i < uiSlots.length; i++) {
+            uiSlots[i].drawContents(itemSlots[i]);
+        }
 
-            if(DEV_MODE && Expo.get().getImGuiExpo().shouldDrawSlotIndices()) {
-                for(InteractableItemSlot slot : array) {
-                    slot.drawSlotIndices();
-                }
+        if(DEV_MODE && Expo.get().getImGuiExpo().shouldDrawSlotIndices()) {
+            for(InteractableItemSlot uiSlot : uiSlots) {
+                uiSlot.drawSlotIndices();
+            }
+        }
+    }
+
+    public void drawHotbarSlots() {
+        for(InteractableItemSlot hotbarSlot : hotbarSlots) {
+            hotbarSlot.drawBase();
+        }
+
+        for(int i = 0; i < hotbarSlots.length; i++) {
+            hotbarSlots[i].drawContents(ClientPlayer.getLocalPlayer().playerInventory.getSlotAt(i));
+        }
+
+        if(DEV_MODE && Expo.get().getImGuiExpo().shouldDrawSlotIndices()) {
+            for(InteractableItemSlot hotbarSlot : hotbarSlots) {
+                hotbarSlot.drawBase();
             }
         }
     }
@@ -1027,7 +671,7 @@ public class PlayerUI {
         r.hudBatch.draw(hotbarHunger, startX + 230 * uiScale, startY + 39 * uiScale, hungerW, hungerH);
 
         // Hotbar slots
-        drawSlots(hotbarSlots);
+        drawHotbarSlots();
 
         // Health status
         status(r, ClientPlayer.getLocalPlayer().playerHealth, startX + 22 * uiScale, startY + 38 * uiScale);
@@ -1110,13 +754,42 @@ public class PlayerUI {
         rc.m5x7_border_use.draw(rc.hudBatch, text, x + (32 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
     }
 
-    public void updateInventoryBounds() {
-        TextureRegion bgTex = craftingOpen ? invBackgroundCrafting : invBackground;
-        invW = bgTex.getRegionWidth() * uiScale;
-        invH = bgTex.getRegionHeight() * uiScale;
+    public void togglePlayerInventoryView() {
+        boolean current = UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible;
 
-        invX = center(invW);
-        invY = centerY(invH);
+        if(current) {
+            closeInventoryView();
+        } else {
+            openPlayerInventoryView();
+        }
+    }
+
+    public void closeInventoryView() {
+        currentContainer.visible = false;
+        currentContainer.onHide();
+        currentContainer = null;
+    }
+
+    public void openPlayerInventoryView() {
+        if(currentContainer != null) {
+            currentContainer.visible = false;
+            currentContainer.onHide();
+        }
+
+        currentContainer = UIContainerInventory.PLAYER_INVENTORY_CONTAINER;
+        currentContainer.visible = true;
+        currentContainer.onShow();
+    }
+
+    public void openContainerView(InventoryViewType type, int containerId, ServerInventorySlot[] serverSlots) {
+        if(currentContainer != null) {
+            currentContainer.visible = false;
+            currentContainer.onHide();
+        }
+
+        currentContainer = UIContainer.fromType(type, containerId, serverSlots);
+        currentContainer.visible = true;
+        currentContainer.onShow();
     }
 
     public void changeUiScale() {
@@ -1130,8 +803,6 @@ public class PlayerUI {
         pingW = tabPingIcon.getRegionWidth() * uiScale;
         pingH = tabPingIcon.getRegionHeight() * uiScale;
         borderWH = tabBorder3x1.getRegionWidth() * uiScale;
-
-        updateInventoryBounds();
 
         hotbarW = hotbarBase.getRegionWidth() * uiScale;
         hotbarH = hotbarBase.getRegionHeight() * uiScale;
@@ -1162,11 +833,16 @@ public class PlayerUI {
         uiWidth = Gdx.graphics.getWidth();
         uiHeight = Gdx.graphics.getHeight();
 
-        invX = center(invW);
-        invY = centerY(invH);
+        if(currentContainer != null) {
+            currentContainer.updatePosition(RenderContext.get(), this);
+        }
         updateHotbarPosition();
 
         chat.readjust();
+    }
+
+    public static PlayerUI get() {
+        return INSTANCE;
     }
 
     private float center(float w) {

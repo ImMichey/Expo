@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
@@ -53,6 +54,7 @@ public class ExpoServerRegistry {
                 PostProcessorLogic.class,
                 PostProcessorLayer.class,
                 PostProcessorBiome.class,
+                InventoryViewType.class,
 
                 // Packets
                 P0_Auth_Req.class,
@@ -93,7 +95,10 @@ public class ExpoServerRegistry {
                 P35_PlayerCraft.class,
                 P36_PlayerReceiveItem.class,
                 P37_EntityTeleport.class,
-                P38_PlayerAnimation.class
+                P38_PlayerAnimation.class,
+                P39_PlayerInteractEntity.class,
+                P40_InventoryView.class,
+                P41_InventoryViewQuit.class
         );
     }
 

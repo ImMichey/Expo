@@ -14,8 +14,6 @@ import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
-import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
-import dev.michey.expo.logic.entity.misc.ClientPuddle;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -25,10 +23,11 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
+import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
-import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
@@ -148,7 +147,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
     /** Player inventory */
     public PlayerInventory playerInventory;
-    public boolean inventoryOpen;
     public static P19_PlayerInventoryUpdate QUEUED_INVENTORY_PACKET = null;
 
     public float playerHealth = 100f;
@@ -338,11 +336,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
             }
 
             // Client-sided inventory check
-            if(IngameInput.get().keyJustPressed(Input.Keys.ESCAPE) && inventoryOpen) {
-                inventoryOpen = false;
+            if(IngameInput.get().keyJustPressed(Input.Keys.ESCAPE) && UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible) {
+                PlayerUI.get().closeInventoryView();
                 AudioEngine.get().playSoundGroup("inv_open");
             } else if(IngameInput.get().keyJustPressed(Input.Keys.E)) {
-                inventoryOpen = !inventoryOpen;
+                PlayerUI.get().togglePlayerInventoryView();
                 AudioEngine.get().playSoundGroup("inv_open");
             }
 
@@ -383,7 +381,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
             boolean canSendPunchPacket = (punchEnd - now) < 0 && (clientPunchEnd - now) < 0;
 
-            if(canSendPunchPacket && IngameInput.get().leftPressed() && !inventoryOpen) {
+            if(canSendPunchPacket && IngameInput.get().leftPressed() && !UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible) {
                 clientPunchEnd = now + 0.1f;
                 ClientPackets.p16PlayerPunch(RenderContext.get().mouseRotation);
             }
@@ -413,9 +411,15 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
                 ClientPackets.p22PlayerArmDirection(currentRotation);
             }
 
-            if(selector.canDoAction() && IngameInput.get().rightJustPressed()) {
-                ClientPackets.p34PlayerPlace(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray,
-                        RenderContext.get().mouseWorldX, RenderContext.get().mouseWorldY);
+            if(IngameInput.get().rightJustPressed()) {
+                if(selector.canDoAction()) {
+                    ClientPackets.p34PlayerPlace(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray,
+                            RenderContext.get().mouseWorldX, RenderContext.get().mouseWorldY);
+                } else {
+                    if(ClientEntityManager.get().selectedEntity != null) {
+                        ClientPackets.p39PlayerInteractEntity();
+                    }
+                }
             }
         } else {
             // Sync arm rotation if needed

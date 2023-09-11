@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.packet;
 
 import com.esotericsoftware.kryonet.Connection;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.connection.PlayerConnectionHandler;
@@ -9,6 +10,7 @@ import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.InventoryChangeResult;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
@@ -90,6 +92,22 @@ public class ExpoServerPacketReader {
             if(sp == null) return;
 
             sp.playerInventory.craft(CraftingRecipeMapping.get().getRecipeMap().get(p.recipeIdentifier), p.all);
+        } else if(packet instanceof P39_PlayerInteractEntity p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            ServerEntity interactionEntity = sp.getDimension().getEntityManager().getEntityById(p.entityId);
+            if(interactionEntity == null) return;
+
+            interactionEntity.onInteraction(sp);
+        } else if(packet instanceof P41_InventoryViewQuit p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            if(sp.viewingInventory != null) {
+                sp.viewingInventory.removeInventoryViewer(sp);
+                sp.viewingInventory = null;
+            }
         }
     }
 
@@ -225,6 +243,11 @@ public class ExpoServerPacketReader {
                 CraftingRecipe recipe = CraftingRecipeMapping.get().getRecipeMap().get(p.recipeIdentifier);
                 player.playerInventory.craft(recipe, p.all);
             }
+        } else if(o instanceof P39_PlayerInteractEntity p) {
+            ServerPlayer player = connectionToPlayer(connection);
+            if(player == null) return;
+
+            ExpoLogger.log("p39: " + player.entityId + " - " + p.entityId);
         }
     }
 

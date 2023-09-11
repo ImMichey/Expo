@@ -70,9 +70,13 @@ public class ExpoShared {
     public static final int CRAFTING_CATEGORY_MISC = 0;
     public static final int CRAFTING_CATEGORY_TOOLS = 1;
     public static final int CRAFTING_CATEGORY_FOOD = 2;
+    public static final int CRAFTING_CATEGORY_3 = 3;
 
     public static final int PLAYER_ANIMATION_ID_PICKUP = 0;
     public static final int PLAYER_ANIMATION_ID_PLACE = 1;
+
+    public static final int CONTAINER_ID_VOID = -1;
+    public static final int CONTAINER_ID_PLAYER = -2;
 
     /** Global random */
     public static final Random RANDOM = new Random();

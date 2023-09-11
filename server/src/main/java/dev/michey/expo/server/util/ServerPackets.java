@@ -10,6 +10,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
@@ -376,6 +377,20 @@ public class ServerPackets {
         p.entityId = entityId;
         p.animationId = animationId;
         udp(p, receiver);
+    }
+
+    /** Sends the P40_InventoryView packet via TCP protocol. */
+    public static void p40InventoryView(ServerInventory inventory, PacketReceiver receiver) {
+        P40_InventoryView p = new P40_InventoryView();
+        p.type = inventory.getType();
+        p.viewSlots = inventory.slots;
+        tcp(p, receiver);
+    }
+
+    /** Sends the P41_InventoryViewQuit packet via TCP protocol. */
+    public static void p41InventoryViewQuit(PacketReceiver receiver) {
+        P41_InventoryViewQuit p = new P41_InventoryViewQuit();
+        tcp(p, receiver);
     }
 
     /** Helper methods below. */
