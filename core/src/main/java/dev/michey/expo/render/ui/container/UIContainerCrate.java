@@ -175,6 +175,7 @@ public class UIContainerCrate extends UIContainer {
     public void onHide() {
         adjustSlotVisibility();
         PlayerUI.get().updateHotbarPosition();
+        PlayerUI.get().updateInventoryElements();
         onMouseMove();
     }
 

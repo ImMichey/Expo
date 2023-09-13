@@ -7,6 +7,10 @@ public class ServerInventorySlot {
     public int slotIndex;
     public ServerInventoryItem item;
 
+    public ServerInventorySlot() {
+        // KryoNet
+    }
+
     public ServerInventorySlot(int slotIndex) {
         this.slotIndex = slotIndex;
         item = new ServerInventoryItem();

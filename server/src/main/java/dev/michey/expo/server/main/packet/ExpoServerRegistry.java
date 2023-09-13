@@ -5,6 +5,7 @@ import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
+import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
@@ -54,6 +55,8 @@ public class ExpoServerRegistry {
                 PostProcessorLayer.class,
                 PostProcessorBiome.class,
                 InventoryViewType.class,
+                ServerInventorySlot.class,
+                ServerInventorySlot[].class,
 
                 // Packets
                 P0_Auth_Req.class,

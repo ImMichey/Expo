@@ -8,7 +8,7 @@ import dev.michey.expo.render.RenderContext;
 
 public class InteractableUIElement {
 
-    public float x, y, w, h, ex, ey;
+    public float x, y, w, h, ex, ey, extX, extY;
     public boolean selected, hovered, visible;
     public int inventorySlotId;
     public int containerId;
@@ -45,6 +45,8 @@ public class InteractableUIElement {
         this.y = y;
         this.w = w;
         this.h = h;
+        this.extX = extX;
+        this.extY = extY;
         ex = x + w + extX;
         ey = y + h + extY;
     }

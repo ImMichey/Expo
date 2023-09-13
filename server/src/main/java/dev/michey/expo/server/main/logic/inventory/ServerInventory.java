@@ -194,6 +194,22 @@ public class ServerInventory {
         if(!sameIds) {
             player.heldItemPacket(PacketReceiver.whoCanSee(getOwner()));
         }
+
+        if(result.changePresent) {
+            for(int viewer : viewerList) {
+                if(viewer == player.entityId) continue;
+
+                var changedSlotsList = result.changedSlots.get(containerId);
+                int[] changedSlots = changedSlotsList.stream().mapToInt(Integer::intValue).toArray();
+
+                var changedItemsList = result.changedItems.get(containerId);
+                ServerInventoryItem[] arr = new ServerInventoryItem[changedItemsList.size()];
+                for(int i = 0; i < arr.length; i++) arr[i] = changedItemsList.get(i);
+
+                notifyViewer(viewer, changedSlots, arr);
+            }
+        }
+
         return result;
     }
 
@@ -277,11 +293,15 @@ public class ServerInventory {
 
     public void kickViewers() {
         for(int viewer : viewerList) {
-            ServerEntity viewerEntity = inventoryOwner.getDimension().getEntityManager().getEntityById(viewer);
-            if(viewerEntity == null) continue;
-            ServerPlayer player = (ServerPlayer) viewerEntity;
-            ServerPackets.p41InventoryViewQuit(PacketReceiver.player(player));
+            kickViewer(viewer);
         }
+    }
+
+    public void kickViewer(int viewer) {
+        ServerEntity viewerEntity = inventoryOwner.getDimension().getEntityManager().getEntityById(viewer);
+        if(viewerEntity == null) return;
+        ServerPlayer player = (ServerPlayer) viewerEntity;
+        ServerPackets.p41InventoryViewQuit(PacketReceiver.player(player));
     }
 
     public Pair<Boolean, List<Pair<Integer, Integer>>> containsItem(int id, int amount) {
@@ -388,6 +408,13 @@ public class ServerInventory {
             ServerPlayer player = (ServerPlayer) viewerEntity;
             ServerPackets.p19ContainerUpdate(containerId, updatedSlots, updated, PacketReceiver.player(player));
         }
+    }
+
+    private void notifyViewer(int viewer, int[] updatedSlots, ServerInventoryItem[] updated) {
+        ServerEntity viewerEntity = inventoryOwner.getDimension().getEntityManager().getEntityById(viewer);
+        if(viewerEntity == null) return;
+        ServerPlayer player = (ServerPlayer) viewerEntity;
+        ServerPackets.p19ContainerUpdate(containerId, updatedSlots, updated, PacketReceiver.player(player));
     }
 
     public int getContainerId() {

@@ -286,6 +286,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P40_InventoryView p) {
             ClientPlayer player = ClientPlayer.getLocalPlayer();
             player.getUI().openContainerView(p.type, p.containerId, p.viewSlots);
+            AudioEngine.get().playSoundGroup("inv_open");
         } else if(o instanceof P41_InventoryViewQuit p) {
             ClientPlayer player = ClientPlayer.getLocalPlayer();
             player.getUI().closeInventoryView();

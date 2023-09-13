@@ -232,12 +232,15 @@ public class UIContainerInventory extends UIContainer {
     public void onShow() {
         adjustSlotVisibility();
         updatePosition(RenderContext.get(), PlayerUI.get());
+        PlayerUI.get().updateInventoryElements();
+        onMouseMove();
     }
 
     @Override
     public void onHide() {
         adjustSlotVisibility();
         PlayerUI.get().updateHotbarPosition();
+        PlayerUI.get().updateInventoryElements();
         onMouseMove();
     }
 

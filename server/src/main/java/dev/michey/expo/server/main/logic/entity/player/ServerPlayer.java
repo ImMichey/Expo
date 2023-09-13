@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -352,6 +353,20 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 health += 1f;
                 if(health > 100f) health = 100f;
                 ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
+            }
+        }
+
+        if(viewingInventory != null) {
+            ServerEntity owner = viewingInventory.getOwner();
+
+            if(owner != null) {
+                float dst = Vector2.dst(owner.posX + 8, owner.posY, posX, posY);
+
+                float MAX_CONTAINER_DST = 48.0f;
+
+                if(dst >= MAX_CONTAINER_DST) {
+                    viewingInventory.kickViewer(entityId);
+                }
             }
         }
     }
