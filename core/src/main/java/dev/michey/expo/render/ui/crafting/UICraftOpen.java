@@ -1,7 +1,6 @@
 package dev.michey.expo.render.ui.crafting;
 
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
@@ -25,6 +24,7 @@ public class UICraftOpen extends InteractableUIElement {
         parentContainer.craftingOpen = !parentContainer.craftingOpen;
         parentContainer.updatePosition(RenderContext.get(), PlayerUI.get());
         parentContainer.adjustSlotVisibility();
+        parentContainer.onMouseMove();
     }
 
     @Override

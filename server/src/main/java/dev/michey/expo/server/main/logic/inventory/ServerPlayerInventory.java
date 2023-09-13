@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.inventory;
 
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
@@ -41,90 +42,12 @@ public class ServerPlayerInventory extends ServerInventory {
     public ServerInventoryItem playerCursorItem; // can be null
 
     public ServerPlayerInventory(ServerPlayer player) {
-        super(InventoryViewType.PLAYER_INVENTORY, ExpoShared.PLAYER_INVENTORY_SLOTS);
+        super(InventoryViewType.PLAYER_INVENTORY, ExpoShared.PLAYER_INVENTORY_SLOTS, ExpoShared.CONTAINER_ID_PLAYER);
         setOwner(player);
         addInventoryViewer(player);
     }
 
-    public InventoryAddItemResult addItem(ServerInventoryItem item) {
-        InventoryAddItemResult result = new InventoryAddItemResult();
-        result.changeResult = new InventoryChangeResult();
-        result.remainingAmount = item.itemAmount;
-
-        ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
-        boolean singleStack = mapping.logic.maxStackSize == 1;
-
-        if(singleStack) {
-            for(var slot : slots) {
-                if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
-                if(slot.item.isEmpty()) {
-                    slot.item = item;
-                    result.changeResult.addChange(slot.slotIndex, slot.item);
-                    result.fullTransfer = true;
-                    result.remainingAmount = 0;
-                    break;
-                }
-            }
-        } else {
-            int remaining = item.itemAmount;
-
-            // Find slots that are not filled with same id first.
-            List<Integer> visitSlotsFirst = new LinkedList<>();
-            int firstEmptySlot = -1;
-            boolean canFillGaps = false;
-
-            for(var slot : slots) {
-                if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
-
-                if(slot.item.itemId == item.itemId && slot.item.itemAmount < mapping.logic.maxStackSize) {
-                    visitSlotsFirst.add(slot.slotIndex);
-
-                    int existingInSlot = slot.item.itemAmount;
-                    int transferable = mapping.logic.maxStackSize - existingInSlot;
-
-                    if(transferable >= remaining) {
-                        canFillGaps = true;
-                        break;
-                    }
-                } else if(slot.item.isEmpty() && firstEmptySlot == -1) {
-                    firstEmptySlot = slot.slotIndex;
-                }
-            }
-
-            remaining = item.itemAmount;
-
-            for(int slotsToVisit : visitSlotsFirst) {
-                int existingInSlot = slots[slotsToVisit].item.itemAmount;
-                int transferable = mapping.logic.maxStackSize - existingInSlot;
-
-                if(transferable >= remaining) {
-                    slots[slotsToVisit].item.itemAmount += remaining;
-                    remaining = 0;
-                    result.fullTransfer = true;
-                    result.remainingAmount = 0;
-                } else {
-                    slots[slotsToVisit].item.itemAmount += transferable;
-                    remaining -= transferable;
-                    result.remainingAmount -= transferable;
-                }
-
-                result.changeResult.addChange(slotsToVisit, slots[slotsToVisit].item);
-            }
-
-            if(!canFillGaps && firstEmptySlot != -1) {
-                // Fill in empty slot.
-                slots[firstEmptySlot].item = item;
-                slots[firstEmptySlot].item.itemAmount = remaining;
-                result.remainingAmount = 0;
-                result.fullTransfer = true;
-                result.changeResult.addChange(firstEmptySlot, slots[firstEmptySlot].item);
-            }
-        }
-
-        return result;
-    }
-
-    private ServerItem spawnServerItem(ServerInventoryItem container) {
+    public ServerItem spawnServerItem(ServerInventoryItem container) {
         // Spawn item entity
         ServerItem item = new ServerItem();
         item.itemContainer = container;
@@ -151,7 +74,7 @@ public class ServerPlayerInventory extends ServerInventory {
                 boolean full = actionType == ExpoShared.PLAYER_INVENTORY_ACTION_LEFT || (actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT && playerCursorItem.itemAmount == 1);
 
                 if(full) {
-                    result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null); // Set cursor as null on client
+                    result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null); // Set cursor as null on client
                     spawnServerItem(playerCursorItem);
                     playerCursorItem = null;
                 } else {
@@ -159,7 +82,7 @@ public class ServerPlayerInventory extends ServerInventory {
                     ServerInventoryItem cloned = new ServerInventoryItem();
                     cloned.clone(playerCursorItem, 1);
                     spawnServerItem(cloned);
-                    result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                    result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                 }
             } else {
                 // Cursor is null and right-clicked, check if you can interact with item
@@ -185,7 +108,7 @@ public class ServerPlayerInventory extends ServerInventory {
                                 slots[p.selectedInventorySlot].item = new ServerInventoryItem();
                             }
 
-                            result.addChange(p.selectedInventorySlot, slots[p.selectedInventorySlot].item);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, p.selectedInventorySlot, slots[p.selectedInventorySlot].item);
                         }
                     }
                 }
@@ -205,16 +128,16 @@ public class ServerPlayerInventory extends ServerInventory {
                         playerCursorItem = new ServerInventoryItem().clone(slots[slotId].item, pickup);
                         slots[slotId].item.itemAmount -= pickup;
 
-                        result.addChange(slotId, slots[slotId].item);
-                        result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, slots[slotId].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                     } else {
                         playerCursorItem = slots[slotId].item;
 
                         ServerInventoryItem replaceWith = new ServerInventoryItem();
                         slots[slotId].item = replaceWith;
 
-                        result.addChange(slotId, replaceWith);
-                        result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, replaceWith);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                     }
                 }
             } else {
@@ -225,14 +148,14 @@ public class ServerPlayerInventory extends ServerInventory {
                             slots[slotId].item = new ServerInventoryItem().clone(playerCursorItem, 1);
                             playerCursorItem.itemAmount -= 1;
 
-                            result.addChange(slotId, slots[slotId].item);
-                            result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, slots[slotId].item);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                         } else {
                             slots[slotId].item = playerCursorItem;
                             playerCursorItem = null;
 
-                            result.addChange(slotId, slots[slotId].item);
-                            result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, slots[slotId].item);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null);
                         }
                     }
                 } else {
@@ -246,8 +169,8 @@ public class ServerPlayerInventory extends ServerInventory {
                             playerCursorItem = slots[slotId].item;
                             slots[slotId].item = cachedCursor;
 
-                            result.addChange(slotId, slots[slotId].item);
-                            result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, slots[slotId].item);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                         }
                     } else {
                         // COMPARE.
@@ -272,14 +195,14 @@ public class ServerPlayerInventory extends ServerInventory {
 
                             if(postTransfer == 0) {
                                 playerCursorItem = null;
-                                result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null);
+                                result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null);
                             } else {
                                 playerCursorItem.itemAmount -= wantToTransfer;
-                                result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                                result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                             }
 
                             slots[slotId].item.itemAmount += wantToTransfer;
-                            result.addChange(slotId, slots[slotId].item);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, slots[slotId].item);
                         } else {
                             // It's a full stack already, swap stack.
                             ServerInventoryItem cachedCursor = playerCursorItem;
@@ -287,8 +210,8 @@ public class ServerPlayerInventory extends ServerInventory {
                             playerCursorItem = slots[slotId].item;
                             slots[slotId].item = cachedCursor;
 
-                            result.addChange(slotId, slots[slotId].item);
-                            result.addChange(ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, slots[slotId].item);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                         }
                     }
                 }
@@ -390,15 +313,15 @@ public class ServerPlayerInventory extends ServerInventory {
 
                     if(amount > slotAmount) {
                         slots[index].item.setEmpty();
-                        result.addChange(index, slots[index].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
                         amount -= slotAmount;
                     } else if(amount == slotAmount) {
                         slots[index].item.setEmpty();
-                        result.addChange(index, slots[index].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
                         continue nextInput;
                     } else {
                         slots[index].item.itemAmount -= amount;
-                        result.addChange(index, slots[index].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
                         continue nextInput;
                     }
                 }

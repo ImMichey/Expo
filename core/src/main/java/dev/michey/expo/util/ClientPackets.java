@@ -117,6 +117,12 @@ public class ClientPackets {
         udp(p);
     }
 
+    /** Sends the P41_InventoryViewQuit packet via TCP protocol. */
+    public static void p41InventoryViewQuit() {
+        P41_InventoryViewQuit p = new P41_InventoryViewQuit();
+        tcp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

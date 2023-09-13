@@ -37,4 +37,8 @@ public class ClientInventoryItem {
         return ItemMapper.get().getMapping(itemId);
     }
 
+    public boolean isEmpty() {
+        return itemId < 0;
+    }
+
 }

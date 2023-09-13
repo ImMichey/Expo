@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class InventoryFileLoader {
 
-    /** Loads a stored JSONArray int a ServerInventory object. */
+    /** Loads a stored JSONArray into a ServerInventory object. */
     public static void loadFromStorage(ServerInventory inventory, JSONArray array) {
         int a = array.length();
 

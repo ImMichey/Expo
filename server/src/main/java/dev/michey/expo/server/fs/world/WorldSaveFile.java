@@ -5,6 +5,7 @@ import dev.michey.expo.io.ExpoFile;
 import dev.michey.expo.io.ExpoFileCreator;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.fs.world.player.PlayerSaveHandler;
+import dev.michey.expo.server.main.logic.entity.container.ContainerRegistry;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.util.ExpoShared;
@@ -154,6 +155,7 @@ public class WorldSaveFile {
         currentEntityId = json.getInt("currentEntityId");
         worldSeed = json.getInt("worldSeed");
         creationTimestamp = json.getLong("creationTimestamp");
+        ContainerRegistry.get().setCurrentContainerId(json.getInt("currentContainerId"));
 
         JSONArray dimensionArray = json.getJSONArray("dimensions");
 
@@ -176,6 +178,7 @@ public class WorldSaveFile {
         full.put("worldSeed", worldSeed);
         full.put("creationTimestamp", creationTimestamp);
         full.put("lastSaveTimestamp", lastSaveTimestamp);
+        full.put("currentContainerId", ContainerRegistry.get().getCurrentContainerId());
 
         JSONArray dimensions = new JSONArray();
         for(ServerDimension dimension : ServerWorld.get().getDimensions()) {

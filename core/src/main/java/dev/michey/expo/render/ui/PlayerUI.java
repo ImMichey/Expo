@@ -264,13 +264,11 @@ public class PlayerUI {
     }
 
     public void updateHotbarPosition() {
-        if(!UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible) {
-            float startX = center(hotbarW);
-            float startY = 2;
+        float startX = center(hotbarW);
+        float startY = 2;
 
-            for(int i = 0; i < hotbarSlots.length; i++) {
-                hotbarSlots[i].update(startX + 4 * uiScale + (i * slotW + i * uiScale), startY + 4 * uiScale, slotW, slotH, uiScale, 0);
-            }
+        for(int i = 0; i < hotbarSlots.length; i++) {
+            hotbarSlots[i].update(startX + 4 * uiScale + (i * slotW + i * uiScale), startY + 4 * uiScale, slotW, slotH, uiScale, 0);
         }
     }
 
@@ -755,9 +753,7 @@ public class PlayerUI {
     }
 
     public void togglePlayerInventoryView() {
-        boolean current = UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible;
-
-        if(current) {
+        if(currentContainer != null) {
             closeInventoryView();
         } else {
             openPlayerInventoryView();
@@ -765,6 +761,7 @@ public class PlayerUI {
     }
 
     public void closeInventoryView() {
+        ClientPackets.p41InventoryViewQuit();
         currentContainer.visible = false;
         currentContainer.onHide();
         currentContainer = null;
@@ -818,7 +815,11 @@ public class PlayerUI {
 
         playerMinimap.updateWH(uiScale);
 
-        updateHotbarPosition();
+        if(currentContainer != null) {
+            currentContainer.updatePosition(RenderContext.get(), this);
+        } else {
+            updateHotbarPosition();
+        }
 
         int lines = 12;
         int total = 19 + lines * 11;
@@ -835,8 +836,9 @@ public class PlayerUI {
 
         if(currentContainer != null) {
             currentContainer.updatePosition(RenderContext.get(), this);
+        } else {
+            updateHotbarPosition();
         }
-        updateHotbarPosition();
 
         chat.readjust();
     }

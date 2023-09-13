@@ -25,14 +25,13 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
-import dev.michey.expo.server.packet.P19_PlayerInventoryUpdate;
+import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.*;
 
@@ -147,7 +146,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
     /** Player inventory */
     public PlayerInventory playerInventory;
-    public static P19_PlayerInventoryUpdate QUEUED_INVENTORY_PACKET = null;
+    public static P19_ContainerUpdate QUEUED_INVENTORY_PACKET = null;
 
     public float playerHealth = 100f;
     public float playerHunger = 100f;
@@ -207,7 +206,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
             playerInventory = new PlayerInventory(this);
 
             if(QUEUED_INVENTORY_PACKET != null) {
-                PacketUtils.readInventoryUpdatePacket(QUEUED_INVENTORY_PACKET, playerInventory);
+                PacketUtils.readInventoryUpdatePacket(QUEUED_INVENTORY_PACKET);
                 QUEUED_INVENTORY_PACKET = null;
             }
 
@@ -336,7 +335,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
             }
 
             // Client-sided inventory check
-            if(IngameInput.get().keyJustPressed(Input.Keys.ESCAPE) && UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible) {
+            if(IngameInput.get().keyJustPressed(Input.Keys.ESCAPE) && PlayerUI.get().currentContainer != null) {
                 PlayerUI.get().closeInventoryView();
                 AudioEngine.get().playSoundGroup("inv_open");
             } else if(IngameInput.get().keyJustPressed(Input.Keys.E)) {
@@ -381,7 +380,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
             boolean canSendPunchPacket = (punchEnd - now) < 0 && (clientPunchEnd - now) < 0;
 
-            if(canSendPunchPacket && IngameInput.get().leftPressed() && !UIContainerInventory.PLAYER_INVENTORY_CONTAINER.visible) {
+            if(canSendPunchPacket && IngameInput.get().leftPressed() && getUI().currentContainer == null) {
                 clientPunchEnd = now + 0.1f;
                 ClientPackets.p16PlayerPunch(RenderContext.get().mouseRotation);
             }

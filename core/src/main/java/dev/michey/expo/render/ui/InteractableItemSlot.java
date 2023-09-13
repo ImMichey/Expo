@@ -2,6 +2,7 @@ package dev.michey.expo.render.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
@@ -33,7 +34,7 @@ public class InteractableItemSlot extends InteractableUIElement {
     }
 
     public void drawContents(ClientInventorySlot slot) {
-        if(slot.item != null) {
+        if(slot.item != null && !slot.item.isEmpty()) {
             PlayerUI parent = PlayerUI.get();
             ItemMapping mapping = ItemMapper.get().getMapping(slot.item.itemId);
             ItemRender render = mapping.uiRender;
@@ -105,10 +106,14 @@ public class InteractableItemSlot extends InteractableUIElement {
 
     @Override
     public void onTooltip() {
-        PlayerUI parent = PlayerUI.get();
         ClientInventoryItem item = ClientPlayer.getLocalPlayer().playerInventory.getSlotAt(inventorySlotId).item;
+        onTooltip(item);
+    }
 
-        if(item != null) {
+    public void onTooltip(ClientInventoryItem item) {
+        PlayerUI parent = PlayerUI.get();
+
+        if(item != null && !item.isEmpty()) {
             ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
 
             if(mapping.logic.isTool()) {

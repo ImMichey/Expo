@@ -1,9 +1,7 @@
 package dev.michey.expo.server.util;
 
 import com.esotericsoftware.kryonet.Connection;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
-import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
@@ -216,22 +214,23 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
-    /** Sends the P19_PlayerInventoryUpdate packet via TCP protocol. */
-    public static void p19PlayerInventoryUpdate(int[] updatedSlots, ServerInventoryItem[] updatedItems, PacketReceiver receiver) {
-        P19_PlayerInventoryUpdate p = new P19_PlayerInventoryUpdate();
+    /** Sends the P19_ContainerUpdate packet via TCP protocol. */
+    public static void p19ContainerUpdate(int containerId, int[] updatedSlots, ServerInventoryItem[] updatedItems, PacketReceiver receiver) {
+        P19_ContainerUpdate p = new P19_ContainerUpdate();
+        p.containerId = containerId;
         p.updatedSlots = updatedSlots;
         p.updatedItems = updatedItems;
         tcp(p, receiver);
     }
 
     /** Sends the P19_PlayerInventoryUpdate packet via TCP protocol. */
-    public static void p19PlayerInventoryUpdate(ServerPlayer player, PacketReceiver receiver) {
+    public static void p19ContainerUpdate(ServerPlayer player, PacketReceiver receiver) {
         ServerPlayerInventory inv = player.playerInventory;
         int[] updatedSlots = new int[inv.slots.length];
         for(int i = 0; i < updatedSlots.length; i++) updatedSlots[i] = i;
         ServerInventoryItem[] updated = new ServerInventoryItem[inv.slots.length];
         for(int i = 0; i < updated.length; i++) updated[i] = inv.slots[i].item;
-        p19PlayerInventoryUpdate(updatedSlots, updated, receiver);
+        p19ContainerUpdate(ExpoShared.CONTAINER_ID_PLAYER, updatedSlots, updated, receiver);
     }
 
     /** Sends the P21_PlayerGearUpdate packet via UDP protocol. */
@@ -383,6 +382,7 @@ public class ServerPackets {
     public static void p40InventoryView(ServerInventory inventory, PacketReceiver receiver) {
         P40_InventoryView p = new P40_InventoryView();
         p.type = inventory.getType();
+        p.containerId = inventory.getContainerId();
         p.viewSlots = inventory.slots;
         tcp(p, receiver);
     }

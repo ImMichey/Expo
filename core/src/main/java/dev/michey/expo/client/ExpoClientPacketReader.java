@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ChatMessage;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -152,16 +151,17 @@ public class ExpoClientPacketReader {
             if(entity != null) {
                 ((ClientPlayer) entity).applyServerPunchData(p);
             }
-        } else if(o instanceof P19_PlayerInventoryUpdate p) {
-            PlayerInventory inv = PlayerInventory.LOCAL_INVENTORY;
-            //log("updatedSlots.length " + p.updatedSlots.length);
-            //log("updatedSlots -> " + Arrays.toString(p.updatedSlots));
+        } else if(o instanceof P19_ContainerUpdate p) {
+            if(p.containerId == CONTAINER_ID_PLAYER) {
+                PlayerInventory inv = PlayerInventory.LOCAL_INVENTORY;
 
-            if(inv == null) {
-                //log("Inventory is null, queueing...");
-                ClientPlayer.QUEUED_INVENTORY_PACKET = p;
+                if(inv == null) {
+                    ClientPlayer.QUEUED_INVENTORY_PACKET = p;
+                } else {
+                    PacketUtils.readInventoryUpdatePacket(p);
+                }
             } else {
-                PacketUtils.readInventoryUpdatePacket(p, inv);
+                PacketUtils.readInventoryUpdatePacket(p);
             }
         } else if(o instanceof P21_PlayerGearUpdate p) {
             ClientEntity entity = entityFromId(p.entityId);
@@ -286,6 +286,9 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P40_InventoryView p) {
             ClientPlayer player = ClientPlayer.getLocalPlayer();
             player.getUI().openContainerView(p.type, p.containerId, p.viewSlots);
+        } else if(o instanceof P41_InventoryViewQuit p) {
+            ClientPlayer player = ClientPlayer.getLocalPlayer();
+            player.getUI().closeInventoryView();
         }
     }
 

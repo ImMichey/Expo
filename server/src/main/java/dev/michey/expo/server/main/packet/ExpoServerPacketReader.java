@@ -45,7 +45,7 @@ public class ExpoServerPacketReader {
             ServerPackets.p3PlayerJoin(req.username, PacketReceiver.local());
             ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.local());
             ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.local());
-            ServerPackets.p19PlayerInventoryUpdate(sp, PacketReceiver.local());
+            ServerPackets.p19ContainerUpdate(sp, PacketReceiver.local());
             //sp.switchToSlot(0);
         } else if(packet instanceof P5_PlayerVelocity vel) {
             ServerPlayer sp = ServerPlayer.getLocalPlayer();
@@ -181,7 +181,7 @@ public class ExpoServerPacketReader {
                     // Player creation packet for joined player
                     ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.connection(connection));
                     ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.connection(connection));
-                    ServerPackets.p19PlayerInventoryUpdate(sp, PacketReceiver.player(sp));
+                    ServerPackets.p19ContainerUpdate(sp, PacketReceiver.player(sp));
                 });
             }
         } else if(o instanceof P5_PlayerVelocity p) {
@@ -247,7 +247,18 @@ public class ExpoServerPacketReader {
             ServerPlayer player = connectionToPlayer(connection);
             if(player == null) return;
 
-            ExpoLogger.log("p39: " + player.entityId + " - " + p.entityId);
+            ServerEntity interactionEntity = player.getDimension().getEntityManager().getEntityById(p.entityId);
+            if(interactionEntity == null) return;
+
+            interactionEntity.onInteraction(player);
+        } else if(o instanceof P41_InventoryViewQuit p) {
+            ServerPlayer player = connectionToPlayer(connection);
+            if(player == null) return;
+
+            if(player.viewingInventory != null) {
+                player.viewingInventory.removeInventoryViewer(player);
+                player.viewingInventory = null;
+            }
         }
     }
 
@@ -263,15 +274,31 @@ public class ExpoServerPacketReader {
     }
 
     private void doInventoryInteraction(ServerPlayer player, P18_PlayerInventoryInteraction p, PacketReceiver receiver) {
-        var change = player.playerInventory.performPlayerAction(p.actionType, p.slotId);
-        convertInventoryChangeResultToPacket(change, receiver);
+        if(p.containerId == ExpoShared.CONTAINER_ID_PLAYER || p.containerId == ExpoShared.CONTAINER_ID_VOID) {
+            var change = player.playerInventory.performPlayerAction(p.actionType, p.slotId);
+            convertInventoryChangeResultToPacket(change, receiver);
+        } else {
+            if(player.viewingInventory != null) {
+                if(player.viewingInventory.getContainerId() == p.containerId) {
+                    var change = player.viewingInventory.performPlayerAction(player, p.actionType, p.slotId);
+                    convertInventoryChangeResultToPacket(change, receiver);
+                }
+            }
+        }
     }
 
     public void convertInventoryChangeResultToPacket(InventoryChangeResult result, PacketReceiver receiver) {
         if(result != null && result.changePresent) {
-            ServerInventoryItem[] arr = new ServerInventoryItem[result.changedItems.size()];
-            for(int i = 0; i < arr.length; i++) arr[i] = result.changedItems.get(i);
-            ServerPackets.p19PlayerInventoryUpdate(result.changedSlots.stream().mapToInt(Integer::intValue).toArray(), arr, receiver);
+            for(int containerId : result.changedSlots.keySet()) {
+                var changedSlotsList = result.changedSlots.get(containerId);
+                int[] changedSlots = changedSlotsList.stream().mapToInt(Integer::intValue).toArray();
+
+                var changedItemsList = result.changedItems.get(containerId);
+                ServerInventoryItem[] arr = new ServerInventoryItem[changedItemsList.size()];
+                for(int i = 0; i < arr.length; i++) arr[i] = changedItemsList.get(i);
+
+                ServerPackets.p19ContainerUpdate(containerId, changedSlots, arr, receiver);
+            }
         }
     }
 

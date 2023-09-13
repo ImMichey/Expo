@@ -3,6 +3,7 @@ package dev.michey.expo.render.ui.container;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.inventory.ClientInventory;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableItemSlot;
@@ -47,6 +48,8 @@ public abstract class UIContainer {
     }
 
     public void convertServerItemsToInventory(ServerInventorySlot[] slots) {
+        ExpoLogger.log("Convert -> " + slots.length);
+
         if(interactableItemSlots == null) {
             interactableItemSlots = new InteractableItemSlot[slots.length];
 

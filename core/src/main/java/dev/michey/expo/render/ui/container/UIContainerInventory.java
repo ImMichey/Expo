@@ -3,6 +3,7 @@ package dev.michey.expo.render.ui.container;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.Expo;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableItemSlot;
@@ -34,7 +35,8 @@ public class UIContainerInventory extends UIContainer {
 
     /** Textures */
     private final TextureRegion invBackgroundCrafting;
-    private final TextureRegion invBackground;
+    public final TextureRegion invBackground;
+    public final TextureRegion invBackgroundNoCrafting;
 
     /** Positions */
     private float invX, invY;
@@ -45,6 +47,7 @@ public class UIContainerInventory extends UIContainer {
 
         invBackground = tr("inv_bgc_");
         invBackgroundCrafting = tr("inv_bgco");
+        invBackgroundNoCrafting = tr("inv_bg_noc");
 
         craftOpenButton = new UICraftOpen(this);
         craftPreviousCategoryButton = new UICraftPreviousCategory(this);

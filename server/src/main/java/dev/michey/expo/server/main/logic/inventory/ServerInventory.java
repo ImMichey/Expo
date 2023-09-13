@@ -16,6 +16,7 @@ import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,12 +27,18 @@ public class ServerInventory {
     private ServerEntity inventoryOwner = null;
     private final HashSet<Integer> viewerList;
     private final InventoryViewType type;
+    private int containerId;
 
     /** Data structure */
     public final ServerInventorySlot[] slots;
 
     public ServerInventory(InventoryViewType type, int size) {
+        this(type, size, 0);
+    }
+
+    public ServerInventory(InventoryViewType type, int size, int containerId) {
         this.type = type;
+        this.containerId = containerId;
         slots = new ServerInventorySlot[size];
         viewerList = new HashSet<>();
 
@@ -52,10 +59,220 @@ public class ServerInventory {
 
     public void addInventoryViewer(ServerPlayer player) {
         viewerList.add(player.entityId);
+        player.viewingInventory = this;
     }
 
     public void removeInventoryViewer(ServerPlayer player) {
         viewerList.remove(player.entityId);
+    }
+
+    public InventoryChangeResult performPlayerAction(ServerPlayer player, int actionType, int slotId) {
+        InventoryChangeResult result = new InventoryChangeResult();
+        int[] oldIds = player.getEquippedItemIds();
+
+        if(slotId == ExpoShared.PLAYER_INVENTORY_SLOT_VOID) {
+            // Clicked into nothing/void.
+            if(player.playerInventory.playerCursorItem != null) {
+                // Something on cursor, throw out.
+                boolean full = actionType == ExpoShared.PLAYER_INVENTORY_ACTION_LEFT || (actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT && player.playerInventory.playerCursorItem.itemAmount == 1);
+
+                if(full) {
+                    result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null); // Set cursor as null on client
+                    player.playerInventory.spawnServerItem(player.playerInventory.playerCursorItem);
+                    player.playerInventory.playerCursorItem = null;
+                } else {
+                    player.playerInventory.playerCursorItem.itemAmount -= 1;
+                    ServerInventoryItem cloned = new ServerInventoryItem();
+                    cloned.clone(player.playerInventory.playerCursorItem, 1);
+                    player.playerInventory.spawnServerItem(cloned);
+                    result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                }
+            }
+        } else if(slotId == ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR) {
+            // Clicked cursor, no use yet.
+        } else {
+            // Clicked regular slot.
+            if(player.playerInventory.playerCursorItem == null) {
+                // Cursor is null, check if slot contains something to pick up.
+                if(!slots[slotId].item.isEmpty()) {
+                    if(actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT && slots[slotId].item.itemAmount > 1) {
+                        // Only pick up half.
+                        int pickup = slots[slotId].item.itemAmount / 2;
+
+                        player.playerInventory.playerCursorItem = new ServerInventoryItem().clone(slots[slotId].item, pickup);
+                        slots[slotId].item.itemAmount -= pickup;
+
+                        result.addChange(getContainerId(), slotId, slots[slotId].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                    } else {
+                        player.playerInventory.playerCursorItem = slots[slotId].item;
+
+                        ServerInventoryItem replaceWith = new ServerInventoryItem();
+                        slots[slotId].item = replaceWith;
+
+                        result.addChange(getContainerId(), slotId, replaceWith);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                    }
+                }
+            } else {
+                // Cursor is not null, swap or put into slot.
+                if(slots[slotId].item.isEmpty()) {
+                    if(actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT && player.playerInventory.playerCursorItem.itemAmount > 1) {
+                        slots[slotId].item = new ServerInventoryItem().clone(player.playerInventory.playerCursorItem, 1);
+                        player.playerInventory.playerCursorItem.itemAmount -= 1;
+
+                        result.addChange(getContainerId(), slotId, slots[slotId].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                    } else {
+                        slots[slotId].item = player.playerInventory.playerCursorItem;
+                        player.playerInventory.playerCursorItem = null;
+
+                        result.addChange(getContainerId(), slotId, slots[slotId].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null);
+                    }
+                } else {
+                    // Compare or swap.
+                    boolean swap = slots[slotId].item.itemId != player.playerInventory.playerCursorItem.itemId;
+
+                    if(swap) {
+                        ServerInventoryItem cachedCursor = player.playerInventory.playerCursorItem;
+
+                        player.playerInventory.playerCursorItem = slots[slotId].item;
+                        slots[slotId].item = cachedCursor;
+
+                        result.addChange(getContainerId(), slotId, slots[slotId].item);
+                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                    } else {
+                        // COMPARE.
+                        ItemMapping mapping = ItemMapper.get().getMapping(player.playerInventory.playerCursorItem.itemId);
+                        int maxStackSize = mapping.logic.maxStackSize;
+
+                        int cursorAmount = player.playerInventory.playerCursorItem.itemAmount;
+                        int slotAmount = slots[slotId].item.itemAmount;
+
+                        int wantToTransfer = actionType == ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT ? 1 : player.playerInventory.playerCursorItem.itemAmount;
+                        //boolean completeTransferPossible = (wantToTransfer + slotAmount) <= maxStackSize;
+                        boolean hasSpaceToTransfer = maxStackSize > 1 && slots[slotId].item.itemAmount < maxStackSize;
+
+                        if(hasSpaceToTransfer) {
+                            int maxWantToTransfer = maxStackSize - slotAmount;
+
+                            if(wantToTransfer > maxWantToTransfer) {
+                                wantToTransfer = maxWantToTransfer;
+                            }
+
+                            int postTransfer = cursorAmount - wantToTransfer;
+
+                            if(postTransfer == 0) {
+                                player.playerInventory.playerCursorItem = null;
+                                result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, null);
+                            } else {
+                                player.playerInventory.playerCursorItem.itemAmount -= wantToTransfer;
+                                result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                            }
+
+                            slots[slotId].item.itemAmount += wantToTransfer;
+                            result.addChange(getContainerId(), slotId, slots[slotId].item);
+                        } else {
+                            // It's a full stack already, swap stack.
+                            ServerInventoryItem cachedCursor = player.playerInventory.playerCursorItem;
+
+                            player.playerInventory.playerCursorItem = slots[slotId].item;
+                            slots[slotId].item = cachedCursor;
+
+                            result.addChange(getContainerId(), slotId, slots[slotId].item);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(!result.changePresent) return null;
+        int[] newIds = player.getEquippedItemIds();
+        boolean sameIds = Arrays.equals(oldIds, newIds);
+        if(!sameIds) {
+            player.heldItemPacket(PacketReceiver.whoCanSee(getOwner()));
+        }
+        return result;
+    }
+
+    public InventoryAddItemResult addItem(ServerInventoryItem item) {
+        InventoryAddItemResult result = new InventoryAddItemResult();
+        result.changeResult = new InventoryChangeResult();
+        result.remainingAmount = item.itemAmount;
+
+        ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
+        boolean singleStack = mapping.logic.maxStackSize == 1;
+
+        if(singleStack) {
+            for(var slot : slots) {
+                if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
+                if(slot.item.isEmpty()) {
+                    slot.item = item;
+                    result.changeResult.addChange(getContainerId(), slot.slotIndex, slot.item);
+                    result.fullTransfer = true;
+                    result.remainingAmount = 0;
+                    break;
+                }
+            }
+        } else {
+            int remaining = item.itemAmount;
+
+            // Find slots that are not filled with same id first.
+            List<Integer> visitSlotsFirst = new LinkedList<>();
+            int firstEmptySlot = -1;
+            boolean canFillGaps = false;
+
+            for(var slot : slots) {
+                if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
+
+                if(slot.item.itemId == item.itemId && slot.item.itemAmount < mapping.logic.maxStackSize) {
+                    visitSlotsFirst.add(slot.slotIndex);
+
+                    int existingInSlot = slot.item.itemAmount;
+                    int transferable = mapping.logic.maxStackSize - existingInSlot;
+
+                    if(transferable >= remaining) {
+                        canFillGaps = true;
+                        break;
+                    }
+                } else if(slot.item.isEmpty() && firstEmptySlot == -1) {
+                    firstEmptySlot = slot.slotIndex;
+                }
+            }
+
+            remaining = item.itemAmount;
+
+            for(int slotsToVisit : visitSlotsFirst) {
+                int existingInSlot = slots[slotsToVisit].item.itemAmount;
+                int transferable = mapping.logic.maxStackSize - existingInSlot;
+
+                if(transferable >= remaining) {
+                    slots[slotsToVisit].item.itemAmount += remaining;
+                    remaining = 0;
+                    result.fullTransfer = true;
+                    result.remainingAmount = 0;
+                } else {
+                    slots[slotsToVisit].item.itemAmount += transferable;
+                    remaining -= transferable;
+                    result.remainingAmount -= transferable;
+                }
+
+                result.changeResult.addChange(getContainerId(), slotsToVisit, slots[slotsToVisit].item);
+            }
+
+            if(!canFillGaps && firstEmptySlot != -1) {
+                // Fill in empty slot.
+                slots[firstEmptySlot].item = item;
+                slots[firstEmptySlot].item.itemAmount = remaining;
+                result.remainingAmount = 0;
+                result.fullTransfer = true;
+                result.changeResult.addChange(getContainerId(), firstEmptySlot, slots[firstEmptySlot].item);
+            }
+        }
+
+        return result;
     }
 
     public void kickViewers() {
@@ -169,8 +386,16 @@ public class ServerInventory {
             ServerEntity viewerEntity = inventoryOwner.getDimension().getEntityManager().getEntityById(viewer);
             if(viewerEntity == null) continue;
             ServerPlayer player = (ServerPlayer) viewerEntity;
-            ServerPackets.p19PlayerInventoryUpdate(updatedSlots, updated, PacketReceiver.player(player));
+            ServerPackets.p19ContainerUpdate(containerId, updatedSlots, updated, PacketReceiver.player(player));
         }
+    }
+
+    public int getContainerId() {
+        return containerId;
+    }
+
+    public void setContainerId(int containerId) {
+        this.containerId = containerId;
     }
 
     public InventoryViewType getType() {

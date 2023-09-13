@@ -780,7 +780,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             heldItemPacket(PacketReceiver.whoCanSee(this));
         }
 
-        ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
+        ServerPackets.p19ContainerUpdate(ExpoShared.CONTAINER_ID_PLAYER, new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
     }
 
     private void useItemDurability(ServerInventoryItem item) {
@@ -792,7 +792,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             heldItemPacket(PacketReceiver.whoCanSee(this));
         }
 
-        ServerPackets.p19PlayerInventoryUpdate(new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
+        ServerPackets.p19ContainerUpdate(ExpoShared.CONTAINER_ID_PLAYER, new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
     }
 
     public float toFeetCenterX() {

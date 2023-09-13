@@ -264,8 +264,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
             if(local != null) {
                 playerBehind = ExpoShared.overlap(new float[] {
-                        local.clientPosX, local.clientPosY,
-                        local.clientPosX + local.textureWidth, local.clientPosY + local.textureHeight
+                        local.finalTextureStartX, local.finalTextureStartY,
+                        local.finalTextureStartX + local.textureWidth, local.finalTextureStartY + local.textureHeight
                 }, new float[] {
                         finalTextureStartX + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement,
                         finalTextureStartX + leavesWidth() + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement + leavesHeight()
@@ -274,9 +274,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 playerBehind = false;
             }
 
-            if(playerBehind && playerBehindDelta > 0.5f) {
+            if(playerBehind && playerBehindDelta > 0.3f) {
                 playerBehindDelta -= delta;
-                if(playerBehindDelta < 0.5f) playerBehindDelta = 0.5f;
+                if(playerBehindDelta < 0.3f) playerBehindDelta = 0.3f;
             }
 
             if(!playerBehind && playerBehindDelta < 1.0f) {

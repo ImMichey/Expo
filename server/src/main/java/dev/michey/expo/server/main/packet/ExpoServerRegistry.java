@@ -9,7 +9,6 @@ import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.gen.*;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -76,7 +75,7 @@ public class ExpoServerRegistry {
                 P16_PlayerPunch.class,
                 P17_PlayerPunchData.class,
                 P18_PlayerInventoryInteraction.class,
-                P19_PlayerInventoryUpdate.class,
+                P19_ContainerUpdate.class,
                 P20_PlayerInventorySwitch.class,
                 P21_PlayerGearUpdate.class,
                 P22_PlayerArmDirection.class,
