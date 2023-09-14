@@ -354,6 +354,10 @@ public class ServerInventory {
     }
 
     public void dropAllItems(float radiusMin, float radiusMax) {
+        dropAllItems(0, 0, radiusMin, radiusMax);
+    }
+
+    public void dropAllItems(float offsetX, float offsetY, float radiusMin, float radiusMax) {
         int dropItems = 0;
 
         for(var slot : slots) {
@@ -370,8 +374,8 @@ public class ServerInventory {
                 ServerItem drop = new ServerItem();
                 drop.itemContainer = new ServerInventoryItem().clone(slot.item);
                 slot.item.setEmpty();
-                drop.posX = getOwner().posX;
-                drop.posY = getOwner().posY;
+                drop.posX = getOwner().posX + offsetX;
+                drop.posY = getOwner().posY + offsetY;
                 drop.dstX = positions[i].x;
                 drop.dstY = positions[i].y;
                 ServerWorld.get().registerServerEntity(getOwner().entityDimension, drop);

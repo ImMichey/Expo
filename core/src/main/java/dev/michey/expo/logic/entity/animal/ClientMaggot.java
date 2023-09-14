@@ -48,7 +48,7 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity {
     public void tick(float delta) {
         syncPositionWithServer();
 
-        if(doLerp) {
+        if(isMoving()) {
             calculateReflection();
         }
 

@@ -1593,34 +1593,30 @@ public class ArrayTextureSpriteBatch implements Batch {
         float u2 = region.getU2() * subImageScaleWidth;
         float v2 = region.getV() * subImageScaleHeight;
 
-        //float color = this.colorPacked;
-        float colorBLACK = BLACK_BITS;
-        float colorOPAQUE = TRANSPARENT_BITS;
-
         vertices[idx++] = x1;
         vertices[idx++] = y1;
-        vertices[idx++] = colorBLACK;
+        vertices[idx++] = BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v;
         vertices[idx++] = ti;
 
         vertices[idx++] = x2 + c1;
         vertices[idx++] = y2;
-        vertices[idx++] = GameSettings.get().enableSoftShadows ? colorOPAQUE : BLACK_BITS;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? TRANSPARENT_BITS : BLACK_BITS;
         vertices[idx++] = u;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x3 + c2;
         vertices[idx++] = y3;
-        vertices[idx++] = GameSettings.get().enableSoftShadows ? colorOPAQUE : BLACK_BITS;
+        vertices[idx++] = GameSettings.get().enableSoftShadows ? TRANSPARENT_BITS : BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x4;
         vertices[idx++] = y4;
-        vertices[idx++] = colorBLACK;
+        vertices[idx++] = BLACK_BITS;
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = ti;

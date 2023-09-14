@@ -26,7 +26,6 @@ public class ServerCrate extends ServerEntity {
 
         crateInventory = new ServerInventory(InventoryViewType.CRATE, 9, ContainerRegistry.get().getNewUniqueContainerId());
         crateInventory.setOwner(this);
-        crateInventory.fillRandom();
     }
 
     @Override
@@ -43,7 +42,7 @@ public class ServerCrate extends ServerEntity {
     @Override
     public void onDie() {
         crateInventory.kickViewers();
-        crateInventory.dropAllItems(16, 32);
+        crateInventory.dropAllItems(7, 0, 16, 32);
         spawnItemSingle(posX + 8, posY + 2, 0, "item_crate", 8);
     }
 

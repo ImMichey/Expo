@@ -46,6 +46,7 @@ public enum ClientEntityType {
     CROP_WHEAT(25, "CropWheat", ServerEntityType.CROP_WHEAT),
     BOULDER(26, "Boulder", ServerEntityType.BOULDER),
     CRATE(27, "Crate", ServerEntityType.CRATE),
+    OAK_TREE_SAPLING(28, "OakTreeSapling", ServerEntityType.OAK_TREE_SAPLING),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -109,6 +110,7 @@ public enum ClientEntityType {
             case 25 -> new ClientCropWheat();
             case 26 -> new ClientBoulder();
             case 27 -> new ClientCrate();
+            case 28 -> new ClientOakTreeSapling();
             default -> null;
         };
     }

@@ -455,7 +455,16 @@
                 }
             },
             "logic": {
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "OAK_TREE_SAPLING",
+                    "previewTexture": "oak_tree_sapling",
+                    "floorRequirement": "FOREST",
+                    "placeAlignmentOffsetX": 8,
+                    "previewOffsetX": 2
+                }
             }
         },
         {

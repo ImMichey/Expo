@@ -6,3 +6,4 @@
 #/connect localhost
 #/noise
 #/noclip
+/fps 240

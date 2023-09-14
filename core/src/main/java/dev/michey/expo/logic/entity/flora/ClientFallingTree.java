@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
@@ -20,6 +21,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
     private TextureRegion treeTrunk;
     private TextureRegion treeLeaves;
+    private Texture treeLeavesPhase0;
 
     public boolean fallingRightDirection;
     public float leavesDisplacement;
@@ -46,6 +48,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
         treeTrunk = tr("eot_falling_trunk_trim_" + variant);
         treeLeaves = tr("eot_falling_leaves");
+        treeLeavesPhase0 = t("foliage/entity_oak_tree/eot_leaves.png");
 
         updateTextureBounds(treeLeaves);
 

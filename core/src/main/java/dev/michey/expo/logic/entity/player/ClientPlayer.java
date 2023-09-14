@@ -23,7 +23,6 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
-import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
@@ -96,8 +95,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
     private TextureRegion tex_shadow_punch_arm;
     private TextureRegion[] textures_shadow_walk;
 
-    private final float[] offset_arm_walk_right = new float[] {7, 6, 7, 7, 8, 7, 6, 7, 7, 8};
-    private final float[] offset_arm_base = new float[] {6, 7};
+    private final float[] offset_arm_walk_right =   new float[] {7, 6, 7, 7, 8, 7, 6, 7, 7, 8};
+    private final float[] offset_arm_base =         new float[] {6, 7};
 
     private float offsetXL;
     private float offsetXR;
@@ -255,6 +254,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
                 boolean scanTile = false;
                 boolean scanFreely = false;
+                float ofx = 0, ofy = 0;
 
                 if(mapping.logic.isSpecialType()) {
                     ToolType tt = mapping.logic.toolType;
@@ -280,6 +280,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
                         selector.currentEntityPlacementTexture = placeData.previewTextureName;
                     }
 
+                    ofx = placeData.previewOffsetX;
+                    ofy = placeData.previewOffsetY;
+
                     if(placeData.alignment == PlaceAlignment.TILE) {
                         scanTile = true;
                     } else {
@@ -300,8 +303,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
                     float d4 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty + 16);
 
                     if(d1 <= range || d2 <= range || d3 <= range || d4 <= range) {
-                        selector.externalPosX = tx;
-                        selector.externalPosY = ty;
+                        selector.externalPosX = tx + ofx;
+                        selector.externalPosY = ty + ofy;
                     } else {
                         Vector2 dst = GenerationUtils.circular(RenderContext.get().mouseRotation + 270, range);
                         float ntx = playerReachCenterX + dst.x;
@@ -310,15 +313,15 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
                         int _tix = ExpoShared.posToTile(ntx);
                         int _tiy = ExpoShared.posToTile(nty);
 
-                        selector.externalPosX = ExpoShared.tileToPos(_tix);
-                        selector.externalPosY = ExpoShared.tileToPos(_tiy);
+                        selector.externalPosX = ExpoShared.tileToPos(_tix) + ofx;
+                        selector.externalPosY = ExpoShared.tileToPos(_tiy) + ofy;
                     }
                 } else if(scanFreely) {
                     selector.currentlyVisible = true;
 
                     // Revisit later.
-                    selector.externalPosX = RenderContext.get().mouseWorldX;
-                    selector.externalPosY = RenderContext.get().mouseWorldY;
+                    selector.externalPosX = RenderContext.get().mouseWorldX + ofx;
+                    selector.externalPosY = RenderContext.get().mouseWorldY + ofy;
                 } else {
                     selector.currentlyVisible = false;
                 }
@@ -337,6 +340,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
             // Client-sided inventory check
             if(IngameInput.get().keyJustPressed(Input.Keys.ESCAPE) && PlayerUI.get().currentContainer != null) {
                 PlayerUI.get().closeInventoryView();
+                ClientPackets.p41InventoryViewQuit();
                 AudioEngine.get().playSoundGroup("inv_open");
             } else if(IngameInput.get().keyJustPressed(Input.Keys.E)) {
                 PlayerUI.get().togglePlayerInventoryView();

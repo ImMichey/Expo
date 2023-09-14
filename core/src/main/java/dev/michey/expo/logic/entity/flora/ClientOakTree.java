@@ -146,7 +146,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         selectionTrunk = generateSelectionTexture(trunk);
 
         String large = variant == 5 ? "_big" : "";
-        leaves = t("foliage/entity_oak_tree/eot_leaves" + large + ".png");
+        leaves = t("foliage/entity_oak_tree/eot_leaves_sized.png");
         leavesShadowMask = tr("eot_leaves" + large + "_sm");
 
         if(cut) {
@@ -301,7 +301,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
         if(!cut) {
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - 35, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
@@ -327,7 +327,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
             if(!cut) {
                 rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-                rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+                rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - 35, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
         }
@@ -338,7 +338,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY + 2, trunk.getRegionWidth(), trunk.getRegionHeight() * -1);
         if(!cut) {
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - 35, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
@@ -401,12 +401,14 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         fallingTree.depth = fallingTree.clientPosY - 12.001f;
         fallingTree.wakeupId = entityId;
 
+        float baf = leavesWidth() / 128f;
+
         fallingTree.leavesDisplacement = leavesDisplacement;
         fallingTree.variant = variant;
         fallingTree.fallingRightDirection = fallingDirectionRight;
         fallingTree.animationDelta = ServerOakTree.FALLING_ANIMATION_DURATION - fallingRemaining;
         fallingTree.colorDisplacement = colorMix;
-        fallingTree.windDisplacement = (foliageAnimator == null ? 0 : foliageAnimator.value) + (contactAnimator == null ? 0 : contactAnimator.value);
+        fallingTree.windDisplacement = (foliageAnimator == null ? 0 : (foliageAnimator.value * baf)) + (contactAnimator == null ? 0 : (contactAnimator.value * baf));
         fallingTree.windDisplacementBase = fallingTree.windDisplacement;
         fallingTree.transparency = playerBehindDelta;
 

@@ -21,6 +21,12 @@ public class ClientUtils {
         }
     }
 
+    public static void logf(String message, int keycode) {
+        if(Gdx.input.isKeyPressed(keycode)) {
+            ExpoLogger.log(message);
+        }
+    }
+
     public static Vector2 entityPosToHudPos(float x, float y) {
         OrthographicCamera c = RenderContext.get().expoCamera.camera;
         float endX = c.position.x + (c.viewportWidth * c.zoom);

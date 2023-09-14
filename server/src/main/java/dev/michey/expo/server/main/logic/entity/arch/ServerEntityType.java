@@ -41,6 +41,7 @@ public enum ServerEntityType {
     CROP_WHEAT(25, "CropWheat", true),
     BOULDER(26, "Boulder", true),
     CRATE(27, "Crate", true),
+    OAK_TREE_SAPLING(28, "OakTreeSapling", false),
     ;
 
     public final int ENTITY_ID;
@@ -83,6 +84,7 @@ public enum ServerEntityType {
             case 25 -> new ServerCropWheat();
             case 26 -> new ServerBoulder();
             case 27 -> new ServerCrate();
+            case 28 -> new ServerOakTreeSapling();
             default -> null;
         };
     }
@@ -117,6 +119,7 @@ public enum ServerEntityType {
             case "CROPWHEAT", "CROP_WHEAT", "WHEATCROP", "WHEAT_CROP" -> new ServerCropWheat();
             case "BOULDER" -> new ServerBoulder();
             case "CRATE" -> new ServerCrate();
+            case "OAKTREESAPLING", "OAK_TREE_SAPLING", "SAPLING" -> new ServerOakTreeSapling();
             default -> null;
         };
     }

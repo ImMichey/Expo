@@ -17,6 +17,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
@@ -50,7 +51,7 @@ public abstract class ClientEntity {
     /** Used for networking syncing. */
     public float lastPosX;
     public float lastPosY;
-    private float lastDelta;
+    public float lastDelta;
     public boolean doLerp;
 
     /** ClientEntity render fields */
@@ -108,19 +109,27 @@ public abstract class ClientEntity {
 
     public void syncPositionWithServer() {
         if(doLerp) {
-            float totalDisX = serverPosX - lastPosX;
-            float totalDisY = serverPosY - lastPosY;
-            float progress = (RenderContext.get().deltaTotal - lastDelta) * ExpoClientContainer.get().getServerTickRate();
-
-            clientPosX = lastPosX + totalDisX * progress;
-            clientPosY = lastPosY + totalDisY * progress;
-
-            if(progress >= 1.0f) {
+            if(ExpoServerBase.get() != null) {
+                doLerp = false;
                 clientPosX = serverPosX;
                 clientPosY = serverPosY;
                 lastPosX = clientPosX;
                 lastPosY = clientPosY;
-                doLerp = false;
+            } else {
+                float totalDisX = serverPosX - lastPosX;
+                float totalDisY = serverPosY - lastPosY;
+                float progress = (RenderContext.get().deltaTotal - lastDelta) * ExpoClientContainer.get().getServerTickRate();
+
+                clientPosX = lastPosX + totalDisX * progress;
+                clientPosY = lastPosY + totalDisY * progress;
+
+                if(progress >= 1.0f) {
+                    clientPosX = serverPosX;
+                    clientPosY = serverPosY;
+                    lastPosX = clientPosX;
+                    lastPosY = clientPosY;
+                    doLerp = false;
+                }
             }
         }
     }

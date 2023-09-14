@@ -283,7 +283,7 @@ public class PlayerUI {
             if(slot.hovered) {
                 slot.hovered = false;
                 slot.onHoverEnd();
-                if(hoveredSlot.equals(slot)) {
+                if(hoveredSlot != null && hoveredSlot.equals(slot)) {
                     hoveredSlot = null;
                 }
             }
@@ -755,16 +755,18 @@ public class PlayerUI {
     public void togglePlayerInventoryView() {
         if(currentContainer != null) {
             closeInventoryView();
+            ClientPackets.p41InventoryViewQuit();
         } else {
             openPlayerInventoryView();
         }
     }
 
     public void closeInventoryView() {
-        ClientPackets.p41InventoryViewQuit();
-        currentContainer.visible = false;
-        currentContainer.onHide();
-        currentContainer = null;
+        if(currentContainer != null) {
+            currentContainer.visible = false;
+            currentContainer.onHide();
+            currentContainer = null;
+        }
     }
 
     public void openPlayerInventoryView() {
