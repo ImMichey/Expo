@@ -13,9 +13,9 @@
                     "texture": "item_stick",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "offsetX": -1.5,
+                    "offsetY": 8,
+                    "rotations": [45, -45]
                 }
             },
             "logic": {
@@ -89,8 +89,8 @@
                     "scaleX": 1,
                     "scaleY": 1,
                     "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45, -45]
+                    "offsetY": 8.5,
+                    "rotations": [45.0, -45.0]
                 }
             },
             "logic": {
@@ -115,7 +115,7 @@
                     "texture": "item_iron_pickaxe",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
+                    "offsetX": -2,
                     "offsetY": 9,
                     "rotations": [45.0, -45.0]
                 }
@@ -194,9 +194,9 @@
                     "texture": "item_grassfiber",
                     "scaleX": 0.75,
                     "scaleY": 0.75,
-                    "offsetX": 1.0,
-                    "offsetY": 3.5,
-                    "rotations": [0.0, -90.0]
+                    "offsetX": -1.0,
+                    "offsetY": 5.0,
+                    "rotations": [45.0, -45.0]
                 }
             },
             "logic": {
@@ -216,8 +216,8 @@
                     "texture": "item_flint_shovel",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
+                    "offsetX": -2,
+                    "offsetY": 8,
                     "rotations": [45, -45]
                 }
             },
@@ -240,7 +240,12 @@
                     "texture": "item_floor_grass"
                 },
                 "held": {
-                    "texture": "item_floor_grass"
+                    "texture": "item_floor_grass",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 1,
+                    "offsetY": 1,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -262,7 +267,12 @@
                     "texture": "item_sand"
                 },
                 "held": {
-                    "texture": "item_sand"
+                    "texture": "item_sand",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 1,
+                    "offsetY": 1,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -284,7 +294,12 @@
                     "texture": "item_dirt"
                 },
                 "held": {
-                    "texture": "item_dirt"
+                    "texture": "item_dirt",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 1,
+                    "offsetY": 1,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -309,8 +324,8 @@
                     "texture": "item_op_shovel",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
+                    "offsetX": -2,
+                    "offsetY": 8,
                     "rotations": [45, -45]
                 }
             },
@@ -335,9 +350,9 @@
                     "texture": "item_flint",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "offsetX": -1,
+                    "offsetY": 3,
+                    "rotations": [45, -45]
                 }
             },
             "logic": {
@@ -355,11 +370,11 @@
                 },
                 "held": {
                     "texture": "item_worm",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": 1,
+                    "offsetY": 0.5,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -381,11 +396,11 @@
                 },
                 "held": {
                     "texture": "item_cord",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": 2.5,
+                    "offsetY": 2,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -403,11 +418,11 @@
                 },
                 "held": {
                     "texture": "item_rock",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": 1,
+                    "offsetY": 1,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -427,9 +442,9 @@
                     "texture": "item_oak_log",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "offsetX": 2,
+                    "offsetY": 4,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -447,11 +462,11 @@
                 },
                 "held": {
                     "texture": "item_acorn",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -1.75,
+                    "offsetY": 6.25,
+                    "rotations": [45, -45]
                 }
             },
             "logic": {
@@ -478,11 +493,11 @@
                 },
                 "held": {
                     "texture": "item_mushroom_red",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [67.5, -22.5]
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -1,
+                    "offsetY": 3,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -504,11 +519,11 @@
                 },
                 "held": {
                     "texture": "item_mushroom_brown",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [67.5, -22.5]
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -1,
+                    "offsetY": 3,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -530,11 +545,11 @@
                 },
                 "held": {
                     "texture": "item_oak_plank",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [67.5, -22.5]
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 3,
+                    "offsetY": 4.5,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -552,11 +567,11 @@
                 },
                 "held": {
                     "texture": "item_mushroom_glowing",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [67.5, -22.5]
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -1,
+                    "offsetY": 3,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -583,8 +598,8 @@
                     "texture": "item_flint_scythe",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
+                    "offsetX": -1.5,
+                    "offsetY": 8.75,
                     "rotations": [45, -45]
                 }
             },
@@ -608,10 +623,10 @@
                 },
                 "held": {
                     "texture": "item_wheat",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -1,
+                    "offsetY": 6,
                     "rotations": [45, -45]
                 }
             },
@@ -660,11 +675,11 @@
                 },
                 "held": {
                     "texture": "item_maggot",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotation": -45
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -1,
+                    "offsetY": 1,
+                    "rotations": [135, 45]
                 }
             },
             "logic": {
@@ -735,7 +750,12 @@
                     "texture": "item_oak_plank_floor"
                 },
                 "held": {
-                    "texture": "item_oak_plank_floor"
+                    "texture": "item_oak_plank_floor",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 1,
+                    "offsetY": 1,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -757,7 +777,12 @@
                     "texture": "item_birch_log"
                 },
                 "held": {
-                    "texture": "item_birch_log"
+                    "texture": "item_birch_log",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 2,
+                    "offsetY": 4,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -796,7 +821,12 @@
                     "texture": "item_crate"
                 },
                 "held": {
-                    "texture": "item_crate"
+                    "texture": "item_crate",
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": 0,
+                    "offsetY": 4,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {
@@ -805,7 +835,35 @@
                     "alignment": "TILE",
                     "type": "ENTITY",
                     "entityType": "CRATE",
-                    "previewTexture": "entity_crate"
+                    "previewTexture": "entity_crate",
+                    "placeAlignmentOffsetX": 1,
+                    "previewOffsetX": 1
+                }
+            }
+        },
+        {
+            "identifier": "item_carrot",
+            "id": 33,
+            "displayName": "Carrot",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_carrot"
+                },
+                "held": {
+                    "texture": "item_carrot",
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -2.0,
+                    "offsetY": 7.0,
+                    "rotations": [45.0, -45.0]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "foodData": {
+                    "hungerRestore": 15.0,
+                    "hungerCooldownRestore": 60.0
                 }
             }
         }

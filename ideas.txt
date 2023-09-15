@@ -1,6 +1,5 @@
 Implement new audio engine (gdx-miniaudio)
 BUG: When player dies away from spawn and moves back to the area, another players are invisible an vice versa?
-BUG: When a chunk is being unloaded entirely/saved, the changes are not saved
 
 - Implement ability to use swing right hand animation (interacting with entities/items)
 - Pine tree

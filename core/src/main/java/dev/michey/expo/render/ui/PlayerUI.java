@@ -90,8 +90,8 @@ public class PlayerUI {
     public final TextureRegion invSlotS;            // Regular Item Slot (hovered)
 
     private final TextureRegion hotbarBase;
-    private final TextureRegion hotbarHealth;
-    private final TextureRegion hotbarHunger;
+    //private final TextureRegion hotbarHealth;
+    //private final TextureRegion hotbarHunger;
 
     private final TextureRegion playerTabHead;
 
@@ -125,8 +125,8 @@ public class PlayerUI {
         invSlotS = tr("inv_slotS");
 
         hotbarBase = tr("hotbar_base");
-        hotbarHealth = tr("hotbar_health");
-        hotbarHunger = tr("hotbar_hunger");
+        //hotbarHealth = tr("hotbar_health");
+        //hotbarHunger = tr("hotbar_hunger");
 
         TextureRegion tab = tr("tab");
 
@@ -665,21 +665,21 @@ public class PlayerUI {
         r.hudBatch.draw(hotbarBase, startX, startY, hotbarW, hotbarH);
 
         // Health + hunger
-        r.hudBatch.draw(hotbarHealth, startX + 10 * uiScale, startY + 39 * uiScale, healthW, healthH);
-        r.hudBatch.draw(hotbarHunger, startX + 230 * uiScale, startY + 39 * uiScale, hungerW, hungerH);
+        //r.hudBatch.draw(hotbarHealth, startX + 10 * uiScale, startY + 39 * uiScale, healthW, healthH);
+        //r.hudBatch.draw(hotbarHunger, startX + 230 * uiScale, startY + 39 * uiScale, hungerW, hungerH);
 
         // Hotbar slots
         drawHotbarSlots();
 
         // Health status
-        status(r, ClientPlayer.getLocalPlayer().playerHealth, startX + 22 * uiScale, startY + 38 * uiScale);
+        status(r, ClientPlayer.getLocalPlayer().playerHealth, startX + 23 * uiScale, startY + 38 * uiScale);
 
         // Hunger status
         status(r, ClientPlayer.getLocalPlayer().playerHunger, startX + 196 * uiScale, startY + 38 * uiScale);
 
         // Current item
         var local = PlayerInventory.LOCAL_INVENTORY.currentItem();
-        itemText(r, local == null ? null : local.toMapping(), startX + 56 * uiScale, startY + 38 * uiScale);
+        itemText(r, local == null ? null : local.toMapping(), startX + 57 * uiScale, startY + 38 * uiScale);
     }
 
     private void itemText(RenderContext rc, ItemMapping mapping, float x, float y) {
@@ -696,7 +696,7 @@ public class PlayerUI {
 
         glyphLayout.setText(rc.m5x7_border_use, text);
         rc.m5x7_border_use.setColor(c);
-        rc.m5x7_border_use.draw(rc.hudBatch, text, x + (138 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
+        rc.m5x7_border_use.draw(rc.hudBatch, text, x + (137 * uiScale - glyphLayout.width) * 0.5f, y + glyphLayout.height + (11 * uiScale - glyphLayout.height) * 0.5f);
         rc.m5x7_border_use.setColor(Color.WHITE);
     }
 
@@ -809,11 +809,11 @@ public class PlayerUI {
         slotW = invSlot.getRegionWidth() * uiScale;
         slotH = invSlot.getRegionHeight() * uiScale;
 
-        healthW = hotbarHealth.getRegionWidth() * uiScale;
-        healthH = hotbarHealth.getRegionHeight() * uiScale;
+        //healthW = hotbarHealth.getRegionWidth() * uiScale;
+        //healthH = hotbarHealth.getRegionHeight() * uiScale;
 
-        hungerW = hotbarHunger.getRegionWidth() * uiScale;
-        hungerH = hotbarHunger.getRegionHeight() * uiScale;
+        //hungerW = hotbarHunger.getRegionWidth() * uiScale;
+        //hungerH = hotbarHunger.getRegionHeight() * uiScale;
 
         playerMinimap.updateWH(uiScale);
 

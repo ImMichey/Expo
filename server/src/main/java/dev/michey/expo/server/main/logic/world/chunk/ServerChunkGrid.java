@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -280,6 +281,7 @@ public class ServerChunkGrid {
 
                 if(now - pair.value > 0) { // reached save state
                     iterator.remove();
+                    knownChunkFiles.add(pair.key.getChunkKey());
                     pair.key.onSave();
                 }
             }
@@ -345,6 +347,7 @@ public class ServerChunkGrid {
 
         // Return inactive chunk and mark it as active if it already exists.
         var inactive = inactiveChunkMap.get(hash);
+
         if(inactive != null) {
             inactiveChunkMap.remove(hash);
             activeChunkMap.put(hash, new Pair<>(inactive.key, generateInactiveChunkTimestamp()));

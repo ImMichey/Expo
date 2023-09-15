@@ -13,7 +13,7 @@ public class ItemSheet {
     public ItemSheet(TextureRegion sheet) {
         itemTextureMap = new HashMap<>();
         this.sheet = sheet;
-        tilesPerRow = sheet.getRegionWidth() / 16;
+        tilesPerRow = sheet.getRegionWidth() / 32;
 
         // Add textures to map
         add("item_blueberry", 0, 12, 10);
@@ -22,33 +22,34 @@ public class ItemSheet {
         add("item_flint_pickaxe", 3, 16, 16);
         add("item_flint_shovel", 4, 15, 15);
         add("item_flint_axe", 5, 17, 13);
-        add("item_sand", 7, 10, 9);
-        add("item_leaf_helmet", 8, 11, 7);
-        add("item_iron_pickaxe", 9, 16, 16);
-        add("item_iron_axe", 10, 18, 14);
-        add("item_floor_grass", 12, 13, 9);
-        add("item_dirt", 13, 13, 8);
-        add("item_op_shovel", 14, 15, 15);
-        add("item_flint", 15, 8, 7);
-        add("item_worm", 16, 13, 10);
-        add("item_cord", 17, 12, 13);
-        add("item_rock", 18, 8, 7);
-        add("item_oak_log", 19, 15, 15);
-        add("item_acorn", 20, 12, 12);
-        add("item_mushroom_red", 21, 8, 9);
-        add("item_mushroom_brown", 22, 8, 9);
-        add("item_oak_plank", 23, 14, 11);
-        add("item_mushroom_glowing", 24, 8, 9);
-        add("item_flint_scythe", 25, 16, 15);
-        add("item_wheat", 26, 13, 12);
-        add("item_wheat_seeds", 27, 9, 8);
-        add("item_maggot", 28, 13, 10);
-        add("item_wood_mask", 29, 9, 9);
-        add("item_fence_stick", 30, 12, 15);
-        add("item_oak_plank_floor", 31, 13, 8);
-        add("item_birch_log", 32, 15, 15);
-        add("item_oak_plank_wall", 33, 5, 7);
-        add("item_crate", 34, 14, 16);
+        add("item_sand", 6, 10, 9);
+        add("item_leaf_helmet", 7, 11, 7);
+        add("item_iron_pickaxe", 8, 16, 16);
+        add("item_iron_axe", 9, 18, 14);
+        add("item_floor_grass", 10, 13, 9);
+        add("item_dirt", 11, 13, 8);
+        add("item_op_shovel", 12, 15, 15);
+        add("item_flint", 13, 8, 7);
+        add("item_worm", 14, 8, 12);
+        add("item_cord", 15, 11, 12);
+        add("item_rock", 16, 8, 7);
+        add("item_oak_log", 17, 15, 15);
+        add("item_acorn", 18, 12, 12);
+        add("item_mushroom_red", 19, 8, 9);
+        add("item_mushroom_brown", 20, 8, 9);
+        add("item_oak_plank", 21, 14, 11);
+        add("item_mushroom_glowing", 22, 8, 9);
+        add("item_flint_scythe", 23, 16, 15);
+        add("item_wheat", 24, 13, 12);
+        add("item_wheat_seeds", 25, 9, 8);
+        add("item_maggot", 26, 10, 14);
+        add("item_wood_mask", 27, 9, 9);
+        add("item_fence_stick", 28, 12, 15);
+        add("item_oak_plank_floor", 29, 13, 8);
+        add("item_birch_log", 30, 15, 15);
+        add("item_oak_plank_wall", 31, 5, 7);
+        add("item_crate", 32, 14, 16);
+        add("item_carrot", 33, 12, 14);
     }
 
     public TextureRegion get(String name) {
@@ -59,8 +60,8 @@ public class ItemSheet {
         int x = tile % tilesPerRow;
         int y = tile / tilesPerRow;
 
-        int xPos = x * 16;
-        int yPos = y * 16 + (16 - h);
+        int xPos = x * 32;
+        int yPos = y * 32 + (32 - h);
 
         itemTextureMap.put(name, new TextureRegion(sheet, xPos, yPos, w, h));
     }

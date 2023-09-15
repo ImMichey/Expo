@@ -41,6 +41,7 @@ import dev.michey.expo.weather.Weather;
 
 import java.util.*;
 
+import static com.badlogic.gdx.graphics.GL20.GL_COVERAGE_BUFFER_BIT_NV;
 import static dev.michey.expo.util.ExpoShared.*;
 
 public class ClientWorld {
@@ -934,6 +935,7 @@ public class ClientWorld {
         float y = r.expoCamera.camera.position.y - Gdx.graphics.getHeight() * 0.5f;
         TextureRegion fboTex = new TextureRegion(texture);
         fboTex.flip(false, true);
+        fboTex.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         float newWidth = fboTex.getRegionWidth() * r.expoCamera.camera.zoom;
         float newHeight = fboTex.getRegionHeight() * r.expoCamera.camera.zoom;

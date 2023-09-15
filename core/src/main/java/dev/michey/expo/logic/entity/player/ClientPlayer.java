@@ -29,6 +29,8 @@ import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -370,6 +372,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
             if(IngameInput.get().keyPressed(Input.Keys.SHIFT_LEFT)) sprinting = true;
 
             int numberPressed = IngameInput.get().pressedNumber();
+
+            if(Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+                ServerWorld.get().getMainDimension().getChunkHandler().chunkdump();
+            }
 
             if(numberPressed != -1) {
                 playerInventory.modifySelectedSlot(numberPressed);

@@ -48,6 +48,9 @@ public class InteractableItemSlot extends InteractableUIElement {
             float _x = this.x + (parent.slotW - dw) * 0.5f;
             float _y = this.y + (parent.slotH - dh) * 0.5f;
 
+            r.hudBatch.setColor(0f, 0f, 0f, 0.125f);
+            r.hudBatch.draw(draw, _x + parent.uiScale, _y - parent.uiScale * 2, dw, dh);
+            r.hudBatch.setColor(Color.WHITE);
             r.hudBatch.draw(draw, _x, _y, dw, dh);
 
             if(mapping.logic.maxStackSize > 1) {

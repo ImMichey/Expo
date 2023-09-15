@@ -392,6 +392,16 @@
                         }
                     ]
                 },
+                "RIVER": {
+                    "entities": [
+                        {
+                            "type": "LILYPAD",
+                            "static": true,
+                            "chance": 0.025,
+                            "pds": 16
+                        }
+                    ]
+                },
                 "DENSE_FOREST": {
                     "entities": [
                         {
