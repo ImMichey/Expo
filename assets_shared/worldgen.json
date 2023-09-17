@@ -62,29 +62,13 @@
                         "logic": {
                             "check": [
                                 "DENSE_FOREST",
-                                "PLAINS",
                                 "FOREST",
                                 "DESERT"
                             ],
-                            "threshold": 0.841,
+                            "threshold": 0.8,
                             "replaceType": "BIOME",
                             "replaceWith": "ROCK",
                             "priority": -100
-                        }
-                    },
-                    {
-                        "name": "wheat_fields",
-                        "octaves": 6,
-                        "type": 5,
-                        "frequency": 0.0125,
-                        "noiseOffset": 0,
-                        "logic": {
-                            "check": [
-                                "PLAINS"
-                            ],
-                            "threshold": 0.833,
-                            "replaceType": "BIOME",
-                            "replaceWith": "WHEAT_FIELDS"
                         }
                     },
                     {
@@ -96,11 +80,10 @@
                         "logic": {
                             "check": [
                                 "DENSE_FOREST",
-                                "PLAINS",
                                 "FOREST",
                                 "DESERT"
                             ],
-                            "threshold": 0.845,
+                            "threshold": 0.8,
                             "replaceType": "BIOME",
                             "replaceWith": "DIRT",
                             "priority": -200
@@ -201,443 +184,421 @@
                     }
                 ]
             },
-            "biomePopulators": {
-                "WHEAT_FIELDS": {
-                    "entities": [
-                        {
-                            "type": "WHEAT_PLANT",
-                            "static": true,
-                            "chance": 0.35,
-                            "pds": 16,
-                            "priority": 100,
-                            "spreadData": {
-                                "spread": [2, 4],
-                                "spreadChance": 0.8,
-                                "spreadDis": [12.0, 18.0],
-                                "spreadType": ["WHEAT_PLANT"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "GRASS",
-                            "static": true,
-                            "chance": 0.5,
-                            "pds": 14
-                        }
-                    ]
+            "tilePopulators": [
+                {
+                    "biome": "LAKE",
+                    "chance": 0.15,
+                    "type": "CATTAIL",
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "static": true,
+                    "spreadData": {
+                        "spread": [1, 5],
+                        "spreadChance": 1.0,
+                        "spreadType": ["CATTAIL"],
+                        "spreadDis": [12.0, 16.0],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
                 },
-                "DESERT": {
-                    "entities": [
-                        {
-                            "type": "ROCK",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 1],
-                                "spreadChance": 0.25,
-                                "spreadDis": [16.0, 24.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        }
-                    ]
+                {
+                    "biome": "RIVER",
+                    "chance": 0.05,
+                    "type": "CATTAIL",
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "static": true,
+                    "spreadData": {
+                        "spread": [1, 5],
+                        "spreadChance": 1.0,
+                        "spreadType": ["CATTAIL"],
+                        "spreadDis": [12.0, 16.0],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
                 },
-                "BEACH": {
-                    "entities": [
-                        {
-                            "type": "ROCK",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 1],
-                                "spreadChance": 0.25,
-                                "spreadDis": [16.0, 24.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "BOULDER",
-                            "static": true,
-                            "chance": 0.02,
-                            "pds": 24,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.66,
-                                "spreadDis": [12.0, 28.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        }
-                    ]
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "OAK_TREE",
+                    "static": true,
+                    "chance": 0.0725,
+                    "spawnOffsets": [-8.0, 8.0, -8.0, 8.0],
+                    "priority": 100,
+                    "spreadData": {
+                        "spread": [1, 5],
+                        "spreadChance": 0.025,
+                        "spreadDis": [16.0, 20.0],
+                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
                 },
-                "PLAINS": {
-                    "entities": [
-                        {
-                            "type": "SUNFLOWER",
-                            "static": true,
-                            "chance": 0.0002,
-                            "pds": 16,
-                            "priority": 50,
-                            "spreadData": {
-                                "spread": [4, 24],
-                                "spreadChance": 1.0,
-                                "spreadDis": [24.0, 96.0],
-                                "spreadType": ["SUNFLOWER"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0],
-                                "spreadUseNextTarget": true
-                            }
-                        },
-                        {
-                            "type": "BUSH",
-                            "static": true,
-                            "chance": 0.04,
-                            "pds": 48,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.35,
-                                "spreadDis": [24.0, 32.0],
-                                "spreadType": ["BUSH"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0],
-                                "spreadUseNextTarget": true
-                            }
-                        },
-                        {
-                            "type": "ROCK",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 1],
-                                "spreadChance": 0.25,
-                                "spreadDis": [16.0, 24.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "BOULDER",
-                            "static": true,
-                            "chance": 0.02,
-                            "pds": 24,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.66,
-                                "spreadDis": [12.0, 28.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "GRASS",
-                            "static": true,
-                            "chance": 0.16,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 7],
-                                "spreadChance": 1.0,
-                                "spreadDis": [14.0, 20.0],
-                                "spreadType": ["GRASS"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "OAK_TREE",
-                            "static": true,
-                            "chance": 0.004,
-                            "pds": 16,
-                            "spreadData": {
-                                "spread": [1, 5],
-                                "spreadChance": 0.025,
-                                "spreadDis": [16.0, 20.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [4.5, 2.5]
-                            }
-                        },
-                        {
-                            "type": "BLUEBERRY_BUSH",
-                            "static": true,
-                            "chance": 0.005,
-                            "pds": 32,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [24.0, 32.0],
-                                "spreadType": ["BLUEBERRY_BUSH"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        }
-                    ]
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "GRASS",
+                    "static": true,
+                    "chance": 0.055,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 6],
+                        "spreadChance": 1.0,
+                        "spreadDis": [8.0, 18.0],
+                        "spreadType": ["GRASS"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
                 },
-                "LAKE": {
-                    "entities": [
-                        {
-                            "type": "LILYPAD",
-                            "static": true,
-                            "chance": 0.125,
-                            "pds": 16
-                        }
-                    ]
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "BUSH",
+                    "static": true,
+                    "chance": 0.01,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.35,
+                        "spreadDis": [24.0, 32.0],
+                        "spreadType": ["BUSH"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0],
+                        "spreadUseNextTarget": true
+                    }
                 },
-                "RIVER": {
-                    "entities": [
-                        {
-                            "type": "LILYPAD",
-                            "static": true,
-                            "chance": 0.025,
-                            "pds": 16
-                        }
-                    ]
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "BLUEBERRY_BUSH",
+                    "static": true,
+                    "chance": 0.002,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.5,
+                        "spreadDis": [24.0, 32.0],
+                        "spreadType": ["BLUEBERRY_BUSH"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
                 },
-                "DENSE_FOREST": {
-                    "entities": [
-                        {
-                            "type": "BUSH",
-                            "static": true,
-                            "chance": 0.07,
-                            "pds": 34,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.35,
-                                "spreadDis": [24.0, 32.0],
-                                "spreadType": ["BUSH"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0],
-                                "spreadUseNextTarget": true
-                            }
-                        },
-                        {
-                            "type": "ROCK",
-                            "static": true,
-                            "chance": 0.02,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 1],
-                                "spreadChance": 0.25,
-                                "spreadDis": [16.0, 24.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "BOULDER",
-                            "static": true,
-                            "chance": 0.02,
-                            "pds": 24,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.66,
-                                "spreadDis": [12.0, 28.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "BLUEBERRY_BUSH",
-                            "static": true,
-                            "chance": 0.005,
-                            "pds": 32,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [24.0, 32.0],
-                                "spreadType": ["BLUEBERRY_BUSH"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "GRASS",
-                            "static": true,
-                            "chance": 0.14,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 6],
-                                "spreadChance": 1.0,
-                                "spreadDis": [8.0, 18.0],
-                                "spreadType": ["GRASS"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "OAK_TREE",
-                            "static": true,
-                            "chance": 0.5,
-                            "pds": 35,
-                            "priority": 100,
-                            "spreadData": {
-                                "spread": [1, 5],
-                                "spreadChance": 0.025,
-                                "spreadDis": [16.0, 20.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [4.5, 2.5]
-                            }
-                        },
-                        {
-                            "type": "MUSHROOM_RED",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 64,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [12.0, 16.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "MUSHROOM_BROWN",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 64,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [12.0, 16.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        }
-                    ]
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "MUSHROOM_RED",
+                    "static": true,
+                    "chance": 0.00025,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.5,
+                        "spreadDis": [12.0, 16.0],
+                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
                 },
-                "FOREST": {
-                    "entities": [
-                        {
-                            "type": "BUSH",
-                            "static": true,
-                            "chance": 0.07,
-                            "pds": 34,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.35,
-                                "spreadDis": [24.0, 32.0],
-                                "spreadType": ["BUSH"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0],
-                                "spreadUseNextTarget": true
-                            }
-                        },
-                        {
-                            "type": "ROCK",
-                            "static": true,
-                            "chance": 0.02,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 1],
-                                "spreadChance": 0.25,
-                                "spreadDis": [16.0, 24.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "BOULDER",
-                            "static": true,
-                            "chance": 0.02,
-                            "pds": 24,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.66,
-                                "spreadDis": [12.0, 28.0],
-                                "spreadType": ["ROCK"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "BLUEBERRY_BUSH",
-                            "static": true,
-                            "chance": 0.005,
-                            "pds": 32,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [24.0, 32.0],
-                                "spreadType": ["BLUEBERRY_BUSH"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "GRASS",
-                            "static": true,
-                            "chance": 0.12,
-                            "pds": 20,
-                            "spreadData": {
-                                "spread": [1, 6],
-                                "spreadChance": 1.0,
-                                "spreadDis": [8.0, 18.0],
-                                "spreadType": ["GRASS"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "OAK_TREE",
-                            "static": true,
-                            "chance": 0.125,
-                            "pds": 28,
-                            "priority": 100,
-                            "spreadData": {
-                                "spread": [1, 5],
-                                "spreadChance": 0.025,
-                                "spreadDis": [16.0, 20.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [4.5, 2.5]
-                            }
-                        },
-                        {
-                            "type": "MUSHROOM_RED",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 64,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [12.0, 16.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        },
-                        {
-                            "type": "MUSHROOM_BROWN",
-                            "static": true,
-                            "chance": 0.01,
-                            "pds": 64,
-                            "spreadData": {
-                                "spread": [1, 3],
-                                "spreadChance": 0.5,
-                                "spreadDis": [12.0, 16.0],
-                                "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                                "spreadStatic": true,
-                                "spreadOffsets": [0.0, 0.0]
-                            }
-                        }
-                    ]
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "MUSHROOM_BROWN",
+                    "static": true,
+                    "chance": 0.00025,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.5,
+                        "spreadDis": [12.0, 16.0],
+                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "ROCK",
+                    "static": true,
+                    "chance": 0.01,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 1],
+                        "spreadChance": 0.25,
+                        "spreadDis": [16.0, 24.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "BOULDER",
+                    "static": true,
+                    "chance": 0.01,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.66,
+                        "spreadDis": [12.0, 28.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "LAKE",
+                    "type": "LILYPAD",
+                    "static": true,
+                    "chance": 0.125,
+                    "spawnOffsets": [-2, 2, -2, 2]
+                },
+                {
+                    "biome": "RIVER",
+                    "type": "LILYPAD",
+                    "static": true,
+                    "chance": 0.025,
+                    "spawnOffsets": [-2, 2, -2, 2]
+                },
+                {
+                    "biome": "BEACH",
+                    "type": "ROCK",
+                    "static": true,
+                    "chance": 0.008,
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "spreadData": {
+                        "spread": [1, 1],
+                        "spreadChance": 0.25,
+                        "spreadDis": [16.0, 24.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "RIVER",
+                    "type": "BOULDER",
+                    "static": true,
+                    "chance": 0.003,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 2],
+                        "spreadChance": 0.5,
+                        "spreadDis": [12.0, 28.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "BEACH",
+                    "type": "BOULDER",
+                    "static": true,
+                    "chance": 0.004,
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.66,
+                        "spreadDis": [12.0, 28.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "BUSH",
+                    "static": true,
+                    "chance": 0.007,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.35,
+                        "spreadDis": [24.0, 32.0],
+                        "spreadType": ["BUSH"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0],
+                        "spreadUseNextTarget": true
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "ROCK",
+                    "static": true,
+                    "chance": 0.01,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 1],
+                        "spreadChance": 0.25,
+                        "spreadDis": [16.0, 24.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "BOULDER",
+                    "static": true,
+                    "chance": 0.01,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.66,
+                        "spreadDis": [12.0, 28.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "BLUEBERRY_BUSH",
+                    "static": true,
+                    "chance": 0.004,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.5,
+                        "spreadDis": [24.0, 32.0],
+                        "spreadType": ["BLUEBERRY_BUSH"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "GRASS",
+                    "static": true,
+                    "chance": 0.06,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 6],
+                        "spreadChance": 1.0,
+                        "spreadDis": [8.0, 18.0],
+                        "spreadType": ["GRASS"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "OAK_TREE",
+                    "static": true,
+                    "chance": 0.038,
+                    "spawnOffsets": [-8.0, 8.0, -8.0, 8.0],
+                    "priority": 100,
+                    "spreadData": {
+                        "spread": [1, 5],
+                        "spreadChance": 0.025,
+                        "spreadDis": [16.0, 20.0],
+                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "MUSHROOM_RED",
+                    "static": true,
+                    "chance": 0.00025,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.5,
+                        "spreadDis": [12.0, 16.0],
+                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "FOREST",
+                    "type": "MUSHROOM_BROWN",
+                    "static": true,
+                    "chance": 0.00025,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.5,
+                        "spreadDis": [12.0, 16.0],
+                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "PLAINS",
+                    "type": "GRASS",
+                    "static": true,
+                    "chance": 0.03,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 5],
+                        "spreadChance": 1.0,
+                        "spreadDis": [14.0, 20.0],
+                        "spreadType": ["GRASS"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "PLAINS",
+                    "type": "SUNFLOWER",
+                    "static": true,
+                    "chance": 0.0001,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "priority": 50,
+                    "spreadData": {
+                        "spread": [4, 24],
+                        "spreadChance": 1.0,
+                        "spreadDis": [24.0, 96.0],
+                        "spreadType": ["SUNFLOWER"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0],
+                        "spreadUseNextTarget": true
+                    }
+                },
+                {
+                    "biome": "PLAINS",
+                    "type": "BUSH",
+                    "static": true,
+                    "chance": 0.007,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.35,
+                        "spreadDis": [24.0, 32.0],
+                        "spreadType": ["BUSH"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0],
+                        "spreadUseNextTarget": true
+                    }
+                },
+                {
+                    "biome": "PLAINS",
+                    "type": "ROCK",
+                    "static": true,
+                    "chance": 0.01,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 1],
+                        "spreadChance": 0.25,
+                        "spreadDis": [16.0, 24.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "PLAINS",
+                    "type": "BOULDER",
+                    "static": true,
+                    "chance": 0.01,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.66,
+                        "spreadDis": [12.0, 28.0],
+                        "spreadType": ["ROCK"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
                 }
+            ],
+            "biomePopulators": {
+                
             }
         },
         {

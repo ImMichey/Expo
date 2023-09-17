@@ -15,6 +15,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
@@ -34,9 +35,9 @@ public class ServerBlueberryBush extends ServerEntity {
     }
 
     @Override
-    public void onGeneration(boolean spread, BiomeType biome) {
-        hasBerries = MathUtils.randomBoolean();
-        berryRegrowthDelta = MathUtils.random(180f, 360f); // 3-6 min
+    public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
+        hasBerries = rnd.randomBoolean();
+        berryRegrowthDelta = rnd.random(180f, 360f); // 3-6 min
     }
 
     @Override

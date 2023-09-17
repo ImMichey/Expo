@@ -17,6 +17,7 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
@@ -73,7 +74,7 @@ public abstract class ServerEntity {
 
     }
 
-    public void onGeneration(boolean spread, BiomeType biome) {
+    public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
 
     }
 
@@ -373,6 +374,10 @@ public abstract class ServerEntity {
                 player.entityVisibilityController.removeTrackedEntity(entityId);
             }
         }
+    }
+
+    public boolean postGeneration() {
+        return true;
     }
 
     public void setDamageableWith(ToolType... types) {

@@ -12,6 +12,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.SpawnItem;
@@ -40,7 +41,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
         new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
         new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
-        new float[] {-6.0f, 4.0f, 17.0f, 4.5f}
+        new float[] {-6.0f, 4.0f, 17.0f, 4.5f},
+        new float[] {-6.0f, 4.0f, 17.0f, 4.5f},
     };
     public static final float[] TREE_HEALTH = new float[] {
             120.0f,
@@ -63,9 +65,9 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     }
 
     @Override
-    public void onGeneration(boolean spread, BiomeType biome) {
-        generateAge(biome);
-        generateVariant();
+    public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
+        generateAge(biome, rnd);
+        generateVariant(rnd);
 
         if(MathUtils.random() <= 0.1f) {
             cut = true;
@@ -174,15 +176,17 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         return true;
     }
 
-    public void generateAge(BiomeType biome) {
+    public void generateAge(BiomeType biome, GenerationRandom rnd) {
         if(biome == BiomeType.PLAINS) {
-            if(MathUtils.random(1, 5) <= 4) {
+            int r = rnd == null ? MathUtils.random(1, 5) : rnd.random(1, 5);
+
+            if(r <= 4) {
                 age = 0;
             } else {
                 age = 1;
             }
         } else {
-            int r = MathUtils.random(100);
+            int r = rnd == null ? MathUtils.random(100) : rnd.random(100);
 
             if(r <= 60) {
                 age = 0;
@@ -200,9 +204,9 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         trunkConversionHealth = health * 0.5f;
     }
 
-    public void generateVariant() {
+    public void generateVariant(GenerationRandom rnd) {
         if(age == 0) {
-            variant = MathUtils.random(1, 3);
+            variant = rnd == null ? MathUtils.random(1, 3) : rnd.random(1, 3);
         } else if(age == 1) {
             variant = 4;
         } else if(age == 2) {

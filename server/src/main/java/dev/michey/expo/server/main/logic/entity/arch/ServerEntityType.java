@@ -42,6 +42,7 @@ public enum ServerEntityType {
     BOULDER(26, "Boulder", true),
     CRATE(27, "Crate", true),
     OAK_TREE_SAPLING(28, "OakTreeSapling", false),
+    CATTAIL(29, "Cattail", true),
     ;
 
     public final int ENTITY_ID;
@@ -85,6 +86,7 @@ public enum ServerEntityType {
             case 26 -> new ServerBoulder();
             case 27 -> new ServerCrate();
             case 28 -> new ServerOakTreeSapling();
+            case 29 -> new ServerCattail();
             default -> null;
         };
     }
@@ -120,6 +122,7 @@ public enum ServerEntityType {
             case "BOULDER" -> new ServerBoulder();
             case "CRATE" -> new ServerCrate();
             case "OAKTREESAPLING", "OAK_TREE_SAPLING", "SAPLING" -> new ServerOakTreeSapling();
+            case "CATTAIL", "CAT_TAIL" -> new ServerCattail();
             default -> null;
         };
     }

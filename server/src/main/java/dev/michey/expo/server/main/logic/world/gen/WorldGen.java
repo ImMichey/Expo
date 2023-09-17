@@ -41,6 +41,7 @@ public class WorldGen {
 
             if(generator.has("noise")) settings.parseNoiseSettings(generator.getJSONObject("noise"));
             if(generator.has("biomePopulators")) settings.parseBiomeSettings(generator.getJSONObject("biomePopulators"));
+            if(generator.has("tilePopulators")) settings.parseTileSettings(generator.getJSONArray("tilePopulators"));
 
             worldGenMap.put(dimension, settings);
             log("Added world gen mapping for '" + dimension + "'");

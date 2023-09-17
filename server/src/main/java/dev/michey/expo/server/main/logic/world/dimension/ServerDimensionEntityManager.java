@@ -48,7 +48,9 @@ public class ServerDimensionEntityManager {
             if(entity == null) entity = getEntityById(op.optionalId);
 
             if(op.add) {
-                addEntityUnsafely(entity);
+                if(entity.postGeneration()) {
+                    addEntityUnsafely(entity);
+                }
             } else {
                 removeEntityUnsafely(entity);
             }

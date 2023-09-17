@@ -14,10 +14,12 @@ public class WorldGenSettings {
     /** Biomes */
     private final HashMap<BiomeType, float[]> biomeDataMap;
     private final HashMap<BiomeType, List<EntityPopulator>> biomePopulatorMap;
+    private final HashMap<BiomeType, List<TilePopulator>> tilePopulatorMap;
 
     public WorldGenSettings() {
         biomeDataMap = new HashMap<>();
         biomePopulatorMap = new HashMap<>();
+        tilePopulatorMap = new HashMap<>();
     }
 
     public void parseNoiseSettings(JSONObject object) {
@@ -76,6 +78,21 @@ public class WorldGenSettings {
         }
     }
 
+    public void parseTileSettings(JSONArray array) {
+        for(int i = 0; i < array.length(); i++) {
+            JSONObject entry = array.getJSONObject(i);
+            TilePopulator tilePopulator = new TilePopulator(entry);
+            tilePopulator.dimensionBounds = EntityPopulationBounds.get().getFor(tilePopulator.type);
+
+            tilePopulatorMap.computeIfAbsent(tilePopulator.biome, k -> new LinkedList<>());
+            tilePopulatorMap.get(tilePopulator.biome).add(tilePopulator);
+        }
+
+        for(BiomeType toSort : tilePopulatorMap.keySet()) {
+            tilePopulatorMap.get(toSort).sort(Comparator.comparing(o -> -o.priority));
+        }
+    }
+
     @Override
     public String toString() {
         return "WorldGenSettings{" +
@@ -91,6 +108,10 @@ public class WorldGenSettings {
 
     public List<EntityPopulator> getEntityPopulators(BiomeType type) {
         return biomePopulatorMap.get(type);
+    }
+
+    public List<TilePopulator> getTilePopulators(BiomeType biome) {
+        return tilePopulatorMap.get(biome);
     }
 
     public WorldGenNoiseSettings getNoiseSettings() {

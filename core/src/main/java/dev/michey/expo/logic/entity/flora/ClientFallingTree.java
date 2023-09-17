@@ -21,7 +21,6 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
     private TextureRegion treeTrunk;
     private TextureRegion treeLeaves;
-    private Texture treeLeavesPhase0;
 
     public boolean fallingRightDirection;
     public float leavesDisplacement;
@@ -48,7 +47,6 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
         treeTrunk = tr("eot_falling_trunk_trim_" + variant);
         treeLeaves = tr("eot_falling_leaves");
-        treeLeavesPhase0 = t("foliage/entity_oak_tree/eot_leaves.png");
 
         updateTextureBounds(treeLeaves);
 
@@ -186,6 +184,10 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
             trunkX -= 2.0f;
 
             dsp += 29.0f;
+        } else if(variant == 6) {
+            trunkX -= 2.0f;
+
+            dsp += 92.0f;
         }
 
         dsp += leavesDisplacement;

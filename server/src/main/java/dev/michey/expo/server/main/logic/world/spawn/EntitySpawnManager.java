@@ -8,6 +8,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
@@ -109,7 +110,7 @@ public class EntitySpawnManager {
                                     ServerEntity spawned = ServerEntityType.typeToEntity(es.spawnType);
                                     spawned.posX = worldX;
                                     spawned.posY = worldY;
-                                    spawned.onGeneration(false, tile.biome);
+                                    spawned.onGeneration(false, tile.biome, new GenerationRandom(tile.chunk.chunkX, tile.chunk.chunkY, es.spawnType));
                                     ServerWorld.get().registerServerEntity(dimension.getDimensionName(), spawned);
 
                                     if(es.entityCapPerPlayer != -1) {

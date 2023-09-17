@@ -38,6 +38,10 @@ public class GenerationRandom {
         return start + random.nextInt(end - start + 1);
     }
 
+    public boolean randomBoolean() {
+        return random.nextBoolean();
+    }
+
     public Vector2[] positions(int amount, float radiusMin, float radiusMax) {
         float anglePer = 360.0f / amount;
         Vector2[] positions = new Vector2[amount];

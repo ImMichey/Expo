@@ -23,6 +23,13 @@ foliage/entity_grass/entity_grass_5_shadow.png
 foliage/entity_grass/entity_grass_6_shadow.png
 foliage/entity_grass/entity_grass_7_shadow.png
 foliage/entity_grass/entity_grass_8_shadow.png
+foliage/entity_cattail/cattail_variation_1.png
+foliage/entity_cattail/cattail_variation_2.png
+foliage/entity_cattail/cattail_variation_3.png
+foliage/entity_cattail/cattail_variation_4.png
+foliage/entity_cattail/cattail_variation_5.png
+foliage/entity_cattail/cattail_variation_6.png
+foliage/entity_cattail/cattail_variation_7.png
 foliage/oak_tree_sapling.png
 foliage/entity_oak_tree/entity_large_tree_leaves.png
 foliage/entity_oak_tree/eot_leaves.png

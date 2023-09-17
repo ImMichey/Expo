@@ -8,6 +8,7 @@ import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import org.json.JSONObject;
 
 public class ServerRock extends ServerEntity implements PhysicsEntity {
@@ -39,9 +40,9 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
     }
 
     @Override
-    public void onGeneration(boolean spread, BiomeType biome) {
+    public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
         //int start = (biome == BiomeType.DESERT || biome == BiomeType.BEACH) ? 4 : 1;
-        variant = MathUtils.random(1, 3);
+        variant = rnd.random(1, 3);
         health = 10.0f;
     }
 

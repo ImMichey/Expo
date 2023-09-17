@@ -63,6 +63,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         new float[] {57, 76, 15, 41, 57, 113, 21, 37, 4, 2, 9, 6},
         new float[] {57, 76, 18, 70, 57, 138, 20, 62, 5, 2, 9, 6},
         new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
+        new float[] {57, 76, 18, 119, 57, 215, 20, 114, 5, 2, 12, 6},
     };
 
     public static final float[][] CUT_MATRIX = new float[][] {
@@ -70,6 +71,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         new float[] {0, 0, 15, 17, 15, 17, 0, 0, 4, 2, 9, 6},
         new float[] {0, 0, 15, 17, 15, 17, 0, 0, 4, 2, 9, 6},
         new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
+        new float[] {0, 0, 20, 17, 20, 17, 0, 0, 5, 2, 12, 6},
         new float[] {0, 0, 20, 17, 20, 17, 0, 0, 5, 2, 12, 6},
     };
 

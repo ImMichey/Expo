@@ -9,6 +9,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import org.json.JSONObject;
 
 public class ServerBoulder extends ServerEntity implements PhysicsEntity {
@@ -40,8 +41,8 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     }
 
     @Override
-    public void onGeneration(boolean spread, BiomeType biome) {
-        if(MathUtils.random() <= 0.1f) {
+    public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
+        if(rnd.random() <= 0.1f) {
             variant = 2;
             health = 80.0f;
         } else {
