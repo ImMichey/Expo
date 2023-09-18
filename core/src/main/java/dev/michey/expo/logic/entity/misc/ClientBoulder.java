@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.entity.misc;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;

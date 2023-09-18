@@ -866,6 +866,28 @@
                     "hungerCooldownRestore": 60.0
                 }
             }
+        },
+        {
+            "identifier": "item_coal",
+            "id": 34,
+            "displayName": "Coal",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_coal"
+                },
+                "held": {
+                    "texture": "item_coal",
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -2.0,
+                    "offsetY": 5.0,
+                    "rotations": [0, -90]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM"
+            }
         }
     ]
 }

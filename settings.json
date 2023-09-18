@@ -8,7 +8,7 @@
         "enableDebugImGui": false
     },
     "fpsCap": 240,
-    "vsync": true,
+    "vsync": false,
     "audio": {
         "masterVolume": 1,
         "ambientVolume": 1,

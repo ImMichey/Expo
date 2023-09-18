@@ -18,6 +18,7 @@ public class TilePopulator {
     public SpreadData spreadData;
     public int priority;
     public int skip = 1;
+    public BorderRequirement borderRequirement = null;
 
     public TilePopulator(JSONObject entry) {
         biome = BiomeType.valueOf(entry.getString("biome"));
@@ -33,6 +34,10 @@ public class TilePopulator {
             JSONObject spread = entry.getJSONObject("spreadData");
             spreadData = new SpreadData(spread);
         }
+
+        if(entry.has("borderRequirement")) {
+            borderRequirement = BorderRequirement.valueOf(entry.getString("borderRequirement"));
+        }
     }
 
     @Override
@@ -47,6 +52,7 @@ public class TilePopulator {
                 ", spreadData=" + spreadData +
                 ", priority=" + priority +
                 ", skip=" + skip +
+                ", borderRequirement=" + borderRequirement +
                 '}';
     }
 

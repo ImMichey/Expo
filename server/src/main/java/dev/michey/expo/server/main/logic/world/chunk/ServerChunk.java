@@ -242,17 +242,19 @@ public class ServerChunk {
                                         var check = causesCollision(proposedX, proposedY, entry, existingEntityDimensionMap, wx, wy);
 
                                         if(!check.key) {
-                                            ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
-                                            generatedEntity.posX = (int) proposedX;
-                                            generatedEntity.posY = (int) proposedY;
-                                            if(populator.asStaticEntity) generatedEntity.setStaticEntity();
-                                            generatedEntity.onGeneration(false, t, rnd);
+                                            if(populator.borderRequirement == null || populator.borderRequirement.meetsRequirements(populator.borderRequirement, tile.getNeighbouringTiles())) {
+                                                ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
+                                                generatedEntity.posX = (int) proposedX;
+                                                generatedEntity.posY = (int) proposedY;
+                                                if(populator.asStaticEntity) generatedEntity.setStaticEntity();
+                                                generatedEntity.onGeneration(false, t, rnd);
 
-                                            addToList(check.value, generatedEntity, existingEntityDimensionMap);
-                                            registerMap.add(generatedEntity);
+                                                addToList(check.value, generatedEntity, existingEntityDimensionMap);
+                                                registerMap.add(generatedEntity);
 
-                                            if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
-                                                doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
+                                                if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
+                                                    doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
+                                                }
                                             }
                                         }
                                     }

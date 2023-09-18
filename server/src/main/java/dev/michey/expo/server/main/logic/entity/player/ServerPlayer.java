@@ -365,7 +365,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 float MAX_CONTAINER_DST = 48.0f;
 
                 if(dst >= MAX_CONTAINER_DST) {
+                    viewingInventory.removeInventoryViewer(this);
                     viewingInventory.kickViewer(entityId);
+                    viewingInventory = null;
                 }
             }
         }

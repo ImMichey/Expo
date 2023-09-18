@@ -48,7 +48,7 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
         }
 
         updateTextureBounds(w, h, 1, 1);
-        interactionPointArray = generateInteractionArray(2);
+        interactionPointArray = generateInteractionArray(2, textureHeight - 12);
     }
 
     @Override

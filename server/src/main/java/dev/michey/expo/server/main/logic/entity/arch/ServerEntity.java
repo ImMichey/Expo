@@ -212,12 +212,14 @@ public abstract class ServerEntity {
         int total = 0;
 
         for(SpawnItem item : spawnItems) {
+            if(item == null) continue;
             total += item.amount;
         }
 
         List<ServerInventoryItem> items = new ArrayList<>(total);
 
         for(SpawnItem item : spawnItems) {
+            if(item == null) continue;
             for(int i = 0; i < item.amount; i++) {
                 items.add(new ServerInventoryItem(item.id, 1));
             }

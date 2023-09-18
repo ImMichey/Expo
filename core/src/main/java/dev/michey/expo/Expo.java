@@ -349,9 +349,9 @@ public class Expo implements ApplicationListener {
 	}
 
 	private void setCursor() {
-		Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/system/cursor.png"));
-		int xHotspot = pixmap.getWidth() / 2;
-		int yHotspot = pixmap.getHeight() / 2;
+		Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/system/cursor_glove.png"));
+		int xHotspot = 0; // pixmap.getWidth() / 2;
+		int yHotspot = 0; // pixmap.getHeight() / 2;
 		Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
 		Gdx.graphics.setCursor(cursor);
 		pixmap.dispose();
@@ -366,7 +366,7 @@ public class Expo implements ApplicationListener {
 			try {
 				for(String line : Files.readAllLines(autoExecFile.toPath())) {
 					log("[autoExec] " + line);
-					if(line.length() == 0) continue;
+					if(line.isEmpty()) continue;
 					if(line.startsWith("#")) continue;
 					GameConsole.get().addConsoleMessage(new ConsoleMessage(line, true));
 				}

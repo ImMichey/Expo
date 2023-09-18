@@ -33,10 +33,6 @@ public class Lwjgl3Launcher {
 		configuration.setForegroundFPS(settings.fpsCap);
 		configuration.setAutoIconify(true);
 
-		// int r = 8, g = 8, b = 8, a = 8;
-		//	int depth = 16, stencil = 0;
-		//	int samples = 0;
-
 		int mode = settings.windowMode; // 0 = Windowed, 1 = Borderless, 2 = Fullscreen
 
 		if(mode == 0) {

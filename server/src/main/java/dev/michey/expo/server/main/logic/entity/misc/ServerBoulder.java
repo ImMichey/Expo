@@ -10,6 +10,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
+import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
 public class ServerBoulder extends ServerEntity implements PhysicsEntity {
@@ -42,7 +43,7 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        if(rnd.random() <= 0.1f) {
+        if(rnd.random() <= 0.25f) {
             variant = 2;
             health = 80.0f;
         } else {
@@ -53,16 +54,20 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onDie() {
-        spawnItemsAround(3, 5, 0, 4.875f, "item_rock", 12);
-    }
+        SpawnItem coal = null;
+        int rocksMin = 3;
+        int rocksMax = 5;
 
-    private float[] itemData() {
-        float v1y = 7.0f; float v2y = 9.0f; float v3y = 11.0f;
-        float fh = 5.25f; // Flint Texture * 0.75 Scale
-        float rh = 7.5f; // Rock Texture * 0.75 Scale
-        if(variant == 3 || variant == 6) return new float[] {1, 2, 0, (v3y - fh) * 0.5f};
-        if(variant == 1 || variant == 4) return new float[] {1, 2, 0, (v1y - rh) * 0.5f};
-        return new float[] {1, 2, 0, (v2y - rh) * 0.5f};
+        if(variant == 2) {
+            // Coal.
+            rocksMin = 2;
+            rocksMax = 3;
+            coal = new SpawnItem("item_coal", 2, 3);
+        }
+
+        spawnItemsAround(0, 4.875f, 8, 12,
+                new SpawnItem("item_rock", rocksMin, rocksMax),
+                coal);
     }
 
     @Override

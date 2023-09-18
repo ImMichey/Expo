@@ -342,14 +342,16 @@
                     "type": "LILYPAD",
                     "static": true,
                     "chance": 0.125,
-                    "spawnOffsets": [-2, 2, -2, 2]
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "borderRequirement": "WATER"
                 },
                 {
                     "biome": "RIVER",
                     "type": "LILYPAD",
                     "static": true,
                     "chance": 0.025,
-                    "spawnOffsets": [-2, 2, -2, 2]
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "borderRequirement": "WATER"
                 },
                 {
                     "biome": "BEACH",
