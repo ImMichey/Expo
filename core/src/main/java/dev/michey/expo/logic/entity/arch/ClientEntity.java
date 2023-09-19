@@ -19,6 +19,7 @@ import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
+import dev.michey.expo.server.util.TeleportReason;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
@@ -98,7 +99,7 @@ public abstract class ClientEntity {
         serverDirY = yDir;
     }
 
-    public void applyTeleportUpdate(float xPos, float yPos) {
+    public void applyTeleportUpdate(float xPos, float yPos, TeleportReason reason) {
         serverPosX = xPos;
         serverPosY = yPos;
         clientPosX = xPos;

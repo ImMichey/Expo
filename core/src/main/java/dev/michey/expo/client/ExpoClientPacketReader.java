@@ -269,7 +269,7 @@ public class ExpoClientPacketReader {
             ClientEntity entity = entityFromId(p.entityId);
 
             if(entity != null) {
-                entity.applyTeleportUpdate(p.x, p.y);
+                entity.applyTeleportUpdate(p.x, p.y, p.teleportReason);
             }
         } else if(o instanceof P38_PlayerAnimation p) {
             ClientEntity entity = entityFromId(p.entityId);

@@ -28,10 +28,7 @@ import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.packet.P16_PlayerPunch;
-import dev.michey.expo.server.util.GenerationUtils;
-import dev.michey.expo.server.util.PacketReceiver;
-import dev.michey.expo.server.util.ServerPackets;
-import dev.michey.expo.server.util.ServerUtils;
+import dev.michey.expo.server.util.*;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
@@ -147,18 +144,19 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
         teleportPlayer(
                 getDimension().getDimensionSpawnX(),
-                getDimension().getDimensionSpawnY()
+                getDimension().getDimensionSpawnY(),
+                TeleportReason.RESPAWN
         );
 
         // chat message
         ServerPackets.p25ChatMessage("SERVER", "Player " + username + " died.", PacketReceiver.all());
     }
 
-    public void teleportPlayer(float x, float y) {
+    public void teleportPlayer(float x, float y, TeleportReason teleportReason) {
         physicsBody.teleport(x, y);
         posX = x;
         posY = y;
-        ServerPackets.p37EntityTeleport(entityId, posX, posY, PacketReceiver.whoCanSee(this));
+        ServerPackets.p37EntityTeleport(entityId, posX, posY, teleportReason, PacketReceiver.whoCanSee(this));
     }
 
     @Override

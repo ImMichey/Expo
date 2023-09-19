@@ -5,6 +5,7 @@ import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.util.TeleportReason;
 
 public class CommandTp extends AbstractConsoleCommand {
 
@@ -32,7 +33,7 @@ public class CommandTp extends AbstractConsoleCommand {
             ServerPlayer l = ServerPlayer.getLocalPlayer();
 
             if(l != null) {
-                l.teleportPlayer(x, y);
+                l.teleportPlayer(x, y, TeleportReason.COMMAND);
                 success("Teleported player to " + x + ", " + y);
             }
         } else {

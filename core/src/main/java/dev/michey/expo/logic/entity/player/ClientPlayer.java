@@ -34,6 +34,7 @@ import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.server.util.TeleportReason;
 import dev.michey.expo.util.*;
 
 import static dev.michey.expo.util.ClientStatic.*;
@@ -1070,12 +1071,16 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
     }
 
     @Override
-    public void applyTeleportUpdate(float xPos, float yPos) {
-        super.applyTeleportUpdate(xPos, yPos);
+    public void applyTeleportUpdate(float xPos, float yPos, TeleportReason reason) {
+        super.applyTeleportUpdate(xPos, yPos, reason);
         if(player) {
             RenderContext.get().expoCamera.resetLerp();
             updateTexturePositionData();
             RenderContext.get().expoCamera.centerToEntity(this);
+
+            if(reason == TeleportReason.RESPAWN) {
+                PlayerUI.get().setFade(1.5f);
+            }
         }
     }
 

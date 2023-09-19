@@ -362,11 +362,12 @@ public class ServerPackets {
     }
 
     /** Sends the P37_EntityTeleport packet via UDP protocol. */
-    public static void p37EntityTeleport(int entityId, float x, float y, PacketReceiver receiver) {
+    public static void p37EntityTeleport(int entityId, float x, float y, TeleportReason teleportReason, PacketReceiver receiver) {
         P37_EntityTeleport p = new P37_EntityTeleport();
         p.entityId = entityId;
         p.x = x;
         p.y = y;
+        p.teleportReason = teleportReason;
         udp(p, receiver);
     }
 

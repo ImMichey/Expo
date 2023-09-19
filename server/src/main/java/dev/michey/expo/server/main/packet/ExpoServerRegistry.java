@@ -12,6 +12,7 @@ import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.gen.*;
 import dev.michey.expo.server.packet.*;
+import dev.michey.expo.server.util.TeleportReason;
 import dev.michey.expo.util.EntityRemovalReason;
 
 import java.util.HashMap;
@@ -57,6 +58,7 @@ public class ExpoServerRegistry {
                 InventoryViewType.class,
                 ServerInventorySlot.class,
                 ServerInventorySlot[].class,
+                TeleportReason.class,
 
                 // Packets
                 P0_Auth_Req.class,

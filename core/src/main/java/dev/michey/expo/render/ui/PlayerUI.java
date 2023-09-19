@@ -55,8 +55,6 @@ public class PlayerUI {
     /** Hotbar */
     private float hotbarW, hotbarH;
     public float slotW, slotH;
-    private float healthW, healthH;
-    private float hungerW, hungerH;
     public final Color COLOR_GREEN = new Color(127f / 255f, 237f / 255f, 51f / 255f, 1.0f);
     public final String COLOR_GREEN_HEX = COLOR_GREEN.toString();
     private final Color COLOR_YELLOW  = new Color(251f / 255f, 242f / 255f, 54f / 255f, 1.0f);
@@ -90,8 +88,6 @@ public class PlayerUI {
     public final TextureRegion invSlotS;            // Regular Item Slot (hovered)
 
     private final TextureRegion hotbarBase;
-    //private final TextureRegion hotbarHealth;
-    //private final TextureRegion hotbarHunger;
 
     private final TextureRegion playerTabHead;
 
@@ -125,8 +121,6 @@ public class PlayerUI {
         invSlotS = tr("inv_slotS");
 
         hotbarBase = tr("hotbar_base");
-        //hotbarHealth = tr("hotbar_health");
-        //hotbarHunger = tr("hotbar_hunger");
 
         TextureRegion tab = tr("tab");
 
@@ -664,10 +658,6 @@ public class PlayerUI {
         // Hotbar base
         r.hudBatch.draw(hotbarBase, startX, startY, hotbarW, hotbarH);
 
-        // Health + hunger
-        //r.hudBatch.draw(hotbarHealth, startX + 10 * uiScale, startY + 39 * uiScale, healthW, healthH);
-        //r.hudBatch.draw(hotbarHunger, startX + 230 * uiScale, startY + 39 * uiScale, hungerW, hungerH);
-
         // Hotbar slots
         drawHotbarSlots();
 
@@ -808,12 +798,6 @@ public class PlayerUI {
 
         slotW = invSlot.getRegionWidth() * uiScale;
         slotH = invSlot.getRegionHeight() * uiScale;
-
-        //healthW = hotbarHealth.getRegionWidth() * uiScale;
-        //healthH = hotbarHealth.getRegionHeight() * uiScale;
-
-        //hungerW = hotbarHunger.getRegionWidth() * uiScale;
-        //hungerH = hotbarHunger.getRegionHeight() * uiScale;
 
         playerMinimap.updateWH(uiScale);
 
