@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,10 +17,7 @@ import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
-import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.ParticleBuilder;
-import dev.michey.expo.util.ParticleColorMap;
-import dev.michey.expo.util.ParticleEmitter;
+import dev.michey.expo.util.*;
 
 public class ClientOakTree extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
@@ -58,6 +56,17 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
      *      [11] = InteractionHeight
      */
     public static final float[][] MATRIX = new float[][] {
+        new float[] {46, 58, 14, 40, 46, 93, 17, 33, 3, 2, 8, 6},
+        new float[] {46, 58, 15, 41, 46, 94, 15, 37, 4, 2, 9, 6},
+        new float[] {57, 76, 15, 41, 57, 112, 21, 37, 4, 2, 9, 6},
+        new float[] {57, 76, 18, 70, 57, 141, 20, 62, 5, 2, 9, 6},
+                                                                        new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
+        new float[] {57, 76, 18, 119, 57, 190, 20, 114, 5, 2, 12, 6},
+        new float[] {57, 76, 18, 96, 57, 167, 20, 91, 5, 2, 12, 6},
+    };
+
+    /*
+    public static final float[][] MATRIX = new float[][] {
         new float[] {57, 76, 14, 40, 57, 109, 22, 33, 3, 2, 8, 6},
         new float[] {57, 76, 15, 41, 57, 113, 21, 37, 4, 2, 9, 6},
         new float[] {57, 76, 15, 41, 57, 113, 21, 37, 4, 2, 9, 6},
@@ -65,6 +74,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
         new float[] {57, 76, 18, 119, 57, 215, 20, 114, 5, 2, 12, 6},
     };
+     */
 
     public static final float[][] CUT_MATRIX = new float[][] {
         new float[] {0, 0, 14, 17, 14, 17, 0, 0, 3, 2, 8, 6},
@@ -72,7 +82,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         new float[] {0, 0, 15, 17, 15, 17, 0, 0, 4, 2, 9, 6},
         new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
         new float[] {0, 0, 20, 17, 20, 17, 0, 0, 5, 2, 12, 6},
-        new float[] {0, 0, 20, 17, 20, 17, 0, 0, 5, 2, 12, 6},
+        new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
+        new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
     };
 
     private float cutTotalWidth() {
@@ -147,9 +158,13 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         trunkShadowMask = tr("eot_trunk_" + cutStr + variant);
         selectionTrunk = generateSelectionTexture(trunk);
 
-        String large = variant == 5 ? "_big" : "";
-        leaves = t("foliage/entity_oak_tree/eot_leaves_sized.png");
-        leavesShadowMask = tr("eot_leaves" + large + "_sm");
+        if(variant >= 1 && variant <= 2) {
+            leaves = t("foliage/entity_oak_tree/eot_leaves_smol.png");
+            leavesShadowMask = tr("eot_leaves_smol_sm");
+        } else {
+            leaves = t("foliage/entity_oak_tree/eot_leaves_sized.png");
+            leavesShadowMask = tr("eot_leaves_sm");
+        }
 
         if(cut) {
             updateTextureBounds(cutTotalWidth(), cutTotalHeight(), 0, 0);
@@ -302,8 +317,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         rc.arraySpriteBatch.begin();
 
         if(!cut) {
+            float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - 35, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
@@ -328,8 +344,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY);
 
             if(!cut) {
+                float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
                 rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-                rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - 35, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+                rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
         }
@@ -339,8 +356,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     public void renderReflection(RenderContext rc, float delta) {
         rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY + 2, trunk.getRegionWidth(), trunk.getRegionHeight() * -1);
         if(!cut) {
+            float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - 35, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
@@ -375,7 +393,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                         tt = fraction * (totalHeight() - cutTotalHeight());
                     }
                 } else {
-                    tt = fraction * (totalHeight() - trunkHeight() + leavesDisplacement);
+                    tt = (totalHeight() - trunkHeight()) * fraction;
                 }
 
                 float topColorT = new Color(0f, 0f, 0f, tt).toFloatBits();

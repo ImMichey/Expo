@@ -32,6 +32,7 @@ foliage/entity_cattail/cattail_variation_6.png
 foliage/entity_cattail/cattail_variation_7.png
 foliage/oak_tree_sapling.png
 foliage/entity_oak_tree/entity_large_tree_leaves.png
+foliage/entity_oak_tree/eot_leaves_smol.png
 foliage/entity_oak_tree/eot_leaves.png
 foliage/entity_oak_tree/eot_leaves_sized.png
 foliage/entity_oak_tree/eot_leaves_big.png

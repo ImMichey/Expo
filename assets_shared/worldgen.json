@@ -219,8 +219,9 @@
                     "biome": "DENSE_FOREST",
                     "type": "OAK_TREE",
                     "static": true,
-                    "chance": 0.0725,
-                    "spawnOffsets": [-8.0, 8.0, -8.0, 8.0],
+                    "chance": 0.725,
+                    "spawnOffsets": [-28.0, 28.0, -28.0, 28.0],
+                    "skip": 4,
                     "priority": 100,
                     "spreadData": {
                         "spread": [1, 5],
@@ -478,8 +479,9 @@
                     "biome": "FOREST",
                     "type": "OAK_TREE",
                     "static": true,
-                    "chance": 0.038,
-                    "spawnOffsets": [-8.0, 8.0, -8.0, 8.0],
+                    "chance": 0.5,
+                    "spawnOffsets": [-32.0, 32.0, -32.0, 32.0],
+                    "skip": 4,
                     "priority": 100,
                     "spreadData": {
                         "spread": [1, 5],

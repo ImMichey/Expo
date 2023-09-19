@@ -42,7 +42,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
         new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
         new float[] {-6.0f, 4.0f, 17.0f, 4.5f},
-        new float[] {-6.0f, 4.0f, 17.0f, 4.5f},
+        new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
+        new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
     };
     public static final float[] TREE_HEALTH = new float[] {
             120.0f,
@@ -99,14 +100,24 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                 ServerPackets.p30EntityDataUpdate(entityId, new Object[] {cut, falling, fallingEnd, fallingDirectionRight}, PacketReceiver.whoCanSee(this));
 
                 int reach = 90;
+                int minLog = 2;
+                int maxLog = 5;
 
                 if(variant == 4) {
                     reach = 120;
+                } else if(variant == 6) {
+                    reach = 220;
+                    minLog += 2;
+                    maxLog += 2;
+                } else if(variant == 7) {
+                    reach = 195;
+                    minLog += 1;
+                    maxLog += 1;
                 }
                 float factor = fallingDirectionRight ? 1 : -1;
 
-                spawnItemsAlongLine(posX + (20 * factor), posY, reach * factor, 0, 10.0f,
-                        new SpawnItem("item_oak_log", 2, 5),
+                spawnItemsAlongLine(posX + (20 * factor), posY, reach * factor, 0, 8.0f,
+                        new SpawnItem("item_oak_log", minLog, maxLog),
                         new SpawnItem("item_acorn", 1, 2));
 
                 float _x1 = posX + 20f * factor;
@@ -177,27 +188,15 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     }
 
     public void generateAge(BiomeType biome, GenerationRandom rnd) {
-        if(biome == BiomeType.PLAINS) {
-            int r = rnd == null ? MathUtils.random(1, 5) : rnd.random(1, 5);
+        int r = rnd == null ? MathUtils.random(100) : rnd.random(100);
+        float fFactor = biome == BiomeType.DENSE_FOREST ? 0.875f : 1.0f;
 
-            if(r <= 4) {
-                age = 0;
-            } else {
-                age = 1;
-            }
+        if(r <= 70 * fFactor) {
+            age = 0;
+        } else if(r <= 90 * fFactor) {
+            age = 1;
         } else {
-            int r = rnd == null ? MathUtils.random(100) : rnd.random(100);
-
-            if(r <= 60) {
-                age = 0;
-            } else {
-                age = 1;
-                /* if(r <= 80) {
-                age = 1;
-            } else {
-                age = 2;
-            }*/
-            }
+            age = 2;
         }
 
         health = TREE_HEALTH[age];
@@ -210,7 +209,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         } else if(age == 1) {
             variant = 4;
         } else if(age == 2) {
-            variant = 5;
+            variant = rnd == null ? MathUtils.random(6, 7) : rnd.random(6, 7);
         }
     }
 
@@ -219,7 +218,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
             age = 0;
         } else if(variant == 4) {
             age = 1;
-        } else if(variant == 5) {
+        } else if(variant == 6 || variant == 7) {
             age = 2;
         }
     }

@@ -46,7 +46,10 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         if(variant == 0) variant = 1;
 
         treeTrunk = tr("eot_falling_trunk_trim_" + variant);
-        treeLeaves = tr("eot_falling_leaves");
+
+        String lStr = "eot_falling_leaves";
+        if(variant <= 2) lStr += "_smol";
+        treeLeaves = tr(lStr);
 
         updateTextureBounds(treeLeaves);
 
@@ -174,7 +177,15 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
         float leavesX = 0f;
 
-        if(variant == 2 || variant == 3) {
+        if(variant == 1) {
+            leavesX -= 0.5f;
+            trunkX -= 5.5f;
+        } else if(variant == 2) {
+            trunkX -= 6.0f;
+            trunkY += 1.0f;
+            dsp += 4.0f;
+            leavesX += 1.0f;
+        } else if(variant == 3) {
             trunkX -= 0.5f;
             trunkY += 1.0f;
 
@@ -186,8 +197,16 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
             dsp += 29.0f;
         } else if(variant == 6) {
             trunkX -= 2.0f;
+            trunkY += 1.0f;
 
-            dsp += 92.0f;
+            leavesX -= 0.5f;
+            dsp += 81f;
+        } else if(variant == 7) {
+            trunkX -= 2.0f;
+            trunkY += 1.0f;
+
+            leavesX -= 0.5f;
+            dsp += 58f;
         }
 
         dsp += leavesDisplacement;
