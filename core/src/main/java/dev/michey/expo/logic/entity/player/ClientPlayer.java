@@ -374,10 +374,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
             int numberPressed = IngameInput.get().pressedNumber();
 
-            if(Gdx.input.isKeyJustPressed(Input.Keys.J)) {
-                ServerWorld.get().getMainDimension().getChunkHandler().chunkdump();
-            }
-
             if(numberPressed != -1) {
                 playerInventory.modifySelectedSlot(numberPressed);
             }

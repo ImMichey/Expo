@@ -58,7 +58,7 @@
                         "octaves": 4,
                         "type": 5,
                         "frequency": 0.035,
-                        "noiseOffset": 4,
+                        "noiseOffset": 100,
                         "logic": {
                             "check": [
                                 "DENSE_FOREST",

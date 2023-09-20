@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -98,14 +97,12 @@ public class ServerChunk {
             expectedBounds = entry.toWorld(x, y);
 
             /*
-
             This fixes the multithreaded intersection entities, but it makes the chunks look less dense
 
             if(expectedBounds[0] < chunkWorldX || expectedBounds[2] > (chunkWorldX + CHUNK_SIZE) || expectedBounds[1] < chunkWorldY || expectedBounds[3] > (chunkWorldY + CHUNK_SIZE)) {
                 collision = true;
             }
             */
-
 
             exit: for(List<float[]> coordList : map.values()) {
                 for(float[] coords : coordList) {
@@ -382,12 +379,6 @@ public class ServerChunk {
                     }
                 }
             }
-        }
-    }
-
-    private void dbg(String s) {
-        if(chunkX == 1 && chunkY == 0) {
-            ExpoLogger.log(s);
         }
     }
 

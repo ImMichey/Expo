@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
@@ -9,21 +8,20 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
-import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
-import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
-import dev.michey.expo.util.*;
+import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ClientEntityManager {
 
@@ -108,7 +106,7 @@ public class ClientEntityManager {
 
                 toAdd.onCreation();
 
-                if(toAdd instanceof ReflectableEntity reflectableEntity) {
+                if(toAdd instanceof ReflectableEntity) {
                     toAdd.calculateReflection();
                 }
             } else {
@@ -304,6 +302,7 @@ public class ClientEntityManager {
         if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
     }
 
+    @SuppressWarnings("GDXJavaFlushInsideLoop")
     public void renderEntities(float delta) {
         RenderContext rc = RenderContext.get();
 

@@ -69,8 +69,14 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         int reach = 90;
         int dir = fallingRightDirection ? 1 : -1;
 
-        if(variant == 4) {
+        if(variant == 1 || variant == 2) {
+            reach = 70;
+        } else if(variant == 4) {
             reach = 120;
+        } else if(variant == 6) {
+            reach = 220;
+        } else if(variant == 7) {
+            reach = 195;
         }
 
         new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
@@ -193,6 +199,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
             dsp += 4.0f;
         } else if(variant == 4) {
             trunkX -= 2.0f;
+            leavesX -= 0.5f;
 
             dsp += 29.0f;
         } else if(variant == 6) {

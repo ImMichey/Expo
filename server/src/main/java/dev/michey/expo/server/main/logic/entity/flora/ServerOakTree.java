@@ -103,7 +103,10 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                 int minLog = 2;
                 int maxLog = 5;
 
-                if(variant == 4) {
+                if(variant == 1 || variant == 2) {
+                    reach = 70;
+                    maxLog -= 1;
+                } else if(variant == 4) {
                     reach = 120;
                 } else if(variant == 6) {
                     reach = 220;

@@ -27,6 +27,7 @@ import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
@@ -461,6 +462,43 @@ public class PlayerUI {
 
         if(PlayerInventory.LOCAL_INVENTORY.cursorItem != null) {
             drawCursor(PlayerInventory.LOCAL_INVENTORY.cursorItem);
+        }
+
+
+        if(ClientEntityManager.get().selectedEntity != null && currentContainer == null) {
+            var e = ClientEntityManager.get().selectedEntity;
+            var type = e.getEntityType();
+
+            TextureRegion indicator = null;
+            int item = ClientPlayer.getLocalPlayer().holdingItemId;
+            ItemMapping mapping = item != -1 ? ItemMapper.get().getMapping(item) : null;
+
+            if(type == ClientEntityType.BOULDER) {
+                if(mapping != null && mapping.logic.isTool(ToolType.PICKAXE)) {
+                    indicator = tr("ui_indicator_pickaxe");
+                } else {
+                    indicator = tr("ui_indicator_pickaxe_bad");
+                }
+            } else if(type == ClientEntityType.OAK_TREE) {
+                if(mapping != null && mapping.logic.isTool(ToolType.AXE)) {
+                    indicator = tr("ui_indicator_axe");
+                } else {
+                    indicator = tr("ui_indicator_axe_bad");
+                }
+            }
+
+            if(indicator != null) {
+                rc.hudBatch.draw(indicator, (int) rc.mouseX + 21, (int) rc.mouseY - 49, indicator.getRegionWidth() * uiScale, indicator.getRegionHeight() * uiScale);
+            }
+
+            /*
+            String t = e.getEntityType().ENTITY_NAME;
+
+            glyphLayout.setText(rc.m5x7_border_use, t);
+            Vector2 pos = ClientUtils.entityPosToHudPos(e.clientPosX, e.clientPosY + e.textureHeight);
+
+            rc.m5x7_border_use.draw(rc.hudBatch, t, pos.x - glyphLayout.width * 0.5f, pos.y + glyphLayout.height);
+            */
         }
 
         rc.hudBatch.end();

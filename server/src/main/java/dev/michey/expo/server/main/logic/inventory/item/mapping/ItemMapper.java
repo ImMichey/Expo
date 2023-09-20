@@ -84,11 +84,7 @@ public class ItemMapper {
     }
 
     public ItemMapping getMapping(int id) {
-        var test = itemMappingsId.get(id);
-        if(test == null) {
-            log("NULL MAPPING " + id);
-        }
-        return test;
+        return itemMappingsId.get(id);
     }
 
     public static ItemMapper get() {

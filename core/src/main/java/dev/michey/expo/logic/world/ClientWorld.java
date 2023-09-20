@@ -935,8 +935,8 @@ public class ClientWorld {
         float y = r.expoCamera.camera.position.y - Gdx.graphics.getHeight() * 0.5f;
         TextureRegion fboTex = new TextureRegion(texture);
         fboTex.flip(false, true);
-        fboTex.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
+        //float s = (float) Gdx.graphics.getWidth() / fboTex.getRegionWidth();
         float newWidth = fboTex.getRegionWidth() * r.expoCamera.camera.zoom;
         float newHeight = fboTex.getRegionHeight() * r.expoCamera.camera.zoom;
 
