@@ -388,6 +388,7 @@ public abstract class ClientEntity {
         int chunkX = ExpoShared.posToChunk(baseX);
         int chunkY = ExpoShared.posToChunk(baseY);
         ClientChunk chunk = chunkGrid().getChunk(chunkX, chunkY);
+        if(chunk == null) return;
 
         int tileX = ExpoShared.posToTile(baseX) - ExpoShared.posToTile(ExpoShared.chunkToPos(chunkX));
         int tileY = ExpoShared.posToTile(baseY) - ExpoShared.posToTile(ExpoShared.chunkToPos(chunkY));

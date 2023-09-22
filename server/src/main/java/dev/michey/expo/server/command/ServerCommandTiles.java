@@ -34,6 +34,7 @@ public class ServerCommandTiles extends AbstractServerCommand {
         ServerChunk[] chunks = player.getChunkGrid().getChunksInPlayerRange(player);
 
         for(ServerChunk chunk : chunks) {
+            if(chunk == null) continue;
             chunk.generate(false);
             ServerPackets.p11ChunkData(chunk, PacketReceiver.player(player));
         }

@@ -32,7 +32,7 @@ public class ServerOakTreeSapling extends ServerEntity {
                 tree.generateAge(null, null);
                 tree.generateVariant(null);
                 if(tileEntity) {
-                    tree.attachToTile(getChunkGrid().getChunk(chunkX, chunkY), tileX, tileY);
+                    tree.attachToTile(getChunkGrid().getChunkSafe(chunkX, chunkY), tileX, tileY);
                 }
                 ServerWorld.get().registerServerEntity(entityDimension, tree);
             }

@@ -58,7 +58,7 @@ public class ExpoCamera {
         ClientPlayer p = ClientPlayer.getLocalPlayer();
 
         if(p != null) {
-            centerToEntity(p);
+            centerToPlayer(p);
         }
     }
 
@@ -90,15 +90,22 @@ public class ExpoCamera {
             RenderContext.get().expoCamera.camera.zoom = newZoom;
         }
 
-        cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
+        if(p.finishedWorldEnterAnimation) {
+            cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
+        }
+
         cameraLerpMouse();
         cameraScreenShake();
 
         if(Float.isNaN(camera.position.x)) {
-            centerToEntity(p);
+            centerToPlayer(p);
         }
 
         camera.update();
+    }
+
+    public void centerToPlayer(ClientPlayer player) {
+        center(player.finalTextureCenterX, player.clientPosY + player.textureOffsetY + 13);
     }
 
     public void centerToEntity(ClientEntity entity) {

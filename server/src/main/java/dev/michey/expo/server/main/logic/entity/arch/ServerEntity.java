@@ -364,7 +364,7 @@ public abstract class ServerEntity {
 
     public void killEntityWithPacket(EntityRemovalReason reason) {
         // Detach from internal tile entity structure if existing
-        if(tileEntity) detachFromTile(getChunkGrid().getChunk(chunkX, chunkY));
+        if(tileEntity) detachFromTile(getChunkGrid().getChunkSafe(chunkX, chunkY));
 
         onDie();
 

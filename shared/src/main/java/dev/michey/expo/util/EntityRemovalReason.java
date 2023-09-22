@@ -7,5 +7,6 @@ public enum EntityRemovalReason {
     VISIBILITY,     // When the entity is out of range of a player and thus has to be forcefully unloaded by the server
     MERGE,          // When the entity is merged with another entity (only applies to ServerItem at the moment)
     DESPAWN,        // When the entity despawns due to a systematic design choice
+    UNSPECIFIED,    // Unspecified
 
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ChatMessage;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -64,12 +65,7 @@ public class ExpoClientPacketReader {
             ClientEntity entity = ClientEntityManager.get().createFromPacket(p);
             ClientEntityManager.get().addEntity(entity);
         } else if(o instanceof P4_EntityDelete p) {
-            //log("Removing Entity object " + p.entityId);
-            ClientEntity entity = entityFromId(p.entityId);
-            if(entity == null) return;
-
-            entity.removalReason = p.reason;
-            ClientEntityManager.get().removeEntity(p.entityId);
+            ClientEntityManager.get().removeEntity(p.entityId, p.reason);
             //ExpoLogger.log("REMOVING: " + entity.getEntityType().name() + "-> " + p.entityId);
         } else if(o instanceof P6_EntityPosition p) {
             ClientEntity entity = entityFromId(p.entityId);
@@ -78,15 +74,7 @@ public class ExpoClientPacketReader {
             //ClientChunkGrid.get().updateChunkViewport(p.activeChunks);
         } else if(o instanceof P8_EntityDeleteStack p) {
             for(int i = 0; i < p.entityList.length; i++) {
-                ClientEntity entity = entityFromId(p.entityList[i]);
-
-                if(entity == null) {
-                    log("Cannot delete " + p.entityList[i]);
-                    continue;
-                }
-
-                entity.removalReason = p.reasons[i];
-                ClientEntityManager.get().removeEntity(p.entityList[i]);
+                ClientEntityManager.get().removeEntity(p.entityList[i], p.reasons[i]);
             }
         } else if(o instanceof P9_PlayerCreate p) {
             log("Creating Player object " + p.entityId + " " + p.entityType + " " + p.username + " " + p.player);
@@ -117,6 +105,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P10_PlayerQuit p) {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
+            //ExpoLogger.log("p11 " + p.chunkX + " " + p.chunkY);
             ClientChunkGrid.get().updateChunkData(p);
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);

@@ -1,7 +1,5 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -135,6 +133,8 @@ public class ServerTile {
 
     /** This method is called when an adjacent layer 0 tile has been updated and this tile potentially needs to adjust its texture. */
     public boolean updateLayer0Adjacent(boolean updateDynamicTilesFlag) {
+        if(dynamicTileParts == null) return false;
+        if(dynamicTileParts[0].emulatingType == null) return false;
         int[] td = dynamicTileParts[0].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[0].layerIds;
 
@@ -156,6 +156,8 @@ public class ServerTile {
     /** This method is called when an adjacent layer 1 tile has been updated and this tile potentially needs to adjust its texture.
      * Returns whether an update packet is needed or not. */
     public boolean updateLayer1Adjacent(boolean updateDynamicTilesFlag) {
+        if(dynamicTileParts == null) return false;
+        if(dynamicTileParts[1].emulatingType == null) return false;
         int[] td = dynamicTileParts[1].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[1].layerIds;
 
@@ -176,6 +178,8 @@ public class ServerTile {
 
     /** This method is called when an adjacent layer 2 tile has been updated and this tile potentially needs to adjust its texture. */
     public boolean updateLayer2Adjacent(boolean updateDynamicTilesFlag) {
+        if(dynamicTileParts == null) return false;
+        if(dynamicTileParts[2].emulatingType == null) return false;
         int[] td = dynamicTileParts[2].emulatingType.TILE_ID_DATA;
         int[] old = dynamicTileParts[2].layerIds;
 

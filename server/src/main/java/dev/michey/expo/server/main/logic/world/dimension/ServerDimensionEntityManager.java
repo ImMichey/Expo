@@ -17,19 +17,20 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerDimensionEntityManager {
 
     /** Storage maps */
-    private final HashMap<Integer, ServerEntity> idEntityMap;
+    private final ConcurrentHashMap<Integer, ServerEntity> idEntityMap;
     private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
     private final HashMap<Integer, List<ServerItem>> mergeItemMap;
 
     public ServerDimensionEntityManager() {
-        idEntityMap = new HashMap<>();
+        idEntityMap = new ConcurrentHashMap<>();
         typeEntityListMap = new HashMap<>();
         damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();

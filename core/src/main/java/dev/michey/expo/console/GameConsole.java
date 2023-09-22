@@ -104,6 +104,7 @@ public class GameConsole {
         resolver.addCommand(new CommandDelsave());
         resolver.addCommand(new CommandDump());
         resolver.addCommand(new CommandNoclip());
+        resolver.addCommand(new CommandGc());
         log("Registered " + resolver.getCommandMap().size() + " commands.");
 
         messageHistory = new LinkedList<>();

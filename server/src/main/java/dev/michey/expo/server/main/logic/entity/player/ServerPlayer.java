@@ -84,7 +84,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public int selectedEntity = -1;
 
     public HashMap<String, Long> hasSeenChunks = new HashMap<>();
-    public int[] currentlyVisibleChunks;
+    //public int[] currentlyVisibleChunks;
+    public ServerChunk[] currentlyVisibleChunks;
+    private final LinkedList<Pair<String, ServerChunk>> chunkPacketList = new LinkedList<>();
 
     public EntityVisibilityController entityVisibilityController = new EntityVisibilityController(this);
 
@@ -182,6 +184,14 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     @Override
     public void tick(float delta) {
+        updateChunks();
+
+        /*
+        if(hasSeenChunks.size() < (PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y)) {
+            onChunkChanged();
+        }
+        */
+
         tickKnockback(delta);
 
         if(invincibility > 0) invincibility -= delta;
@@ -199,13 +209,19 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             float toMoveX = xDir * delta * playerSpeed * multiplicator * normalizer + knockbackAppliedX;
             float toMoveY = yDir * delta * playerSpeed * multiplicator * normalizer + knockbackAppliedY;
 
-            var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
+            // Hook here and check if chunk exists as it's multithreaded as of 21.09.2023
+            int chunkX = ExpoShared.posToChunk(toMoveX + posX);
+            int chunkY = ExpoShared.posToChunk(toMoveY + posY);
 
-            posX = result.goalX - physicsBody.xOffset;
-            posY = result.goalY - physicsBody.yOffset;
+            if(getChunkGrid().isActiveChunk(chunkX, chunkY)) {
+                var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
 
-            ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
-            dirResetPacket = true;
+                posX = result.goalX - physicsBody.xOffset;
+                posY = result.goalY - physicsBody.yOffset;
+
+                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
+                dirResetPacket = true;
+            }
         } else if(dirResetPacket) {
             dirResetPacket = false;
 
@@ -497,47 +513,31 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         ServerPackets.p17PlayerPunchData(entityId, _clientStart, _clientEnd, punchDeltaFinish, PacketReceiver.whoCanSee(this));
     }
 
-    @Override
-    public void onChunkChanged() {
-        //log("PLAYER " + username + " changed chunk to " + chunkX + "," + chunkY);
-        currentlyVisibleChunks = getChunkGrid().getChunkNumbersInPlayerRange(this);
-        List<Pair<String, ServerChunk>> chunkPacketList = null;
-        //List<ServerChunk> populationChunkQueue = new LinkedList<>();
+    private void updateChunks() {
+        chunkPacketList.clear();
+        currentlyVisibleChunks = getChunkGrid().getChunksInPlayerRange(this);
 
-        for(int i = 0; i < currentlyVisibleChunks.length; i += 2) {
-            int x = currentlyVisibleChunks[i    ];
-            int y = currentlyVisibleChunks[i + 1];
-            String key = x + "," + y;
+        for(ServerChunk chunk : currentlyVisibleChunks) {
+            if(chunk == null) continue; // If null, it is generating/loading from disk right now; otherwise it is fully loaded.
 
-            boolean newChunk = !hasSeenChunks.containsKey(key);
+            // var pair = getChunkGrid().generatingChunkMap.get(chunk.getChunkKey());
+            // boolean isGenerating = pair != null && pair.value.contains(entityId);
+            boolean isNewChunk = !hasSeenChunks.containsKey(chunk.getChunkKey());
             boolean resend = false;
-            ServerChunk chunk = null;
 
-            if(!newChunk) {
-                chunk = getChunkGrid().getChunk(x, y);
-                long cached = hasSeenChunks.get(key);
-
-                if(cached < chunk.lastTileUpdate) {
-                    resend = true;
-                }
+            if(!isNewChunk) {
+                long cached = hasSeenChunks.get(chunk.getChunkKey());
+                resend = cached < chunk.lastTileUpdate;
             }
 
-            if(newChunk || resend) {
-                if(chunkPacketList == null) chunkPacketList = new LinkedList<>();
-                if(chunk == null) {
-                    chunk = getChunkGrid().getChunk(x, y);
-                    //populationChunkQueue.add(chunk);
-                }
-
-                hasSeenChunks.put(key, chunk.lastTileUpdate);
-                chunkPacketList.add(new Pair<>(key, chunk));
+            if(resend || isNewChunk) {
+                hasSeenChunks.put(chunk.getChunkKey(), chunk.lastTileUpdate);
+                chunkPacketList.add(new Pair<>(chunk.getChunkKey(), chunk));
             }
         }
 
-        if(chunkPacketList != null) {
-            for(var pair : chunkPacketList) {
-                ServerPackets.p11ChunkData(pair.value, PacketReceiver.player(this));
-            }
+        for(var pair : chunkPacketList) {
+            ServerPackets.p11ChunkData(pair.value, PacketReceiver.player(this));
         }
     }
 
@@ -546,7 +546,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         ItemMapping m = ItemMapper.get().getMapping(item.itemId);
         if(m.logic.placeData == null) return; // to combat de-sync server<->client, double check current item
 
-        var chunk = getChunkGrid().getChunk(chunkX, chunkY);
+        var chunk = getChunkGrid().getChunkSafe(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
         PlaceData p = m.logic.placeData;
 
@@ -683,7 +683,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         ToolType useTool = item.isTool(ToolType.SHOVEL, ToolType.SCYTHE);
         if(useTool == null) return; // to combat de-sync server<->client, double check current item
 
-        var chunk = getChunkGrid().getChunk(chunkX, chunkY);
+        var chunk = getChunkGrid().getChunkSafe(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
         int pColor = tile.toParticleColorId();
         int digLayer = digLayer(tile);
@@ -774,12 +774,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public boolean canSeeChunk(String chunkKey) {
         if(currentlyVisibleChunks != null) {
-            for(int i = 0; i < currentlyVisibleChunks.length; i += 2) {
-                int x = currentlyVisibleChunks[i    ];
-                int y = currentlyVisibleChunks[i + 1];
-
-                String ck = x + "," + y;
-                if(ck.equals(chunkKey)) return true;
+            for(ServerChunk chunk : currentlyVisibleChunks) {
+                if(chunk == null) continue;
+                if(chunk.getChunkKey().equals(chunkKey)) return true;
             }
         }
 

@@ -315,7 +315,7 @@ public class ImGuiExpo {
                     coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (CLIENT) " + (chunk.tileEntityGrid == null ? "EMPTY" : chunk.tileEntityGrid[r.mouseTileArray] + ""));
 
                     if(ServerWorld.get() != null) {
-                        ServerChunk ch = ServerWorld.get().getDimension("overworld").getChunkHandler().getChunk(chunk.chunkX, chunk.chunkY);
+                        ServerChunk ch = ServerWorld.get().getDimension("overworld").getChunkHandler().getChunkSafe(chunk.chunkX, chunk.chunkY);
 
                         coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (SERVER) " + (ch.hasTileBasedEntities() ? ch.getTileBasedEntityIdGrid()[r.mouseTileArray] : "EMPTY"));
                     }

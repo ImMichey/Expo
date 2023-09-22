@@ -10,6 +10,8 @@ public enum BorderRequirement {
     public boolean meetsRequirements(BorderRequirement requirement, ServerTile[] tiles) {
         for(ServerTile tile : tiles) {
             if(tile == null) continue;
+            if(tile.dynamicTileParts == null) continue;
+            if(tile.dynamicTileParts[2].emulatingType == null) continue;
 
             if(requirement == WATER && !TileLayerType.isWater(tile.dynamicTileParts[2].emulatingType)) {
                 return false;

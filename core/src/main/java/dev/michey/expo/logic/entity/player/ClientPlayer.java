@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
@@ -143,7 +144,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
     private static final Vector2 NULL_ROTATION_VECTOR = GenerationUtils.circular(0, 1);
 
     /** World enter animation */
-    private boolean finishedWorldEnterAnimation;
+    public boolean finishedWorldEnterAnimation;
     private float worldAnimDelta;
 
     /** Player inventory */
@@ -164,10 +165,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
         drawReflection = true;
-        //disableTextureCentering = true;
 
         if(player) {
-            RenderContext.get().expoCamera.center(clientPosX, clientPosY);
             selector = new ClientSelector();
             entityManager().addClientSideEntity(selector);
         }
@@ -359,6 +358,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
                     worldAnimDelta = 1.0f;
                 }
 
+                RenderContext.get().expoCamera.centerToPlayer(this);
                 RenderContext.get().expoCamera.camera.zoom = CAMERA_ANIMATION_MIN_ZOOM + (DEFAULT_CAMERA_ZOOM - CAMERA_ANIMATION_MIN_ZOOM) * Interpolation.pow5.apply(worldAnimDelta);
             }
 
@@ -1072,7 +1072,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
         if(player) {
             RenderContext.get().expoCamera.resetLerp();
             updateTexturePositionData();
-            RenderContext.get().expoCamera.centerToEntity(this);
+            RenderContext.get().expoCamera.centerToPlayer(this);
 
             if(reason == TeleportReason.RESPAWN) {
                 PlayerUI.get().setFade(1.5f);

@@ -108,6 +108,7 @@ public enum TileLayerType {
     }
 
     public static boolean isConnected(TileLayerType t0, TileLayerType t1) {
+        if(t0 == null) return true;
         String[] check = t0.TILE_CONNECTION_DATA;
         if(check == null) return t0 == t1;
 

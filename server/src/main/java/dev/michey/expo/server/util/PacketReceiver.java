@@ -5,6 +5,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 
@@ -79,11 +80,9 @@ public class PacketReceiver {
                 ServerPlayer player = (ServerPlayer) se;
 
                 if(player.currentlyVisibleChunks != null) {
-                    for(int i = 0; i < player.currentlyVisibleChunks.length; i += 2) {
-                        int x = player.currentlyVisibleChunks[i    ];
-                        int y = player.currentlyVisibleChunks[i + 1];
-
-                        if(x == chunkX && y == chunkY) {
+                    for(ServerChunk chunk : player.currentlyVisibleChunks) {
+                        if(chunk == null) continue;
+                        if(chunkX == chunk.chunkX && chunkY == chunk.chunkY) {
                             list.add(player.playerConnection.getKryoConnection());
                             continue nextPlayer;
                         }
