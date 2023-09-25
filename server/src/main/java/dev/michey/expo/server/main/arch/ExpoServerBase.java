@@ -10,6 +10,7 @@ import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.container.ContainerRegistry;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.packet.ExpoServerPacketReader;
 import dev.michey.expo.server.packet.Packet;
@@ -102,6 +103,25 @@ public abstract class ExpoServerBase {
                         log("Found spawn area at " + found.value[0] + ", " + found.value[1] + " - using as dimension spawn coordinates.");
                         dimension.setDimensionSpawnX(found.value[0] + 8);
                         dimension.setDimensionSpawnY(found.value[1] + 8);
+
+                        // Generate spawn chunks
+                        int scx = ExpoShared.posToChunk(dimension.getDimensionSpawnX());
+                        int scy = ExpoShared.posToChunk(dimension.getDimensionSpawnY());
+
+                        int GENERATION_RANGE = 17;
+                        log("Generating " + (GENERATION_RANGE * GENERATION_RANGE) + " chunks around spawn point...");
+
+                        int gcx = scx - (GENERATION_RANGE - 1) / 2;
+                        int gcy = scy - (GENERATION_RANGE - 1) / 2;
+                        ServerChunkGrid grid = ServerWorld.get().getDimension(dimension.getDimensionName()).getChunkHandler();
+
+                        for(int i = 0; i < GENERATION_RANGE; i++) {
+                            for(int j = 0; j < GENERATION_RANGE; j++) {
+                                int currentX = gcx + i;
+                                int currentY = gcy + j;
+                                grid.generateChunkSilently(currentX, currentY);
+                            }
+                        }
                     } else {
                         log("Failed to find spawn area, re-using dimension spawn coordinates.");
                     }

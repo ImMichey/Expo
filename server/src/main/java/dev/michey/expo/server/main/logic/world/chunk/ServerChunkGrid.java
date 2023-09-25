@@ -468,6 +468,14 @@ public class ServerChunkGrid {
         return chunk;
     }
 
+    public void generateChunkSilently(int chunkX, int chunkY) {
+        String hash = chunkHash(chunkX, chunkY);
+        ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
+        chunk.generate(true);
+        inactiveChunkMap.put(hash, new Pair<>(chunk, generateTimestamp()));
+        chunk.onInactive();
+    }
+
     public ServerChunk getActiveChunk(String chunkKey) {
         return activeChunkMap.get(chunkKey).key;
     }

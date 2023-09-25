@@ -491,7 +491,6 @@ public class ServerChunk {
         }
 
         removeWithoutCachingList.clear();
-
         // log(chunkKey + " INACTIVE, removed " + inactiveEntities.size() + " entities");
     }
 

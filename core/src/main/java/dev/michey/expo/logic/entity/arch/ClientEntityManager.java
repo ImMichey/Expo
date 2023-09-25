@@ -168,8 +168,6 @@ public class ClientEntityManager {
             }
         }
 
-        ClientUtils.log("AdditionQueue: " + additionQueue.size() + ", RemovalQueue: " + removalQueue.size(), Input.Keys.I);
-
         for(ClientChunk chunk : greenlitAmbientOcclusionList) {
             chunk.generateAmbientOcclusion(false);
         }
