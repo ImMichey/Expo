@@ -106,6 +106,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         // add physics body of player to world
         physicsBody = new EntityPhysicsBox(this, -3, 0, 6, 6);
         hitbox = EntityHitboxMapper.get().getFor(ServerEntityType.PLAYER);
+
+        playerInventory.addInventoryViewer(this);
     }
 
     @Override

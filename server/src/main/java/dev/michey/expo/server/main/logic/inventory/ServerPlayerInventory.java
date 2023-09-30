@@ -44,7 +44,6 @@ public class ServerPlayerInventory extends ServerInventory {
     public ServerPlayerInventory(ServerPlayer player) {
         super(InventoryViewType.PLAYER_INVENTORY, ExpoShared.PLAYER_INVENTORY_SLOTS, ExpoShared.CONTAINER_ID_PLAYER);
         setOwner(player);
-        addInventoryViewer(player);
     }
 
     public ServerItem spawnServerItem(ServerInventoryItem container) {
@@ -61,6 +60,13 @@ public class ServerPlayerInventory extends ServerInventory {
 
         ServerWorld.get().registerServerEntity(getOwner().entityDimension, item);
         return item;
+    }
+
+    @Override
+    public void removeInventoryViewer(ServerPlayer player) {
+        if(getOwner().entityId != player.entityId) {
+            super.removeInventoryViewer(player);
+        }
     }
 
     public InventoryChangeResult performPlayerAction(int actionType, int slotId) {

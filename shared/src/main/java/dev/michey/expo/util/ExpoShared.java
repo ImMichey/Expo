@@ -28,9 +28,9 @@ public class ExpoShared {
     public static final int ROW_TILES = CHUNK_SIZE / TILE_SIZE;
     public static final int SPAWN_AREA_CHUNK_RANGE = 9;
     public static final int PLAYER_CHUNK_VIEW_RANGE_X = 7;
-    public static final int PLAYER_CHUNK_VIEW_RANGE_Y = 5;
+    public static final int PLAYER_CHUNK_VIEW_RANGE_Y = 7;
     public static final int PLAYER_CHUNK_VIEW_RANGE_DIR_X = (PLAYER_CHUNK_VIEW_RANGE_X - 1) / 2; // (7 - 1) / 2 = 3
-    public static final int PLAYER_CHUNK_VIEW_RANGE_DIR_Y = (PLAYER_CHUNK_VIEW_RANGE_Y - 1) / 2; // (5 - 1) / 2 = 2
+    public static final int PLAYER_CHUNK_VIEW_RANGE_DIR_Y = (PLAYER_CHUNK_VIEW_RANGE_Y - 1) / 2; // (7 - 1) / 2 = 3
 
     public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_DIR_X * 0.5f * CHUNK_SIZE;
 

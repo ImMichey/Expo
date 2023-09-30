@@ -46,7 +46,7 @@ public class AudioEngine {
         SoundGroupDatabase database = null;
 
         for(String line : lines) {
-            if(line.length() == 0) continue;
+            if(line.isEmpty()) continue;
             if(line.startsWith("*")) continue;
             boolean isHeader = line.startsWith("#");
 

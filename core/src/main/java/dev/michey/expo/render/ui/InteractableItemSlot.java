@@ -119,7 +119,7 @@ public class InteractableItemSlot extends InteractableUIElement {
         if(item != null && !item.isEmpty()) {
             ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
 
-            if(mapping.logic.isTool()) {
+            if(mapping.logic.isTool() || mapping.logic.isArmor()) {
                 float percentage = item.itemMetadata.durability / (float) mapping.logic.durability * 100f;
                 float[] rgb = parent.percentageToColor(percentage);
                 String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();

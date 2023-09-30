@@ -93,8 +93,23 @@ public class ItemLogic {
         }
     }
 
+    public boolean isArmor() {
+        return isSpecialType() && (
+                toolType == ToolType.HELMET
+                        || toolType == ToolType.GLOVES
+                        || toolType == ToolType.CHESTPLATE
+                        || toolType == ToolType.LEGS
+                        || toolType == ToolType.BOOTS
+        );
+    }
+
     public boolean isTool() {
-        return isSpecialType() && (toolType == ToolType.PICKAXE || toolType == ToolType.AXE || toolType == ToolType.SHOVEL || toolType == ToolType.SCYTHE);
+        return isSpecialType() && (
+                toolType == ToolType.PICKAXE
+                        || toolType == ToolType.AXE
+                        || toolType == ToolType.SHOVEL
+                        || toolType == ToolType.SCYTHE
+        );
     }
 
     public boolean isTool(ToolType checkType) {

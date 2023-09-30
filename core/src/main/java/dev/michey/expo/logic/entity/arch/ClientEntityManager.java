@@ -11,8 +11,13 @@ import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -184,12 +189,15 @@ public class ClientEntityManager {
 
         depthEntityList.sort(depthSorter);
         var player = ClientPlayer.getLocalPlayer();
-        boolean doCheck = player != null;
 
         for(ClientEntity entity : depthEntityList) {
             entity.tick(delta);
+        }
 
-            if(doCheck) {
+        if(player != null && player.selector != null) {
+            player.selector.tick0();
+
+            for(ClientEntity entity : depthEntityList) {
                 if(entity instanceof SelectableEntity) {
                     Object[] data = isNowSelected(entity);
 
@@ -452,11 +460,31 @@ public class ClientEntityManager {
     public Object[] isNowSelected(ClientEntity entity) {
         // only check if in view
         if(!entity.visibleToRenderEngine) return null;
+        ClientPlayer p = ClientPlayer.getLocalPlayer();
 
         if(entity.getEntityType() == ClientEntityType.DYNAMIC_3D_TILE) {
             ClientDynamic3DTile dyn = (ClientDynamic3DTile) entity;
             int minus = dyn.emulatingType.TILE_ID_DATA[0];
             if(dyn.layerIds.length == 1 && (dyn.layerIds[0] - minus) == 0) return null;
+
+            ItemMapping mapping = p.holdingItemId != -1 ? (ItemMapper.get().getMapping(p.holdingItemId)) : null;
+
+            if(dyn.emulatingType == TileLayerType.DIRT) {
+                // Check for shovel.
+                if(mapping == null || !mapping.logic.isTool(ToolType.SHOVEL)) {
+                    return null;
+                }
+            } else if(dyn.emulatingType == TileLayerType.ROCK) {
+                // Check for pickaxe.
+                if(mapping == null || !mapping.logic.isTool(ToolType.PICKAXE)) {
+                    return null;
+                }
+            } else if(dyn.emulatingType == TileLayerType.OAKPLANKWALL) {
+                // Check for axe.
+                if(mapping == null || !mapping.logic.isTool(ToolType.AXE)) {
+                    return null;
+                }
+            }
 
             ClientEntity[] entities = dyn.getNeighbouringTileEntitiesNESW();
 
@@ -465,12 +493,11 @@ public class ClientEntityManager {
             }
         }
 
-        ClientPlayer player = ClientPlayer.getLocalPlayer();
         RenderContext r = RenderContext.get();
 
         // range
-        float px = player.playerReachCenterX;
-        float py = player.playerReachCenterY;
+        float px = p.playerReachCenterX;
+        float py = p.playerReachCenterY;
 
         float shortestDistance = Float.MAX_VALUE, shortestDistanceX = 0, shortestDistanceY = 0;
         float[] points = ((SelectableEntity) entity).interactionPoints();
@@ -485,10 +512,10 @@ public class ClientEntityManager {
             }
         }
 
-        if(shortestDistance > player.getPlayerRange()) return null;
+        if(shortestDistance > p.getPlayerRange()) return null;
 
         // view angle
-        double entityPlayerAngle = GenerationUtils.angleBetween360(player.playerReachCenterX, player.playerReachCenterY, shortestDistanceX, shortestDistanceY);
+        double entityPlayerAngle = GenerationUtils.angleBetween360(p.playerReachCenterX, p.playerReachCenterY, shortestDistanceX, shortestDistanceY);
         if(!ExpoShared.inAngleProximity(r.mousePlayerAngle, entityPlayerAngle, 225)) return null;
 
         float sx = entity.finalTextureStartX;

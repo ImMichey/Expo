@@ -4,29 +4,30 @@ import java.util.HashMap;
 
 public enum TileLayerType {
 
-    EMPTY(0,                new int[] {-1},         new String[] {"EMPTY"},                                 false),
-    SOIL(1,                 new int[] {0},          new String[] {"SOIL"},                                  false),
-    SOIL_HOLE(2,            new int[] {90, 111},    new String[] {"SOIL_HOLE"},                             false),
-    SAND(3,                 new int[] {23, 44},     new String[] {"SAND", "DESERT"},                        false),
-    DESERT(4,               new int[] {23, 44},     new String[] {"DESERT", "SAND"},                        false),
-    GRASS(5,                new int[] {1, 22},      new String[] {"GRASS", "FOREST"},                       false),
-    FOREST(6,               new int[] {112, 133},   new String[] {"FOREST", "GRASS"},                       false),
-    WATER(7,                new int[] {46, 67},     new String[] {"WATER", "WATER_SANDY"},                  false),
-    WATER_DEEP(8,           new int[] {68, 89},     new String[] {"WATER_DEEP", "WATER", "WATER_SANDY", "WATER_OVERLAY"},    false),
-    ROCK(9,                 new int[] {156, 177},   new String[] {"ROCK"},                                  true),
-    SOIL_FARMLAND(10,       new int[] {178, 199},   new String[] {"SOIL_FARMLAND"},                         false),
-    OAK_PLANK(11,           new int[] {200, 221},   new String[] {"OAK_PLANK"},                             false),
-    DIRT(12,                new int[] {222, 243},   new String[] {"DIRT"},                                  true),
-    WATER_SANDY(13,         new int[] {244, 265},   new String[] {"WATER_SANDY", "WATER"},                  false),
-    OAKPLANKWALL(14,        new int[] {266, 287},   new String[] {"OAKPLANKWALL"},                          true),
-    WATER_OVERLAY(15,       new int[] {288, 309},   new String[] {"WATER_OVERLAY", "WATER_DEEP"},           false),
-    SAND_WATERLOGGED(16,    new int[] {310, 331},   new String[] {"SAND_WATERLOGGED"},                      false),
-    SOIL_DEEP_WATERLOGGED(17,new int[] {332, 353},  new String[] {"SOIL_DEEP_WATERLOGGED", "SOIL_WATERLOGGED"},                 false),
-    SOIL_WATERLOGGED(18,    new int[] {354, 375},   new String[] {"SOIL_WATERLOGGED"},false),
+    EMPTY(0,                    new int[] {-1},         rgba8888(0, 0, 0), new String[] {"EMPTY"},                                 false),
+    SOIL(1,                     new int[] {0},          rgba8888(97, 86, 70), new String[] {"SOIL"},                                  false),
+    SOIL_HOLE(2,                new int[] {90, 111},    rgba8888(64, 59, 49), new String[] {"SOIL_HOLE"},                             false),
+    SAND(3,                     new int[] {23, 44},     rgba8888(242, 235, 209), new String[] {"SAND", "DESERT"},                        false),
+    DESERT(4,                   new int[] {23, 44},     rgba8888(0, 0, 0), new String[] {"DESERT", "SAND"},                        false),
+    GRASS(5,                    new int[] {1, 22},      rgba8888(0, 0, 0), new String[] {"GRASS", "FOREST"},                       false),
+    FOREST(6,                   new int[] {112, 133},   rgba8888(57, 113, 35), new String[] {"FOREST", "GRASS"},                       false),
+    WATER(7,                    new int[] {46, 67},     rgba8888(88, 158, 220), new String[] {"WATER", "WATER_SANDY"},                  false),
+    WATER_DEEP(8,               new int[] {68, 89},     rgba8888(73, 135, 211), new String[] {"WATER_DEEP", "WATER", "WATER_SANDY", "WATER_OVERLAY"},    false),
+    ROCK(9,                     new int[] {156, 177},   rgba8888(59, 60, 62), new String[] {"ROCK"},                                  true),
+    SOIL_FARMLAND(10,           new int[] {178, 199},   rgba8888(45, 43, 35), new String[] {"SOIL_FARMLAND"},                         false),
+    OAK_PLANK(11,               new int[] {200, 221},   rgba8888(150, 124, 89), new String[] {"OAK_PLANK"},                             false),
+    DIRT(12,                    new int[] {222, 243},   rgba8888(71, 60, 49), new String[] {"DIRT"},                                  true),
+    WATER_SANDY(13,             new int[] {244, 265},   rgba8888(88, 158, 220), new String[] {"WATER_SANDY", "WATER"},                  false),
+    OAKPLANKWALL(14,            new int[] {266, 287},   rgba8888(141, 113, 81), new String[] {"OAKPLANKWALL"},                          true),
+    WATER_OVERLAY(15,           new int[] {288, 309},   rgba8888(88, 158, 220), new String[] {"WATER_OVERLAY", "WATER_DEEP"},           false),
+    SAND_WATERLOGGED(16,        new int[] {310, 331},   rgba8888(88, 158, 220), new String[] {"SAND_WATERLOGGED"},                      false),
+    SOIL_DEEP_WATERLOGGED(17,   new int[] {332, 353},   rgba8888(73, 135, 211), new String[] {"SOIL_DEEP_WATERLOGGED", "SOIL_WATERLOGGED"},false),
+    SOIL_WATERLOGGED(18,        new int[] {354, 375},   rgba8888(88, 158, 220), new String[] {"SOIL_WATERLOGGED"},false),
     ;
 
     public final int SERIALIZATION_ID;
     public final int[] TILE_ID_DATA;
+    public final int TILE_COLOR;
     public final String[] TILE_CONNECTION_DATA;
     public final boolean TILE_IS_WALL;
 
@@ -39,11 +40,16 @@ public enum TileLayerType {
         ELEVATION_TEXTURE_MAP.put(OAKPLANKWALL, "tile_oakplankwall_elevation");
     }
 
-    TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, String[] TILE_CONNECTION_DATA, boolean TILE_IS_WALL) {
+    TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, int TILE_COLOR, String[] TILE_CONNECTION_DATA, boolean TILE_IS_WALL) {
         this.SERIALIZATION_ID = SERIALIZATION_ID;
         this.TILE_ID_DATA = TILE_ID_DATA;
+        this.TILE_COLOR = TILE_COLOR;
         this.TILE_CONNECTION_DATA = TILE_CONNECTION_DATA;
         this.TILE_IS_WALL = TILE_IS_WALL;
+    }
+
+    private static int rgba8888(float r, float g, float b) {
+        return ((int) (r) << 24) | ((int) (g) << 16) | ((int) (b) << 8) | (255);
     }
 
     public static TileLayerType serialIdToType(int id) {

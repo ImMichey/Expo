@@ -17,6 +17,7 @@ import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
+import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.*;
@@ -230,6 +231,7 @@ public class ExpoClientPacketReader {
             var chunk = grid.getChunk(p.chunkX, p.chunkY); if(chunk == null) return;
 
             chunk.updateSingle(p);
+            PlayerUI.get().playerMinimap.incomplete = true;
         } else if(o instanceof P33_TileDig p) {
             float x = ExpoShared.tileToPos(p.tileX);
             float y = ExpoShared.tileToPos(p.tileY);

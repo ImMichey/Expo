@@ -550,7 +550,7 @@ public class RenderContext {
         ShaderProgram shader = new ShaderProgram(vertex, fragment);
 
         if(!shader.isCompiled()) log("Error while compiling shader " + key + " - Shader Error: " + shader.getLog());
-        if(shader.getLog().length() != 0) log("Warning while compiling shader " + key + " - Shader Warnings: " + shader.getLog());
+        if(!shader.getLog().isEmpty()) log("Warning while compiling shader " + key + " - Shader Warnings: " + shader.getLog());
 
         return shader;
     }

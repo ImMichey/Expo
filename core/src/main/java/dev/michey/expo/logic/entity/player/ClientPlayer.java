@@ -251,6 +251,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
         if(player) {
             // Selector update
+            selector.blockSelection = false;
+
             if(holdingItemId != -1) {
                 ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
 
@@ -317,6 +319,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
                         selector.externalPosX = ExpoShared.tileToPos(_tix) + ofx;
                         selector.externalPosY = ExpoShared.tileToPos(_tiy) + ofy;
+
+                        if(selector.currentSelectorType == SelectorType.DIG_SCYTHE || selector.currentSelectorType == SelectorType.DIG_SHOVEL) {
+                            selector.blockSelection = true;
+                        }
                     }
                 } else if(scanFreely) {
                     selector.currentlyVisible = true;

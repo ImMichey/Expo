@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.misc;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
@@ -14,6 +15,7 @@ import dev.michey.expo.server.main.logic.inventory.item.*;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
@@ -38,6 +40,7 @@ public class ClientSelector extends ClientEntity {
     public String currentEntityPlacementTexture;
     public boolean currentlyVisible = false;
     private boolean eligible;
+    public boolean blockSelection = false;
 
     public float externalPosX, externalPosY;
     public int selectionChunkX, selectionChunkY;
@@ -58,8 +61,7 @@ public class ClientSelector extends ClientEntity {
         return currentlyVisible && eligible;
     }
 
-    @Override
-    public void tick(float delta) {
+    public void tick0() {
         eligible = false;
         if(!currentlyVisible) return;
 
@@ -142,6 +144,10 @@ public class ClientSelector extends ClientEntity {
                 }
             }
         }
+    }
+
+    @Override
+    public void tick(float delta) {
             /*
             if(lastTix != tix || lastTiy != tiy) {
                 alphaDelta = 0;
