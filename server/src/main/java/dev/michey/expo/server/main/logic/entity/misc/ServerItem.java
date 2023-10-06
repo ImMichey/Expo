@@ -64,7 +64,7 @@ public class ServerItem extends ServerEntity implements PhysicsEntity {
             posX = result.goalX - physicsBody.xOffset;
             posY = result.goalY - physicsBody.yOffset;
 
-            ServerPackets.p13EntityMove(entityId, (int) dstX, (int) dstY, posX, posY, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, (int) dstX, (int) dstY, posX, posY, 0, PacketReceiver.whoCanSee(this));
         }
 
         if(pickupImmunity > 0) {

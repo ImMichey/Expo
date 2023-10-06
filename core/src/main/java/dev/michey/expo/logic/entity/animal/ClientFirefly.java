@@ -36,6 +36,11 @@ public class ClientFirefly extends ClientEntity {
     }
 
     @Override
+    public boolean isMoving() {
+        return serverMoveDistance > 0;
+    }
+
+    @Override
     public void onCreation() {
         TextureRegion f = animationHandler.getActiveFrame();
         updateTextureBounds(f.getRegionWidth(), f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);

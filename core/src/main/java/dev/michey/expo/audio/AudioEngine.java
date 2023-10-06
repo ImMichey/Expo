@@ -216,9 +216,13 @@ public class AudioEngine {
         return data;
     }
 
-    /** Plays a managed sound of a certain group that dynamically changes its panning and volume depending on the player's distance to the origin. **/
     public TrackedSoundData playSoundGroupManaged(String groupName, Vector2 soundOrigin, float maxAudibleRange, boolean loop) {
-        TrackedSoundData data = soundGroupMap.get(groupName).playSound(1.0f, loop);
+        return playSoundGroupManaged(groupName, soundOrigin, maxAudibleRange, loop, 1.0f);
+    }
+
+    /** Plays a managed sound of a certain group that dynamically changes its panning and volume depending on the player's distance to the origin. **/
+    public TrackedSoundData playSoundGroupManaged(String groupName, Vector2 soundOrigin, float maxAudibleRange, boolean loop, float multiplier) {
+        TrackedSoundData data = soundGroupMap.get(groupName).playSound(multiplier, loop);
         data.dynamic = true;
         data.worldPosition = soundOrigin;
         data.audibleRange = maxAudibleRange;

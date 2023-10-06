@@ -38,6 +38,7 @@ public class ServerChunk {
     private final String chunkKey;
     public final ServerTile[] tiles;
     public long lastTileUpdate;
+    public boolean inactivity;
 
     /** Tile based entities */
     private int[] tileBasedEntityIdGrid;
@@ -54,9 +55,7 @@ public class ServerChunk {
         this.chunkY = chunkY;
         this.chunkKey = chunkX + "," + chunkY;
 
-        int totalTiles = ROW_TILES * ROW_TILES;
-
-        tiles = new ServerTile[totalTiles];
+        tiles = new ServerTile[ROW_TILES * ROW_TILES];
 
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
@@ -171,7 +170,8 @@ public class ServerChunk {
         }
     }
 
-    public void populate() {
+    public void populate(boolean inactive) {
+        inactivity = inactive;
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
 
@@ -307,6 +307,21 @@ public class ServerChunk {
             ServerWorld.get().registerServerEntity(dimension.getDimensionName(), entity);
         }
 
+        /*
+        if(inactive) {
+            for(ServerEntity entity : registerMap) {
+                entity.entityId = ServerWorld.get().generateEntityId();
+                entity.entityDimension = dimension.getDimensionName();
+                entity.onCreation();
+            }
+
+            getDimension().getChunkHandler().inactiveChunkMap.put(chunkKey, new Pair<>(this, getDimension().getChunkHandler().generateTimestamp()));
+            onInactiveSilently(registerMap);
+        } else {
+
+        }
+        */
+
         //ExpoLogger.log("Finish pop " + chunkKey);
         // log("Population took " + ((System.nanoTime() - start) / 1_000_000.0d) + "ms.");
     }
@@ -388,7 +403,7 @@ public class ServerChunk {
         }
     }
 
-    public void generate(boolean populate) {
+    public void generate(boolean populate, boolean inactive) {
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
 
@@ -448,7 +463,7 @@ public class ServerChunk {
             }
         }
 
-        if(populate) populate();
+        if(populate) populate(inactive);
     }
 
     /** Called when the chunk has been inactive before and is now marked as active again. */
@@ -548,7 +563,7 @@ public class ServerChunk {
 
         if(loadedString == null) {
             log("Failed to load " + chunkIdentifier() + " from file, regenerating instead");
-            generate(true);
+            generate(true, false);
         } else {
             try {
                 JSONObject object = new JSONObject(loadedString);
@@ -586,7 +601,7 @@ public class ServerChunk {
             } catch (JSONException e) {
                 log("Failed to convert save file of " + chunkIdentifier() + " to json, regenerating instead");
                 e.printStackTrace();
-                generate(true);
+                generate(true, false);
             }
         }
     }

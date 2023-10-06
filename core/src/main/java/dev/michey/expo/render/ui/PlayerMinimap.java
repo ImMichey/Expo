@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
+import dev.michey.expo.logic.entity.misc.ClientFenceStick;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -127,8 +128,8 @@ public class PlayerMinimap {
                     }
                 }
             } else {
-                for(int i = 0; i < (MAP_SIZE / 2); i++) {
-                    for(int j = 0; j < (MAP_SIZE / 2); j++) {
+                for(int i = 0; i < MAP_SIZE; i++) {
+                    for(int j = 0; j < MAP_SIZE; j++) {
                         int tx = startX + i;
                         int ty = startY + j;
 
@@ -153,10 +154,14 @@ public class PlayerMinimap {
                         if(chunk.biomes[tileArray] == BiomeType.OCEAN_DEEP) {
                             use = TileLayerType.WATER_DEEP;
                         } else {
-                            var dyn = chunk.getTileEntityAt(tileArray, 0, 0);
+                            ClientEntity te = null;
 
-                            if(dyn != null) {
-                                use = ((ClientDynamic3DTile) dyn).emulatingType;
+                            if(chunk.tileEntityGrid != null) {
+                                te = chunk.getTileEntityAt(tileArray, 0, 0);
+                            }
+
+                            if(te instanceof ClientDynamic3DTile cd3d) {
+                                use = cd3d.emulatingType;
                             } else {
                                 use = chunk.dynamicTiles[tileArray][2].emulatingType;
 

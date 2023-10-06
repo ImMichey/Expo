@@ -221,7 +221,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 posX = result.goalX - physicsBody.xOffset;
                 posY = result.goalY - physicsBody.yOffset;
 
-                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
+                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
                 dirResetPacket = true;
             }
         } else if(dirResetPacket) {
@@ -233,14 +233,14 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 posY = result.goalY - physicsBody.yOffset;
             }
 
-            ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
         } else {
             if(knockbackAppliedX != 0 || knockbackAppliedY != 0) {
                 var result = physicsBody.move(knockbackAppliedX, knockbackAppliedY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
                 posX = result.goalX - physicsBody.xOffset;
                 posY = result.goalY - physicsBody.yOffset;
 
-                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, PacketReceiver.whoCanSee(this));
+                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
             }
         }
 
@@ -257,18 +257,17 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     int item = getCurrentItemId();
                     float dmg = ExpoShared.PLAYER_DEFAULT_ATTACK_DAMAGE;
 
-                    if(item != -1) {
-                        dmg = ItemMapper.get().getMapping(item).logic.harvestDamage;
-                    }
-
                     if(selected.damageableWith != null) {
                         if(item != -1) {
-                            ToolType usingType = ItemMapper.get().getMapping(item).logic.toolType;
+                            ItemMapping mapping = ItemMapper.get().getMapping(item);
+
+                            ToolType usingType = mapping.logic.toolType;
                             boolean used = false;
                             boolean fist = false;
 
                             for(ToolType checkFor : selected.damageableWith) {
                                 if(usingType == checkFor) {
+                                    dmg = mapping.logic.harvestDamage;
                                     selected.applyDamageWithPacket(this, dmg);
                                     useItemDurability(getCurrentItem());
                                     used = true;

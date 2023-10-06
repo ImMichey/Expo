@@ -52,7 +52,7 @@ public class ServerMaggot extends ServerEntity implements DamageableEntity, Phys
         maggotBrain.tick(delta);
 
         if(maggotBrain.getCurrentState() != AIState.WALK && applyKnockback) {
-            ServerPackets.p13EntityMove(entityId, 0, 0, posX, posY, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, 0, 0, posX, posY, 0, PacketReceiver.whoCanSee(this));
         }
     }
 

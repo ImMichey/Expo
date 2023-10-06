@@ -76,15 +76,10 @@ public enum TileLayerType {
         };
     }
 
-    public static float color255Packed(int r, int g, int b, int a) {
-        int color = (a << 24) | (b << 16) | (g << 8) | r;
-        return Float.intBitsToFloat(color & 0xfeffffff);
-    }
-
     public static String typeToItemDrop(TileLayerType type) {
         return switch (type) {
             case SOIL -> "item_dirt";
-            case SAND -> "item_floor_sand";
+            case SAND -> "item_sand";
             case FOREST, GRASS -> "item_floor_grass";
             default -> null;
         };

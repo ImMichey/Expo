@@ -45,7 +45,7 @@ public class AIModuleFly extends AIModule {
             if(e.getChunkGrid().isActiveChunk(chunkX, chunkY)) {
                 e.posX = targetX;
                 e.posY = targetY;
-                ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, PacketReceiver.whoCanSee(e));
+                ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, Math.abs(dir.x) + Math.abs(dir.y), PacketReceiver.whoCanSee(e));
             } else {
                 box.teleport(oldPosX, oldPosY);
             }
@@ -60,7 +60,7 @@ public class AIModuleFly extends AIModule {
             if(e.getChunkGrid().isActiveChunk(chunkX, chunkY)) {
                 e.posX = dstX;
                 e.posY = dstY;
-                ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, PacketReceiver.whoCanSee(e));
+                ServerPackets.p13EntityMove(e.entityId, e.velToPos(dir.x), e.velToPos(dir.y), e.posX, e.posY, Math.abs(dir.x) + Math.abs(dir.y), PacketReceiver.whoCanSee(e));
             }
         }
     }

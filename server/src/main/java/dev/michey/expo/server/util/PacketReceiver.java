@@ -101,6 +101,7 @@ public class PacketReceiver {
     public static PacketReceiver whoCanSee(ServerEntity entity) {
         if(ExpoServerBase.get().isLocalServer()) {
             ServerPlayer player = ServerPlayer.getLocalPlayer();
+            if(player == null) return null;
 
             if(entity.entityId == player.entityId || player.entityVisibilityController.isAlreadyVisible(entity.entityId)) {
                 return local();

@@ -39,6 +39,11 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity {
     }
 
     @Override
+    public boolean isMoving() {
+        return serverMoveDistance > 0;
+    }
+
+    @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         damageDelta = RenderContext.get().deltaTotal;
         damageTint = true;

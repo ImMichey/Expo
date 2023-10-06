@@ -161,19 +161,20 @@ public class ServerPackets {
     }
 
     /** Sends the P13_EntityMove packet via UDP protocol. */
-    public static void p13EntityMove(int entityId, int xDir, int yDir, boolean sprinting, float xPos, float yPos, PacketReceiver receiver) {
+    public static void p13EntityMove(int entityId, int xDir, int yDir, boolean sprinting, float xPos, float yPos, float distance, PacketReceiver receiver) {
         P13_EntityMove p = new P13_EntityMove();
         p.entityId = entityId;
         p.xDir = xDir;
         p.yDir = yDir;
         p.xPos = xPos;
         p.yPos = yPos;
+        p.distance = distance;
         p.sprinting = sprinting;
         udp(p, receiver);
     }
 
-    public static void p13EntityMove(int entityId, int xDir, int yDir, float xPos, float yPos, PacketReceiver receiver) {
-        p13EntityMove(entityId, xDir, yDir, false, xPos, yPos, receiver);
+    public static void p13EntityMove(int entityId, int xDir, int yDir, float xPos, float yPos, float distance, PacketReceiver receiver) {
+        p13EntityMove(entityId, xDir, yDir, false, xPos, yPos, distance, receiver);
     }
 
     /** Sends the P14_WorldUpdate packet via TCP protocol. */

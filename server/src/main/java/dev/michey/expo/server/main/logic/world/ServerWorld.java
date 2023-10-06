@@ -60,9 +60,7 @@ public class ServerWorld {
             } catch (InterruptedException e) {
                 log("ServerWorld ExecutorService crashed");
                 e.printStackTrace();
-            } catch (RejectedExecutionException e) {
-                log("ServerWorld ExecutorService crashed (ignored)");
-            }
+            } catch (RejectedExecutionException ignored) { }
         }
     }
 
@@ -113,7 +111,7 @@ public class ServerWorld {
         return currentEntityId;
     }
 
-    private synchronized int generateEntityId() {
+    public synchronized int generateEntityId() {
         int nextId = currentEntityId;
         currentEntityId++;
         return nextId;

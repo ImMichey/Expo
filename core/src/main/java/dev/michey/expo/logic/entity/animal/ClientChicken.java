@@ -11,28 +11,30 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientWorm extends ClientEntity implements ReflectableEntity {
+public class ClientChicken extends ClientEntity implements ReflectableEntity {
 
-    private final ExpoAnimationHandler animationHandler;
+    private ExpoAnimationHandler animationHandler;
     private boolean cachedMoving;
     private boolean flipped;
+
+    private int variant;
 
     private float damageDelta;
     private boolean damageTint;
 
-    public ClientWorm() {
-        animationHandler = new ExpoAnimationHandler() {
-            @Override
-            public void onAnimationFinish() {
-                if(isInWater()) spawnPuddle(false, flipped ? 2.5f : -2.5f, 0);
-            }
-        };
-        animationHandler.addAnimation("idle", new ExpoAnimation("entity_wormS_idle", 3, 0.25f));
-        animationHandler.addAnimation("walk", new ExpoAnimation("entity_wormS_walk", 5, 0.125f));
-    }
+    private int lastFootstepIndex;
 
     @Override
     public void onCreation() {
+        animationHandler = new ExpoAnimationHandler() {
+            @Override
+            public void onAnimationFinish() {
+                if(isInWater() && animationHandler.getActiveAnimationName().equals("idle")) spawnPuddle(false, 0, 1);
+            }
+        };
+        animationHandler.addAnimation("idle", new ExpoAnimation("entity_chicken_var_" + variant + "_idle", 2, 0.75f));
+        animationHandler.addAnimation("walk", new ExpoAnimation("entity_chicken_var_" + variant + "_walk", 8, 0.1f));
+
         updateTextureBounds(animationHandler.getActiveFrame());
     }
 
@@ -41,11 +43,6 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
         if(removalReason == EntityRemovalReason.DEATH) {
             playEntitySound("bloody_squish");
         }
-    }
-
-    @Override
-    public boolean isMoving() {
-        return serverMoveDistance > 0;
     }
 
     @Override
@@ -84,7 +81,7 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
     @Override
     public void render(RenderContext rc, float delta) {
         animationHandler.tick(delta);
-        boolean flip = (!flipped && serverDirX == 0) || (flipped && serverDirX == 1);
+        boolean flip = (!flipped && serverDirX == -1) || (flipped && serverDirX == 1);
 
         if(flip) {
             animationHandler.flipAllAnimations(true, false);
@@ -93,6 +90,15 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
         TextureRegion f = animationHandler.getActiveFrame();
         updateTextureBounds(f);
+
+        int i = animationHandler.getActiveAnimation().getFrameIndex();
+
+        if((i == 4 || i == 8) && (lastFootstepIndex != i)) {
+            lastFootstepIndex = i;
+            playEntitySound(getFootstepSound(), 0.4f);
+
+            if(isInWater()) spawnPuddle(false, 0, 1);
+        }
 
         visibleToRenderEngine = rc.inDrawBounds(this);
 
@@ -113,13 +119,23 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
     }
 
     @Override
+    public void applyPacketPayload(Object[] payload) {
+        variant = (int) payload[0];
+    }
+
+    @Override
+    public boolean isMoving() {
+        return serverMoveDistance > 0;
+    }
+
+    @Override
     public void renderShadow(RenderContext rc, float delta) {
         drawShadowIfVisible(animationHandler.getActiveFrame());
     }
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.WORM;
+        return ClientEntityType.CHICKEN;
     }
 
 }

@@ -168,6 +168,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
 
         if(player) {
             selector = new ClientSelector();
+            selector.clientPosX = clientPosX;
+            selector.clientPosY = clientPosY;
             entityManager().addClientSideEntity(selector);
         }
 
@@ -490,8 +492,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
     }
 
     @Override
-    public void applyPositionUpdate(float xPos, float yPos, int xDir, int yDir, boolean sprinting) {
-        super.applyPositionUpdate(xPos, yPos, xDir, yDir, sprinting);
+    public void applyPositionUpdate(float xPos, float yPos, int xDir, int yDir, boolean sprinting, float distance) {
+        super.applyPositionUpdate(xPos, yPos, xDir, yDir, sprinting, distance);
 
         if(!player) {
             cachedSprinting = sprinting;

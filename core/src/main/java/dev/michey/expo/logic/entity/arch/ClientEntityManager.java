@@ -90,9 +90,18 @@ public class ClientEntityManager {
 
             if(!idEntityMap.containsKey(toAdd.entityId)) { // Might cause some bugs in the future
                 boolean add = true;
+                float _px, _py;
 
-                int chunkX = ExpoShared.posToChunk(toAdd.serverPosX);
-                int chunkY = ExpoShared.posToChunk(toAdd.serverPosY);
+                if(toAdd.entityId < 0) {
+                    _px = toAdd.clientPosX;
+                    _py = toAdd.clientPosY;
+                } else {
+                    _px = toAdd.serverPosX;
+                    _py = toAdd.serverPosY;
+                }
+
+                int chunkX = ExpoShared.posToChunk(_px);
+                int chunkY = ExpoShared.posToChunk(_py);
                 ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
 
                 if(chunk == null) {

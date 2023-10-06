@@ -1,9 +1,6 @@
 package dev.michey.expo.logic.entity.arch;
 
-import dev.michey.expo.logic.entity.animal.ClientCrab;
-import dev.michey.expo.logic.entity.animal.ClientFirefly;
-import dev.michey.expo.logic.entity.animal.ClientMaggot;
-import dev.michey.expo.logic.entity.animal.ClientWorm;
+import dev.michey.expo.logic.entity.animal.*;
 import dev.michey.expo.logic.entity.container.ClientCrate;
 import dev.michey.expo.logic.entity.crop.ClientCropWheat;
 import dev.michey.expo.logic.entity.flora.*;
@@ -48,6 +45,7 @@ public enum ClientEntityType {
     CRATE(27, "Crate", ServerEntityType.CRATE),
     OAK_TREE_SAPLING(28, "OakTreeSapling", ServerEntityType.OAK_TREE_SAPLING),
     CATTAIL(29, "Cattail", ServerEntityType.CATTAIL),
+    CHICKEN(30, "Chicken", ServerEntityType.CHICKEN),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -113,6 +111,7 @@ public enum ClientEntityType {
             case 27 -> new ClientCrate();
             case 28 -> new ClientOakTreeSapling();
             case 29 -> new ClientCattail();
+            case 30 -> new ClientChicken();
             default -> null;
         };
     }

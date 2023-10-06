@@ -39,6 +39,7 @@ public abstract class ClientEntity {
     public float clientPosY;
     public float serverDirX;
     public float serverDirY;
+    public float serverMoveDistance;
     /** Updated only when method called */
     public int clientChunkX;
     public int clientChunkY;
@@ -93,10 +94,11 @@ public abstract class ClientEntity {
         doLerp = true;
     }
 
-    public void applyPositionUpdate(float xPos, float yPos, int xDir, int yDir, boolean sprinting) {
+    public void applyPositionUpdate(float xPos, float yPos, int xDir, int yDir, boolean sprinting, float distance) {
         applyPositionUpdate(xPos, yPos);
         serverDirX = xDir;
         serverDirY = yDir;
+        serverMoveDistance = distance;
     }
 
     public void applyTeleportUpdate(float xPos, float yPos, TeleportReason reason) {
@@ -459,6 +461,10 @@ public abstract class ClientEntity {
 
     public void readEntityDataUpdate(Object[] payload) {
 
+    }
+
+    public void playEntitySound(String group, float volumeMultiplier) {
+        AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE * volumeMultiplier, false, volumeMultiplier);
     }
 
     public void playEntitySound(String group) {

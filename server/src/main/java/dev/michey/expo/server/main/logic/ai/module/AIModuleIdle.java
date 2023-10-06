@@ -18,7 +18,9 @@ public class AIModuleIdle extends AIModule {
     @Override
     public void onStart() {
         var e = getBrain().getEntity();
-        ServerPackets.p13EntityMove(e.entityId, 0, 0, e.posX, e.posY, PacketReceiver.whoCanSee(e));
+        var walk = (AIModuleWalk) getBrain().getModule(AIState.WALK);
+
+        ServerPackets.p13EntityMove(e.entityId, e.velToPos(walk.dir.x), e.velToPos(walk.dir.y), e.posX, e.posY, 0, PacketReceiver.whoCanSee(e));
     }
 
     @Override

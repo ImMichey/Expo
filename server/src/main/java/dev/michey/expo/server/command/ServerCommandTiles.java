@@ -35,7 +35,7 @@ public class ServerCommandTiles extends AbstractServerCommand {
 
         for(ServerChunk chunk : chunks) {
             if(chunk == null) continue;
-            chunk.generate(false);
+            chunk.generate(false, false);
             ServerPackets.p11ChunkData(chunk, PacketReceiver.player(player));
         }
 

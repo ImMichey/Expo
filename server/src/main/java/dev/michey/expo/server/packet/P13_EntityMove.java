@@ -7,6 +7,7 @@ public class P13_EntityMove extends Packet {
     public int yDir;
     public float xPos;
     public float yPos;
+    public float distance;
     public boolean sprinting;
 
 }

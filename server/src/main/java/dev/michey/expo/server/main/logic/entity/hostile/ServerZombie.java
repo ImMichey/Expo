@@ -51,7 +51,7 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
         brain.tick(delta);
 
         if(brain.currentMode != AIConstants.STROLL && applyKnockback) {
-            ServerPackets.p13EntityMove(entityId, 0, 0, posX, posY, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, 0, 0, posX, posY, 0, PacketReceiver.whoCanSee(this));
         }
     }
 

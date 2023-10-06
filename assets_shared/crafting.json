@@ -5,7 +5,9 @@
             "recipe_oak_plank",
             "recipe_fence_stick",
             "recipe_oak_wood_floor",
-            "recipe_crate"
+            "recipe_crate",
+            "recipe_sand_floor",
+            "recipe_dirt_floor"
         ],
         "tools": [
             "recipe_flint_pickaxe",
@@ -181,6 +183,32 @@
                 {
                     "id": 21,
                     "amount": 6
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_sand_floor",
+            "output": {
+                "id": 10,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 36,
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_dirt_floor",
+            "output": {
+                "id": 11,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 35,
+                    "amount": 1
                 }
             ]
         }

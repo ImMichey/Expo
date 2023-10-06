@@ -35,7 +35,7 @@ public class ServerDummy extends ServerEntity {
         if(!travelX && !travelY) {
             generateDst();
         } else {
-            ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, xDir, yDir, posX, posY, 0, PacketReceiver.whoCanSee(this));
             //ServerPackets.p6EntityPosition(entityId, posX, posY, PacketReceiver.whoCanSee(this));
         }
     }

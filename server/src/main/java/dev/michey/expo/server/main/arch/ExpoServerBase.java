@@ -10,6 +10,7 @@ import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.container.ContainerRegistry;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.packet.ExpoServerPacketReader;
@@ -105,10 +106,11 @@ public abstract class ExpoServerBase {
                         dimension.setDimensionSpawnY(found.value[1] + 8);
 
                         // Generate spawn chunks
+                        /*
                         int scx = ExpoShared.posToChunk(dimension.getDimensionSpawnX());
                         int scy = ExpoShared.posToChunk(dimension.getDimensionSpawnY());
 
-                        int GENERATION_RANGE = 17;
+                        int GENERATION_RANGE = 12;
                         log("Generating " + (GENERATION_RANGE * GENERATION_RANGE) + " chunks around spawn point...");
 
                         int gcx = scx - (GENERATION_RANGE - 1) / 2;
@@ -119,9 +121,10 @@ public abstract class ExpoServerBase {
                             for(int j = 0; j < GENERATION_RANGE; j++) {
                                 int currentX = gcx + i;
                                 int currentY = gcy + j;
-                                grid.generateChunkSilently(currentX, currentY);
+                                //grid.getChunkSafe(currentX, currentY);
                             }
                         }
+                        */
                     } else {
                         log("Failed to find spawn area, re-using dimension spawn coordinates.");
                     }

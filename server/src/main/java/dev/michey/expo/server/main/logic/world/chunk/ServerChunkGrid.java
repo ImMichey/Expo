@@ -36,7 +36,7 @@ public class ServerChunkGrid {
     private Pair[] spawnChunks; // can be null if not main dimension
 
     // multithreading
-    private final ConcurrentHashMap<String, Pair<ServerChunk, Long>> activeChunkMap; // key = hash, value = pair <chunk, activeTimestamp>
+    public final ConcurrentHashMap<String, Pair<ServerChunk, Long>> activeChunkMap; // key = hash, value = pair <chunk, activeTimestamp>
     private final ConcurrentHashMap<String, Pair<ServerChunk, Long>> inactiveChunkMap; // key = hash, value = pair <chunk, inactiveTimestamp>
     private final ConcurrentHashMap<String, ServerTile> tileMap;
     public final ConcurrentHashMap<String, Pair<ServerChunk, Set<Integer>>> generatingChunkMap; // key = hash, value = pair <chunk, list<playerIds>>
@@ -302,6 +302,11 @@ public class ServerChunkGrid {
                 }
             }
         }
+
+        // Inactivity chunks (special)
+        {
+
+        }
     }
 
     /** Returns all active chunks with their respective inactivity timestamp. */
@@ -421,7 +426,7 @@ public class ServerChunkGrid {
 
                 @Override
                 public void run() {
-                    chunk.generate(true);
+                    chunk.generate(true, false);
                     activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
                     generatingChunkMap.remove(hash);
                 }
@@ -461,7 +466,7 @@ public class ServerChunkGrid {
             chunk.loadFromFile();
         } else {
             // Generate chunk.
-            chunk.generate(populate);
+            chunk.generate(populate, false);
         }
 
         activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
@@ -469,11 +474,8 @@ public class ServerChunkGrid {
     }
 
     public void generateChunkSilently(int chunkX, int chunkY) {
-        String hash = chunkHash(chunkX, chunkY);
         ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
-        chunk.generate(true);
-        inactiveChunkMap.put(hash, new Pair<>(chunk, generateTimestamp()));
-        chunk.onInactive();
+        chunk.generate(true, true);
     }
 
     public ServerChunk getActiveChunk(String chunkKey) {
@@ -491,7 +493,7 @@ public class ServerChunkGrid {
     }
 
     /** Returns the timestamp when an inactive chunk should be saved to the disk. */
-    private long generateTimestamp() {
+    public long generateTimestamp() {
         return System.currentTimeMillis() + saveAfterMillis;
     }
 

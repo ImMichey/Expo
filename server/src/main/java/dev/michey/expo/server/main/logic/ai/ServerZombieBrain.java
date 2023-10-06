@@ -164,6 +164,7 @@ public class ServerZombieBrain {
                 parent.velToPos(dirVector.y),
                 parent.posX,
                 parent.posY,
+                Math.abs(dirVector.x) + Math.abs(dirVector.y),
                 PacketReceiver.whoCanSee(parent));
     }
 
@@ -173,6 +174,7 @@ public class ServerZombieBrain {
                 parent.velToPos(0),
                 parent.posX,
                 parent.posY,
+                0,
                 PacketReceiver.whoCanSee(parent));
     }
 

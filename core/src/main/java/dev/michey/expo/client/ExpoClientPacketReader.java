@@ -118,7 +118,7 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P13_EntityMove p) {
             ClientEntity entity = entityFromId(p.entityId);
             if(entity != null) {
-                entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir, p.sprinting);
+                entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir, p.sprinting, p.distance);
             }
         } else if(o instanceof P14_WorldUpdate p) {
             log("Received WORLD UPDATE " + p.worldTime + " " + p.worldWeather + " " + p.weatherStrength);

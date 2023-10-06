@@ -465,6 +465,7 @@ public class PlayerUI {
         }
 
 
+        /*
         if(ClientEntityManager.get().selectedEntity != null && currentContainer == null) {
             var e = ClientEntityManager.get().selectedEntity;
             var type = e.getEntityType();
@@ -491,15 +492,16 @@ public class PlayerUI {
                 rc.hudBatch.draw(indicator, (int) rc.mouseX + 21, (int) rc.mouseY - 49, indicator.getRegionWidth() * uiScale, indicator.getRegionHeight() * uiScale);
             }
 
-            /*
+
             String t = e.getEntityType().ENTITY_NAME;
 
             glyphLayout.setText(rc.m5x7_border_use, t);
             Vector2 pos = ClientUtils.entityPosToHudPos(e.clientPosX, e.clientPosY + e.textureHeight);
 
             rc.m5x7_border_use.draw(rc.hudBatch, t, pos.x - glyphLayout.width * 0.5f, pos.y + glyphLayout.height);
-            */
+
         }
+        */
 
         rc.hudBatch.end();
 

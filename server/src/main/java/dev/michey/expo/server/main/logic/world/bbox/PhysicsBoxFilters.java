@@ -27,10 +27,14 @@ public class PhysicsBoxFilters {
 
     public static CollisionFilter generalFilter = (item, other) -> {
         if(item.userData instanceof PhysicsEntity pe) {
-            // PhysicsMassClassification classification = pe.getPhysicsMassClassification();
+            PhysicsMassClassification classification = pe.getPhysicsMassClassification();
 
             if(other.userData instanceof PhysicsEntity oe) {
                 PhysicsMassClassification otherClassification = oe.getPhysicsMassClassification();
+
+                if(otherClassification == PhysicsMassClassification.MEDIUM && classification == PhysicsMassClassification.MEDIUM) {
+                    return Response.slide;
+                }
 
                 if(otherClassification == PhysicsMassClassification.WALL) {
                     return Response.slide;

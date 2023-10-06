@@ -27,7 +27,7 @@ public class ItemSheet {
         add("item_iron_pickaxe", 8, 16, 16);
         add("item_iron_axe", 9, 18, 14);
         add("item_floor_grass", 10, 13, 9);
-        add("item_dirt", 11, 13, 8);
+        add("item_dirt", 11, 11, 11);
         add("item_op_shovel", 12, 15, 15);
         add("item_flint", 13, 8, 7);
         add("item_worm", 14, 8, 12);
@@ -51,6 +51,8 @@ public class ItemSheet {
         add("item_crate", 32, 14, 16);
         add("item_carrot", 33, 12, 14);
         add("item_coal", 34, 10, 10);
+        add("item_dirt_floor", 35, 13, 8);
+        add("item_sand_floor", 36, 13, 8);
     }
 
     public TextureRegion get(String name) {

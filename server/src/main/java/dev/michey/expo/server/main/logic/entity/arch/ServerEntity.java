@@ -261,6 +261,9 @@ public abstract class ServerEntity {
         int tileX = ExpoShared.posToTile(posX);
         int tileY = ExpoShared.posToTile(posY);
         ServerTile t = getChunkGrid().getTile(tileX, tileY);
+        if(t == null) {
+            ExpoLogger.log("NULL " + tileX + " " + tileY + " ( " + posX + "," + posY + ")");
+        }
         boolean hole = t.dynamicTileParts[0].emulatingType == TileLayerType.SOIL_HOLE;
         if(hole) return 0.75f;
 
