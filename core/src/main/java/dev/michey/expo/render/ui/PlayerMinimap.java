@@ -16,6 +16,7 @@ import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -107,10 +108,10 @@ public class PlayerMinimap {
                         if(tile.biome == BiomeType.OCEAN_DEEP) {
                             use = TileLayerType.WATER_DEEP;
                         } else {
-                            var dyn = (ServerDynamic3DTile) tile.hasTileBasedEntity(ServerEntityType.DYNAMIC_3D_TILE);
+                            ServerEntity sd3d = tile.hasTileBasedEntity(ServerEntityType.DYNAMIC_3D_TILE);
 
-                            if(dyn != null) {
-                                use = dyn.emulatingType;
+                            if(sd3d != null) {
+                                use = ((ServerDynamic3DTile) sd3d).emulatingType;
                             } else {
                                 use = tile.dynamicTileParts[2].emulatingType;
 

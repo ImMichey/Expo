@@ -31,7 +31,7 @@ public class ServerItem extends ServerEntity implements PhysicsEntity {
     public float dstY;
     public float originX, originY;
     public float dstDelta;
-    public float pickupImmunity = 1.0f;
+    public float pickupImmunity = 0.5f;
     public float lifetime;
 
     public boolean blockedForMerge = false;

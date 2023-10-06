@@ -268,8 +268,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                             for(ToolType checkFor : selected.damageableWith) {
                                 if(usingType == checkFor) {
                                     dmg = mapping.logic.harvestDamage;
-                                    selected.applyDamageWithPacket(this, dmg);
-                                    useItemDurability(getCurrentItem());
+                                    if(selected.applyDamageWithPacket(this, dmg)) {
+                                        useItemDurability(getCurrentItem());
+                                    }
                                     used = true;
                                     break;
                                 } else if(checkFor == ToolType.FIST) {

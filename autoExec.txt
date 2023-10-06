@@ -7,3 +7,4 @@
 #/noise
 #/noclip
 /fps 240
+/give flint_axe

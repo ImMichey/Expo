@@ -374,11 +374,13 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
             int xDir = 0, yDir = 0;
             boolean sprinting = false;
 
-            if(IngameInput.get().keyPressed(Input.Keys.W)) yDir += 1;
-            if(IngameInput.get().keyPressed(Input.Keys.S)) yDir -= 1;
-            if(IngameInput.get().keyPressed(Input.Keys.A)) xDir -= 1;
-            if(IngameInput.get().keyPressed(Input.Keys.D)) xDir += 1;
-            if(IngameInput.get().keyPressed(Input.Keys.SHIFT_LEFT)) sprinting = true;
+            if(finishedWorldEnterAnimation) {
+                if(IngameInput.get().keyPressed(Input.Keys.W)) yDir += 1;
+                if(IngameInput.get().keyPressed(Input.Keys.S)) yDir -= 1;
+                if(IngameInput.get().keyPressed(Input.Keys.A)) xDir -= 1;
+                if(IngameInput.get().keyPressed(Input.Keys.D)) xDir += 1;
+                if(IngameInput.get().keyPressed(Input.Keys.SHIFT_LEFT)) sprinting = true;
+            }
 
             int numberPressed = IngameInput.get().pressedNumber();
 

@@ -29,7 +29,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public int age;
     public int variant;
     public boolean cut;
-    public float trunkConversionHealth;
+    public float trunkConversionHealth = 30;
 
     public boolean falling;
     public float fallingEnd;
@@ -47,8 +47,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     };
     public static final float[] TREE_HEALTH = new float[] {
             120.0f,
-            160.0f,
-            200.0f,
+            150.0f,
+            180.0f,
     };
 
     @Override
@@ -62,7 +62,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onDie() {
-        spawnItemsAround(0.0f, 6.0f, 10f, 14f, new SpawnItem("item_oak_log", 1, 2));
+        spawnItemsAround(0.0f, 6.0f, 8, 8, new SpawnItem("item_oak_log", 1, 1));
     }
 
     @Override
@@ -84,7 +84,6 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     public ServerOakTree() {
         health = TREE_HEALTH[0];
-        trunkConversionHealth = health * 0.5f;
         setDamageableWith(ToolType.AXE);
     }
 
@@ -203,7 +202,6 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         }
 
         health = TREE_HEALTH[age];
-        trunkConversionHealth = health * 0.5f;
     }
 
     public void generateVariant(GenerationRandom rnd) {
