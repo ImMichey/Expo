@@ -15,6 +15,7 @@ import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
+import dev.michey.expo.logic.entity.misc.ClientCloud;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;

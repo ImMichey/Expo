@@ -57,6 +57,7 @@ public enum ClientEntityType {
     PUDDLE(-7, "Puddle", null),
     FALLING_TREE(-8, "FallingTree", null),
     DAMAGE_INDICATOR(-9, "DamageIndicator", null),
+    CLOUD(-10, "Cloud", null),
 
     ;
 

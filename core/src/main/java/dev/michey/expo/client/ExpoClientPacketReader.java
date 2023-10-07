@@ -107,7 +107,14 @@ public class ExpoClientPacketReader {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
             //ExpoLogger.log("p11 " + p.chunkX + " " + p.chunkY);
-            ClientChunkGrid.get().updateChunkData(p);
+            new Thread("ChunkUpdateThread[" + p.chunkX + "," + p.chunkY + "]") {
+
+                @Override
+                public void run() {
+                    ClientChunkGrid.get().updateChunkData(p);
+                }
+
+            }.start();
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);
 
