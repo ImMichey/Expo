@@ -359,7 +359,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
             }
 
             // World enter animation
-            if(!finishedWorldEnterAnimation) {
+            if(!finishedWorldEnterAnimation && !getUI().loadingScreen) {
                 worldAnimDelta += delta;
 
                 if(worldAnimDelta >= 1.0f) {

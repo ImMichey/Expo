@@ -250,7 +250,8 @@ public class Expo implements ApplicationListener {
 
 		r.update();
 		AudioEngine.get().tick();
-		ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1.0f);
+		//ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1.0f);
+		ScreenUtils.clear(Color.BLACK);
 
 		if(r.drawImGui && DEV_MODE) {
 			imGuiGlfw.newFrame();

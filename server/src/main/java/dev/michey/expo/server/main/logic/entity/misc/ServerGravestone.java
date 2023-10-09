@@ -16,4 +16,9 @@ public class ServerGravestone extends ServerEntity {
         return new SavableEntity(this).pack();
     }
 
+    @Override
+    public boolean onDamage(ServerEntity damageSource, float damage) {
+        if(invincibility > 0) return false;
+        return super.onDamage(damageSource, damage);
+    }
 }

@@ -1,3 +1,4 @@
+/fps 240
 /delsave dev
 /world dev
 #/connect 167.86.107.202
@@ -6,5 +7,3 @@
 #/connect localhost
 #/noise
 #/noclip
-/fps 240
-/give flint_axe

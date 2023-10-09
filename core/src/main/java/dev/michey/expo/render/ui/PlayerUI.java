@@ -45,6 +45,9 @@ public class PlayerUI {
     public float uiScale; // default = 2.0f
     private float uiWidth, uiHeight;
 
+    /** Loading screen */
+    public boolean loadingScreen = true;
+
     /** Tab list */
     public boolean tablistOpen = false;
     private float pthW, pthH;

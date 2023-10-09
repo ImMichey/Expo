@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.misc.ClientFenceStick;
@@ -53,7 +54,7 @@ public class PlayerMinimap {
     private final int MAP_SIZE = 96;
 
     private int centerTileX, centerTileY;
-    public boolean incomplete = false;
+    public boolean incomplete = true;
 
     public PlayerMinimap(PlayerUI ui, TextureRegion minimap, TextureRegion minimapArrow, TextureRegion minimapPlayer) {
         this.ui = ui;

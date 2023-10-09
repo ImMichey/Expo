@@ -61,7 +61,7 @@
                     "texture": "item_flint_pickaxe",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
+                    "offsetX": -2,
                     "offsetY": 9,
                     "rotations": [45, -45]
                 }
@@ -927,6 +927,33 @@
                     "offsetX": -2.0,
                     "offsetY": 5.0,
                     "rotations": [0, -90]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_torch",
+            "id": 37,
+            "displayName": "Torch",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_torch"
+                },
+                "held": {
+                    "texture": "item_torch",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2.5,
+                    "offsetY": 7,
+                    "rotations": [45, -45],
+                    "light": {
+                        "color": [0.0, 0.0, 0.0, 0.0],
+                        "pulsating": true,
+                        "distance": 32
+                    }
                 }
             },
             "logic": {

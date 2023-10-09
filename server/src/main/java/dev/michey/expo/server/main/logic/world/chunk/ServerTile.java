@@ -504,6 +504,7 @@ public class ServerTile {
 
     public ServerEntity hasTileBasedEntity(ServerEntityType type) {
         if(!chunk.hasTileBasedEntities()) return null;
+        if(chunk.getTileBasedEntityIdGrid() == null) return null;
         int entityId = chunk.getTileBasedEntityIdGrid()[tileArray];
         if(entityId == -1) return null;
         ServerEntity found = ServerWorld.get().getDimension(chunk.getDimension().getDimensionName()).getEntityManager().getEntityById(entityId);

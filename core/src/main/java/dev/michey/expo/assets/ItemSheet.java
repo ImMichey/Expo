@@ -53,6 +53,7 @@ public class ItemSheet {
         add("item_coal", 34, 10, 10);
         add("item_dirt_floor", 35, 13, 8);
         add("item_sand_floor", 36, 13, 8);
+        add("item_torch", 37, 11, 14);
     }
 
     public TextureRegion get(String name) {

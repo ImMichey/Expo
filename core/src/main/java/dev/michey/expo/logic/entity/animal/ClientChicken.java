@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.animal;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -30,6 +31,7 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity {
             @Override
             public void onAnimationFinish() {
                 if(isInWater() && animationHandler.getActiveAnimationName().equals("idle")) spawnPuddle(false, 0, 1);
+                lastFootstepIndex = 0;
             }
         };
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_chicken_var_" + variant + "_idle", 2, 0.75f));
@@ -93,8 +95,9 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity {
 
         int i = animationHandler.getActiveAnimation().getFrameIndex();
 
-        if((i == 4 || i == 8) && (lastFootstepIndex != i)) {
+        if((i == 3 || i == 7) && (lastFootstepIndex != i)) {
             lastFootstepIndex = i;
+
             playEntitySound(getFootstepSound(), 0.4f);
 
             if(isInWater()) spawnPuddle(false, 0, 1);

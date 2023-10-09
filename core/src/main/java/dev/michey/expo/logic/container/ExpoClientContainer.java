@@ -2,8 +2,10 @@ package dev.michey.expo.logic.container;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.ExpoClientPacketReader;
 import dev.michey.expo.console.ConsoleMessage;
@@ -13,6 +15,7 @@ import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.ClientWorld;
+import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
@@ -20,6 +23,7 @@ import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ClientUtils;
+import dev.michey.expo.util.ExpoShared;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -131,7 +135,30 @@ public class ExpoClientContainer {
             RenderContext r = RenderContext.get();
             r.hudBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-            playerUI.render();
+            if(playerUI.loadingScreen) {
+                // World loading hook
+                int loadedChunks = ClientChunkGrid.get().getAllClientChunks().size();
+                int requiredChunks = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_X * ExpoShared.PLAYER_CHUNK_VIEW_RANGE_Y;
+
+                if(loadedChunks < requiredChunks) {
+                    r.hudBatch.begin();
+                    r.hudBatch.setColor(Color.BLACK);
+                    r.hudBatch.draw(playerUI.whiteSquare, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                    r.hudBatch.setColor(Color.WHITE);
+
+                    r.globalGlyph.setText(r.m6x11_border_use, "Loading World...");
+                    float w = r.globalGlyph.width;
+                    float h = r.globalGlyph.height;
+
+                    r.m6x11_border_use.draw(r.hudBatch, "Loading World...", (Gdx.graphics.getWidth() - w) * 0.5f, (Gdx.graphics.getHeight() - h) * 0.5f + h);
+
+                    r.hudBatch.end();
+                } else {
+                    playerUI.loadingScreen = false;
+                }
+            } else {
+                playerUI.render();
+            }
 
             BitmapFont useFont = r.m5x7_border_all[0];
 

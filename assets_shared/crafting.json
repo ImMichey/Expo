@@ -13,7 +13,8 @@
             "recipe_flint_pickaxe",
             "recipe_flint_axe",
             "recipe_flint_shovel",
-            "recipe_flint_scythe"
+            "recipe_flint_scythe",
+            "recipe_torch"
         ],
         "food": [
             "recipe_wheat_seeds"
@@ -208,6 +209,23 @@
             "input": [
                 {
                     "id": 35,
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_torch",
+            "output": {
+                "id": 37,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 34,
                     "amount": 1
                 }
             ]
