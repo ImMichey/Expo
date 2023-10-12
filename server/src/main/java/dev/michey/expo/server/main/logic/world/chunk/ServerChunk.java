@@ -510,18 +510,24 @@ public class ServerChunk {
     }
 
     /** Called when the chunk has been inactive before and is now commanded to save. */
-    public void onSave() {
+    public void onSave(boolean shutdown) {
         //log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
         String worldName = ExpoServerBase.get().getWorldSaveHandler().getWorldName();
         if(worldName.startsWith("dev-world-")) return;
 
-        dimension.getChunkHandler().ioExecutorService.execute(() -> {
+        Runnable r = () -> {
             for(ServerTile tile : tiles) {
                 dimension.getChunkHandler().removeNoiseCache(tile.tileX, tile.tileY);
                 dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
             }
             save();
-        });
+        };
+
+        if(shutdown) {
+            new Thread(r).start();
+        } else {
+            dimension.getChunkHandler().ioExecutorService.execute(r);
+        }
     }
 
     /** Attaches an entity to a tile within the chunk tile structure. */

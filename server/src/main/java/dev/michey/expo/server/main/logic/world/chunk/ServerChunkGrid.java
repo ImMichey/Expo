@@ -37,7 +37,7 @@ public class ServerChunkGrid {
     private long saveAfterMillis;
     private Pair[] spawnChunks; // can be null if not main dimension
 
-    // multithreading
+    /** Multithreading logic */
     public final ConcurrentHashMap<String, Pair<ServerChunk, Long>> activeChunkMap; // key = hash, value = pair <chunk, activeTimestamp>
     private final ConcurrentHashMap<String, Pair<ServerChunk, Long>> inactiveChunkMap; // key = hash, value = pair <chunk, inactiveTimestamp>
     private final ConcurrentHashMap<String, ServerTile> tileMap;
@@ -305,7 +305,7 @@ public class ServerChunkGrid {
                 if(now - pair.value > 0) { // reached save state
                     iterator.remove();
                     knownChunkFiles.add(pair.key.getChunkKey());
-                    pair.key.onSave();
+                    pair.key.onSave(false);
                 }
             }
         }
@@ -499,11 +499,11 @@ public class ServerChunkGrid {
         log("Saving all chunks for dimension " + dimension.getDimensionName());
         for(var v : activeChunkMap.values()) {
             v.key.onInactive();
-            v.key.onSave();
+            v.key.onSave(true);
         }
 
         for(var v : inactiveChunkMap.values()) {
-            v.key.onSave();
+            v.key.onSave(true);
         }
     }
 

@@ -28,6 +28,7 @@ testfile.txt
 *.ear
 hs_err_pid*
 .attach_pid*
+threads_report.txt
 
 ## Android:
 /android/libs/armeabi-v7a/

@@ -31,6 +31,8 @@ import dev.michey.expo.util.ExpoShared;
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
@@ -231,6 +233,15 @@ public class ExpoClientContainer {
             for(ServerDimension dim : ServerWorld.get().getDimensions()) {
                 dim.getChunkHandler().executorService.shutdown();
                 dim.getChunkHandler().ioExecutorService.shutdown();
+
+                try {
+                    if(!dim.getChunkHandler().ioExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                        int didntFinish = dim.getChunkHandler().ioExecutorService.shutdownNow().size();
+                        ExpoLogger.log("Failed to save " + didntFinish + " chunks (thread timeout).");
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
             localServer.stopServer();
         }
