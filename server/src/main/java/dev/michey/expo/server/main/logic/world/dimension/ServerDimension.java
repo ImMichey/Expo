@@ -21,6 +21,7 @@ import dev.michey.expo.util.Pair;
 import dev.michey.expo.weather.Weather;
 import make.some.noise.Noise;
 
+import java.util.Locale;
 import java.util.concurrent.Callable;
 
 public abstract class ServerDimension {
@@ -82,6 +83,16 @@ public abstract class ServerDimension {
         entitySpawnManager.tick(ExpoServerContainer.get().globalDelta);
         entityManager.tickEntities(ExpoServerContainer.get().globalDelta);
         visibilityController.tick();
+
+        /*
+        if(dimensionName.equals("overworld")) {
+            ExpoLogger.log("Total timeframe: tick=" + st(e, a) + "\t chunks=" + st(b, a) + "\t esm=" + st(c, b) + "\t ent=" + st(d, c) + "\t vsb=" + st(e, d));
+        }
+        */
+    }
+
+    private String st(long l1, long l2) {
+        return String.format(Locale.US, "%.2f", ((l1 - l2) / 1_000_000d * 240d)) + "%";
     }
 
     private void generateWeather() {

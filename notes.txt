@@ -1,0 +1,23 @@
+[Known Bugs]
+* Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer
+* AO bug, similar to above, not sure if related or separate bug
+
+[Stuff To Fix, Implement...]
+* Insect Net -> Left/Right Click Firefly -> Catch Firefly
+* Lower Tree Trunk Generation
+* Adjust Boulder Health
+* Adjust Dynamic 3D Rock Health
+* Fix Loot Table Dynamic 3D Dirt + Wood
+* Fix selection system
+* Add particles to Dynamic 3D Tiles
+* Proper Torch Texture
+* Add Flint Sword for now
+* New Oak Plank Wall textures
+* Proper Dirt Wall texture
+* Proper Rock Wall texture
+* Proper foliage fading in trees (interpolation)
+
+[Long Term Fixes]
+* New physics engine [Performance issues at large scale]
+* New audio engine [Audio cutoff issues?]
+* Investigate:

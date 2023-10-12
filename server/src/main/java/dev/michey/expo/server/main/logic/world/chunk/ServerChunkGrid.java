@@ -17,6 +17,8 @@ import make.some.noise.Noise;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -40,6 +42,8 @@ public class ServerChunkGrid {
     private final ConcurrentHashMap<String, Pair<ServerChunk, Long>> inactiveChunkMap; // key = hash, value = pair <chunk, inactiveTimestamp>
     private final ConcurrentHashMap<String, ServerTile> tileMap;
     public final ConcurrentHashMap<String, Pair<ServerChunk, Set<Integer>>> generatingChunkMap; // key = hash, value = pair <chunk, list<playerIds>>
+    public final ExecutorService executorService;
+    public final ExecutorService ioExecutorService;
 
     /** Noise logic */
     private final Noise terrainNoiseHeight;
@@ -62,6 +66,9 @@ public class ServerChunkGrid {
         generatingChunkMap = new ConcurrentHashMap<>();
         unloadAfterMillis = ExpoShared.UNLOAD_CHUNKS_AFTER_MILLIS;
         saveAfterMillis = ExpoShared.SAVE_CHUNKS_AFTER_MILLIS;
+
+        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ioExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         genSettings = WorldGen.get().getSettings(dimension.getDimensionName());
         WorldGenNoiseSettings settings = genSettings.getNoiseSettings();
@@ -410,28 +417,18 @@ public class ServerChunkGrid {
 
         if(knownChunkFiles.contains(hash)) {
             // Start a I/O thread and load the chunk content.
-            new Thread("ChunkLoadThread[" + hash + "]") {
-
-                @Override
-                public void run() {
-                    chunk.loadFromFile();
-                    activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
-                    generatingChunkMap.remove(hash);
-                }
-
-            }.start();
+            executorService.execute(() -> {
+                chunk.loadFromFile();
+                activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
+                generatingChunkMap.remove(hash);
+            });
         } else {
             // Start generation task.
-            new Thread("ChunkGenerateThread[" + hash + "]") {
-
-                @Override
-                public void run() {
-                    chunk.generate(true, false);
-                    activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
-                    generatingChunkMap.remove(hash);
-                }
-
-            }.start();
+            executorService.execute(() -> {
+                chunk.generate(true, false);
+                activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
+                generatingChunkMap.remove(hash);
+            });
         }
     }
 

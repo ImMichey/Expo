@@ -22,12 +22,12 @@ public class ServerWorld {
     private static ServerWorld INSTANCE;
 
     /** All world dimensions */
-    private HashMap<String, ServerDimension> serverDimensionMap;
+    private final HashMap<String, ServerDimension> serverDimensionMap;
     private ServerDimension mainDimension;
 
     /** Multithreaded ticking for every dimension */
-    private ExecutorService executorService;
-    private Collection<Callable<Void>> dimensionTickCollection;
+    private final ExecutorService executorService;
+    private final Collection<Callable<Void>> dimensionTickCollection;
 
     /** Entity id tracking */
     private int currentEntityId;
@@ -130,6 +130,9 @@ public class ServerWorld {
     }
 
     public void cancelAll() {
+        for(ServerDimension dim : getDimensions()) {
+            dim.getChunkHandler().executorService.shutdown();
+        }
         executorService.shutdown();
     }
 

@@ -52,7 +52,7 @@ public class GameSettings {
     public int lightQuality = 2;
 
     // Gameplay variables
-    public boolean runDefault = true;
+    public boolean runDefault = false;
 
     public GameSettings() {
         var result = ExpoFileCreator.createFileStructure(new ExpoFile(ExpoFile.FileType.CONFIG, SETTINGS_FILE_NAME, asJson()));

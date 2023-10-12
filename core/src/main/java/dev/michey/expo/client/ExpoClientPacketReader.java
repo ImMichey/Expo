@@ -107,15 +107,7 @@ public class ExpoClientPacketReader {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
             //ExpoLogger.log("p11 " + p.chunkX + " " + p.chunkY);
-            ExpoLogger.log("p11");
-            new Thread("ChunkUpdateThread[" + p.chunkX + "," + p.chunkY + "]") {
-
-                @Override
-                public void run() {
-                    ClientChunkGrid.get().updateChunkData(p);
-                }
-
-            }.start();
+            ExpoClientContainer.get().getClientWorld().getClientChunkGrid().handleChunkData(p);
         } else if(o instanceof P12_PlayerDirection p) {
             ClientEntity entity = entityFromId(p.entityId);
 
@@ -240,8 +232,6 @@ public class ExpoClientPacketReader {
 
             chunk.updateSingle(p);
             PlayerUI.get().playerMinimap.incomplete = true;
-
-            ExpoLogger.log("p32");
         } else if(o instanceof P33_TileDig p) {
             float x = ExpoShared.tileToPos(p.tileX);
             float y = ExpoShared.tileToPos(p.tileY);

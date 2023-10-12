@@ -20,6 +20,9 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
+import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ClientUtils;
@@ -220,9 +223,15 @@ public class ExpoClientContainer {
     }
 
     public void stopSession() {
+        ExpoClientContainer.get().clientWorld.getClientChunkGrid().executorService.shutdown();
+
         if(client != null) {
             client.disconnect();
         } else {
+            for(ServerDimension dim : ServerWorld.get().getDimensions()) {
+                dim.getChunkHandler().executorService.shutdown();
+                dim.getChunkHandler().ioExecutorService.shutdown();
+            }
             localServer.stopServer();
         }
     }

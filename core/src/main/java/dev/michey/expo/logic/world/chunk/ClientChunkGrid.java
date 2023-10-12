@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -26,6 +28,7 @@ public class ClientChunkGrid {
     private static ClientChunkGrid INSTANCE;
 
     private final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
+    public final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     /** Minimap only noise logic on dedicated server connection. */
     public Noise terrainNoiseHeight;
@@ -86,6 +89,10 @@ public class ClientChunkGrid {
                 ExpoLogger.log(npp.noiseWrapper.name + ": " + noise.getSeed());
             }
         }
+    }
+
+    public void handleChunkData(P11_ChunkData p) {
+        executorService.execute(() -> ClientChunkGrid.get().updateChunkData(p));
     }
 
     public void tick(float delta) {

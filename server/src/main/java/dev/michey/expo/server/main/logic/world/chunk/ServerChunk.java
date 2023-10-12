@@ -515,18 +515,13 @@ public class ServerChunk {
         String worldName = ExpoServerBase.get().getWorldSaveHandler().getWorldName();
         if(worldName.startsWith("dev-world-")) return;
 
-        new Thread("ChunkSaveThread[" + chunkKey + "]") {
-
-            @Override
-            public void run() {
-                for(ServerTile tile : tiles) {
-                    dimension.getChunkHandler().removeNoiseCache(tile.tileX, tile.tileY);
-                    dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
-                }
-                save();
+        dimension.getChunkHandler().ioExecutorService.execute(() -> {
+            for(ServerTile tile : tiles) {
+                dimension.getChunkHandler().removeNoiseCache(tile.tileX, tile.tileY);
+                dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
             }
-
-        }.start();
+            save();
+        });
     }
 
     /** Attaches an entity to a tile within the chunk tile structure. */
