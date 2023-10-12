@@ -6,6 +6,8 @@ import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.ClientParticle;
 
+import java.util.List;
+
 import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ParticleBuilder {
@@ -57,6 +59,12 @@ public class ParticleBuilder {
 
     public ParticleBuilder color(Color... colors) {
         this.colors = colors;
+        return this;
+    }
+
+    public ParticleBuilder color(List<Color> colors) {
+        this.colors = new Color[colors.size()];
+        for(int i = 0; i < colors.size(); i++) this.colors[i] = colors.get(i);
         return this;
     }
 

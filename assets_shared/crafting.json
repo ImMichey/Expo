@@ -7,14 +7,18 @@
             "recipe_oak_wood_floor",
             "recipe_crate",
             "recipe_sand_floor",
-            "recipe_dirt_floor"
+            "recipe_dirt_floor",
+            "recipe_oak_wood_wall",
+            "recipe_rock_wall",
+            "recipe_dirt_wall"
         ],
         "tools": [
             "recipe_flint_pickaxe",
             "recipe_flint_axe",
             "recipe_flint_shovel",
             "recipe_flint_scythe",
-            "recipe_torch"
+            "recipe_torch",
+            "recipe_insect_net"
         ],
         "food": [
             "recipe_wheat_seeds"
@@ -227,6 +231,62 @@
                 {
                     "id": 34,
                     "amount": 1
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_oak_wood_wall",
+            "output": {
+                "id": 31,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 21,
+                    "amount": 2
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_rock_wall",
+            "output": {
+                "id": 38,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 16,
+                    "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_dirt_wall",
+            "output": {
+                "id": 39,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 35,
+                    "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_insect_net",
+            "output": {
+                "id": 40,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 15,
+                    "amount": 3
                 }
             ]
         }

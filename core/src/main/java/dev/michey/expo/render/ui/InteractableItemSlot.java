@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
@@ -119,7 +120,7 @@ public class InteractableItemSlot extends InteractableUIElement {
         if(item != null && !item.isEmpty()) {
             ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
 
-            if(mapping.logic.isTool() || mapping.logic.isArmor()) {
+            if(mapping.logic.isTool() || mapping.logic.isArmor() || mapping.logic.isTool(ToolType.NET)) {
                 float percentage = item.itemMetadata.durability / (float) mapping.logic.durability * 100f;
                 float[] rgb = parent.percentageToColor(percentage);
                 String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();

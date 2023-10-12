@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -33,6 +34,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("stone_hit");
+        ParticleSheet.Common.spawnRockHitParticles(this);
     }
 
     @Override

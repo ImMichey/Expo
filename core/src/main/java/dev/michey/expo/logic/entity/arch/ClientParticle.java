@@ -3,8 +3,6 @@ package dev.michey.expo.logic.entity.arch;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public abstract class ClientParticle extends ClientEntity {
 
     public TextureRegion particleTexture;

@@ -267,7 +267,7 @@
                     "biome": "DENSE_FOREST",
                     "type": "BLUEBERRY_BUSH",
                     "static": true,
-                    "chance": 0.002,
+                    "chance": 0.001,
                     "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
                     "spreadData": {
                         "spread": [1, 3],
@@ -449,7 +449,7 @@
                     "biome": "FOREST",
                     "type": "BLUEBERRY_BUSH",
                     "static": true,
-                    "chance": 0.004,
+                    "chance": 0.001,
                     "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
                     "spreadData": {
                         "spread": [1, 3],
@@ -541,7 +541,7 @@
                     "biome": "PLAINS",
                     "type": "SUNFLOWER",
                     "static": true,
-                    "chance": 0.0001,
+                    "chance": 0.00025,
                     "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
                     "priority": 50,
                     "spreadData": {

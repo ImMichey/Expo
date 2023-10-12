@@ -28,5 +28,6 @@
         "enableWater": false,
         "enableBlur": true
     },
-    "preferredHeight": 720
+    "preferredHeight": 720,
+    "gameplay": {"runDefault": false}
 }

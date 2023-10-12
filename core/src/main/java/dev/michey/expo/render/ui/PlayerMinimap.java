@@ -4,10 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
-import dev.michey.expo.logic.entity.misc.ClientFenceStick;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -29,7 +27,6 @@ import dev.michey.expo.util.Pair;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
@@ -49,6 +46,7 @@ public class PlayerMinimap {
     private final Pixmap pixmap;
     private final Texture pixmapTexture;
     private final HashMap<TileLayerType, HashSet<int[]>> minimapContainerMap;
+    private final HashMap<BiomeType, HashSet<int[]>> minimapBiomeContainerMap;
     private final HashMap<ClientPlayer, Pair<Float, Float>> drawUsers;
 
     private final int MAP_SIZE = 96;
@@ -63,6 +61,15 @@ public class PlayerMinimap {
         this.minimapPlayer = minimapPlayer;
 
         minimapContainerMap = new HashMap<>();
+        minimapBiomeContainerMap = new HashMap<>();
+
+        for(TileLayerType tlt : TileLayerType.values()) {
+            minimapContainerMap.put(tlt, new HashSet<>());
+        }
+        minimapBiomeContainerMap.put(BiomeType.PLAINS, new HashSet<>());
+        minimapBiomeContainerMap.put(BiomeType.DENSE_FOREST, new HashSet<>());
+        minimapBiomeContainerMap.put(BiomeType.FOREST, new HashSet<>());
+
         pixmap = new Pixmap(MAP_SIZE, MAP_SIZE, Pixmap.Format.RGBA8888);
         pixmapTexture = new Texture(pixmap);
         pixmap.setBlending(Pixmap.Blending.None);
@@ -80,11 +87,9 @@ public class PlayerMinimap {
             incomplete = false;
             centerTileX = newTileX;
             centerTileY = newTileY;
-            minimapContainerMap.clear();
 
-            for(TileLayerType tlt : TileLayerType.values()) {
-                minimapContainerMap.put(tlt, new HashSet<>());
-            }
+            for(var k : minimapContainerMap.keySet()) minimapContainerMap.get(k).clear();
+            for(var k : minimapBiomeContainerMap.keySet()) minimapBiomeContainerMap.get(k).clear();
 
             int startX = centerTileX - MAP_SIZE / 2;
             int startY = centerTileY - MAP_SIZE / 2;
@@ -126,7 +131,19 @@ public class PlayerMinimap {
                             }
                         }
 
-                        minimapContainerMap.get(use).add(new int[] {i, j});
+                        BiomeType useBiome = null;
+
+                        if(use == TileLayerType.FOREST) {
+                            if(tile.biome == BiomeType.FOREST || tile.biome == BiomeType.DENSE_FOREST || tile.biome == BiomeType.PLAINS) {
+                                useBiome = tile.biome;
+                            }
+                        }
+
+                        if(useBiome != null) {
+                            minimapBiomeContainerMap.get(useBiome).add(new int[] {i, j});
+                        } else {
+                            minimapContainerMap.get(use).add(new int[] {i, j});
+                        }
                     }
                 }
             } else {
@@ -177,7 +194,19 @@ public class PlayerMinimap {
                             }
                         }
 
-                        minimapContainerMap.get(use).add(new int[] {i, j});
+                        BiomeType useBiome = null;
+
+                        if(use == TileLayerType.FOREST) {
+                            if(chunk.biomes[tileArray] == BiomeType.FOREST || chunk.biomes[tileArray] == BiomeType.DENSE_FOREST || chunk.biomes[tileArray] == BiomeType.PLAINS) {
+                                useBiome = chunk.biomes[tileArray];
+                            }
+                        }
+
+                        if(useBiome != null) {
+                            minimapBiomeContainerMap.get(useBiome).add(new int[] {i, j});
+                        } else {
+                            minimapContainerMap.get(use).add(new int[] {i, j});
+                        }
                     }
                 }
             }
@@ -188,6 +217,15 @@ public class PlayerMinimap {
             for(TileLayerType tlt : minimapContainerMap.keySet()) {
                 pixmap.setColor(tlt.TILE_COLOR);
                 var coords = minimapContainerMap.get(tlt);
+
+                for(int[] d : coords) {
+                    pixmap.drawPixel(d[0], d[1]);
+                }
+            }
+
+            for(BiomeType bt : minimapBiomeContainerMap.keySet()) {
+                pixmap.setColor(bt.BIOME_COLOR[0], bt.BIOME_COLOR[1], bt.BIOME_COLOR[2], bt.BIOME_COLOR[3]);
+                var coords = minimapBiomeContainerMap.get(bt);
 
                 for(int[] d : coords) {
                     pixmap.drawPixel(d[0], d[1]);

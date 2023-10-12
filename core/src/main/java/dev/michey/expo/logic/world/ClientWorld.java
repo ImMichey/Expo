@@ -647,6 +647,21 @@ public class ClientWorld {
                         if(Expo.get().getImGuiExpo().renderClientPos.get()) {
                             r.chunkRenderer.setColor(Color.CYAN);
                             r.chunkRenderer.circle(all.clientPosX, all.clientPosY, 0.8f, 8);
+
+                            if(all instanceof ClientDynamic3DTile cd3d) {
+                                r.chunkRenderer.setColor(Color.RED);
+                                r.chunkRenderer.end();
+
+                                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                                r.chunkRenderer.rect(
+                                        cd3d.finalDrawPosX - cd3d.squishAnimator2D.squishX1,
+                                        cd3d.finalDrawPosY + cd3d.squishAnimator2D.squishY1,
+                                        cd3d.created.getRegionWidth() + cd3d.squishAnimator2D.squishX2,
+                                        cd3d.created.getRegionHeight() - 32 + cd3d.squishAnimator2D.squishY2);
+
+                                r.chunkRenderer.end();
+                                r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                            }
                         }
 
                         if(Expo.get().getImGuiExpo().renderServerPos.get()) {
@@ -662,6 +677,8 @@ public class ClientWorld {
                         if(Expo.get().getImGuiExpo().renderVisualCenter.get()) {
                             r.chunkRenderer.setColor(Color.YELLOW);
                             r.chunkRenderer.circle(all.finalTextureCenterX, all.finalTextureCenterY, 0.33f, 8);
+
+
                         }
 
                         if(Expo.get().getImGuiExpo().renderInteractionPoints.get()) {

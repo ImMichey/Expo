@@ -137,25 +137,26 @@ public class ExpoClientContainer {
 
             if(playerUI.loadingScreen) {
                 // World loading hook
-                int loadedChunks = ClientChunkGrid.get().getAllClientChunks().size();
-                int requiredChunks = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_X * ExpoShared.PLAYER_CHUNK_VIEW_RANGE_Y;
+                r.hudBatch.begin();
+                r.hudBatch.setColor(Color.BLACK);
+                r.hudBatch.draw(playerUI.whiteSquare, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                r.hudBatch.setColor(Color.WHITE);
 
-                if(loadedChunks < requiredChunks) {
-                    r.hudBatch.begin();
-                    r.hudBatch.setColor(Color.BLACK);
-                    r.hudBatch.draw(playerUI.whiteSquare, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                    r.hudBatch.setColor(Color.WHITE);
+                String string;
 
-                    r.globalGlyph.setText(r.m6x11_border_use, "Loading World...");
-                    float w = r.globalGlyph.width;
-                    float h = r.globalGlyph.height;
-
-                    r.m6x11_border_use.draw(r.hudBatch, "Loading World...", (Gdx.graphics.getWidth() - w) * 0.5f, (Gdx.graphics.getHeight() - h) * 0.5f + h);
-
-                    r.hudBatch.end();
+                if(ExpoServerLocal.get() != null) {
+                    string = "Loading World '" + ExpoServerLocal.get().getWorldSaveHandler().getWorldName() + "'...";
                 } else {
-                    playerUI.loadingScreen = false;
+                    string = "Retrieving World data...";
                 }
+
+                r.globalGlyph.setText(r.m6x11_border_use, string);
+                float w = r.globalGlyph.width;
+                float h = r.globalGlyph.height;
+
+                r.m6x11_border_use.draw(r.hudBatch, string, (Gdx.graphics.getWidth() - w) * 0.5f, (Gdx.graphics.getHeight() - h) * 0.5f + h);
+
+                r.hudBatch.end();
             } else {
                 playerUI.render();
             }

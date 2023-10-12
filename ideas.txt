@@ -5,3 +5,8 @@ BUG: When player dies away from spawn and moves back to the area, another player
 - Pine tree
 - Birch tree
 - Ability to draw entities below water (partially and fully)
+
+
+
+---
+AO bug when placing stuff?

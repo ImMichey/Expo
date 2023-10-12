@@ -125,6 +125,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         heldItemPacket(PacketReceiver.whoCanSee(this));
 
         ServerGravestone gravestone = new ServerGravestone();
+        gravestone.owner = username;
         gravestone.posX = posX;
         gravestone.posY = posY;
         gravestone.setStaticEntity();

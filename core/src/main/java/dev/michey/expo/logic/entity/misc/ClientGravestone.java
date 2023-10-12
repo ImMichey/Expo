@@ -17,6 +17,8 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
     private TextureRegion selectionTexture;
     private float[] interactionPointArray;
 
+    public String owner;
+
     @Override
     public void onCreation() {
         texture = tr("entity_gravestone");
@@ -80,6 +82,11 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
+    }
+
+    @Override
+    public void applyPacketPayload(Object[] payload) {
+        owner = (String) payload[0];
     }
 
     @Override

@@ -244,7 +244,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 .amount(5, 8)
                 .scale(0.6f, 0.9f)
                 .lifetime(0.3f, 0.5f)
-                .color(ParticleColorMap.random(5))
+                .color(ParticleColorMap.of(5))
                 .position(clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f)
                 .velocity(-30, 30, -30, 30)
                 .fadeout(0.15f)

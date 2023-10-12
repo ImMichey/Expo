@@ -82,6 +82,9 @@ public class ClientChunk {
     /** Detaches a tile entity from the current chunk and returns the new amount of tile entities within this chunk. */
     public int detachTileEntity(int tileArray) {
         tileEntityCount--;
+        if(tileEntityGrid == null) {
+            ExpoLogger.log("DETACH " + tileArray + " new: " + tileEntityCount);
+        }
         tileEntityGrid[tileArray] = -1;
         return tileEntityCount;
     }

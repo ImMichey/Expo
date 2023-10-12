@@ -65,7 +65,7 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
             coal = new SpawnItem("item_coal", 2, 3);
         }
 
-        spawnItemsAround(0, 4.875f, 8, 12,
+        spawnItemsAround(0, 4.875f, 11, 13,
                 new SpawnItem("item_rock", rocksMin, rocksMax),
                 coal);
     }

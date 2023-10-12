@@ -51,6 +51,9 @@ public class GameSettings {
     public int zoomLevel = 0;
     public int lightQuality = 2;
 
+    // Gameplay variables
+    public boolean runDefault = true;
+
     public GameSettings() {
         var result = ExpoFileCreator.createFileStructure(new ExpoFile(ExpoFile.FileType.CONFIG, SETTINGS_FILE_NAME, asJson()));
 
@@ -109,6 +112,10 @@ public class GameSettings {
                 .put("waterReflections", waterReflections)
                 ;
 
+        JSONObject gameplayJson = new JSONObject()
+                .put("runDefault", runDefault)
+                ;
+
         return new JSONObject()
                 .put("preferredWidth", preferredWidth)
                 .put("preferredHeight", preferredHeight)
@@ -119,6 +126,7 @@ public class GameSettings {
                 .put("audio", audioJson)
                 .put("uiScale", uiScale)
                 .put("graphics", graphicJson)
+                .put("gameplay", gameplayJson)
                 ;
     }
 
@@ -154,6 +162,9 @@ public class GameSettings {
         grassColoring = graphicJson.getBoolean("grassColoring");
         ambientOcclusion = graphicJson.getBoolean("ambientOcclusion");
         waterReflections = graphicJson.getBoolean("waterReflections");
+
+        JSONObject gameplayJson = jsonSettings.getJSONObject("gameplay");
+        runDefault = gameplayJson.getBoolean("runDefault");
     }
 
     @Override

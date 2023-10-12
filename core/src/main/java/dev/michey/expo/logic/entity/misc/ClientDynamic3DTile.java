@@ -12,6 +12,8 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.SquishAnimator2D;
+import dev.michey.expo.render.animator.SquishAnimatorAdvanced2D;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
@@ -30,8 +32,11 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     private float playerBehindDelta;
     private float playerBehindDeltaInterpolated;
 
+    public final SquishAnimatorAdvanced2D squishAnimator2D = new SquishAnimatorAdvanced2D(0.2f, 1, 1);
+
     private boolean updateTexture = false;
     public TextureRegion created;
+    private TextureRegion ao;
 
     @Override
     public void onCreation() {
@@ -44,6 +49,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
                 clientPosX + 13, clientPosY + 13,
         };
 
+        ao = tr("entity_wall_ao");
         createTexture();
     }
 
@@ -85,6 +91,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("stone_hit");
+        squishAnimator2D.reset();
 
         if(selected && newHealth <= 0) {
             CameraShake.invoke(1.25f, 0.33f);
@@ -100,12 +107,13 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             createTexture();
         }
 
+        /*
         ClientPlayer local = ClientPlayer.getLocalPlayer();
         boolean playerBehind;
 
         if(local != null) {
             if(local.depth > depth) {
-                float buffer = 16;
+                float buffer = 4;
 
                 playerBehind = ExpoShared.overlap(new float[] {
                         local.clientPosX, local.clientPosY,
@@ -138,6 +146,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
             playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
         }
+        */
     }
 
     @Override
@@ -145,19 +154,32 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
+            boolean un = squishAnimator2D.isActive();
+            ClientEntity[] n = getNeighbouringTileEntitiesNESW();
+            squishAnimator2D.calculate(delta);
+            if(un) notifySquish(n);
+
             updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated);
-            rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(created,
+                    finalDrawPosX - squishAnimator2D.squishX1,
+                    finalDrawPosY + squishAnimator2D.squishY1,
+                    created.getRegionWidth() + squishAnimator2D.squishX2,
+                    created.getRegionHeight() + squishAnimator2D.squishY2);
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY, created.getRegionWidth(), created.getRegionHeight() * -1);
+        rc.arraySpriteBatch.draw(created,
+                finalDrawPosX - squishAnimator2D.squishX1,
+                finalDrawPosY + squishAnimator2D.squishY1,
+                created.getRegionWidth() + squishAnimator2D.squishX2,
+                (created.getRegionHeight() + squishAnimator2D.squishY2) * -1);
     }
 
     @Override
@@ -172,6 +194,12 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
                 rc.useRegularArrayShader();
                 rc.arraySpriteBatch.drawGradient(created, textureWidth, textureHeight, shadow);
             }
+        }
+
+        if(emulatingType == TileLayerType.OAKPLANKWALL) {
+            rc.useArrayBatch();
+            rc.useRegularArrayShader();
+            rc.arraySpriteBatch.draw(ao, finalDrawPosX - 2, finalDrawPosY - 2);
         }
     }
 
@@ -198,10 +226,19 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
+        boolean un = squishAnimator2D.isActive();
+        ClientEntity[] n = getNeighbouringTileEntitiesNESW();
+        squishAnimator2D.calculate(delta);
+        if(un) notifySquish(n);
+
         rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, true);
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated * 0.5f);
-        rc.arraySpriteBatch.draw(created, finalDrawPosX, finalDrawPosY);
+        rc.arraySpriteBatch.draw(created,
+                finalDrawPosX - squishAnimator2D.squishX1,
+                finalDrawPosY + squishAnimator2D.squishY1,
+                created.getRegionWidth() + squishAnimator2D.squishX2,
+                created.getRegionHeight() + squishAnimator2D.squishY2);
 
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -213,6 +250,24 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     @Override
     public float[] interactionPoints() {
         return interactionPointArray;
+    }
+
+    private void notifySquish(ClientEntity[] n) {
+        // Notify neighbouring tiles.
+        if(n[0] != null && n[0] instanceof ClientDynamic3DTile cd3d) {
+            cd3d.squishAnimator2D.squishY1 = -squishAnimator2D.squishY1;
+            cd3d.squishAnimator2D.squishY2 = -squishAnimator2D.squishY2 * 0.5f;
+        }
+        if(n[1] != null && n[1] instanceof ClientDynamic3DTile cd3d) {
+            cd3d.squishAnimator2D.squishX1 = -squishAnimator2D.squishX1;
+            cd3d.squishAnimator2D.squishX2 = -squishAnimator2D.squishX1;
+        }
+        if(n[2] != null && n[2] instanceof ClientDynamic3DTile cd3d) {
+            cd3d.squishAnimator2D.squishY2 = -squishAnimator2D.squishY1 * 0.5f;
+        }
+        if(n[3] != null && n[3] instanceof ClientDynamic3DTile cd3d) {
+            cd3d.squishAnimator2D.squishX2 = -squishAnimator2D.squishX1;
+        }
     }
 
 }

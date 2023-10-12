@@ -258,6 +258,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
             float bc = new Color(0, 0, 0, b).toFloatBits();
             float tc = new Color(0, 0, 0, t).toFloatBits();
 
+            //rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(treeLeaves, treeLeaves.getRegionWidth(), treeLeaves.getRegionHeight(), leavesShadow, windDisplacement, windDisplacement, tc, bc);
             rc.arraySpriteBatch.drawGradientCustomColor(treeLeaves, treeLeaves.getRegionWidth(), treeLeaves.getRegionHeight(), leavesShadow, tc, bc);
         }
     }

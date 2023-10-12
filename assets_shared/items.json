@@ -959,6 +959,96 @@
             "logic": {
                 "toolType": "ITEM"
             }
+        },
+        {
+            "identifier": "item_rock_wall",
+            "id": 38,
+            "displayName": "Stone Wall",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_rock_wall"
+                },
+                "held": {
+                    "texture": "item_rock_wall"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_2",
+                    "floorType": "ROCK_WALL"
+                }
+            }
+        },
+        {
+            "identifier": "item_dirt_wall",
+            "id": 39,
+            "displayName": "Dirt Wall",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_dirt_wall"
+                },
+                "held": {
+                    "texture": "item_dirt_wall"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_2",
+                    "floorType": "DIRT_WALL"
+                }
+            }
+        },
+        {
+            "identifier": "item_insect_net",
+            "id": 40,
+            "displayName": "Insect Net",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_insect_net"
+                },
+                "held": {
+                    "texture": "item_insect_net",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2.75,
+                    "offsetY": 8.5,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "toolType": "NET",
+                "durability": 124
+            }
+        },
+        {
+            "identifier": "item_firefly",
+            "id": 41,
+            "displayName": "Firefly",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_firefly"
+                },
+                "held": {
+                    "texture": "item_firefly",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2.75,
+                    "offsetY": 8.5,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM"
+            }
         }
     ]
 }

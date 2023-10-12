@@ -107,6 +107,7 @@ public class ExpoClientPacketReader {
             ExpoClientContainer.get().notifyPlayerQuit(p.username);
         } else if(o instanceof P11_ChunkData p) {
             //ExpoLogger.log("p11 " + p.chunkX + " " + p.chunkY);
+            ExpoLogger.log("p11");
             new Thread("ChunkUpdateThread[" + p.chunkX + "," + p.chunkY + "]") {
 
                 @Override
@@ -239,6 +240,8 @@ public class ExpoClientPacketReader {
 
             chunk.updateSingle(p);
             PlayerUI.get().playerMinimap.incomplete = true;
+
+            ExpoLogger.log("p32");
         } else if(o instanceof P33_TileDig p) {
             float x = ExpoShared.tileToPos(p.tileX);
             float y = ExpoShared.tileToPos(p.tileY);
@@ -247,7 +250,7 @@ public class ExpoClientPacketReader {
                     .amount(8, 16)
                     .scale(0.5f, 0.9f)
                     .lifetime(0.35f, 0.5f)
-                    .color(ParticleColorMap.random(p.particleColorId))
+                    .color(ParticleColorMap.of(p.particleColorId))
                     .position(x + 2, y + 2)
                     .offset(12, 12)
                     .velocity(-24, 24, 8, 32)

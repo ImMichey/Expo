@@ -44,7 +44,7 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
                 .amount(4, 7)
                 .scale(0.6f, 0.9f)
                 .lifetime(0.3f, 0.35f)
-                .color(ParticleColorMap.random(1))
+                .color(ParticleColorMap.of(1))
                 .position(finalTextureCenterX, finalTextureCenterY)
                 .velocity(-24, 24, -24, 24)
                 .fadeout(0.10f)

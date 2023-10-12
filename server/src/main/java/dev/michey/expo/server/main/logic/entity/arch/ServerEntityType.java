@@ -19,7 +19,7 @@ public enum ServerEntityType {
     BUSH(6, "Bush", false),
     ITEM(7, "Item", true),
     ANCIENT_TREE(8, "AncientTree", false),
-    GRAVESTONE(9, "Gravestone", false),
+    GRAVESTONE(9, "Gravestone", true),
     DANDELION(10, "Dandelion", false),
     POPPY(11, "Poppy", false),
     BLUEBERRY_BUSH(12, "BlueberryBush", true),

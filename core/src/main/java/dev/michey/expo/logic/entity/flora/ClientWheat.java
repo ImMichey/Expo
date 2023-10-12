@@ -47,7 +47,7 @@ public class ClientWheat extends ClientEntity implements SelectableEntity, Refle
                 .amount(5, 9)
                 .scale(0.7f, 1.0f)
                 .lifetime(0.3f, 0.35f)
-                .color(ParticleColorMap.random(4))
+                .color(ParticleColorMap.of(4))
                 .position(finalTextureCenterX, finalTextureCenterY)
                 .velocity(-24, 24, -24, 24)
                 .fadeout(0.10f)

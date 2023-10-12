@@ -2,10 +2,12 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.SquishAnimator2D;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
@@ -19,6 +21,8 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
     private TextureRegion shadowMask;
     private float[] interactionPointArray;
     private TextureRegion selectionTexture;
+
+    private final SquishAnimator2D squishAnimator2D = new SquishAnimator2D(0.2f, 1.5f, 1.5f);
 
     @Override
     public void onCreation() {
@@ -38,6 +42,9 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("stone_hit");
+        squishAnimator2D.reset();
+
+        ParticleSheet.Common.spawnBoulderHitParticles(this, variant == 2);
 
         if(selected && newHealth <= 0) {
             CameraShake.invoke(1.0f, 0.33f);
@@ -69,8 +76,11 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         rc.bindAndSetSelection(rc.arraySpriteBatch);
+        squishAnimator2D.calculate(delta);
 
-        rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
+        rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX - squishAnimator2D.squishX * 0.5f, finalSelectionDrawPosY,
+                selectionTexture.getRegionWidth() + squishAnimator2D.squishX, selectionTexture.getRegionHeight() + squishAnimator2D.squishY);
+
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
@@ -82,16 +92,21 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
+            squishAnimator2D.calculate(delta);
+
             updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
+
+            rc.arraySpriteBatch.draw(texture, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY,
+                    texture.getRegionWidth() + squishAnimator2D.squishX, texture.getRegionHeight() + squishAnimator2D.squishY);
         }
     }
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY, texture.getRegionWidth(), texture.getRegionHeight() * -1);
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY,
+                texture.getRegionWidth() + squishAnimator2D.squishX, (texture.getRegionHeight() + squishAnimator2D.squishY) * -1);
     }
 
     @Override
