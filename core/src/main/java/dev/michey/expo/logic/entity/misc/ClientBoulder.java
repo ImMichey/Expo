@@ -118,7 +118,7 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
         if(draw) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(ao, finalDrawPosX - 1, finalDrawPosY - 1);
+            rc.arraySpriteBatch.draw(ao, finalDrawPosX - 1 - squishAnimator2D.squishX * 0.5f, finalDrawPosY - 1, ao.getRegionWidth() + squishAnimator2D.squishX, ao.getRegionHeight() + squishAnimator2D.squishY);
             rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
     }
