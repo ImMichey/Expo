@@ -70,7 +70,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         generateAge(biome, rnd);
         generateVariant(rnd);
 
-        if(rnd.random() <= 0.1f) {
+        if(rnd.random() <= 0.02f) {
             cut = true;
             health = trunkConversionHealth;
         }
