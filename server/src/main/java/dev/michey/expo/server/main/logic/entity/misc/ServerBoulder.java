@@ -1,6 +1,5 @@
 package dev.michey.expo.server.main.logic.entity.misc;
 
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
@@ -45,10 +44,10 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
         if(rnd.random() <= 0.25f) {
             variant = 2;
-            health = 80.0f;
+            health = 90.0f;
         } else {
             variant = 1;
-            health = 50.0f;
+            health = 75.0f;
         }
     }
 
