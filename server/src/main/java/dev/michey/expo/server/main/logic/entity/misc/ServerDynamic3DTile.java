@@ -29,13 +29,13 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
 
         if(emulatingType == TileLayerType.ROCK) {
             setDamageableWith(ToolType.PICKAXE);
-            health = 50.0f;
+            health = 75.0f;
         } else if(emulatingType == TileLayerType.DIRT) {
             setDamageableWith(ToolType.SHOVEL);
-            health = 50.0f;
+            health = 75.0f;
         } else if(emulatingType == TileLayerType.OAKPLANKWALL) {
             setDamageableWith(ToolType.AXE);
-            health = 50.0f;
+            health = 75.0f;
         }
     }
 
@@ -86,7 +86,24 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
             }
         }
 
-        spawnItemsAround(8, 8, 8, 8, new SpawnItem("item_rock", 2, 3), new SpawnItem("item_flint", 1, 1, 0.5f));
+        SpawnItem[] drops = null;
+
+        if(emulatingType == TileLayerType.ROCK) {
+            drops = new SpawnItem[] {
+                    new SpawnItem("item_rock", 2, 3),
+                    new SpawnItem("item_flint", 1, 1, 0.5f)
+            };
+        } else if(emulatingType == TileLayerType.DIRT) {
+            drops = new SpawnItem[] {
+                    new SpawnItem("item_dirt", 2, 3)
+            };
+        } else if(emulatingType == TileLayerType.OAKPLANKWALL) {
+            drops = new SpawnItem[] {
+                    new SpawnItem("item_oak_plank", 1, 2)
+            };
+        }
+
+        spawnItemsAround(8, 8, 8, 8, drops);
     }
 
     @Override
