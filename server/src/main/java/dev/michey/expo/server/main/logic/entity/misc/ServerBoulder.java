@@ -55,12 +55,12 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     public void onDie() {
         SpawnItem coal = null;
         int rocksMin = 3;
-        int rocksMax = 5;
+        int rocksMax = 4;
 
         if(variant == 2) {
             // Coal.
-            rocksMin = 2;
-            rocksMax = 3;
+            rocksMin = 1;
+            rocksMax = 2;
             coal = new SpawnItem("item_coal", 2, 3);
         }
 
