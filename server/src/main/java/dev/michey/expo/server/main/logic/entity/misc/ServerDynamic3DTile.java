@@ -86,24 +86,19 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
             }
         }
 
-        SpawnItem[] drops = null;
+        spawnItemsAround(8, 8, 8, 8, getDrop());
+    }
 
-        if(emulatingType == TileLayerType.ROCK) {
-            drops = new SpawnItem[] {
+    private SpawnItem[] getDrop() {
+        return switch (emulatingType) {
+            case ROCK -> new SpawnItem[] {
                     new SpawnItem("item_rock", 2, 3),
                     new SpawnItem("item_flint", 1, 1, 0.5f)
             };
-        } else if(emulatingType == TileLayerType.DIRT) {
-            drops = new SpawnItem[] {
-                    new SpawnItem("item_dirt", 2, 3)
-            };
-        } else if(emulatingType == TileLayerType.OAKPLANKWALL) {
-            drops = new SpawnItem[] {
-                    new SpawnItem("item_oak_plank", 1, 2)
-            };
-        }
-
-        spawnItemsAround(8, 8, 8, 8, drops);
+            case DIRT -> new SpawnItem[] { new SpawnItem("item_dirt", 2, 3) };
+            case OAKPLANKWALL -> new SpawnItem[] { new SpawnItem("item_oak_plank", 1, 2) };
+            default -> null;
+        };
     }
 
     @Override
