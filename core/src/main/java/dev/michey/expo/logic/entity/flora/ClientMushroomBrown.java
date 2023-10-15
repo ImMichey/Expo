@@ -18,11 +18,13 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     private TextureRegion texture;
     private TextureRegion selectionTexture;
+    private TextureRegion ao;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        texture = tr("entity_mushroom_brown");
+        texture = tr("entity_mushroom_brownn");
+        ao = tr("entity_mushroom_brownn_ao");
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
@@ -89,6 +91,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
         if(drawMushroom) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
+            //rc.arraySpriteBatch.draw(ao, finalDrawPosX + 1, finalDrawPosY - 1);
             rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
         }
     }
