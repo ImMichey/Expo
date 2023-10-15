@@ -59,6 +59,7 @@ public class ExpoServerRegistry {
                 ServerInventorySlot.class,
                 ServerInventorySlot[].class,
                 TeleportReason.class,
+                BiomeDefinition.class,
 
                 // Packets
                 P0_Auth_Req.class,

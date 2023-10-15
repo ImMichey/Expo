@@ -15,7 +15,7 @@ public class ServerGrass extends ServerEntity {
 
     public ServerGrass() {
         variant = 1;
-        health = 20.0f;
+        health = 30.0f;
         setDamageableWith(ToolType.SCYTHE, ToolType.FIST);
     }
 

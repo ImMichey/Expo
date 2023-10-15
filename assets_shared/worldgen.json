@@ -171,16 +171,11 @@
                         "moisture": [0.0, 0.45]
                     },
                     {
-                        "type": "FOREST",
-                        "elevation": [0.5, 1.0],
-                        "temperature": [0.45, 1.0],
-                        "moisture": [0.0, 0.45]
-                    },
-                    {
                         "type": "DENSE_FOREST",
                         "elevation": [0.5, 1.0],
                         "temperature": [0.0, 1.0],
-                        "moisture": [0.45, 1.0]
+                        "moisture": [0.0, 1.0],
+                        "priority": 100
                     }
                 ]
             },

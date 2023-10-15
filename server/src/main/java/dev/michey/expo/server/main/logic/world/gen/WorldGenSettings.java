@@ -1,6 +1,8 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,12 +14,14 @@ public class WorldGenSettings {
     private WorldGenNoiseSettings noiseSettings;
 
     /** Biomes */
-    private final HashMap<BiomeType, float[]> biomeDataMap;
+    //private final HashMap<BiomeType, float[]> biomeDataMap;
+    private final LinkedList<BiomeDefinition> biomeDefinitionList;
     private final HashMap<BiomeType, List<EntityPopulator>> biomePopulatorMap;
     private final HashMap<BiomeType, List<TilePopulator>> tilePopulatorMap;
 
     public WorldGenSettings() {
-        biomeDataMap = new HashMap<>();
+        //biomeDataMap = new HashMap<>();
+        biomeDefinitionList = new LinkedList<>();
         biomePopulatorMap = new HashMap<>();
         tilePopulatorMap = new HashMap<>();
     }
@@ -54,8 +58,10 @@ public class WorldGenSettings {
                 values[4] = m.getFloat(0);
                 values[5] = m.getFloat(1);
 
-                biomeDataMap.put(BiomeType.valueOf(entry.getString("type")), values);
+                biomeDefinitionList.add(new BiomeDefinition(BiomeType.valueOf(entry.getString("type")), values, !entry.has("priority") ? 0 : entry.getInt("priority")));
             }
+
+            biomeDefinitionList.sort(Comparator.comparingInt(o -> o.priority));
         }
     }
 
@@ -97,13 +103,14 @@ public class WorldGenSettings {
     public String toString() {
         return "WorldGenSettings{" +
                 "noiseSettings=" + noiseSettings +
-                ", biomeDataMap=" + biomeDataMap +
+                ", biomeDefinitionList=" + biomeDefinitionList +
                 ", biomePopulatorMap=" + biomePopulatorMap +
+                ", tilePopulatorMap=" + tilePopulatorMap +
                 '}';
     }
 
-    public HashMap<BiomeType, float[]> getBiomeDataMap() {
-        return biomeDataMap;
+    public LinkedList<BiomeDefinition> getBiomeDefinitionList() {
+        return biomeDefinitionList;
     }
 
     public List<EntityPopulator> getEntityPopulators(BiomeType type) {

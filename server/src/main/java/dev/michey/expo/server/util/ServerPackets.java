@@ -32,7 +32,7 @@ public class ServerPackets {
         p.worldSeed = worldSeed;
         if(genSettings != null) {
             p.noiseSettings = genSettings.getNoiseSettings();
-            p.biomeDataMap = genSettings.getBiomeDataMap();
+            p.biomeDefinitionList = genSettings.getBiomeDefinitionList();
         }
         tcp(p, receiver);
     }

@@ -169,9 +169,9 @@ public class ServerChunkGrid {
     private Pair<BiomeType, float[]> convertNoise(int x, int y) {
         if(!genSettings.getNoiseSettings().isTerrainGenerator()) return new Pair<>(BiomeType.VOID, new float[] {0, 0, 0});
 
-        for(BiomeType toCheck : genSettings.getBiomeDataMap().keySet()) {
-            float[] values = genSettings.getBiomeDataMap().get(toCheck);
-
+        for(BiomeDefinition biomeDefinition : genSettings.getBiomeDefinitionList()) {
+            float[] values = biomeDefinition.noiseBoundaries;
+            BiomeType toCheck = biomeDefinition.biomeType;
             float elevationMin = values[0];
             float elevationMax = values[1];
 

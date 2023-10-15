@@ -7,6 +7,7 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
+import dev.michey.expo.server.main.logic.world.gen.BiomeDefinition;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
 import dev.michey.expo.server.main.logic.world.gen.PostProcessorBiome;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
@@ -17,6 +18,7 @@ import make.some.noise.Noise;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +38,7 @@ public class ClientChunkGrid {
     public Noise terrainNoiseMoisture;
     public Noise riverNoise;
     public WorldGenNoiseSettings noiseSettings;
-    public HashMap<BiomeType, float[]> biomeDataMap;
+    public List<BiomeDefinition> biomeDefinitionList;
 
     private HashMap<String, Pair<BiomeType, Float>> noiseCacheMap;
     public LinkedList<Pair<NoisePostProcessor, Noise>> noisePostProcessorMap;
@@ -66,9 +68,9 @@ public class ClientChunkGrid {
         return clientChunkMap.values();
     }
 
-    public void applyGenSettings(WorldGenNoiseSettings noiseSettings, HashMap<BiomeType, float[]> biomeDataMap, int worldSeed) {
+    public void applyGenSettings(WorldGenNoiseSettings noiseSettings, List<BiomeDefinition> biomeDefinitionList, int worldSeed) {
         this.noiseSettings = noiseSettings;
-        this.biomeDataMap = biomeDataMap;
+        this.biomeDefinitionList = biomeDefinitionList;
         log("Applying world gen mapping " + noiseSettings);
 
         if(noiseSettings.isTerrainGenerator()) {
@@ -160,8 +162,9 @@ public class ClientChunkGrid {
     private Pair<BiomeType, Float> convertNoise(int x, int y) {
         if(terrainNoiseHeight == null) return new Pair<>(BiomeType.VOID, 0f);
 
-        for(BiomeType toCheck : biomeDataMap.keySet()) {
-            float[] values = biomeDataMap.get(toCheck);
+        for(BiomeDefinition biomeDefinition : biomeDefinitionList) {
+            float[] values = biomeDefinition.noiseBoundaries;
+            BiomeType toCheck = biomeDefinition.biomeType;
 
             float elevationMin = values[0];
             float elevationMax = values[1];

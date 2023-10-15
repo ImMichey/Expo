@@ -2,6 +2,8 @@ package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
+import dev.michey.expo.log.ExpoLogger;
 
 public abstract class ClientParticle extends ClientEntity {
 
@@ -21,10 +23,13 @@ public abstract class ClientParticle extends ClientEntity {
     public float rotationSpeed;
     public boolean dynamicDepth;
     public float startDepth;
+    public boolean decreaseSpeed;
 
     //private float pox, poy; // Particle origin values
     public float pvx;
     public float pvy; // Particle velocity values
+    public float spvx; // Particle velocity values
+    public float spvy; // Particle velocity values
 
     @Override
     public void tick(float delta) {
@@ -53,6 +58,14 @@ public abstract class ClientParticle extends ClientEntity {
                 useAlpha = (lifetime / fadeOutDuration);
                 if(useAlpha < 0) useAlpha = 0;
             }
+        }
+
+        if(decreaseSpeed) {
+            float progress = (lifetime / lifetimeStatic); // 1 -> 0
+            float interpolated = Math.abs(Interpolation.pow3OutInverse.apply(Math.abs(progress - 1f)) - 1f);
+
+            pvx = spvx * interpolated;
+            pvy = spvy * interpolated;
         }
 
         float addY = pvy * delta;
@@ -125,6 +138,10 @@ public abstract class ClientParticle extends ClientEntity {
     public void setParticleDynamicDepth() {
         dynamicDepth = true;
         startDepth = depth;
+    }
+
+    public void setDecreaseSpeed() {
+        decreaseSpeed = true;
     }
 
 }

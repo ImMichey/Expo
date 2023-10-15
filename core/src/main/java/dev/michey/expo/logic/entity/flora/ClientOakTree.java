@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -37,6 +39,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private final float colorMix = MathUtils.random(0.175f);
 
     private float playerBehindDelta = 1.0f;
+    private float playerBehindInterpolated = 1.0f;
     private float resetShadowFadeTimer;
 
     private TextureRegion selectionTrunk;
@@ -60,7 +63,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         new float[] {46, 58, 15, 41, 46, 94, 15, 37, 4, 2, 9, 6},
         new float[] {57, 76, 15, 41, 57, 112, 21, 37, 4, 2, 9, 6},
         new float[] {57, 76, 18, 70, 57, 141, 20, 62, 5, 2, 9, 6},
-                                                                        new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
+        new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
         new float[] {57, 76, 18, 119, 57, 190, 20, 114, 5, 2, 12, 6},
         new float[] {57, 76, 18, 96, 57, 167, 20, 91, 5, 2, 12, 6},
     };
@@ -240,19 +243,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("wood_cut");
 
-        new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(5, 8)
-                .scale(0.6f, 0.9f)
-                .lifetime(0.3f, 0.5f)
-                .color(ParticleColorMap.of(5))
-                .position(clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f)
-                .velocity(-30, 30, -30, 30)
-                .fadeout(0.15f)
-                .textureRange(12, 14)
-                .randomRotation()
-                .rotateWithVelocity()
-                .depth(depth - 0.0001f)
-                .spawn();
+        ParticleSheet.Common.spawnTreeHitParticles(this, clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f);
 
         if(!cut) {
             contactAnimator.onContact();
@@ -291,14 +282,22 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 playerBehind = false;
             }
 
-            if(playerBehind && playerBehindDelta > 0.3f) {
-                playerBehindDelta -= delta;
-                if(playerBehindDelta < 0.3f) playerBehindDelta = 0.3f;
+            float INTERPOLATION_SPEED_IN = 2.5f;
+            float INTERPOLATION_SPEED_OUT = 1.25f;
+            float MAX_TRANSPARENCY = 0.6f;
+
+            if(playerBehind && playerBehindDelta > 0) {
+                playerBehindDelta -= delta * INTERPOLATION_SPEED_IN;
+                if(playerBehindDelta < 0) playerBehindDelta = 0;
+
+                playerBehindInterpolated = 1f - MAX_TRANSPARENCY + Interpolation.smooth2.apply(playerBehindDelta) * MAX_TRANSPARENCY;
             }
 
-            if(!playerBehind && playerBehindDelta < 1.0f) {
-                playerBehindDelta += delta;
-                if(playerBehindDelta > 1.0f) playerBehindDelta = 1.0f;
+            if(!playerBehind && playerBehindDelta < 1) {
+                playerBehindDelta += delta * INTERPOLATION_SPEED_OUT;
+                if(playerBehindDelta > 1) playerBehindDelta = 1;
+
+                playerBehindInterpolated = 1f - MAX_TRANSPARENCY + Interpolation.smooth2.apply(playerBehindDelta) * MAX_TRANSPARENCY;
             }
         }
     }
@@ -318,7 +317,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
         if(!cut) {
             float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
-            rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
+            rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
             rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
@@ -345,7 +344,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
             if(!cut) {
                 float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
-                rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
+                rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
                 rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
@@ -357,7 +356,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY + 2, trunk.getRegionWidth(), trunk.getRegionHeight() * -1);
         if(!cut) {
             float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
-            rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindDelta);
+            rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
             rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
@@ -430,7 +429,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         fallingTree.colorDisplacement = colorMix;
         fallingTree.windDisplacement = (foliageAnimator == null ? 0 : (foliageAnimator.value * baf)) + (contactAnimator == null ? 0 : (contactAnimator.value * baf));
         fallingTree.windDisplacementBase = fallingTree.windDisplacement;
-        fallingTree.transparency = playerBehindDelta;
+        fallingTree.transparency = playerBehindInterpolated;
 
         entityManager().addClientSideEntity(fallingTree);
     }

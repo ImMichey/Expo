@@ -18,6 +18,9 @@ public class ParticleColorMap {
     public static final Color COLOR_PARTICLE_GRASS_1 = Color.valueOf("#87d46b");
     public static final Color COLOR_PARTICLE_GRASS_2 = Color.valueOf("#70cc4f");
 
+    public static final Color COLOR_PARTICLE_BLUEBERRYBUSH_1 = Color.valueOf("#67b34a");
+    public static final Color COLOR_PARTICLE_BLUEBERRYBUSH_2 = Color.valueOf("#519737");
+
     public static final Color COLOR_PARTICLE_MUSHROOM_1 = Color.valueOf("#f5ddd1");
     public static final Color COLOR_PARTICLE_MUSHROOM_2 = Color.valueOf("#e1ccc2");
 
@@ -34,8 +37,8 @@ public class ParticleColorMap {
     public static final Color COLOR_PARTICLE_STICK_1 = Color.valueOf("#604c31");
     public static final Color COLOR_PARTICLE_STICK_2 = Color.valueOf("#604828");
 
-    public static final Color COLOR_PARTICLE_ROCK_1 = Color.valueOf("#808383");
-    public static final Color COLOR_PARTICLE_ROCK_2 = Color.valueOf("#565f5f");
+    public static final Color COLOR_PARTICLE_ROCK_1 = Color.valueOf("#ccd7d7");
+    public static final Color COLOR_PARTICLE_ROCK_2 = Color.valueOf("#b1baba");
     public static final Color COLOR_PARTICLE_COAL_1 = Color.valueOf("#10021b");
     public static final Color COLOR_PARTICLE_COAL_2 = Color.valueOf("#2e2d32");
 
@@ -70,6 +73,9 @@ public class ParticleColorMap {
         colorEntry(8, COLOR_PARTICLE_ROCK_2);
         colorEntry(8, COLOR_PARTICLE_COAL_1);
         colorEntry(8, COLOR_PARTICLE_COAL_2);
+
+        colorEntry(9, COLOR_PARTICLE_BLUEBERRYBUSH_1);
+        colorEntry(9, COLOR_PARTICLE_BLUEBERRYBUSH_2);
     }
 
     public static List<Color> of(int id) {

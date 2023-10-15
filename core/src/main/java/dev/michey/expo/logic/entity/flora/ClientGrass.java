@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -72,19 +73,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
         playEntitySound("grass_hit");
         contactAnimator.onContact();
 
-        new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(4, 7)
-                .scale(0.6f, 0.9f)
-                .lifetime(0.3f, 0.35f)
-                .color(ParticleColorMap.of(1))
-                .position(finalTextureCenterX, finalTextureCenterY)
-                .velocity(-24, 24, -24, 24)
-                .fadeout(0.10f)
-                .textureRange(3, 7)
-                .randomRotation()
-                .rotateWithVelocity()
-                .depth(depth - 0.0001f)
-                .spawn();
+        ParticleSheet.Common.spawnGrassHitParticles(this);
     }
 
     @Override

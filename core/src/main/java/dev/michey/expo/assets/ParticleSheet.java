@@ -52,11 +52,47 @@ public class ParticleSheet {
 
     public static class Common {
 
+        public static void spawnGrassHitParticles(ClientEntity entity) {
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(10, 14)
+                    .scale(0.3f, 0.8f)
+                    .lifetime(0.35f, 0.5f)
+                    .color(ParticleColorMap.of(1))
+                    .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
+                    .velocity(-24, 24, -24, 24)
+                    .fadein(0.1f)
+                    .fadeout(0.1f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(3, 7)
+                    .decreaseSpeed()
+                    .depth(entity.depth - 0.0001f)
+                    .spawn();
+        }
+
+        public static void spawnBlueberryHitParticles(ClientEntity entity) {
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(10, 14)
+                    .scale(0.3f, 0.8f)
+                    .lifetime(0.35f, 0.5f)
+                    .color(ParticleColorMap.of(9))
+                    .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
+                    .velocity(-24, 24, -24, 24)
+                    .fadein(0.1f)
+                    .fadeout(0.1f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(3, 7)
+                    .decreaseSpeed()
+                    .depth(entity.depth - 0.0001f)
+                    .spawn();
+        }
+
         public static void spawnMushroomHitParticles(ClientEntity entity) {
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                    .amount(2, 5)
-                    .scale(0.6f, 0.9f)
-                    .lifetime(0.3f, 0.4f)
+                    .amount(4, 7)
+                    .scale(0.4f, 0.9f)
+                    .lifetime(0.35f, 0.5f)
                     .color(ParticleColorMap.of(3))
                     .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
                     .velocity(-24, 24, -24, 24)
@@ -65,39 +101,57 @@ public class ParticleSheet {
                     .randomRotation()
                     .rotateWithVelocity()
                     .depth(entity.depth - 0.0001f)
+                    .decreaseSpeed()
                     .spawn();
         }
 
         public static void spawnRockHitParticles(ClientEntity entity) {
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                    .amount(6, 10)
-                    .scale(0.65f, 0.8f)
-                    .lifetime(0.4f, 0.6f)
+                    .amount(10, 14)
+                    .scale(0.3f, 0.9f)
+                    .lifetime(0.35f, 0.5f)
                     .color(ParticleColorMap.of(7))
                     .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
-                    .velocity(-24, 24, -24, 24)
+                    .velocity(-32, 32, -32, 32)
                     .fadein(0.1f)
-                    .fadeout(0.2f)
-                    .textureRange(0, 0)
+                    .fadeout(0.1f)
                     .randomRotation()
                     .rotateWithVelocity()
+                    .decreaseSpeed()
                     .depth(entity.depth - 0.0001f)
                     .spawn();
         }
 
         public static void spawnBoulderHitParticles(ClientEntity entity, boolean coal) {
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                    .amount(6, 10)
-                    .scale(0.65f, 0.8f)
-                    .lifetime(0.4f, 0.6f)
+                    .amount(10, 14)
+                    .scale(0.3f, 0.9f)
+                    .lifetime(0.35f, 0.5f)
                     .color(ParticleColorMap.of(coal ? 8 : 7))
                     .position(entity.finalTextureStartX + 7.5f, entity.finalTextureStartY + 7f)
-                    .velocity(-24, 24, -24, 24)
+                    .velocity(-32, 32, -32, 32)
                     .fadein(0.1f)
-                    .fadeout(0.2f)
-                    .textureRange(0, 1)
+                    .fadeout(0.1f)
                     .randomRotation()
                     .rotateWithVelocity()
+                    .decreaseSpeed()
+                    .depth(entity.depth - 0.0001f)
+                    .spawn();
+        }
+
+        public static void spawnTreeHitParticles(ClientEntity entity, float x, float y) {
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(10, 14)
+                    .scale(0.3f, 0.9f)
+                    .lifetime(0.35f, 0.5f)
+                    .color(ParticleColorMap.of(5))
+                    .position(x, y)
+                    .velocity(-32, 32, -32, 32)
+                    .fadein(0.1f)
+                    .fadeout(0.1f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .decreaseSpeed()
                     .depth(entity.depth - 0.0001f)
                     .spawn();
         }

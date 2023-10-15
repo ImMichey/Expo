@@ -2,9 +2,12 @@ package dev.michey.expo.util;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.ClientParticle;
+import dev.michey.expo.server.util.GenerationUtils;
 
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class ParticleBuilder {
     private float offsetX, offsetY;
     private boolean randomRotation;
     private boolean rotateWithVelocity;
+    private boolean decreaseSpeed;
     private float depth = Float.MAX_VALUE;
     private boolean dynamicDepth;
 
@@ -76,6 +80,22 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder velocityNormalized(float max) {
+        float x = MathUtils.cosDeg(MathUtils.random(360f));
+        float y = MathUtils.sinDeg(MathUtils.random(360f));
+        Vector2 vv = new Vector2(x, y).nor().scl(max);
+
+        ExpoLogger.log("-> " + vv);
+
+        this.velocityMinX = -vv.x;
+        this.velocityMaxX = vv.x;
+
+        this.velocityMinY = -vv.y;
+        this.velocityMaxY = vv.y;
+
+        return this;
+    }
+
     public ParticleBuilder fadeout(float fadeout) {
         this.fadeout = fadeout;
         return this;
@@ -114,6 +134,11 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder decreaseSpeed() {
+        decreaseSpeed = true;
+        return this;
+    }
+
     public ParticleBuilder depth(float depth) {
         this.depth = depth;
         return this;
@@ -144,6 +169,8 @@ public class ParticleBuilder {
             float velocityY = MathUtils.random(velocityMinY, velocityMaxY);
             p.pvx = velocityX;
             p.pvy = velocityY;
+            p.spvx = velocityX;
+            p.spvy = velocityY;
 
             p.setParticleFadeout(fadeout);
             p.setParticleFadein(fadein);
@@ -159,6 +186,7 @@ public class ParticleBuilder {
             if(randomRotation) p.setParticleRotation(MathUtils.random(360f));
             if(rotateWithVelocity) p.setParticleConstantRotation((Math.abs(p.pvx) + Math.abs(p.pvy)) * 0.5f / 24f * 360f);
             if(dynamicDepth) p.setParticleDynamicDepth();
+            if(decreaseSpeed) p.setDecreaseSpeed();
 
             ClientEntityManager.get().addClientSideEntity(p);
         }
