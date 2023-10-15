@@ -804,21 +804,24 @@ public class PolygonTileBatch implements PolygonBatch {
     private static final float USE_DEFAULT_RENDERER = 1.0f;
     private static final float USE_CUSTOM_RENDERER = 0.5f;
 
-    private float getAsPacked(float grassColor, float ambientOcclusion) {
-        if(grassColor == 0) {
-            // No grass color.
-            if(ambientOcclusion == 0) {
-                // No ambient occlusion.
-                COLOR.set(0.0f, 0.0f, USE_DEFAULT_RENDERER, 0.0f);
-                return COLOR.toFloatBits();
-            } else {
-                // Ambient occlusion.
-                COLOR.set(0.0f, ambientOcclusion, USE_CUSTOM_RENDERER, 1.0f);
-                return COLOR.toFloatBits();
-            }
+    private float getAsPacked(float ambientOcclusion) {
+        // No grass color.
+        if(ambientOcclusion == 0) {
+            // No ambient occlusion.
+            COLOR.set(0.0f, 0.0f, USE_DEFAULT_RENDERER, 0.0f);
+            return COLOR.toFloatBits();
+        } else {
+            // Ambient occlusion.
+            COLOR.set(0.0f, ambientOcclusion, USE_CUSTOM_RENDERER, 1.0f);
+            return COLOR.toFloatBits();
+        }
+
+        /*
+        if(grassColor == null) {
+
         } else {
             // Grass color.
-            float start = grassColor - MIN_TEMP - DIFF_TEMP * START_OFFSET;
+            float start = grassColor[grassColorIndex] - MIN_TEMP - DIFF_TEMP * START_OFFSET;
             if(start < 0) start = 0;
 
             float adjustedAlpha = start * STRENGTH / DIFF_TEMP;
@@ -826,9 +829,10 @@ public class PolygonTileBatch implements PolygonBatch {
             COLOR.set(adjustedAlpha, ambientOcclusion, USE_CUSTOM_RENDERER, ambientOcclusion > 0 ? 1f : 0f);
             return COLOR.toFloatBits();
         }
+        */
     }
 
-    public void draw (TextureRegion region, float x, float y, float width, float height, float grassColor, float[] ambientOcclusion) {
+    public void drawGrass (TextureRegion region, float x, float y, float width, float height, float[] ambientOcclusion) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
 
         final short[] triangles = this.triangles;
@@ -868,10 +872,10 @@ public class PolygonTileBatch implements PolygonBatch {
         final float u2 = region.u2;
         final float v2 = region.v;
 
-        float c1 = getAsPacked(grassColor, ambientOcclusion[0]);
-        float c2 = getAsPacked(grassColor, ambientOcclusion[1]);
-        float c3 = getAsPacked(grassColor, ambientOcclusion[2]);
-        float c4 = getAsPacked(grassColor, ambientOcclusion[3]);
+        float c1 = getAsPacked(ambientOcclusion[0]);
+        float c2 = getAsPacked(ambientOcclusion[1]);
+        float c3 = getAsPacked(ambientOcclusion[2]);
+        float c4 = getAsPacked(ambientOcclusion[3]);
 
         int idx = this.vertexIndex;
         vertices[idx++] = x;

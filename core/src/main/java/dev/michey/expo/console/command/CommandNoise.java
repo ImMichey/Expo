@@ -72,8 +72,8 @@ public class CommandNoise extends AbstractConsoleCommand {
                         BiomeType b = c.tiles[t].biome;
 
                         if(b == BiomeType.FOREST || b == BiomeType.PLAINS || b == BiomeType.DENSE_FOREST) {
-                            float avg = c.tiles[t].foliageColor;
-                            avgList.add(avg);
+                            //float avg = c.tiles[t].foliageColor;
+                            //avgList.add(avg);
                         }
 
                         float[] colors = c.tiles[t].biome.BIOME_COLOR;

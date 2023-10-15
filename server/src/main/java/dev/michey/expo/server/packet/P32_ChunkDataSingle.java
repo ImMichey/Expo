@@ -9,6 +9,5 @@ public class P32_ChunkDataSingle extends Packet {
     public int layer;
     public int tileArray;
     public DynamicTilePart tile;
-    public float grassColor;
 
 }

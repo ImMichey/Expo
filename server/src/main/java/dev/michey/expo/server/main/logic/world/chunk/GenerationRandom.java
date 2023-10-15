@@ -18,6 +18,12 @@ public class GenerationRandom {
         random = new RandomXS128(n);
     }
 
+    public GenerationRandom(int x, int y) {
+        long tmp = (y + ((x + 1) / 2));
+        long n = x + (tmp * tmp);
+        random = new RandomXS128(n);
+    }
+
     public float random() {
         return random.nextFloat();
     }
@@ -56,6 +62,12 @@ public class GenerationRandom {
 
     public Vector2 circularRandom(float radius) {
         return GenerationUtils.circular(random(360f), radius);
+    }
+
+    public void setSeed(int x, int y) {
+        long tmp = (y + ((x + 1) / 2));
+        long n = x + (tmp * tmp);
+        random.setSeed(n);
     }
 
 }

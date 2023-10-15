@@ -131,12 +131,10 @@ public class ServerPackets {
         int s = chunk.tiles.length;
         p.biomes = new BiomeType[s];
         p.individualTileData = new DynamicTilePart[s][];
-        p.grassColor = new float[s];
 
         for(int i = 0; i < s; i++) {
             p.biomes[i] = chunk.tiles[i].biome;
             p.individualTileData[i] = chunk.tiles[i].dynamicTileParts;
-            p.grassColor[i] = chunk.tiles[i].foliageColor;
         }
 
         if(chunk.hasTileBasedEntities()) {
@@ -330,19 +328,18 @@ public class ServerPackets {
     }
 
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
-    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, float grassColor, PacketReceiver receiver) {
+    public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, PacketReceiver receiver) {
         P32_ChunkDataSingle p = new P32_ChunkDataSingle();
         p.chunkX = chunkX;
         p.chunkY = chunkY;
         p.layer = layer;
         p.tileArray = tileArray;
         p.tile = dynamicTile;
-        p.grassColor = grassColor;
         udp(p, receiver);
     }
 
     public static void p32ChunkDataSingle(ServerTile tile, int layer) {
-        p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, layer, tile.tileArray, tile.dynamicTileParts[layer], tile.foliageColor, PacketReceiver.whoCanSee(tile));
+        p32ChunkDataSingle(tile.chunk.chunkX, tile.chunk.chunkY, layer, tile.tileArray, tile.dynamicTileParts[layer], PacketReceiver.whoCanSee(tile));
     }
 
     /** Sends the P33_TileDig packet via UDP protocol. */

@@ -12,7 +12,6 @@
 * New Oak Plank Wall textures
 * Proper foliage fading in trees (interpolation)
 * Adjust tree fall impact radius for items, particles, etc.
-* New mushroom textures
 
 [Long Term Fixes]
 * New physics engine [Performance issues at large scale]

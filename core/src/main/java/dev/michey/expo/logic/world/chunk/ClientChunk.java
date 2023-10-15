@@ -5,7 +5,6 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
-import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
@@ -17,7 +16,6 @@ import dev.michey.expo.util.Pair;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static dev.michey.expo.util.ExpoShared.*;
 
@@ -28,7 +26,6 @@ public class ClientChunk {
     public int chunkY;
     public BiomeType[] biomes;
     public ClientDynamicTilePart[][] dynamicTiles;
-    public float[] grassColor;
 
     public int[] tileEntityGrid; // is null by default
     private int tileEntityCount;
@@ -89,12 +86,11 @@ public class ClientChunk {
         return tileEntityCount;
     }
 
-    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] dynamicTiles, float[] grassColor, int initializationTileCount) {
+    public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] dynamicTiles, int initializationTileCount) {
         this.chunkX = chunkX;
         this.chunkY = chunkY;
         this.biomes = biomes;
         this.dynamicTiles = convertToClient(dynamicTiles);
-        this.grassColor = grassColor;
         this.initializationTileCount = initializationTileCount;
 
         chunkDrawBeginX = ExpoShared.chunkToPos(chunkX);
@@ -410,12 +406,10 @@ public class ClientChunk {
 
     public void updateSingle(P32_ChunkDataSingle p) {
         this.dynamicTiles[p.tileArray][p.layer].updateFrom(p.tile);
-        this.grassColor[p.tileArray] = p.grassColor;
     }
 
-    public void update(BiomeType[] biomes, DynamicTilePart[][] individualTileData, float[] grassColor, int initializationTileCount) {
+    public void update(BiomeType[] biomes, DynamicTilePart[][] individualTileData, int initializationTileCount) {
         this.biomes = biomes;
-        this.grassColor = grassColor;
         this.initializationTileCount = initializationTileCount;
         this.ranAmbientOcclusion = false;
 

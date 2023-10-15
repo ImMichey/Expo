@@ -126,9 +126,9 @@ public class ClientChunkGrid {
         ClientChunk existing = clientChunkMap.get(key);
 
         if(existing == null) {
-            clientChunkMap.put(key, new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.grassColor, p.tileEntityCount));
+            clientChunkMap.put(key, new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.tileEntityCount));
         } else {
-            existing.update(p.biomes, p.individualTileData, p.grassColor, p.tileEntityCount);
+            existing.update(p.biomes, p.individualTileData, p.tileEntityCount);
         }
     }
 

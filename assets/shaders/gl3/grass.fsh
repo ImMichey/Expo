@@ -27,9 +27,9 @@ void main() {
         float ambientOcclusion = data.g;
 
         if(grassColor > 0.0) {
-            tileColor.r = tileColor.r - (tileColor.r * grassColor * 1.5);
-            tileColor.g = tileColor.g - (tileColor.g * grassColor * 1.0);
-            tileColor.b = tileColor.b - (tileColor.b * grassColor * 2.0);
+            tileColor.r = tileColor.r - (tileColor.r * grassColor * 2.25);
+            tileColor.g = tileColor.g - (tileColor.g * grassColor * 1.5);
+            tileColor.b = tileColor.b - (tileColor.b * grassColor * 3.0);
         }
 
         if(ambientOcclusion > 0.0 && tileColor.a > 0.0) {

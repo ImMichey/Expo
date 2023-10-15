@@ -105,15 +105,15 @@ public class ClientDynamicTilePart {
         }
     }
 
-    public void draw(RenderContext r, float grassColor, float[] ambientOcclusion) {
+    public void draw(RenderContext r, float[] ambientOcclusion) {
         if(texture.length == 1) {
             if(texture[0] == null) return;
-            r.polygonTileBatch.draw(texture[0], x, y, 16, 16, grassColor, ambientOcclusion);
+            r.polygonTileBatch.drawGrass(texture[0], x, y, 16, 16, ambientOcclusion);
         } else {
-            r.polygonTileBatch.draw(texture[0], x, y, 8, 8, grassColor, n);
-            r.polygonTileBatch.draw(texture[1], x + 8, y, 8, 8, grassColor, n);
-            r.polygonTileBatch.draw(texture[2], x , y + 8, 8, 8, grassColor, n);
-            r.polygonTileBatch.draw(texture[3], x + 8, y + 8, 8, 8, grassColor, n);
+            r.polygonTileBatch.drawGrass(texture[0], x, y, 8, 8, n);
+            r.polygonTileBatch.drawGrass(texture[1], x + 8, y, 8, 8, n);
+            r.polygonTileBatch.drawGrass(texture[2], x , y + 8, 8, 8, n);
+            r.polygonTileBatch.drawGrass(texture[3], x + 8, y + 8, 8, 8, n);
         }
     }
 

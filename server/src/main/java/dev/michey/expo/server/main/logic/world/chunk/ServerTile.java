@@ -25,15 +25,12 @@ public class ServerTile {
     public BiomeType biome;
     public DynamicTilePart[] dynamicTileParts;
 
-    public float foliageColor;
-
     public ServerTile(ServerChunk chunk, int tileX, int tileY, int tileArray) {
         this.chunk = chunk;
         this.tileX = tileX;
         this.tileY = tileY;
         this.tileArray = tileArray;
         biome = BiomeType.VOID;
-        foliageColor = chunk.getDimension().getChunkHandler().getElevationTemperatureMoisture(tileX, tileY)[1];
     }
 
     public static final int NORTH = 1;
