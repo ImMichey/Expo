@@ -10,7 +10,6 @@
 * Proper Torch Texture
 * Add Flint Sword for now
 * New Oak Plank Wall textures
-* Proper foliage fading in trees (interpolation)
 * Adjust tree fall impact radius for items, particles, etc.
 
 [Long Term Fixes]
