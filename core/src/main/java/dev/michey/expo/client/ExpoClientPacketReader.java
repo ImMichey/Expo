@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ChatMessage;
+import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -46,12 +47,12 @@ public class ExpoClientPacketReader {
 
     private void handlePacket(Packet o, boolean local) {
         if(o instanceof P1_Auth_Rsp p) {
-            log("Received authorization packet: " + p.authorized + " (" + p.message + ") server tps: " + p.serverTps);
-
             if(!p.authorized) {
+                GameConsole.get().addSystemErrorMessage("Failed to join server: " + p.message);
                 Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             } else {
+                GameConsole.get().addSystemSuccessMessage("Successfully joined server: " + p.message + " (" + p.serverTps + " TPS)");
                 if(!local) {
                     ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
                     ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDefinitionList, p.worldSeed);

@@ -8,6 +8,10 @@ public class BiomeDefinition {
     public float[] noiseBoundaries;
     public int priority;
 
+    public BiomeDefinition() {
+        // KryoNet
+    }
+
     public BiomeDefinition(BiomeType biomeType, float[] noiseBoundaries, int priority) {
         this.biomeType = biomeType;
         this.noiseBoundaries = noiseBoundaries;

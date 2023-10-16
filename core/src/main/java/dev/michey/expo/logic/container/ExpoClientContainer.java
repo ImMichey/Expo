@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.ExpoClientPacketReader;
 import dev.michey.expo.console.ConsoleMessage;
@@ -245,6 +246,8 @@ public class ExpoClientContainer {
             }
             localServer.stopServer();
         }
+
+        AudioEngine.get().killAll();
     }
 
     public ExpoClient getClient() {

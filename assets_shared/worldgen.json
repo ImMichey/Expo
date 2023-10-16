@@ -130,9 +130,9 @@
                 ],
                 "terrain": {
                     "elevation": {
-                        "octaves": 5,
+                        "octaves": 6,
                         "type": 11,
-                        "frequency": 0.002
+                        "frequency": 0.004
                     },
                     "temperature": {
                         "octaves": 5,
@@ -148,27 +148,27 @@
                 "biomes": [
                     {
                         "type": "OCEAN_DEEP",
-                        "elevation": [0.0, 0.485],
+                        "elevation": [0.0, 0.48],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "OCEAN",
-                        "elevation": [0.485, 0.488],
+                        "elevation": [0.48, 0.486],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "BEACH",
-                        "elevation": [0.488, 0.5],
+                        "elevation": [0.486, 0.5],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "PLAINS",
                         "elevation": [0.5, 1.0],
-                        "temperature": [0.0, 0.495],
-                        "moisture": [0.48, 0.525]
+                        "temperature": [0.0, 0.5],
+                        "moisture": [0.49, 0.525]
                     },
                     {
                         "type": "DENSE_FOREST",

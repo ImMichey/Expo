@@ -2,8 +2,8 @@
 /delsave dev
 /world dev
 #/connect 167.86.107.202
-#/speed 500
+/speed 500
 #/time 0
 #/connect localhost
 #/noise
-#/noclip
+/noclip
