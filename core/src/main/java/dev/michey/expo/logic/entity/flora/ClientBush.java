@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.assets.ParticleSheet;
@@ -9,11 +10,12 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientBush extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientBush extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
@@ -85,6 +87,11 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         drawWindShadowIfVisible(shadowMask, contactAnimator);
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.4f, 0.4f, 0, 1.5f);
     }
 
     @Override

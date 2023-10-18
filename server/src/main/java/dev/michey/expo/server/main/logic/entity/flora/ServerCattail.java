@@ -7,6 +7,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
+import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
 
 public class ServerCattail extends ServerEntity {
@@ -21,7 +22,14 @@ public class ServerCattail extends ServerEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        variant = rnd.random(1, 3);
+        variant = rnd.random(1, 4);
+
+        int tx = ExpoShared.posToTile(posX);
+        int ty = ExpoShared.posToTile(posY);
+
+        posX = ExpoShared.tileToPos(tx) + 8f + rnd.random(-1f, 1f);
+        posY = ExpoShared.tileToPos(ty) + 8f + rnd.random(-1f, 1f);
+        setStaticEntity();
     }
 
     @Override
@@ -36,19 +44,20 @@ public class ServerCattail extends ServerEntity {
 
         ServerTile[] neighbours = tile.getNeighbouringTiles();
         int waterTilesNearby = 1;
-        boolean landNearby = false;
+        int landTilesNearby = 0;
 
         for(ServerTile n : neighbours) {
             if(n == null) continue;
 
             if(!BiomeType.isWater(n.biome) && (n.biome == BiomeType.DENSE_FOREST || n.biome == BiomeType.FOREST || n.biome == BiomeType.PLAINS)) {
-                landNearby = true;
+                landTilesNearby++;
             } else {
                 waterTilesNearby++;
             }
         }
 
-        return waterTilesNearby >= 2 && waterTilesNearby <= 6 && landNearby;
+        return true;
+       // return waterTilesNearby >= 4 && waterTilesNearby <= 7 && landTilesNearby <= 3;
     }
 
     @Override

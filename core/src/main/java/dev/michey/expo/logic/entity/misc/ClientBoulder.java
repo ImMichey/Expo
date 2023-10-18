@@ -10,10 +10,11 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.SquishAnimator2D;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientBoulder extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientBoulder extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private int variant;
     private TextureRegion texture;
@@ -30,6 +31,8 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
         if(variant == 2) {
             texName += "_coal";
+        } else if(variant == 3) {
+            texName += "_iron";
         }
         texture = tr(texName);
         ao = tr("entity_boulder_ao");
@@ -118,9 +121,14 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
         if(draw) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(ao, finalDrawPosX - 1 - squishAnimator2D.squishX * 0.5f, finalDrawPosY - 1, ao.getRegionWidth() + squishAnimator2D.squishX, ao.getRegionHeight() + squishAnimator2D.squishY);
+           // rc.arraySpriteBatch.draw(ao, finalDrawPosX - 1 - squishAnimator2D.squishX * 0.5f, finalDrawPosY - 1, ao.getRegionWidth() + squishAnimator2D.squishX, ao.getRegionHeight() + squishAnimator2D.squishY);
             rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.4f, 0.4f, 0, 1.5f);
     }
 
     @Override

@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
@@ -14,6 +15,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
@@ -364,8 +366,8 @@ public class ClientEntityManager {
     public void renderEntityShadows(float delta) {
         RenderContext rc = RenderContext.get();
 
-        rc.arraySpriteBatch.begin();
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+        rc.arraySpriteBatch.begin();
 
         rc.arraySpriteBatch.setBlendFunction(GL30.GL_ONE, GL30.GL_ONE);
         Gdx.gl30.glBlendEquation(GL30.GL_MAX);
@@ -379,6 +381,27 @@ public class ClientEntityManager {
 
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setShader(null);
+
+        // .........................
+
+        if(GameSettings.get().ambientOcclusion) {
+            rc.aoBatch.setShader(rc.aoShader);
+            rc.aoBatch.begin();
+
+            rc.aoBatch.setBlendFunction(GL30.GL_ONE, GL30.GL_ONE);
+            Gdx.gl30.glBlendEquation(GL30.GL_MAX);
+
+            for(ClientEntity entity : depthEntityList) {
+                if(entity instanceof AmbientOcclusionEntity ao && entity.visibleToRenderEngine) {
+                    ao.renderAO(rc);
+                }
+            }
+
+            rc.aoBatch.setBlendFunction(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+            Gdx.gl30.glBlendEquation(GL30.GL_FUNC_ADD);
+
+            rc.aoBatch.end();
+        }
     }
 
     public ClientEntity getEntityById(int entityId) {

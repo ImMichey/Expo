@@ -14,12 +14,13 @@ import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientGrass extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientGrass extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private final FoliageAnimator foliageAnimator = new FoliageAnimator();
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
@@ -140,6 +141,11 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAOAuto33(rc);
     }
 
     @Override

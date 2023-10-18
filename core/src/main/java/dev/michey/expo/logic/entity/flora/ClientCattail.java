@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -13,12 +14,13 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientCattail extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientCattail extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private final FoliageAnimator foliageAnimator = new FoliageAnimator(0.8f, 1.7f, 0.02f, 0.03f, 0.035f, 0.05f, 2.0f, 5.0f, 0.5f, 1.5f);
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
@@ -31,20 +33,17 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void onCreation() {
         contactAnimator.MIN_SQUISH = 0.6667f;
-        grass = ExpoAssets.get().texture("foliage/entity_cattail/cattail_variation_" + variant + ".png");
-        grassShadow = tr("cattail_variation_shadow_" + variant);
+        grass = ExpoAssets.get().texture("foliage/entity_cattail/cattail_" + variant + ".png");
+        grassShadow = tr("cattail_shadow_" + variant);
 
         float w = 0, h = 0;
 
-        if(variant == 1) {
-            w = 15;
-            h = 29;
-        } else if(variant == 2) {
-            w = 19;
-            h = 37;
-        } else if(variant == 3) {
-            w = 16;
-            h = 42;
+        if(variant == 1 || variant == 2) {
+            w = 17;
+            h = 24;
+        } else if(variant == 3 || variant == 4) {
+            w = 14;
+            h = 18;
         }
 
         updateTextureBounds(w, h, 1, 1);
@@ -56,19 +55,7 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
         playEntitySound("grass_hit");
         contactAnimator.onContact();
 
-        new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(4, 7)
-                .scale(0.6f, 0.9f)
-                .lifetime(0.3f, 0.35f)
-                .color(ParticleColorMap.of(1))
-                .position(finalTextureCenterX, finalTextureCenterY)
-                .velocity(-24, 24, -24, 24)
-                .fadeout(0.10f)
-                .textureRange(3, 7)
-                .randomRotation()
-                .rotateWithVelocity()
-                .depth(depth - 0.0001f)
-                .spawn();
+        ParticleSheet.Common.spawnGrassHitParticles(this);
     }
 
     @Override
@@ -131,6 +118,11 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAOAuto50(rc);
     }
 
     @Override

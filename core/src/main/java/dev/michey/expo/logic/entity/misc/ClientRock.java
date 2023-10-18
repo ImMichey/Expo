@@ -9,14 +9,14 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientRock extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientRock extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private int variant;
     private TextureRegion texture;
-    private TextureRegion ao;
     private TextureRegion shadowMask;
     private float[] interactionPointArray;
     private TextureRegion selectionTexture;
@@ -24,7 +24,6 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
     @Override
     public void onCreation() {
         texture = tr("entity_rockn_" + variant);
-        ao = tr("entity_rock_ao_" + variant);
         shadowMask = texture;
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
@@ -96,9 +95,13 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
         if(draw) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(ao, finalDrawPosX - 1, finalDrawPosY - 1);
             rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.25f, 0.25f, 0, 1);
     }
 
     @Override

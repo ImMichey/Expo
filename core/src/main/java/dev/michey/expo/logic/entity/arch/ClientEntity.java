@@ -1,11 +1,13 @@
 package dev.michey.expo.logic.entity.arch;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
 import dev.michey.expo.logic.entity.misc.ClientPuddle;
@@ -24,6 +26,7 @@ import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
 
+import static dev.michey.expo.render.RenderContext.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
 public abstract class ClientEntity {
@@ -469,6 +472,49 @@ public abstract class ClientEntity {
 
     public void playEntitySound(String group) {
         AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
+    }
+
+    private void drawAO(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {
+        Texture aoTexture = rc.aoTextures[0];
+        float fw = aoTexture.getWidth() * scaleX;
+        float fh = aoTexture.getHeight() * scaleY;
+        rc.aoBatch.draw(aoTexture, clientPosX - fw * 0.5f + offsetX, clientPosY - fh * 0.5f + offsetY, fw, fh);
+    }
+
+    public void drawAOAuto100(RenderContext rc) {
+        Texture aoTexture = rc.aoTextures[0];
+        float scale = textureWidth / aoTexture.getWidth();
+        if(rc.aoBatch.getPackedColor() != TRANS_100_PACKED) rc.aoBatch.setPackedColor(TRANS_100_PACKED);
+        drawAO(rc, scale, scale, 0, 0);
+    }
+
+    public void drawAOAuto50(RenderContext rc) {
+        Texture aoTexture = rc.aoTextures[0];
+        float scale = textureWidth / aoTexture.getWidth();
+        if(rc.aoBatch.getPackedColor() != TRANS_50_PACKED) rc.aoBatch.setPackedColor(TRANS_50_PACKED);
+        drawAO(rc, scale, scale, 0, 0);
+    }
+
+    public void drawAOAuto33(RenderContext rc) {
+        Texture aoTexture = rc.aoTextures[0];
+        float scale = textureWidth / aoTexture.getWidth();
+        if(rc.aoBatch.getPackedColor() != TRANS_33_PACKED) rc.aoBatch.setPackedColor(TRANS_33_PACKED);
+        drawAO(rc, scale, scale, 0, 0);
+    }
+
+    public void drawAO100(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {
+        if(rc.aoBatch.getPackedColor() != TRANS_100_PACKED) rc.aoBatch.setPackedColor(TRANS_100_PACKED);
+        drawAO(rc, scaleX, scaleY, offsetX, offsetY);
+    }
+
+    public void drawAO50(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {
+        if(rc.aoBatch.getPackedColor() != TRANS_50_PACKED) rc.aoBatch.setPackedColor(TRANS_50_PACKED);
+        drawAO(rc, scaleX, scaleY, offsetX, offsetY);
+    }
+
+    public void drawAO33(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {
+        if(rc.aoBatch.getPackedColor() != TRANS_33_PACKED) rc.aoBatch.setPackedColor(TRANS_33_PACKED);
+        drawAO(rc, scaleX, scaleY, offsetX, offsetY);
     }
 
 }

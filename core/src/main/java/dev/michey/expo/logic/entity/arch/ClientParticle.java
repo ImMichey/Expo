@@ -76,6 +76,10 @@ public abstract class ClientParticle extends ClientEntity {
         if(dynamicDepth) {
             depth += addY;
         }
+
+        if(rotationSpeed > 0) {
+            rotation += delta * rotationSpeed;
+        }
     }
 
     public void setParticleLifetime(float lifetime) {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
@@ -53,10 +54,11 @@ public class ParticleSheet {
     public static class Common {
 
         public static void spawnGrassHitParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(10, 14)
                     .scale(0.3f, 0.8f)
-                    .lifetime(0.35f, 0.5f)
+                    .lifetime(0.4f, 0.55f)
                     .color(ParticleColorMap.of(1))
                     .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
                     .velocity(-24, 24, -24, 24)
@@ -71,10 +73,11 @@ public class ParticleSheet {
         }
 
         public static void spawnBlueberryHitParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(10, 14)
                     .scale(0.3f, 0.8f)
-                    .lifetime(0.35f, 0.5f)
+                    .lifetime(0.4f, 0.55f)
                     .color(ParticleColorMap.of(9))
                     .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
                     .velocity(-24, 24, -24, 24)
@@ -89,10 +92,11 @@ public class ParticleSheet {
         }
 
         public static void spawnMushroomHitParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(4, 7)
                     .scale(0.4f, 0.9f)
-                    .lifetime(0.35f, 0.5f)
+                    .lifetime(0.4f, 0.55f)
                     .color(ParticleColorMap.of(3))
                     .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
                     .velocity(-24, 24, -24, 24)
@@ -106,10 +110,11 @@ public class ParticleSheet {
         }
 
         public static void spawnRockHitParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(10, 14)
                     .scale(0.3f, 0.9f)
-                    .lifetime(0.35f, 0.5f)
+                    .lifetime(0.4f, 0.55f)
                     .color(ParticleColorMap.of(7))
                     .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
                     .velocity(-32, 32, -32, 32)
@@ -123,10 +128,11 @@ public class ParticleSheet {
         }
 
         public static void spawnBoulderHitParticles(ClientEntity entity, boolean coal) {
+            if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(10, 14)
                     .scale(0.3f, 0.9f)
-                    .lifetime(0.35f, 0.5f)
+                    .lifetime(0.4f, 0.55f)
                     .color(ParticleColorMap.of(coal ? 8 : 7))
                     .position(entity.finalTextureStartX + 7.5f, entity.finalTextureStartY + 7f)
                     .velocity(-32, 32, -32, 32)
@@ -140,10 +146,11 @@ public class ParticleSheet {
         }
 
         public static void spawnTreeHitParticles(ClientEntity entity, float x, float y) {
+            if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(10, 14)
                     .scale(0.3f, 0.9f)
-                    .lifetime(0.35f, 0.5f)
+                    .lifetime(0.4f, 0.55f)
                     .color(ParticleColorMap.of(5))
                     .position(x, y)
                     .velocity(-32, 32, -32, 32)
@@ -157,10 +164,11 @@ public class ParticleSheet {
         }
 
         public static void spawnWoodHitParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(3, 7)
                     .scale(0.6f, 0.8f)
-                    .lifetime(0.3f, 0.5f)
+                    .lifetime(0.4f, 0.55f)
                     .color(ParticleColorMap.of(6))
                     .position(entity.finalTextureStartX + 8, entity.finalTextureStartY + 8)
                     .velocity(-24, 24, -24, 24)

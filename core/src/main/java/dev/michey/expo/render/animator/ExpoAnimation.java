@@ -12,9 +12,14 @@ public class ExpoAnimation {
     private float animationDelta;
     private float animationDeltaSinceStart;
     private boolean animationFinished;
+    private boolean pingPong;
 
     public ExpoAnimation(String textureName, int frames, float frameDuration) {
-        textureArray = ExpoAssets.get().textureArray(textureName, frames);
+        this(textureName, frames, frameDuration, false);
+    }
+
+    public ExpoAnimation(String textureName, int frames, float frameDuration, boolean pingPong) {
+        textureArray = ExpoAssets.get().textureArray(textureName, frames, pingPong);
         this.frameDuration = frameDuration;
         this.totalAnimationDuration = this.frameDuration * frames;
     }
@@ -24,7 +29,7 @@ public class ExpoAnimation {
         animationDelta += delta;
         animationDeltaSinceStart += delta;
 
-        if(animationDeltaSinceStart >= totalAnimationDuration) {
+        if(animationDeltaSinceStart >= (totalAnimationDuration * (pingPong ? 2 : 1))) {
             animationFinished = true;
             animationDeltaSinceStart -= totalAnimationDuration;
         }
@@ -33,6 +38,14 @@ public class ExpoAnimation {
     public void reset() {
         animationDelta = 0;
         animationDeltaSinceStart = 0;
+    }
+
+    public void offset(float delta) {
+        animationDelta = delta;
+    }
+
+    public void setPingPong() {
+        pingPong = true;
     }
 
     public void flip(boolean x, boolean y) {
@@ -48,12 +61,26 @@ public class ExpoAnimation {
     }
 
     public int getFrameIndex() {
-        return (int) (animationDelta / frameDuration) % textureArray.size;
+        if(pingPong) {
+            int frameNumber = (int) (animationDelta / frameDuration);
+            frameNumber %= this.textureArray.size * 2 - 2;
+
+            if(frameNumber >= this.textureArray.size) {
+                frameNumber = this.textureArray.size - 2 - (frameNumber - this.textureArray.size);
+            }
+
+            return frameNumber;
+        } else {
+            return (int) (animationDelta / frameDuration) % textureArray.size;
+        }
     }
 
     public boolean isAnimationFinished() {
         return animationFinished;
-        //return animationDelta >= totalAnimationDuration;
+    }
+
+    public Array<TextureRegion> getTextureArray() {
+        return textureArray;
     }
 
     public float getDelta() {

@@ -28,11 +28,10 @@ public class ClientParticleHit extends ClientParticle {
         rc.useRegularBatch();
         rc.batch.setColor(r, g, b, useAlpha);
 
-        if(rotationSpeed > 0) {
-            rotation += delta * rotationSpeed;
-        }
+        float w = particleTexture.getRegionWidth() * scaleX;
+        float h = particleTexture.getRegionHeight() * scaleY;
 
-        rc.batch.draw(particleTexture, clientPosX, clientPosY, 0, 0, particleTexture.getRegionWidth(), particleTexture.getRegionHeight(), scaleX, scaleY, rotation);
+        rc.batch.draw(particleTexture, clientPosX, clientPosY, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
         rc.batch.setColor(Color.WHITE);
     }
 

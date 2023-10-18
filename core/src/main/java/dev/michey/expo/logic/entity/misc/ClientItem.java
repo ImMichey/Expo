@@ -4,16 +4,21 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientItem extends ClientEntity implements ReflectableEntity {
+import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
+
+public class ClientItem extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     public int itemId;
     public int itemAmount;
@@ -32,6 +37,8 @@ public class ClientItem extends ClientEntity implements ReflectableEntity {
     private float stackX = 1.0f;
     private float stackY = 1.0f;
 
+    private TextureRegion ao;
+
     @Override
     public void onCreation() {
         texture = ItemMapper.get().getMapping(itemId).uiRender.textureRegion;
@@ -39,6 +46,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity {
         currentScaleY = 0.75f;
 
         updateTextureBounds(texture.getRegionWidth() * currentScaleX, texture.getRegionHeight() * currentScaleY, 0, 0);
+        ao = tr("item_shadow");
     }
 
     @Override
@@ -54,8 +62,8 @@ public class ClientItem extends ClientEntity implements ReflectableEntity {
         updateTexturePositionData();
         lifetime += delta;
 
-        if(lifetime <= 0.25f) {
-            useAlpha = lifetime / 0.25f;
+        if(lifetime <= 0.125f) {
+            useAlpha = lifetime / 0.125f;
         } else {
             useAlpha = 1.0f;
         }
@@ -156,13 +164,22 @@ public class ClientItem extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, floatingPos);
-        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
-        boolean draw = rc.verticesInBounds(vertices);
 
-        if(draw) {
-            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
-        }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        float norm = (floatingPos + 2) / 4f; // [0-4] // 0 = max, 4 = lowest
+        float MIN_SCALE = 0.5f;
+        float MAX_SCALE = 1f;
+        float _norm = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * (1f - norm);
+
+        float tw = rc.aoTextures[0].getWidth();
+        float th = rc.aoTextures[0].getHeight();
+        float relative = (textureWidth + textureHeight) / 1.5f / tw * _norm;
+
+        if(rc.aoBatch.getPackedColor() != TRANS_100_PACKED) rc.aoBatch.setPackedColor(TRANS_100_PACKED);
+        rc.aoBatch.draw(rc.aoTextures[0], clientPosX - tw * 0.5f * relative, clientPosY - 4 - th * 0.5f * relative, tw * relative, th * relative);
     }
 
     @Override

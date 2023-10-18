@@ -22,6 +22,7 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     public static final float[][] ROCK_BODIES = new float[][] {
             new float[] {-9.0f, 2.0f, 18.0f, 6.0f},
             new float[] {-9.0f, 2.0f, 18.0f, 6.0f},
+            new float[] {-9.0f, 2.0f, 18.0f, 6.0f},
     };
 
     public ServerBoulder() {
@@ -42,7 +43,12 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        if(rnd.random() <= 0.25f) {
+        float ch = rnd.random();
+
+        if(ch <= 0.1f) {
+            variant = 3;
+            health = 105.0f;
+        } else if(ch <= 0.3) {
             variant = 2;
             health = 90.0f;
         } else {

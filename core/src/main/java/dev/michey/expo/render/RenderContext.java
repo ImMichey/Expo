@@ -89,6 +89,7 @@ public class RenderContext {
     public ShaderProgram grassShader;
     public ShaderProgram waterDistortionShader;
     public ShaderProgram simplePassthroughShader;
+    public ShaderProgram aoShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -98,8 +99,16 @@ public class RenderContext {
     public PolygonTileBatch polygonTileBatch;           // Game world batch
     public ShapeRenderer chunkRenderer;                 // Game world batch
     public ArrayTextureSpriteBatch arraySpriteBatch;    // Game world batch
+    public SpriteBatch aoBatch;                         // Game world batch
     public SpriteBatch hudBatch;                        // HUD batch
     public TextureRegion square;
+
+    /** Ambient Occlusion */
+    public Texture[] aoTextures;
+    public float lastAOAlpha = 1.0f;
+    public static final float TRANS_100_PACKED = new Color(0.0f, 0.0f, 0.0f, 1.0f).toFloatBits();
+    public static final float TRANS_50_PACKED = new Color(0.0f, 0.0f, 0.0f, 0.5f).toFloatBits();
+    public static final float TRANS_33_PACKED = new Color(0.0f, 0.0f, 0.0f, 1f / 3f).toFloatBits();
 
     /** Fonts */
     public BitmapFont[] m5x7_all;
@@ -177,6 +186,7 @@ public class RenderContext {
         chunkRenderer = new ShapeRenderer();
         expoCamera = new ExpoCamera();
         arraySpriteBatch = new ArrayTextureSpriteBatch(8191, 2048, 2048, 32, GL30.GL_NEAREST, GL30.GL_NEAREST);
+        aoBatch = new SpriteBatch();
         globalGlyph = new GlyphLayout();
 
         {
@@ -256,6 +266,12 @@ public class RenderContext {
         displacementTexture = ExpoAssets.get().texture("water/displacementmap.png");
         displacementTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
+        aoTextures = new Texture[] {
+                ExpoAssets.get().texture("ao_tex_100perc.png"),
+                ExpoAssets.get().texture("ao_tex_50perc.png"),
+                ExpoAssets.get().texture("ao_tex_33perc.png"),
+        };
+
         numbers = new TextureRegion[10];
         TextureRegion baseTexture = ExpoAssets.get().textureRegion("numbers");
 
@@ -302,6 +318,7 @@ public class RenderContext {
         grassShader = compileShader("gl3/grass");
         waterDistortionShader = compileShader("gl3/water_distortion");
         simplePassthroughShader = compileShader("gl3/simple_passthrough");
+        aoShader = compileShader("gl3/ao");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         lightEngine = new ExpoLightEngine();
@@ -378,6 +395,8 @@ public class RenderContext {
         batch.totalRenderCalls = 0;
         arraySpriteBatch.totalRenderCalls = 0;
         hudBatch.totalRenderCalls = 0;
+        polygonTileBatch.totalRenderCalls = 0;
+        aoBatch.totalRenderCalls = 0;
     }
 
     private void createFBOs(int w, int h) {

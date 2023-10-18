@@ -40,12 +40,11 @@ public class ClientParticleOakLeaf extends ClientParticle {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            if(rotationSpeed > 0) {
-                rotation += delta * rotationSpeed;
-            }
-
             rc.arraySpriteBatch.setColor(r, g, b, useAlpha);
-            rc.arraySpriteBatch.draw(leaf, clientPosX, clientPosY, 0, 0, leaf.getRegionWidth(), leaf.getRegionHeight(), scaleX, scaleY, rotation);
+            float w = leaf.getRegionWidth() * scaleX;
+            float h = leaf.getRegionHeight() * scaleY;
+
+            rc.arraySpriteBatch.draw(leaf, clientPosX, clientPosY, 0, 0, w, h, 1.0f, 1.0f, rotation);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }

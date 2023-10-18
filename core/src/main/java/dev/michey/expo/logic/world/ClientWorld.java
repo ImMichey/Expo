@@ -370,7 +370,6 @@ public class ClientWorld {
             r.shadowFbo.begin();
                 transparentScreen();
                 clientEntityManager.renderEntityShadows(r.delta);
-                ClientUtils.takeScreenshot("0-shadowFbo", Input.Keys.G);
             r.shadowFbo.end();
         }
 
@@ -379,9 +378,7 @@ public class ClientWorld {
             r.tilesFbo.begin();
                 transparentScreen();
                 renderChunkTiles(false);
-                ClientUtils.takeScreenshot("00-post", Input.Keys.G);
                 drawShadowFbo(r, r.simplePassthroughShader, r.tilesFbo.getColorBufferTexture());
-                ClientUtils.takeScreenshot("1-tilesFbo", Input.Keys.G);
             r.tilesFbo.end();
         }
 
@@ -390,9 +387,7 @@ public class ClientWorld {
             r.waterTilesFbo.begin();
                 transparentScreen();
                 renderWaterTiles();
-                ClientUtils.takeScreenshot("check", Input.Keys.G);
                 drawShadowFbo(r, r.simplePassthroughShader, r.waterTilesFbo.getColorBufferTexture());
-                ClientUtils.takeScreenshot("2-waterTilesFbo", Input.Keys.G);
             r.waterTilesFbo.end();
         }
 
@@ -409,7 +404,6 @@ public class ClientWorld {
                 r.waterDistortionShader.setUniformf("u_waterSkewY", r.waterSkewY);
 
                 drawFboTexture(r.waterTilesFbo, r.waterDistortionShader);
-                ClientUtils.takeScreenshot("3-waterReflectionFbo", Input.Keys.G);
             r.waterReflectionFbo.end();
         }
 
@@ -429,12 +423,10 @@ public class ClientWorld {
                 renderChunkTiles(true);
 
                 drawShadowFbo(r, r.simplePassthroughShader, r.tilesFbo.getColorBufferTexture());
-                ClientUtils.takeScreenshot("4-tilesFboAgain", Input.Keys.G);
             r.tilesFbo.end();
 
             r.mainFbo.begin();
                 drawFboTexture(r.tilesFbo, null);
-            ClientUtils.takeScreenshot("5-final", Input.Keys.G);
             r.mainFbo.end();
         }
 

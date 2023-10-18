@@ -193,6 +193,7 @@ public class ExpoCamera {
         RenderContext.get().arraySpriteBatch.setProjectionMatrix(camera.combined);
         RenderContext.get().polygonTileBatch.setProjectionMatrix(camera.combined);
         RenderContext.get().chunkRenderer.setProjectionMatrix(camera.combined);
+        RenderContext.get().aoBatch.setProjectionMatrix(camera.combined);
         RenderContext.get().lightEngine.updateCamera();
     }
 

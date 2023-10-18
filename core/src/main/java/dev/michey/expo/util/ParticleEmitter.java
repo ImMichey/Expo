@@ -17,6 +17,7 @@ public class ParticleEmitter {
     }
 
     public void tick(float delta) {
+        if(!GameSettings.get().enableParticles) return;
         spawnNextDelta -= delta;
 
         if(spawnNextDelta <= 0) {

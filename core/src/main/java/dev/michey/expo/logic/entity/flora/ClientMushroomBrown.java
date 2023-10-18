@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
@@ -10,21 +11,20 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientMushroomBrown extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientMushroomBrown extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private TextureRegion texture;
     private TextureRegion selectionTexture;
-    private TextureRegion ao;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
         texture = tr("entity_mushroom_brownn");
-        ao = tr("entity_mushroom_brownn_ao");
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
@@ -91,9 +91,13 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
         if(drawMushroom) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            //rc.arraySpriteBatch.draw(ao, finalDrawPosX + 1, finalDrawPosY - 1);
             rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO50(rc, 0.125f, 0.125f, 0, 0);
     }
 
     @Override

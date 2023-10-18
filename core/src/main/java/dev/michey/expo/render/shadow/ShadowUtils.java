@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.world.ClientWorld;
+import dev.michey.expo.render.RenderContext;
 
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -11,12 +12,13 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientSunflower extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientSunflower extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private final FoliageAnimator foliageAnimator = new FoliageAnimator(
             0.2f, 0.5f, 0.02f, 0.03f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f
@@ -43,19 +45,7 @@ public class ClientSunflower extends ClientEntity implements SelectableEntity, R
         playEntitySound("grass_hit");
         contactAnimator.onContact();
 
-        new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(4, 7)
-                .scale(0.6f, 0.9f)
-                .lifetime(0.3f, 0.35f)
-                .color(ParticleColorMap.of(1))
-                .position(finalTextureCenterX, finalTextureCenterY)
-                .velocity(-24, 24, -24, 24)
-                .fadeout(0.10f)
-                .textureRange(3, 7)
-                .randomRotation()
-                .rotateWithVelocity()
-                .depth(depth - 0.0001f)
-                .spawn();
+        ParticleSheet.Common.spawnGrassHitParticles(this);
     }
 
     @Override
@@ -117,6 +107,11 @@ public class ClientSunflower extends ClientEntity implements SelectableEntity, R
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(wheatShadow, wheatShadow.getRegionWidth(), wheatShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAOAuto50(rc);
     }
 
     @Override

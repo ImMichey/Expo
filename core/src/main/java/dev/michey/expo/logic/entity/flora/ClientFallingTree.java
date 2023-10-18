@@ -15,6 +15,7 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
 
 public class ClientFallingTree extends ClientEntity implements ReflectableEntity {
@@ -79,18 +80,20 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
             reach = 195;
         }
 
-        new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
-                .amount(32, 64)
-                .scale(0.6f, 1.1f)
-                .lifetime(0.6f, 2.5f)
-                .position(clientPosX + (20 * dir), clientPosY - 12)
-                .offset(reach * dir, 0)
-                .velocity(-32, 32, 24, 80)
-                .fadeout(0.25f)
-                .randomRotation()
-                .rotateWithVelocity()
-                .depth(depth - 0.01f)
-                .spawn();
+        if(GameSettings.get().enableParticles) {
+            new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
+                    .amount(32, 64)
+                    .scale(0.6f, 1.1f)
+                    .lifetime(0.6f, 2.5f)
+                    .position(clientPosX + (20 * dir), clientPosY - 12)
+                    .offset(reach * dir, 0)
+                    .velocity(-32, 32, 24, 80)
+                    .fadeout(0.25f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .depth(depth - 0.01f)
+                    .spawn();
+        }
     }
 
     @Override

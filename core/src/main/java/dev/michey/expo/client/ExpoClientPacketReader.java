@@ -122,9 +122,8 @@ public class ExpoClientPacketReader {
                 entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir, p.sprinting, p.distance);
             }
         } else if(o instanceof P14_WorldUpdate p) {
-            log("Received WORLD UPDATE " + p.worldTime + " " + p.worldWeather + " " + p.weatherStrength);
-
             ClientWorld w = ExpoClientContainer.get().getClientWorld();
+            log("Received WORLD UPDATE " + p.worldTime + " " + p.worldWeather + " " + p.weatherStrength + " (cl: " + w.worldTime + ")");
 
             w.worldTime = p.worldTime;
             w.worldWeather = p.worldWeather;

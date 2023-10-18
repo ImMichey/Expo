@@ -9,10 +9,11 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientBlueberryBush extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientBlueberryBush extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
@@ -92,6 +93,11 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         drawWindShadowIfVisible(mask, contactAnimator);
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.4f, 0.4f, 0, 1.5f);
     }
 
     @Override

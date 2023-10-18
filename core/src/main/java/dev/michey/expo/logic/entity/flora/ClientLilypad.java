@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.flora;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -50,19 +51,7 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity, Ref
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("grass_hit");
 
-        new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(2, 5)
-                .scale(0.6f, 0.9f)
-                .lifetime(0.3f, 0.5f)
-                .color(ParticleColorMap.of(1))
-                .position(finalTextureCenterX, finalTextureCenterY)
-                .velocity(-24, 24, -24, 24)
-                .fadeout(0.15f)
-                .textureRange(12, 14)
-                .randomRotation()
-                .rotateWithVelocity()
-                .depth(depth - 0.0001f)
-                .spawn();
+        ParticleSheet.Common.spawnGrassHitParticles(this);
     }
 
     @Override

@@ -9,8 +9,8 @@ public enum TileLayerType {
     SOIL_HOLE(2,                new int[] {90, 111},    rgba8888(64, 59, 49), new String[] {"SOIL_HOLE"},                             false),
     SAND(3,                     new int[] {23, 44},     rgba8888(242, 235, 209), new String[] {"SAND", "DESERT"},                        false),
     DESERT(4,                   new int[] {23, 44},     rgba8888(0, 0, 0), new String[] {"DESERT", "SAND"},                        false),
-    GRASS(5,                    new int[] {1, 22},      rgba8888(0, 0, 0), new String[] {"GRASS", "FOREST"},                       false),
-    FOREST(6,                   new int[] {112, 133},   rgba8888(57, 113, 35), new String[] {"FOREST", "GRASS"},                       false),
+    GRASS(5,                    new int[] {1, 22},      rgba8888(108, 173f, 76f), new String[] {"GRASS"},                       false),
+    FOREST(6,                   new int[] {112, 133},   rgba8888(57, 113, 35), new String[] {"FOREST"},                       false),
     WATER(7,                    new int[] {46, 67},     rgba8888(88, 158, 220), new String[] {"WATER", "WATER_SANDY"},                  false),
     WATER_DEEP(8,               new int[] {68, 89},     rgba8888(73, 135, 211), new String[] {"WATER_DEEP", "WATER", "WATER_SANDY", "WATER_OVERLAY"},    false),
     ROCK(9,                     new int[] {156, 177},   rgba8888(59, 60, 62), new String[] {"ROCK"},                                  true),
@@ -129,7 +129,8 @@ public enum TileLayerType {
 
     public static TileLayerType biomeToLayer1(BiomeType type) {
         return switch (type) {
-            case FOREST, DENSE_FOREST, PLAINS, WHEAT_FIELDS -> FOREST;
+            case PLAINS -> GRASS;
+            case FOREST, DENSE_FOREST, WHEAT_FIELDS -> FOREST;
             case BEACH -> SAND;
             case OCEAN_DEEP -> SOIL_DEEP_WATERLOGGED;
             case PUDDLE, LAKE, RIVER, OCEAN -> SOIL_WATERLOGGED;

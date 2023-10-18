@@ -17,11 +17,12 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.util.*;
 
-public class ClientOakTree extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientOakTree extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private ContactAnimator contactAnimator;
     private FoliageAnimator foliageAnimator;
@@ -409,6 +410,15 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
                 rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(leavesShadowMask, leavesShadowMask.getRegionWidth(), leavesShadowMask.getRegionHeight(), shadowL, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value, topColorL, bottomColorL);
             }
+        }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        if(cut) {
+            drawAO33(rc, 0.5f, 0.75f, 1, 3.5f);
+        } else {
+            drawAO33(rc, 1.0f, 1.25f, 1, 3.5f);
         }
     }
 

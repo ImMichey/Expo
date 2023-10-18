@@ -229,6 +229,8 @@ public class ImGuiExpo {
                 coloredBulletText(0.0f, 1.0f, 0.5f, "batch: " + r.batch.totalRenderCalls);
                 coloredBulletText(0.0f, 1.0f, 0.5f, "arraySpriteBatch: " + r.arraySpriteBatch.totalRenderCalls);
                 coloredBulletText(0.0f, 1.0f, 0.5f, "hudBatch: " + r.hudBatch.totalRenderCalls);
+                coloredBulletText(0.0f, 1.0f, 0.5f, "aoBatch: " + r.aoBatch.totalRenderCalls);
+                coloredBulletText(0.0f, 1.0f, 0.5f, "polygonTileBatch: " + r.polygonTileBatch.totalRenderCalls);
                 ImGui.separator();
 
                 if(ImGui.treeNode(500, "Light engine")) {

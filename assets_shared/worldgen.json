@@ -121,7 +121,7 @@
                                 "!OCEAN_DEEP"
                             ],
                             "thresholdA": 0.5085,
-                            "thresholdB": 0.5215,
+                            "thresholdB": 0.5216,
                             "replaceType": "BIOME",
                             "replaceWith": "RIVER",
                             "priority": 1000
@@ -148,19 +148,19 @@
                 "biomes": [
                     {
                         "type": "OCEAN_DEEP",
-                        "elevation": [0.0, 0.48],
+                        "elevation": [0.0, 0.465],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "OCEAN",
-                        "elevation": [0.48, 0.486],
+                        "elevation": [0.465, 0.48],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "BEACH",
-                        "elevation": [0.486, 0.5],
+                        "elevation": [0.48, 0.5],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
@@ -182,30 +182,30 @@
             "tilePopulators": [
                 {
                     "biome": "LAKE",
-                    "chance": 0.15,
+                    "chance": 0.015,
                     "type": "CATTAIL",
-                    "spawnOffsets": [-2, 2, -2, 2],
+                    "spawnOffsets": [-1.0, 1.0, -1.0, 1.0],
                     "static": true,
                     "spreadData": {
                         "spread": [1, 5],
                         "spreadChance": 1.0,
                         "spreadType": ["CATTAIL"],
-                        "spreadDis": [12.0, 16.0],
+                        "spreadDis": [16.0, 20.0],
                         "spreadStatic": true,
                         "spreadOffsets": [0.0, 0.0]
                     }
                 },
                 {
                     "biome": "RIVER",
-                    "chance": 0.05,
+                    "chance": 0.005,
                     "type": "CATTAIL",
-                    "spawnOffsets": [-2, 2, -2, 2],
+                    "spawnOffsets": [-1.0, 1.0, -1.0, 1.0],
                     "static": true,
                     "spreadData": {
                         "spread": [1, 5],
                         "spreadChance": 1.0,
                         "spreadType": ["CATTAIL"],
-                        "spreadDis": [12.0, 16.0],
+                        "spreadDis": [16.0, 20.0],
                         "spreadStatic": true,
                         "spreadOffsets": [0.0, 0.0]
                     }
@@ -540,7 +540,7 @@
                     "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
                     "priority": 50,
                     "spreadData": {
-                        "spread": [4, 24],
+                        "spread": [8, 48],
                         "spreadChance": 1.0,
                         "spreadDis": [24.0, 96.0],
                         "spreadType": ["SUNFLOWER"],
