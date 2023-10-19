@@ -42,12 +42,12 @@ public abstract class ExpoServerBase {
     /** Command resolver */
     private final ServerCommandResolver commandResolver;
 
-    public ExpoServerBase(boolean localServer, String worldName) {
+    public ExpoServerBase(boolean localServer, String worldName, int worldSeed) {
         this.localServer = localServer;
         EntityHitboxMapper.get();
         packetReader = new ExpoServerPacketReader();
         serverContainer = new ExpoServerContainer();
-        worldSaveFile = new WorldSaveFile(worldName);
+        worldSaveFile = new WorldSaveFile(worldName, worldSeed);
         new ContainerRegistry();
         if(!worldSaveFile.load()) {
             log("Failed to load WorldSaveFile, aborting application.");

@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.dongbat.jbump.Item;
 import com.dongbat.jbump.Rect;
 import com.dongbat.jbump.World;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -19,7 +18,6 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.Pair;
 import dev.michey.expo.weather.Weather;
-import make.some.noise.Noise;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;

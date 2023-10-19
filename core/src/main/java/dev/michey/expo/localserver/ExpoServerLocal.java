@@ -17,8 +17,8 @@ public class ExpoServerLocal extends ExpoServerBase {
 
     private Thread gameLogicThread;
 
-    public ExpoServerLocal(String worldName) {
-        super(true, worldName);
+    public ExpoServerLocal(String worldName, int worldSeed) {
+        super(true, worldName, worldSeed);
         if(ItemMapper.get() == null) {
             new ItemMapper(true, false);
             Expo.get().loadItemMapperTextures();
@@ -40,7 +40,7 @@ public class ExpoServerLocal extends ExpoServerBase {
             @Override
             public void run() {
                 long initialTime = System.nanoTime();
-                final double timeU = 1_000_000_000 / (double) ExpoShared.DEFAULT_SERVER_TICK_RATE;
+                final double timeU = 1_000_000_000 / (double) ExpoShared.DEFAULT_LOCAL_TICK_RATE;
                 double deltaU = 0;
                 int ticks = 0;
                 long timer = System.currentTimeMillis();
@@ -51,7 +51,7 @@ public class ExpoServerLocal extends ExpoServerBase {
                     initialTime = currentTime;
 
                     if(deltaU >= 1) {
-                        serverContainer.loop(ExpoServerLocal.get(), 1f / (float) ExpoShared.DEFAULT_SERVER_TICK_RATE);
+                        serverContainer.loop(ExpoServerLocal.get(), 1f / (float) ExpoShared.DEFAULT_LOCAL_TICK_RATE);
                         ticks++;
                         deltaU--;
                     }

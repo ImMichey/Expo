@@ -174,12 +174,12 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
         float MAX_SCALE = 1f;
         float _norm = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * (1f - norm);
 
-        float tw = rc.aoTextures[0].getWidth();
-        float th = rc.aoTextures[0].getHeight();
+        float tw = rc.aoTexture.getWidth();
+        float th = rc.aoTexture.getHeight();
         float relative = (textureWidth + textureHeight) / 1.5f / tw * _norm;
 
         if(rc.aoBatch.getPackedColor() != TRANS_100_PACKED) rc.aoBatch.setPackedColor(TRANS_100_PACKED);
-        rc.aoBatch.draw(rc.aoTextures[0], clientPosX - tw * 0.5f * relative, clientPosY - 4 - th * 0.5f * relative, tw * relative, th * relative);
+        rc.aoBatch.draw(rc.aoTexture, clientPosX - tw * 0.5f * relative, clientPosY - 4 - th * 0.5f * relative, tw * relative, th * relative);
     }
 
     @Override

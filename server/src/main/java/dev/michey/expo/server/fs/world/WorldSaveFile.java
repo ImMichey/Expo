@@ -32,18 +32,19 @@ public class WorldSaveFile {
     private final String worldName;
     private String worldSpawnDimension = ExpoShared.DIMENSION_OVERWORLD;
     private int currentEntityId = 0;
-    private int worldSeed = MathUtils.random.nextInt();
+    private int worldSeed;
     private long creationTimestamp;
     private long lastSaveTimestamp;
 
     /** Player save handling */
     private PlayerSaveHandler playerSaveHandler;
 
-    public WorldSaveFile(String worldName) {
+    public WorldSaveFile(String worldName, int worldSeed) {
         this.worldName = worldName;
         long now = System.currentTimeMillis();
         creationTimestamp = now;
         lastSaveTimestamp = now;
+        this.worldSeed = worldSeed;
     }
 
     public int getCurrentEntityId() {

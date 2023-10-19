@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Align;
 import dev.michey.expo.command.CommandResolver;
 import dev.michey.expo.console.command.*;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.render.RenderContext;
 
 import java.util.*;
@@ -59,12 +60,15 @@ public class GameConsole {
     private int CONSOLE_COMMAND_TARGET_WIDTH = 768;//768;
     private final GlyphLayout historyGlyph;
     private final GlyphLayout calcGlyph;
+
     private int dragX;
     private int dragY;
     private int lastDragX;
     private int lastDragY;
     private int lastClickX;
     private int lastClickY;
+    private boolean initDrag;
+
     private int displayEntries = 17;
     public int displayFromLineIndex = 0;
     public int displayToLineIndex = displayEntries - 1;

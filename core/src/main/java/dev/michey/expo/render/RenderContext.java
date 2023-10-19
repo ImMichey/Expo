@@ -104,8 +104,7 @@ public class RenderContext {
     public TextureRegion square;
 
     /** Ambient Occlusion */
-    public Texture[] aoTextures;
-    public float lastAOAlpha = 1.0f;
+    public Texture aoTexture;
     public static final float TRANS_100_PACKED = new Color(0.0f, 0.0f, 0.0f, 1.0f).toFloatBits();
     public static final float TRANS_50_PACKED = new Color(0.0f, 0.0f, 0.0f, 0.5f).toFloatBits();
     public static final float TRANS_33_PACKED = new Color(0.0f, 0.0f, 0.0f, 1f / 3f).toFloatBits();
@@ -266,11 +265,7 @@ public class RenderContext {
         displacementTexture = ExpoAssets.get().texture("water/displacementmap.png");
         displacementTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
-        aoTextures = new Texture[] {
-                ExpoAssets.get().texture("ao_tex_100perc.png"),
-                ExpoAssets.get().texture("ao_tex_50perc.png"),
-                ExpoAssets.get().texture("ao_tex_33perc.png"),
-        };
+        aoTexture = ExpoAssets.get().texture("ao_tex_60_20.png");
 
         numbers = new TextureRegion[10];
         TextureRegion baseTexture = ExpoAssets.get().textureRegion("numbers");

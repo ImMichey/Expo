@@ -14,6 +14,7 @@
 * Add Flint Sword for now
 * New Oak Plank Wall textures
 * Adjust tree fall impact radius for items, particles, etc.
+* Add fading AO shadow for ClientGhostItem
 
 [Long Term Fixes]
 * New physics engine [Performance issues at large scale]

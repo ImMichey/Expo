@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
@@ -80,7 +81,7 @@ public class InputController {
 
     /** Dragging operations */
     public void onDrag(int x, int y, boolean consoleOpen, boolean chatOpen, boolean inventoryOpen) {
-        if(consoleOpen) {
+        if(consoleOpen && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             // Block any input to ingame if console is open
             GameConsole.get().handleDragged(x, y);
         }

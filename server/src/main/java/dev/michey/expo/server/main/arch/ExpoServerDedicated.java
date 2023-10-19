@@ -35,7 +35,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
     private Thread consoleCommandThread;
 
     public ExpoServerDedicated(ExpoServerConfiguration config) {
-        super(false, config.getWorldName());
+        super(false, config.getWorldName(), ExpoShared.RANDOM.nextInt());
         this.config = config;
         if(config.isWhitelistEnabled()) {
             whitelist = new ServerWhitelist();

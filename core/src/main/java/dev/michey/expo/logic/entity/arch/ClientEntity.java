@@ -475,29 +475,25 @@ public abstract class ClientEntity {
     }
 
     private void drawAO(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {
-        Texture aoTexture = rc.aoTextures[0];
-        float fw = aoTexture.getWidth() * scaleX;
-        float fh = aoTexture.getHeight() * scaleY;
-        rc.aoBatch.draw(aoTexture, clientPosX - fw * 0.5f + offsetX, clientPosY - fh * 0.5f + offsetY, fw, fh);
+        float fw = rc.aoTexture.getWidth() * scaleX;
+        float fh = rc.aoTexture.getHeight() * scaleY;
+        rc.aoBatch.draw(rc.aoTexture, clientPosX - fw * 0.5f + offsetX, clientPosY - fh * 0.5f + offsetY, fw, fh);
     }
 
     public void drawAOAuto100(RenderContext rc) {
-        Texture aoTexture = rc.aoTextures[0];
-        float scale = textureWidth / aoTexture.getWidth();
+        float scale = textureWidth / rc.aoTexture.getWidth();
         if(rc.aoBatch.getPackedColor() != TRANS_100_PACKED) rc.aoBatch.setPackedColor(TRANS_100_PACKED);
         drawAO(rc, scale, scale, 0, 0);
     }
 
     public void drawAOAuto50(RenderContext rc) {
-        Texture aoTexture = rc.aoTextures[0];
-        float scale = textureWidth / aoTexture.getWidth();
+        float scale = textureWidth / rc.aoTexture.getWidth();
         if(rc.aoBatch.getPackedColor() != TRANS_50_PACKED) rc.aoBatch.setPackedColor(TRANS_50_PACKED);
         drawAO(rc, scale, scale, 0, 0);
     }
 
     public void drawAOAuto33(RenderContext rc) {
-        Texture aoTexture = rc.aoTextures[0];
-        float scale = textureWidth / aoTexture.getWidth();
+        float scale = textureWidth / rc.aoTexture.getWidth();
         if(rc.aoBatch.getPackedColor() != TRANS_33_PACKED) rc.aoBatch.setPackedColor(TRANS_33_PACKED);
         drawAO(rc, scale, scale, 0, 0);
     }

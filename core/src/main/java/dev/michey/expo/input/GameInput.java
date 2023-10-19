@@ -37,7 +37,7 @@ public class GameInput implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if(Expo.get().getActiveScreen().getScreenName().equals(ClientStatic.SCREEN_MENU)) {
+        if(Expo.get().getActiveScreen().getScreenName().equals(ClientStatic.SCREEN_MENU) && !GameConsole.get().isVisible()) {
             MenuScreen.get().handleClick(button);
             return false;
         }

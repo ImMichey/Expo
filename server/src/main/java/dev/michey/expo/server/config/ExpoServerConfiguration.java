@@ -24,7 +24,7 @@ public class ExpoServerConfiguration {
     private int serverPort = ExpoShared.DEFAULT_EXPO_SERVER_PORT;
     private int writeBufferSize = ExpoShared.DEFAULT_WRITE_BUFFER_SIZE;
     private int objectBufferSize = ExpoShared.DEFAULT_OBJECT_BUFFER_SIZE;
-    private int serverTps = ExpoShared.DEFAULT_SERVER_TICK_RATE;
+    private int serverTps = ExpoShared.DEFAULT_DEDICATED_TICK_RATE;
     private boolean enableWhitelist = false;
     private String worldName = "default-world";
     private int unloadChunksAfter = 5000;

@@ -344,7 +344,7 @@ public class ImGuiExpo {
                     double total = ExpoServerContainer.get().totalTickDuration / 1_000_000d;
                     double packets = ExpoServerContainer.get().packetTickDuration / 1_000_000d;
                     double world = ExpoServerContainer.get().worldTickDuration / 1_000_000d;
-                    double max = 1f / (double) ExpoShared.DEFAULT_SERVER_TICK_RATE;
+                    double max = 1f / (double) ExpoShared.DEFAULT_LOCAL_TICK_RATE;
                     coloredBulletText(0f, 1f, 1f, "Total: " + total + " (" + (Math.round(total / max * 100d) / 100d) + "%)");
                     coloredBulletText(0f, 1f, 1f, "Packets: " + packets + " (" + (Math.round(packets / max * 100d) / 100d) + "%)");
                     coloredBulletText(0f, 1f, 1f, "World: " + world + " (" + (Math.round(world / max * 100d) / 100d) + "%)");

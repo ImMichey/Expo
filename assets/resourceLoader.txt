@@ -60,9 +60,6 @@ foliage/entity_wheat/entity_crop_wheat_stage_5.png
 foliage/entity_wheat/entity_crop_wheat_stage_6.png
 foliage/entity_sunflower/entity_sunflower.png
 foliage/entity_sunflower/entity_sunflower_sm.png
-ao_tex_64.png
-ao_tex_100perc.png
-ao_tex_50perc.png
-ao_tex_33perc.png
+ao_tex_60_20.png
 
 [!LOAD]
