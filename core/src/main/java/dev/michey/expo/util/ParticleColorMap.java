@@ -42,6 +42,15 @@ public class ParticleColorMap {
     public static final Color COLOR_PARTICLE_COAL_1 = Color.valueOf("#10021b");
     public static final Color COLOR_PARTICLE_COAL_2 = Color.valueOf("#2e2d32");
 
+    public static final Color COLOR_PARTICLE_DYNAMIC_ROCK_1 = Color.valueOf("#808683");
+    public static final Color COLOR_PARTICLE_DYNAMIC_ROCK_2 = Color.valueOf("#8e9a94");
+
+    public static final Color COLOR_PARTICLE_DYNAMIC_DIRT_1 = Color.valueOf("#9d8b72");
+    public static final Color COLOR_PARTICLE_DYNAMIC_DIRT_2 = Color.valueOf("#a28c6b");
+
+    public static final Color COLOR_PARTICLE_DYNAMIC_OAK_PLANK_1 = Color.valueOf("#8e9a94");
+    public static final Color COLOR_PARTICLE_DYNAMIC_OAK_PLANK_2 = Color.valueOf("#8e9a94");
+
     static {
         COLOR_MAP = new HashMap<>();
 
@@ -76,6 +85,15 @@ public class ParticleColorMap {
 
         colorEntry(9, COLOR_PARTICLE_BLUEBERRYBUSH_1);
         colorEntry(9, COLOR_PARTICLE_BLUEBERRYBUSH_2);
+
+        colorEntry(10, COLOR_PARTICLE_DYNAMIC_ROCK_1);
+        colorEntry(10, COLOR_PARTICLE_DYNAMIC_ROCK_2);
+
+        colorEntry(11, COLOR_PARTICLE_DYNAMIC_DIRT_1);
+        colorEntry(11, COLOR_PARTICLE_DYNAMIC_DIRT_2);
+
+        colorEntry(12, COLOR_PARTICLE_DYNAMIC_OAK_PLANK_1);
+        colorEntry(12, COLOR_PARTICLE_DYNAMIC_OAK_PLANK_2);
     }
 
     public static List<Color> of(int id) {

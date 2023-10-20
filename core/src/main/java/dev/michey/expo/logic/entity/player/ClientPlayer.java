@@ -23,6 +23,7 @@ import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
@@ -43,7 +44,7 @@ import dev.michey.expo.util.*;
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
-public class ClientPlayer extends ClientEntity implements ReflectableEntity {
+public class ClientPlayer extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     /** Last known player username. */
     public String username;
@@ -1093,6 +1094,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity {
                 holdingItemSprite.draw(rc.batch);
             }
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO50(rc, 0.25f, 0.25f, 0, 0);
     }
 
     @Override

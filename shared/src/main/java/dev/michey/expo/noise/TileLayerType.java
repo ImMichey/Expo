@@ -6,7 +6,7 @@ public enum TileLayerType {
 
     EMPTY(0,                    new int[] {-1},         rgba8888(0, 0, 0), new String[] {"EMPTY"},                                 false),
     SOIL(1,                     new int[] {0},          rgba8888(97, 86, 70), new String[] {"SOIL"},                                  false),
-    SOIL_HOLE(2,                new int[] {90, 111},    rgba8888(64, 59, 49), new String[] {"SOIL_HOLE"},                             false),
+    SOIL_HOLE(2,                new int[] {90, 111},    rgba8888(64, 59, 49), new String[] {"SOIL_HOLE", "SOIL_FARMLAND"},                             false),
     SAND(3,                     new int[] {23, 44},     rgba8888(242, 235, 209), new String[] {"SAND", "DESERT"},                        false),
     DESERT(4,                   new int[] {23, 44},     rgba8888(0, 0, 0), new String[] {"DESERT", "SAND"},                        false),
     GRASS(5,                    new int[] {1, 22},      rgba8888(108, 173f, 76f), new String[] {"GRASS"},                       false),
@@ -14,7 +14,7 @@ public enum TileLayerType {
     WATER(7,                    new int[] {46, 67},     rgba8888(88, 158, 220), new String[] {"WATER", "WATER_SANDY"},                  false),
     WATER_DEEP(8,               new int[] {68, 89},     rgba8888(73, 135, 211), new String[] {"WATER_DEEP", "WATER", "WATER_SANDY", "WATER_OVERLAY"},    false),
     ROCK(9,                     new int[] {156, 177},   rgba8888(59, 60, 62), new String[] {"ROCK"},                                  true),
-    SOIL_FARMLAND(10,           new int[] {178, 199},   rgba8888(45, 43, 35), new String[] {"SOIL_FARMLAND"},                         false),
+    SOIL_FARMLAND(10,           new int[] {178, 199},   rgba8888(45, 43, 35), new String[] {"SOIL_FARMLAND", "SOIL_HOLE"},                         false),
     OAK_PLANK(11,               new int[] {200, 221},   rgba8888(150, 124, 89), new String[] {"OAK_PLANK"},                             false),
     DIRT(12,                    new int[] {222, 243},   rgba8888(71, 60, 49), new String[] {"DIRT"},                                  true),
     WATER_SANDY(13,             new int[] {244, 265},   rgba8888(88, 158, 220), new String[] {"WATER_SANDY", "WATER"},                  false),

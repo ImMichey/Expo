@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -96,6 +97,8 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         if(selected && newHealth <= 0) {
             CameraShake.invoke(1.25f, 0.33f);
         }
+
+        ParticleSheet.Common.spawnDynamic3DHitParticles(this);
     }
 
     @Override
@@ -169,7 +172,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
                     finalDrawPosY + squishAnimator2D.squishY1,
                     created.getRegionWidth() + squishAnimator2D.squishX2,
                     created.getRegionHeight() + squishAnimator2D.squishY2);
-            rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 
@@ -231,7 +234,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         squishAnimator2D.calculate(delta);
         if(un) notifySquish(n);
 
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, true);
+        setSelectionValuesNoOutline();
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated * 0.5f);
         rc.arraySpriteBatch.draw(created,

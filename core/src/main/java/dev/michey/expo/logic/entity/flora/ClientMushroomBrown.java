@@ -56,7 +56,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        setSelectionValues();
 
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
         rc.arraySpriteBatch.end();

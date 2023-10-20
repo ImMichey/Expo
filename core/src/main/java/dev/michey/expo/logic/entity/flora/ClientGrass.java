@@ -99,7 +99,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
+        setSelectionValues(Color.BLACK);
 
         rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
         rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);

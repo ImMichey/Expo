@@ -78,7 +78,7 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        setSelectionValues();
         squishAnimator2D.calculate(delta);
 
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX - squishAnimator2D.squishX * 0.5f, finalSelectionDrawPosY,

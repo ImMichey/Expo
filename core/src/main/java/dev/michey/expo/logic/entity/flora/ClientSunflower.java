@@ -70,7 +70,7 @@ public class ClientSunflower extends ClientEntity implements SelectableEntity, R
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, false);
+        setSelectionValues();
 
         rc.arraySpriteBatch.drawCustomVertices(wheat, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, wheat.getWidth(), wheat.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();

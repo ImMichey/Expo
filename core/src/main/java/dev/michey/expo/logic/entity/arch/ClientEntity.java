@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
@@ -77,6 +78,7 @@ public abstract class ClientEntity {
     public float finalTextureRootX, finalTextureRootY;          // The world position where the texture has its root visually (feet)
     public float finalSelectionDrawPosX, finalSelectionDrawPosY;// The world position where to draw the selection texture at
     public boolean drawReflection = false;
+    public float blinkDelta;
 
     /** ClientEntity base methods */
     public abstract void onCreation();
@@ -472,6 +474,21 @@ public abstract class ClientEntity {
 
     public void playEntitySound(String group) {
         AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
+    }
+
+    public void setSelectionValues() {
+        RenderContext rc = RenderContext.get();
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, false);
+    }
+
+    public void setSelectionValues(Color color) {
+        RenderContext rc = RenderContext.get();
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, color, false);
+    }
+
+    public void setSelectionValuesNoOutline() {
+        RenderContext rc = RenderContext.get();
+        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, true);
     }
 
     private void drawAO(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {

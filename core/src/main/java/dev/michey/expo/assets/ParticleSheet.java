@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
@@ -52,6 +54,34 @@ public class ParticleSheet {
     }
 
     public static class Common {
+
+        public static void spawnDynamic3DHitParticles(ClientDynamic3DTile cd3d) {
+            if(!GameSettings.get().enableParticles) return;
+
+            int colorId = 10;
+
+            if(cd3d.emulatingType == TileLayerType.DIRT) {
+                colorId = 11;
+            } else if(cd3d.emulatingType == TileLayerType.OAKPLANKWALL) {
+                colorId = 12;
+            }
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(12, 18)
+                    .scale(0.3f, 0.7f)
+                    .lifetime(0.4f, 0.55f)
+                    .color(ParticleColorMap.of(colorId))
+                    .position(cd3d.serverPosX + 2, cd3d.serverPosY + 2)
+                    .offset(12, 28)
+                    .velocity(-32, 32, -32, 32)
+                    .fadein(0.1f)
+                    .fadeout(0.1f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .decreaseSpeed()
+                    .depth(cd3d.depth - 0.0001f)
+                    .spawn();
+        }
 
         public static void spawnGrassHitParticles(ClientEntity entity) {
             if(!GameSettings.get().enableParticles) return;

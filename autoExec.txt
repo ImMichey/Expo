@@ -1,6 +1,6 @@
 /fps 240
-#/delsave dev
-#/world dev
+/delsave dev
+/world dev
 #/connect 167.86.107.202
 #/speed 500
 #/time 0

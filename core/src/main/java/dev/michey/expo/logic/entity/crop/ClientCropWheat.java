@@ -131,7 +131,7 @@ public class ClientCropWheat extends ClientEntity implements SelectableEntity, R
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
+        setSelectionValues(Color.BLACK);
 
         rc.arraySpriteBatch.drawCustomVertices(cropTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, cropTexture.getWidth(), cropTexture.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();

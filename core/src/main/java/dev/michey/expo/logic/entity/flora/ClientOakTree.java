@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.entity.flora;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -59,14 +57,21 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
      *      [10] = InteractionWidth
      *      [11] = InteractionHeight
      */
+    public static final float[] LEAVES_SMALL = new float[] {
+        46, 58
+    };
+    public static final float[] LEAVES_MEDIUM = new float[] {
+        57, 76
+    };
+
     public static final float[][] MATRIX = new float[][] {
-        new float[] {46, 58, 14, 40, 46, 93, 17, 33, 3, 2, 8, 6},
-        new float[] {46, 58, 15, 41, 46, 94, 15, 37, 4, 2, 9, 6},
-        new float[] {57, 76, 15, 41, 57, 112, 21, 37, 4, 2, 9, 6},
-        new float[] {57, 76, 18, 70, 57, 141, 20, 62, 5, 2, 9, 6},
+        new float[] {LEAVES_SMALL[0], LEAVES_SMALL[1], 14, 40, 46, 93, 17, 33, 3, 2, 8, 6},
+        new float[] {LEAVES_SMALL[0], LEAVES_SMALL[1], 15, 41, 46, 94, 15, 37, 4, 2, 9, 6},
+        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 15, 41, 57, 112, 21, 37, 4, 2, 9, 6},
+        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 18, 70, 57, 141, 20, 62, 5, 2, 9, 6},
         new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
-        new float[] {57, 76, 18, 119, 57, 190, 20, 114, 5, 2, 12, 6},
-        new float[] {57, 76, 18, 96, 57, 167, 20, 91, 5, 2, 12, 6},
+        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 18, 119, 57, 190, 20, 114, 5, 2, 12, 6},
+        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 18, 96, 57, 167, 20, 91, 5, 2, 12, 6},
     };
 
     /*
@@ -166,8 +171,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             leaves = t("foliage/entity_oak_tree/eot_leaves_smol.png");
             leavesShadowMask = tr("eot_leaves_smol_sm");
         } else {
-            leaves = t("foliage/entity_oak_tree/eot_leaves_sized.png");
             leavesShadowMask = tr("eot_leaves_sm");
+            leaves = t("foliage/entity_oak_tree/eot_leaves_sized.png");
         }
 
         if(cut) {
@@ -308,7 +313,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         if(!cut) {
             foliageAnimator.calculateWindOnDemand();
         }
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        setSelectionValues();
 
         rc.arraySpriteBatch.draw(selectionTrunk, finalSelectionDrawPosX, finalSelectionDrawPosY);
         rc.arraySpriteBatch.end();

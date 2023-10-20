@@ -76,7 +76,7 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
+        setSelectionValues(Color.BLACK);
 
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY + animationSine);
         rc.arraySpriteBatch.end();

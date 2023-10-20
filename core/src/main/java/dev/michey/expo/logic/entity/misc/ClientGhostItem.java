@@ -3,13 +3,17 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 
-public class ClientGhostItem extends ClientEntity {
+import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
+
+public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEntity {
 
     public TextureRegion texture;
     public int amount;
@@ -20,7 +24,7 @@ public class ClientGhostItem extends ClientEntity {
 
     @Override
     public void onCreation() {
-
+        visibleToRenderEngine = true;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class ClientGhostItem extends ClientEntity {
         for(char c : numberAsString.toCharArray()) {
             TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
             rc.arraySpriteBatch.draw(indiNumber, ex + add, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
-            add += 6 * fontScale;
+            add += (int) (6 * fontScale);
         }
 
         rc.arraySpriteBatch.setColor(Color.WHITE);
@@ -73,16 +77,24 @@ public class ClientGhostItem extends ClientEntity {
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, floatingPos + floatingPosAnimation);
-        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
-        boolean draw = rc.verticesInBounds(vertices);
 
-        if(draw) {
-            float t = new Color(0.0f, 0.0f, 0.0f, 0.0f).toFloatBits();
-            float b = new Color(0.0f, 0.0f, 0.0f, useAlpha).toFloatBits();
+    }
 
-            rc.arraySpriteBatch.drawGradientCustomColor(texture, textureWidth, textureHeight, shadow, t, b);
-        }
+    @Override
+    public void renderAO(RenderContext rc) {
+        float norm = (floatingPos + 2) / 4f; // [0-4] // 0 = max, 4 = lowest
+        float MIN_SCALE = 0.5f;
+        float MAX_SCALE = 1f;
+        float _norm = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * (1f - norm);
+        _norm *= useAlpha;
+
+        float tw = rc.aoTexture.getWidth();
+        float th = rc.aoTexture.getHeight();
+        float relative = (texture.getRegionWidth() * 0.75f + texture.getRegionHeight() * 0.75f) / 1.5f / tw * _norm;
+
+        float packed = new Color(0.0f, 0.0f, 0.f, useAlpha).toFloatBits();
+        if(rc.aoBatch.getPackedColor() != packed) rc.aoBatch.setPackedColor(packed);
+        rc.aoBatch.draw(rc.aoTexture, clientPosX - tw * 0.5f * relative, clientPosY - 4 - th * 0.5f * relative, tw * relative, th * relative);
     }
 
     @Override

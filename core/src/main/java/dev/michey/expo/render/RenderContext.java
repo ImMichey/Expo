@@ -90,6 +90,7 @@ public class RenderContext {
     public ShaderProgram waterDistortionShader;
     public ShaderProgram simplePassthroughShader;
     public ShaderProgram aoShader;
+    public ShaderProgram blinkShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -314,6 +315,7 @@ public class RenderContext {
         waterDistortionShader = compileShader("gl3/water_distortion");
         simplePassthroughShader = compileShader("gl3/simple_passthrough");
         aoShader = compileShader("gl3/ao");
+        blinkShader = compileShader("gl3/blink");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         lightEngine = new ExpoLightEngine();
@@ -447,10 +449,6 @@ public class RenderContext {
 
     public void useRegularArrayShader() {
         if(arraySpriteBatch.getShader() != DEFAULT_GLES3_ARRAY_SHADER) arraySpriteBatch.setShader(DEFAULT_GLES3_ARRAY_SHADER);
-    }
-
-    public void bindAndSetSelection(Batch useBatch) {
-        bindAndSetSelection(useBatch, 2048, Color.WHITE, false);
     }
 
     public void bindAndSetSelection(Batch useBatch, float textureSize, Color c, boolean disableOutline) {

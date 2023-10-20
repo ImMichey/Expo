@@ -24,7 +24,7 @@ public class ServerChicken extends ServerEntity implements DamageableEntity, Phy
 
     public ServerChicken() {
         health = 40.0f;
-        variant = 1;
+        variant = 2;
     }
 
     @Override
@@ -36,7 +36,8 @@ public class ServerChicken extends ServerEntity implements DamageableEntity, Phy
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        variant = rnd.random(1, 2);
+        //variant = rnd.random(1, 2);
+        variant = 2;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        setSelectionValues();
 
         Texture useTex = hasBerries ? bushFruits : bush;
         rc.arraySpriteBatch.drawCustomVertices(useTex, finalDrawPosX, finalDrawPosY, useTex.getWidth(), useTex.getHeight(), contactAnimator.value, contactAnimator.value);

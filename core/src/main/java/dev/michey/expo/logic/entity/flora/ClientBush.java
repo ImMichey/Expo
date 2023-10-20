@@ -55,7 +55,7 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        rc.bindAndSetSelection(rc.arraySpriteBatch);
+        setSelectionValues();
 
         rc.arraySpriteBatch.drawCustomVertices(texture, finalDrawPosX, finalDrawPosY, texture.getWidth(), texture.getHeight(), contactAnimator.value, contactAnimator.value);
         rc.arraySpriteBatch.end();

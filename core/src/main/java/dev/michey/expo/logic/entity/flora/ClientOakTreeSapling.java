@@ -80,7 +80,7 @@ public class ClientOakTreeSapling extends ClientEntity implements SelectableEnti
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.BLACK, false);
+        setSelectionValues(Color.BLACK);
 
         rc.arraySpriteBatch.drawCustomVertices(sapling, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, sapling.getWidth(), sapling.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         rc.arraySpriteBatch.end();
