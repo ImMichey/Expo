@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.ClientParticle;
@@ -29,9 +30,11 @@ public class ParticleBuilder {
     private int textureMin, textureMax;
     private float startPosX, startPosY;
     private float offsetX, offsetY;
+    private float followOffsetX, followOffsetY;
     private boolean randomRotation;
     private boolean rotateWithVelocity;
     private boolean decreaseSpeed;
+    private ClientEntity followEntity;
     private float depth = Float.MAX_VALUE;
     private boolean dynamicDepth;
 
@@ -85,8 +88,6 @@ public class ParticleBuilder {
         float y = MathUtils.sinDeg(MathUtils.random(360f));
         Vector2 vv = new Vector2(x, y).nor().scl(max);
 
-        ExpoLogger.log("-> " + vv);
-
         this.velocityMinX = -vv.x;
         this.velocityMaxX = vv.x;
 
@@ -139,6 +140,17 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder followEntity(ClientEntity followEntity) {
+        this.followEntity = followEntity;
+        return this;
+    }
+
+    public ParticleBuilder followOffset(float offsetX, float offsetY) {
+        this.followOffsetX = offsetX;
+        this.followOffsetY = offsetY;
+        return this;
+    }
+
     public ParticleBuilder depth(float depth) {
         this.depth = depth;
         return this;
@@ -187,6 +199,10 @@ public class ParticleBuilder {
             if(rotateWithVelocity) p.setParticleConstantRotation((Math.abs(p.pvx) + Math.abs(p.pvy)) * 0.5f / 24f * 360f);
             if(dynamicDepth) p.setParticleDynamicDepth();
             if(decreaseSpeed) p.setDecreaseSpeed();
+            if(followEntity != null) {
+                p.setFollowEntity(followEntity);
+                p.setFollowOffset(followOffsetX, followOffsetY);
+            }
 
             ClientEntityManager.get().addClientSideEntity(p);
         }

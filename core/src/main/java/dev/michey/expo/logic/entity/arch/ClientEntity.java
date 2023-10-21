@@ -530,4 +530,31 @@ public abstract class ClientEntity {
         drawAO(rc, scaleX, scaleY, offsetX, offsetY);
     }
 
+    public void chooseArrayBatch(RenderContext rc, float intensity) {
+        if(blinkDelta > 0) {
+            rc.useBlinkShader();
+            rc.blinkShader.setUniformf("u_intensity", intensity);
+        } else {
+            rc.useRegularArrayShader();
+        }
+    }
+
+    public float tickBlink(float delta, float speed) {
+        if(blinkDelta > 0) {
+            blinkDelta -= delta * speed;
+            if(blinkDelta < 0) blinkDelta = 0;
+            return Interpolation.smooth2.apply(1f - blinkDelta);
+        }
+        return 0f;
+    }
+
+    public float tickBlink(float delta) {
+        if(blinkDelta > 0) {
+            blinkDelta -= delta * 7.5f;
+            if(blinkDelta < 0) blinkDelta = 0;
+            return Interpolation.smooth2.apply(1f - blinkDelta);
+        }
+        return 0f;
+    }
+
 }

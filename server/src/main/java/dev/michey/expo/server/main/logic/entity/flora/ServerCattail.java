@@ -22,7 +22,7 @@ public class ServerCattail extends ServerEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        variant = rnd.random(1, 4);
+        variant = rnd.random(1, 2);
 
         int tx = ExpoShared.posToTile(posX);
         int ty = ExpoShared.posToTile(posY);
@@ -35,29 +35,6 @@ public class ServerCattail extends ServerEntity {
     @Override
     public void onDie() {
         spawnItemsAround(2, 3, 0, 6, "item_grassfiber", 8);
-    }
-
-    @Override
-    public boolean postGeneration() {
-        ServerTile tile = getCurrentTile();
-        if(tile == null) return false;
-
-        ServerTile[] neighbours = tile.getNeighbouringTiles();
-        int waterTilesNearby = 1;
-        int landTilesNearby = 0;
-
-        for(ServerTile n : neighbours) {
-            if(n == null) continue;
-
-            if(!BiomeType.isWater(n.biome) && (n.biome == BiomeType.DENSE_FOREST || n.biome == BiomeType.FOREST || n.biome == BiomeType.PLAINS)) {
-                landTilesNearby++;
-            } else {
-                waterTilesNearby++;
-            }
-        }
-
-        return true;
-       // return waterTilesNearby >= 4 && waterTilesNearby <= 7 && landTilesNearby <= 3;
     }
 
     @Override

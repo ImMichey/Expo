@@ -45,10 +45,11 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
         float ch = rnd.random();
 
-        if(ch <= 0.1f) {
-            variant = 3;
+        /*if(ch <= 0.1f) {
+            variant = 1;
             health = 105.0f;
-        } else if(ch <= 0.3) {
+        } else
+            */if(ch <= 0.3) {
             variant = 2;
             health = 90.0f;
         } else {

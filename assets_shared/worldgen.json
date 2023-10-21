@@ -62,8 +62,7 @@
                         "logic": {
                             "check": [
                                 "DENSE_FOREST",
-                                "FOREST",
-                                "DESERT"
+                                "FOREST"
                             ],
                             "threshold": 0.8,
                             "replaceType": "BIOME",
@@ -80,8 +79,7 @@
                         "logic": {
                             "check": [
                                 "DENSE_FOREST",
-                                "FOREST",
-                                "DESERT"
+                                "FOREST"
                             ],
                             "threshold": 0.8,
                             "replaceType": "BIOME",
@@ -130,19 +128,19 @@
                 ],
                 "terrain": {
                     "elevation": {
-                        "octaves": 6,
+                        "octaves": 7,
                         "type": 11,
-                        "frequency": 0.004
+                        "frequency": 0.0022
                     },
                     "temperature": {
-                        "octaves": 5,
+                        "octaves": 7,
                         "type": 9,
-                        "frequency": 0.008
+                        "frequency": 0.004
                     },
                     "moisture": {
-                        "octaves": 5,
+                        "octaves": 7,
                         "type": 9,
-                        "frequency": 0.008
+                        "frequency": 0.004
                     }
                 },
                 "biomes": [
@@ -154,13 +152,13 @@
                     },
                     {
                         "type": "OCEAN",
-                        "elevation": [0.465, 0.48],
+                        "elevation": [0.465, 0.488],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "BEACH",
-                        "elevation": [0.48, 0.5],
+                        "elevation": [0.488, 0.5],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
@@ -168,7 +166,7 @@
                         "type": "PLAINS",
                         "elevation": [0.5, 1.0],
                         "temperature": [0.0, 0.5],
-                        "moisture": [0.49, 0.525]
+                        "moisture": [0.49, 0.511]
                     },
                     {
                         "type": "DENSE_FOREST",
@@ -596,7 +594,7 @@
                     }
                 },
                 {
-                    "biome": "DENSE_FOREST",
+                    "biome": ["DENSE_FOREST", "PLAINS"],
                     "type": "CHICKEN",
                     "static": false,
                     "chance": 0.0001,
@@ -606,6 +604,21 @@
                         "spreadChance": 1.0,
                         "spreadDis": [16.0, 32.0],
                         "spreadType": ["CHICKEN"],
+                        "spreadStatic": false,
+                        "spreadOffsets": [0.0, 0.0]
+                    }
+                },
+                {
+                    "biome": "BEACH",
+                    "type": "CRAB",
+                    "static": false,
+                    "chance": 0.0005,
+                    "spawnOffsets": [0.0, 0.0, 0.0, 0.0],
+                    "spreadData": {
+                        "spread": [1, 3],
+                        "spreadChance": 0.5,
+                        "spreadDis": [16.0, 32.0],
+                        "spreadType": ["CRAB"],
                         "spreadStatic": false,
                         "spreadOffsets": [0.0, 0.0]
                     }

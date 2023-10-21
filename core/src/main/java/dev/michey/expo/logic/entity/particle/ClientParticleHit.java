@@ -31,7 +31,7 @@ public class ClientParticleHit extends ClientParticle {
         float w = particleTexture.getRegionWidth() * scaleX;
         float h = particleTexture.getRegionHeight() * scaleY;
 
-        rc.batch.draw(particleTexture, clientPosX, clientPosY, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
+        rc.batch.draw(particleTexture, clientPosX - w * 0.5f, clientPosY - h * 0.5f, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
         rc.batch.setColor(Color.WHITE);
     }
 

@@ -17,9 +17,6 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
     private boolean cachedMoving;
     private boolean flipped;
 
-    private float damageDelta;
-    private boolean damageTint;
-
     public ClientWorm() {
         animationHandler = new ExpoAnimationHandler() {
             @Override
@@ -50,8 +47,7 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        damageDelta = RenderContext.get().deltaTotal;
-        damageTint = true;
+        blinkDelta = 1.0f;
         /*
         ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
         Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
@@ -83,6 +79,7 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
+        float interpolatedBlink = tickBlink(delta);
         animationHandler.tick(delta);
         boolean flip = (!flipped && serverDirX == 0) || (flipped && serverDirX == 1);
 
@@ -99,16 +96,9 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
         if(visibleToRenderEngine) {
             updateDepth();
             rc.useArrayBatch();
-            rc.useRegularArrayShader();
+            chooseArrayBatch(rc, interpolatedBlink);
 
-            if(damageTint) {
-                float MAX_TINT_DURATION = 0.2f;
-                if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
-            }
-
-            if(damageTint) rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
-            if(damageTint) rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 

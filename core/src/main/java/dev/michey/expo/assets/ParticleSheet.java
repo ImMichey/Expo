@@ -38,6 +38,8 @@ public class ParticleSheet {
         createParticle(sheet, 36, 0, 2, 3);
         createParticle(sheet, 39, 0, 2, 3);
         createParticle(sheet, 42, 0, 2, 3);
+
+        createParticle(sheet, 45, 0, 4, 4);
     }
 
     private void createParticle(TextureRegion baseSheet, int offsetX, int offsetY, int width, int height) {
@@ -45,15 +47,31 @@ public class ParticleSheet {
         currentId++;
     }
 
-    public TextureRegion randomHitParticle() {
-        return particleTextureMap.get(MathUtils.random(0, 7));
-    }
-
     public TextureRegion getRandomParticle(int begin, int end) {
         return particleTextureMap.get(MathUtils.random(begin, end));
     }
 
     public static class Common {
+
+        public static void spawnBloodParticles(ClientEntity entity, float ox, float oy) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(12, 16)
+                    .scale(0.25f, 0.5f)
+                    .lifetime(0.3f, 0.5f)
+                    .color(ParticleColorMap.of(13))
+                    .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
+                    .velocity(-48, 48, -48, 48)
+                    .fadeout(0.3f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .decreaseSpeed()
+                    .depth(entity.depth - 0.0001f)
+                    .followEntity(entity)
+                    .followOffset(ox, oy)
+                    .spawn();
+        }
 
         public static void spawnDynamic3DHitParticles(ClientDynamic3DTile cd3d) {
             if(!GameSettings.get().enableParticles) return;

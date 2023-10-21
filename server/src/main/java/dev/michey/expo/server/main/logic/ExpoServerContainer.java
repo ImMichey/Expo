@@ -42,7 +42,7 @@ public class ExpoServerContainer {
 
         long pw = System.nanoTime();
 
-        boolean doUpdate = pw - lastUpdate >= 250_000_000;
+        boolean doUpdate = pw - lastUpdate >= 125_000_000;
 
         long ttd = pw - s;
         long ptd = pp - s;

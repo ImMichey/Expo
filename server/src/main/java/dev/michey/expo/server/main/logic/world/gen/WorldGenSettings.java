@@ -90,8 +90,10 @@ public class WorldGenSettings {
             TilePopulator tilePopulator = new TilePopulator(entry);
             tilePopulator.dimensionBounds = EntityPopulationBounds.get().getFor(tilePopulator.type);
 
-            tilePopulatorMap.computeIfAbsent(tilePopulator.biome, k -> new LinkedList<>());
-            tilePopulatorMap.get(tilePopulator.biome).add(tilePopulator);
+            for(BiomeType b : tilePopulator.biomes) {
+                tilePopulatorMap.computeIfAbsent(b, k -> new LinkedList<>());
+                tilePopulatorMap.get(b).add(tilePopulator);
+            }
         }
 
         for(BiomeType toSort : tilePopulatorMap.keySet()) {

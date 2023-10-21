@@ -1,50 +1,66 @@
 package dev.michey.expo.logic.entity.animal;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
-import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
+import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientCrab extends ClientEntity {
+public class ClientCrab extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     private final ExpoAnimationHandler animationHandler;
-    private TextureRegion debugTex;
 
     private boolean cachedMoving;
     private boolean flipped;
 
-    private float delta;
+    private int lastFootstepIndex;
 
     public ClientCrab() {
-        animationHandler = new ExpoAnimationHandler();
-        animationHandler.addAnimation("idle", new ExpoAnimation("entity_wormS_idle", 3, 0.25f));
-        animationHandler.addAnimation("walk", new ExpoAnimation("entity_wormS_walk", 5, 0.15f));
+        animationHandler = new ExpoAnimationHandler() {
+            @Override
+            public void onAnimationFinish() {
+                lastFootstepIndex = 0;
+            }
+        };
+        animationHandler.addAnimation("idle", new ExpoAnimation("entity_crab_idle", 4, 0.25f));
+        animationHandler.addAnimation("walk", new ExpoAnimation("entity_crab_walk", 12, 0.05f));
     }
 
     @Override
     public void onCreation() {
-        debugTex = tr("entity_crab");
+        updateTextureBounds(animationHandler.getActiveFrame());
+    }
+
+    @Override
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
+        blinkDelta = 1.0f;
+        ParticleSheet.Common.spawnBloodParticles(this, 0, -1.5f);
+
+        ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
+        Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
+
+        spawnDamageIndicator((int) damage, clientPosX, clientPosY + 8, dir);
     }
 
     @Override
     public void onDeletion() {
-
+        if(removalReason == EntityRemovalReason.DEATH) {
+            playEntitySound("bloody_squish");
+        }
     }
 
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
 
-        this.delta += delta;
-
-        if(this.delta >= 6.0f) {
-            this.delta = MathUtils.random(1.0f, 3.0f);
-            playEntitySound("crab");
+        if(isMoving()) {
+            calculateReflection();
         }
 
         if(cachedMoving != isMoving()) {
@@ -55,8 +71,14 @@ public class ClientCrab extends ClientEntity {
     }
 
     @Override
+    public boolean isMoving() {
+        return serverMoveDistance > 0;
+    }
+
+    @Override
     public void render(RenderContext rc, float delta) {
         visibleToRenderEngine = rc.inDrawBounds(this);
+        float interpolatedBlink = tickBlink(delta, 7.5f);
 
         if(visibleToRenderEngine) {
             animationHandler.tick(delta);
@@ -67,26 +89,39 @@ public class ClientCrab extends ClientEntity {
                 flipped = !flipped;
             }
 
-            updateTextureBounds(debugTex);
+            int i = animationHandler.getActiveAnimation().getFrameIndex();
+
+            if((i == 4 || i == 10) && (lastFootstepIndex != i)) {
+                lastFootstepIndex = i;
+
+                playEntitySound(getFootstepSound(), 0.3f);
+            }
+
+            TextureRegion cf = animationHandler.getActiveFrame();
+            updateTextureBounds(cf);
 
             updateDepth();
             rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.draw(debugTex, clientPosX, clientPosY, textureWidth, textureHeight);
+            chooseArrayBatch(rc, interpolatedBlink);
+
+            rc.arraySpriteBatch.draw(cf, finalDrawPosX, finalDrawPosY);
         }
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(clientPosX, clientPosY);
-        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(debugTex, shadow);
-        boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
+        drawShadowIfVisible(animationHandler.getActiveFrame());
+    }
 
-        if(drawMushroom) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(debugTex, textureWidth, textureHeight, shadow);
-        }
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.333f, 0.333f, 0, 1);
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        TextureRegion cf = animationHandler.getActiveFrame();
+        rc.arraySpriteBatch.draw(cf, finalDrawPosX, finalDrawPosY, cf.getRegionWidth(), cf.getRegionHeight() * -1);
     }
 
     @Override

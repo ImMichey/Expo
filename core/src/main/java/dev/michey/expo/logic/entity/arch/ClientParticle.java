@@ -24,12 +24,19 @@ public abstract class ClientParticle extends ClientEntity {
     public boolean dynamicDepth;
     public float startDepth;
     public boolean decreaseSpeed;
+    public ClientEntity followEntity;
+    public float followOffsetX, followOffsetY;
 
     //private float pox, poy; // Particle origin values
     public float pvx;
     public float pvy; // Particle velocity values
     public float spvx; // Particle velocity values
     public float spvy; // Particle velocity values
+    public float coveredDistanceX, coveredDistanceY;
+
+    public ClientParticle() {
+        visibleToRenderEngine = true;
+    }
 
     @Override
     public void tick(float delta) {
@@ -70,11 +77,22 @@ public abstract class ClientParticle extends ClientEntity {
 
         float addY = pvy * delta;
 
-        if(pvx != 0) clientPosX += pvx * delta;
-        if(pvy != 0) clientPosY += addY;
+        if(followEntity != null) {
+            coveredDistanceX += pvx * delta;
+            coveredDistanceY += addY;
+            clientPosX = followEntity.finalTextureCenterX + coveredDistanceX + followOffsetX;
+            clientPosY = followEntity.finalTextureCenterY + coveredDistanceY + followOffsetY;
+        } else {
+            clientPosX += pvx * delta;
+            clientPosY += addY;
+        }
 
         if(dynamicDepth) {
-            depth += addY;
+            if(followEntity != null) {
+                depth = followEntity.depth - 0.01f;
+            } else {
+                depth += addY;
+            }
         }
 
         if(rotationSpeed > 0) {
@@ -146,6 +164,15 @@ public abstract class ClientParticle extends ClientEntity {
 
     public void setDecreaseSpeed() {
         decreaseSpeed = true;
+    }
+
+    public void setFollowEntity(ClientEntity followEntity) {
+        this.followEntity = followEntity;
+    }
+
+    public void setFollowOffset(float followOffsetX, float followOffsetY) {
+        this.followOffsetX = followOffsetX;
+        this.followOffsetY = followOffsetY;
     }
 
 }

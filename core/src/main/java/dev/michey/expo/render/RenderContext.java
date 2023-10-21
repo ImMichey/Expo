@@ -447,6 +447,10 @@ public class RenderContext {
         }
     }
 
+    public void useBlinkShader() {
+        if(arraySpriteBatch.getShader() != blinkShader) arraySpriteBatch.setShader(blinkShader);
+    }
+
     public void useRegularArrayShader() {
         if(arraySpriteBatch.getShader() != DEFAULT_GLES3_ARRAY_SHADER) arraySpriteBatch.setShader(DEFAULT_GLES3_ARRAY_SHADER);
     }

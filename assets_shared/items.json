@@ -1049,6 +1049,32 @@
             "logic": {
                 "toolType": "ITEM"
             }
+        },
+        {
+            "identifier": "item_crab_claw",
+            "id": 42,
+            "displayName": "Crab Claw",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_crab_claw"
+                },
+                "held": {
+                    "texture": "item_crab_claw",
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -2.5,
+                    "offsetY": 4.5,
+                    "rotations": [45.0, -45.0]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "foodData": {
+                    "hungerRestore": 5.0,
+                    "hungerCooldownRestore": 30.0
+                }
+            }
         }
     ]
 }

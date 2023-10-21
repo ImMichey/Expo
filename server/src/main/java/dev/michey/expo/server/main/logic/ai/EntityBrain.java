@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.ai;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.server.main.logic.ai.module.AIModule;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.util.AIState;
@@ -26,6 +27,7 @@ public class EntityBrain {
         if(aiModules.size() == 1) {
             // First entry so set this as active
             setActiveModule(module.getState());
+            currentDelta = MathUtils.random(module.getDuration());
         }
     }
 

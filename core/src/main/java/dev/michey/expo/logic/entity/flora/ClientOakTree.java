@@ -211,7 +211,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                             .randomRotation()
                             .rotateWithVelocity()
                             .depth(depth - 0.01f)
-                            .dynamicDepth(), 0.5f, 3.0f, 5.0f);
+                            .dynamicDepth(), 0.5f, 2.0f, 4.0f);
         }
     }
 
