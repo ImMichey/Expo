@@ -1,0 +1,23 @@
+{
+    "CRAB": {
+        "maxHp": 50,
+        "ai.idleMin": 4.0,
+        "ai.idleMax": 8.0,
+        "ai.idleSeekDistance": 48.0,
+        "ai.strollMin": 3.0,
+        "ai.strollMax": 6.0,
+        "ai.strollSpeed": 8.0,
+        "ai.strollSeekDistance": 48.0,
+        "ai.fleeMin": 5.0,
+        "ai.fleeMax": 8.0,
+        "ai.fleeSpeed": 16.0,
+        "ai.chaseDistance": 64.0,
+        "ai.chaseSpeed": 16.0,
+        "ai.attackDistance": 16.0,
+        "ai.attackCooldown": 1.5,
+        "ai.attackDuration": 0.64,
+        "ai.attackDamage": 20.0,
+        "ai.attackAt": 0.40,
+        "ai.attackRange": 20.0
+    }
+}

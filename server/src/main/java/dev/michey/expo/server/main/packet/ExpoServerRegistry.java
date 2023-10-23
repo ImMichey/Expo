@@ -103,7 +103,8 @@ public class ExpoServerRegistry {
                 P38_PlayerAnimation.class,
                 P39_PlayerInteractEntity.class,
                 P40_InventoryView.class,
-                P41_InventoryViewQuit.class
+                P41_InventoryViewQuit.class,
+                P42_EntityAnimation.class
         );
     }
 

@@ -14,6 +14,7 @@ dependencies {
 	api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 	api "com.github.tommyettinger:make_some_noise:0.4"
 	api "com.github.implicit-invocation:jbump:v1.0.2"
+	//api "com.github.KleeSup:KleeSwept:$kleesweptVersion"
 }
 
 jar {

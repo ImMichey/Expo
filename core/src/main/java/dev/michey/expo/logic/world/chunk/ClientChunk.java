@@ -77,13 +77,13 @@ public class ClientChunk {
     }
 
     /** Detaches a tile entity from the current chunk and returns the new amount of tile entities within this chunk. */
-    public int detachTileEntity(int tileArray) {
+    public void detachTileEntity(int tileArray) {
         tileEntityCount--;
         if(tileEntityGrid == null) {
-            ExpoLogger.log("DETACH " + tileArray + " new: " + tileEntityCount);
+            ExpoLogger.log("DETACH FAILED " + chunkX + "," + chunkY + " " + tileArray + " new: " + tileEntityCount);
+        } else {
+            tileEntityGrid[tileArray] = -1;
         }
-        tileEntityGrid[tileArray] = -1;
-        return tileEntityCount;
     }
 
     public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] dynamicTiles, int initializationTileCount) {

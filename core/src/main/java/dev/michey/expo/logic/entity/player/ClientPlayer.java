@@ -1098,7 +1098,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.25f, 0.25f, 0, 0);
+        drawAO100(rc, 0.25f, 0.25f, 0, 0);
     }
 
     @Override

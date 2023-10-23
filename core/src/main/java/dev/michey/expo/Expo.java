@@ -37,7 +37,6 @@ import org.lwjgl.glfw.GLFW;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -81,7 +80,8 @@ public class Expo implements ApplicationListener {
 		if(!DEV_MODE) {
 			ExpoLogger.enableDualLogging("clientlogs");
 		} else {
-			// Delete temporary ImGui Java files in OS temp folder on each startup to fix pollution
+			/*
+			Delete temporary ImGui Java files in OS temp folder on each startup to fix pollution
 			File[] list = Paths.get(System.getProperty("java.io.tmpdir")).toFile().listFiles();
 
 			if(list != null) {
@@ -97,7 +97,9 @@ public class Expo implements ApplicationListener {
 					}
 				}
 			}
+			*/
 		}
+
 		inactiveScreens = new HashMap<>();
 		this.gameSettings = gameSettings;
 	}

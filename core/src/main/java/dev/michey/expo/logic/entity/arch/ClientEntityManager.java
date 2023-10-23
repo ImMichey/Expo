@@ -456,6 +456,7 @@ public class ClientEntityManager {
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
+        e.serverHealth = p.entityHealth;
         return e;
     }
 
@@ -467,6 +468,7 @@ public class ClientEntityManager {
         e.serverPosY = p.serverPosY;
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
+        e.serverHealth = p.entityHealth;
         e.applyPacketPayload(p.payload);
         return e;
     }

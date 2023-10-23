@@ -7,7 +7,7 @@ import dev.michey.expo.util.AIState;
 
 import java.util.HashMap;
 
-public class EntityBrain {
+public class EntityBrainOld {
 
     private final ServerEntity parent;
     private final HashMap<AIState, AIModule> aiModules;
@@ -15,7 +15,7 @@ public class EntityBrain {
     private AIModule currentModule;
     private float currentDelta;
 
-    public EntityBrain(ServerEntity parent) {
+    public EntityBrainOld(ServerEntity parent) {
         this.parent = parent;
         aiModules = new HashMap<>();
     }

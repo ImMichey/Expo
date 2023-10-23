@@ -7,6 +7,7 @@ public class P29_EntityCreateAdvanced extends Packet {
     public ServerEntityType entityType;
     public int entityId;
     public String dimensionName;
+    public float entityHealth;
 
     public float serverPosX;
     public float serverPosY;

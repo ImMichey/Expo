@@ -1,7 +1,7 @@
 package dev.michey.expo.server.main.logic.entity.animal;
 
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.logic.ai.EntityBrain;
+import dev.michey.expo.server.main.logic.ai.EntityBrainOld;
 import dev.michey.expo.server.main.logic.ai.module.AIModuleIdle;
 import dev.michey.expo.server.main.logic.ai.module.AIModuleWalk;
 import dev.michey.expo.server.main.logic.entity.arch.*;
@@ -14,7 +14,7 @@ import dev.michey.expo.util.AIState;
 
 public class ServerMaggot extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
-    public EntityBrain maggotBrain = new EntityBrain(this);
+    public EntityBrainOld maggotBrain = new EntityBrainOld(this);
     public EntityPhysicsBox physicsBody;
 
     public ServerMaggot() {

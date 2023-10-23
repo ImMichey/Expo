@@ -28,7 +28,7 @@ public class ClientFirefly extends ClientEntity {
     private ExpoLight fireflyLight;
 
     public ClientFirefly() {
-        animationHandler = new ExpoAnimationHandler();
+        animationHandler = new ExpoAnimationHandler(this);
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_firefly_fly", 4, 0.250f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_firefly_fly", 4, 0.125f));
         removalFade = 0.25f;

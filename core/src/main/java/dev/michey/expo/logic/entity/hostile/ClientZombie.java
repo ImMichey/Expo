@@ -28,7 +28,7 @@ public class ClientZombie extends ClientEntity implements ReflectableEntity {
     private int lastFootstepIndex;
 
     public ClientZombie() {
-        animationHandler = new ExpoAnimationHandler();
+        animationHandler = new ExpoAnimationHandler(this);
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_zombie_idle", 2, 0.5f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_zombie_walk", 10, 0.15f));
 

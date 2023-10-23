@@ -2,7 +2,7 @@ package dev.michey.expo.server.main.logic.entity.animal;
 
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.logic.ai.EntityBrain;
+import dev.michey.expo.server.main.logic.ai.EntityBrainOld;
 import dev.michey.expo.server.main.logic.ai.module.AIModuleIdle;
 import dev.michey.expo.server.main.logic.ai.module.AIModuleWalk;
 import dev.michey.expo.server.main.logic.entity.arch.*;
@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 public class ServerChicken extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
-    public EntityBrain wormBrain = new EntityBrain(this);
+    public EntityBrainOld wormBrain = new EntityBrainOld(this);
     public EntityPhysicsBox physicsBody;
 
     public int variant;

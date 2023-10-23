@@ -609,10 +609,10 @@
                     }
                 },
                 {
-                    "biome": "BEACH",
+                    "biome": ["BEACH", "RIVER"],
                     "type": "CRAB",
                     "static": false,
-                    "chance": 0.0005,
+                    "chance": 0.001,
                     "spawnOffsets": [0.0, 0.0, 0.0, 0.0],
                     "spreadData": {
                         "spread": [1, 3],

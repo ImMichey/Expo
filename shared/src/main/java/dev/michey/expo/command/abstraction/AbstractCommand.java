@@ -26,6 +26,18 @@ public abstract class AbstractCommand {
         return n;
     }
 
+    public float parseF(String value, int pos) throws CommandSyntaxException {
+        float n;
+
+        try {
+            n = Float.parseFloat(value);
+        } catch (NumberFormatException e) {
+            throw new CommandSyntaxException("Argument '" + value + "' at pos '" + pos + "' present, but not a float", CommandExceptionReason.FAULTY_DATATYPE);
+        }
+
+        return n;
+    }
+
     public int parseI(String[] array, int pos) throws CommandSyntaxException {
         if(pos >= array.length) throw new CommandSyntaxException("No argument at pos '" + pos + "' present, integer required", CommandExceptionReason.OUT_OF_BOUNDS);
         int n;

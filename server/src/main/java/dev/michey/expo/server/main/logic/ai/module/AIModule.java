@@ -1,12 +1,12 @@
 package dev.michey.expo.server.main.logic.ai.module;
 
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.server.main.logic.ai.EntityBrain;
+import dev.michey.expo.server.main.logic.ai.EntityBrainOld;
 import dev.michey.expo.util.AIState;
 
 public abstract class AIModule {
 
-    private EntityBrain brain;
+    private EntityBrainOld brain;
     private final AIState state;
     private final float minDuration;
     private final float maxDuration;
@@ -34,11 +34,11 @@ public abstract class AIModule {
         return state;
     }
 
-    public void setBrain(EntityBrain brain) {
+    public void setBrain(EntityBrainOld brain) {
         this.brain = brain;
     }
 
-    public EntityBrain getBrain() {
+    public EntityBrainOld getBrain() {
         return brain;
     }
 

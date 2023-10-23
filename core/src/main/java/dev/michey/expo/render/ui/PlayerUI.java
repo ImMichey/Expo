@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
@@ -20,17 +21,23 @@ import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.ClientInventorySlot;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.render.ui.container.UIContainer;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
+import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
@@ -467,6 +474,17 @@ public class PlayerUI {
             drawCursor(PlayerInventory.LOCAL_INVENTORY.cursorItem);
         }
 
+        if(Expo.get().getImGuiExpo().entityBrainStates.get() && ServerWorld.get() != null) {
+            var crabs = ServerWorld.get().getMainDimension().getEntityManager().getEntitiesOf(ServerEntityType.CRAB);
+
+            for(ServerEntity se : crabs) {
+                ServerCrab crab = (ServerCrab) se;
+
+                Vector2 drawPos = ClientUtils.entityPosToHudPos(crab.posX, crab.posY + 14);
+
+                rc.m5x7_border_use.draw(rc.hudBatch, crab.brain.getActiveModule(), drawPos.x, drawPos.y);
+            }
+        }
 
         /*
         if(ClientEntityManager.get().selectedEntity != null && currentContainer == null) {

@@ -21,7 +21,7 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity {
     private boolean damageTint;
 
     public ClientMaggot() {
-        animationHandler = new ExpoAnimationHandler();
+        animationHandler = new ExpoAnimationHandler(this);
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_maggot_idle", 3, 0.25f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_maggot_walk", 5, 0.15f));
     }

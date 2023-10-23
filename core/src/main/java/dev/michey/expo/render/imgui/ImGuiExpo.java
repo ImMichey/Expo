@@ -70,6 +70,7 @@ public class ImGuiExpo {
     public final ImBoolean renderEntityBbox = new ImBoolean(false);
     public final ImBoolean renderPunchData = new ImBoolean(false);
     public final ImBoolean renderHitbox = new ImBoolean(false);
+    public final ImBoolean entityBrainStates = new ImBoolean(false);
     private final float[] speed = new float[1];
     private final float[] minStrength = new float[1];
     private final float[] maxStrength = new float[1];
@@ -516,6 +517,14 @@ public class ImGuiExpo {
                 //if(ImGui.sliderFloat("heightOffset", heightOffset, 0.0f, 1.0f)) r.heightOffset = heightOffset[0];
                 if(ImGui.sliderFloat("offset", offset, 0.0f, 10.0f)) r.offset = offset[0];
                 //if(ImGui.sliderFloat("skew", skew, -500.0f, 500.0f)) r.skew = skew[0];
+
+                ImGui.treePop();
+            }
+
+            ImGui.separator();
+
+            if(ImGui.treeNode("AI")) {
+                ImGui.checkbox("EntityBrain states", entityBrainStates);
 
                 ImGui.treePop();
             }

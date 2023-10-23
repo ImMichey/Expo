@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
@@ -20,9 +21,11 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
+import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.util.TeleportReason;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
@@ -35,6 +38,7 @@ public abstract class ClientEntity {
     /** Passed by the game server. */
     public int entityId;
     public int tileEntityTileArray;
+    public float serverHealth;
 
     /** ClientEntity base fields */
     public float serverPosX;
@@ -79,6 +83,7 @@ public abstract class ClientEntity {
     public float finalSelectionDrawPosX, finalSelectionDrawPosY;// The world position where to draw the selection texture at
     public boolean drawReflection = false;
     public float blinkDelta;
+    public float lastBlink = Float.MAX_VALUE;
 
     /** ClientEntity base methods */
     public abstract void onCreation();
@@ -277,6 +282,10 @@ public abstract class ClientEntity {
     /** Util methods */
     public boolean isMoving() {
         return serverDirX != 0 || serverDirY != 0 || doLerp;
+    }
+
+    public void playFootstepSound() {
+
     }
 
     public String getFootstepSound() {
@@ -555,6 +564,59 @@ public abstract class ClientEntity {
             return Interpolation.smooth2.apply(1f - blinkDelta);
         }
         return 0f;
+    }
+
+    public void setBlink() {
+        blinkDelta = 1.0f;
+        RenderContext r = RenderContext.get();
+
+        float diff = r.deltaTotal - lastBlink;
+
+        if(diff >= 0.25f) {
+            lastBlink = r.deltaTotal - 0.25f;
+        } else {
+            lastBlink = r.deltaTotal;
+        }
+    }
+
+    public void drawHealthBar(RenderContext rc, float healthPercentage) {
+        float diff = rc.deltaTotal - lastBlink;
+        float MAX_DIFF = 2.5f;
+        if(diff >= MAX_DIFF) return;
+        float TRANS_DUR = 0.25f;
+
+        float alpha = 1.0f;
+
+        if(diff <= TRANS_DUR) {
+            float dt = diff / TRANS_DUR;
+            alpha = Interpolation.smooth2.apply(dt);
+        } else if(diff >= (MAX_DIFF - TRANS_DUR)) {
+            float dt = 1f - (diff - (MAX_DIFF - TRANS_DUR)) / TRANS_DUR;
+            alpha = Interpolation.smooth2.apply(dt);
+        }
+
+        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
+
+        RenderContext r = RenderContext.get();
+        float length = Math.max(textureWidth, 3) - 2;
+
+        float startX = clientPosX - length * 0.5f - 1;
+        float startY = clientPosY + textureHeight + 8;
+
+        rc.arraySpriteBatch.draw(r.hbEdge, startX, startY);
+        rc.arraySpriteBatch.draw(r.hbEdge, startX + length + 1, startY);
+
+        float lengthFilled = (healthPercentage * length);
+        float remaining = length - lengthFilled;
+
+        rc.arraySpriteBatch.draw(r.hbFilled, startX + 1, startY, lengthFilled, 3);
+        rc.arraySpriteBatch.draw(r.hbUnfilled, startX + 1 + lengthFilled, startY, remaining, 3);
+
+        rc.arraySpriteBatch.setColor(Color.WHITE);
+    }
+
+    public void playEntityAnimation(int animationId) {
+
     }
 
 }

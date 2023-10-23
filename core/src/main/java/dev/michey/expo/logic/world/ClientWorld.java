@@ -125,7 +125,8 @@ public class ClientWorld {
             }
         }
 
-        AudioEngine.get().ambientVolume("ambience_rain", rainAmbienceVolume);
+        float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
+        AudioEngine.get().ambientVolume("ambience_rain", rainAmbienceVolume * fn);
     }
 
     private void spawnRain() {
@@ -207,7 +208,8 @@ public class ClientWorld {
         if(worldTime >= ExpoTime.DAY && worldTime < ExpoTime.SUNSET) {
             worldSunShadowAlpha = 1.0f;
             setAmbient(1, 1, 1);
-            AudioEngine.get().ambientVolume("ambience_day", 1.0f);
+            float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
+            AudioEngine.get().ambientVolume("ambience_day", 1.0f * fn);
             AudioEngine.get().ambientVolume("ambience_night", 0.0f);
         } else if(worldTime >= ExpoTime.SUNRISE && worldTime < ExpoTime.DAY) {
             // 6:00 - 8:00
@@ -246,8 +248,9 @@ public class ClientWorld {
                 );
             }
 
-            AudioEngine.get().ambientVolume("ambience_day", normalized);
-            AudioEngine.get().ambientVolume("ambience_night", 1f - normalized);
+            float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
+            AudioEngine.get().ambientVolume("ambience_day", normalized * fn);
+            AudioEngine.get().ambientVolume("ambience_night", (1f - normalized) * fn);
         } else if(worldTime >= ExpoTime.SUNSET && worldTime < ExpoTime.NIGHT) {
             // 20:00 - 22:00
             float secondsPassed = worldTime - ExpoTime.SUNSET;
@@ -287,8 +290,9 @@ public class ClientWorld {
                 );
             }
 
-            AudioEngine.get().ambientVolume("ambience_day", 1f - normalized);
-            AudioEngine.get().ambientVolume("ambience_night", normalized);
+            float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
+            AudioEngine.get().ambientVolume("ambience_day", (1f - normalized) * fn);
+            AudioEngine.get().ambientVolume("ambience_night", normalized * fn);
         } else if(worldTime >= ExpoTime.NIGHT || worldTime < ExpoTime.SUNRISE) {
             // 22:00 - 6:00
             float secondsPassed = (worldTime < ExpoTime.SUNRISE ? (worldTime + ExpoTime.worldDurationHours(2)) : (worldTime - ExpoTime.NIGHT));
@@ -316,8 +320,9 @@ public class ClientWorld {
             }
             */
 
+            float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
             AudioEngine.get().ambientVolume("ambience_day", 0.0f);
-            AudioEngine.get().ambientVolume("ambience_night", 1.0f);
+            AudioEngine.get().ambientVolume("ambience_night", 1.0f * fn);
         }
     }
 
@@ -564,6 +569,7 @@ public class ClientWorld {
                     if(ServerWorld.get() != null) {
                         r.chunkRenderer.end();
                         r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+
                         r.chunkRenderer.setColor(Color.PINK);
                         var world = ServerWorld.get().getMainDimension().getPhysicsWorld();
 

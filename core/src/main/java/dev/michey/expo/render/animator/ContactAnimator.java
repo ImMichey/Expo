@@ -38,6 +38,7 @@ public class ContactAnimator {
         WALKING_ENTITY_LIST.add(ClientEntityType.PLAYER);
         WALKING_ENTITY_LIST.add(ClientEntityType.ZOMBIE);
         WALKING_ENTITY_LIST.add(ClientEntityType.CHICKEN);
+        WALKING_ENTITY_LIST.add(ClientEntityType.CRAB);
     }
 
     public ContactAnimator(ClientEntity parent, List<ClientEntityType> contactList) {

@@ -173,6 +173,11 @@ public class RenderContext {
     public TextureRegion[] buttonPartsSelected;
     public GlyphLayout globalGlyph;
 
+    /** Health Bars */
+    public TextureRegion hbEdge;
+    public TextureRegion hbFilled;
+    public TextureRegion hbUnfilled;
+
     /** Screenshots */
     public boolean queueScreenshot;
 
@@ -303,6 +308,11 @@ public class RenderContext {
         buttonPartsSelected[4] = new TextureRegion(baseButtonSel, 3, 3, 1, 4);
         buttonPartsSelected[5] = new TextureRegion(baseButtonSel, 5, 3, 2, 4);
         buttonPartsSelected[6] = new TextureRegion(baseButtonSel, 8, 0, 1, 1);
+
+        TextureRegion healthBarBase = ExpoAssets.get().textureRegion("ui_entity_healthbar");
+        hbEdge = new TextureRegion(healthBarBase, 0, 0, 1, 3);
+        hbFilled = new TextureRegion(healthBarBase, 1, 0, 1, 3);
+        hbUnfilled = new TextureRegion(healthBarBase, 2, 0, 1, 3);
 
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");

@@ -2,6 +2,7 @@ package dev.michey.expo.audio;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 
@@ -226,8 +227,8 @@ public class AudioEngine {
         data.dynamic = true;
         data.worldPosition = soundOrigin;
         data.audibleRange = maxAudibleRange;
-        dynamicCalculate(data);
         soundData.put(data.id, data);
+        dynamicCalculate(data);
         return data;
     }
 

@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.arch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.dongbat.jbump.CollisionFilter;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
@@ -251,6 +252,50 @@ public abstract class ServerEntity {
         return b == BiomeType.OCEAN_DEEP;
     }
 
+    public void attemptMove(float x, float y) {
+        attemptMove(x, y, PhysicsBoxFilters.generalFilter);
+    }
+
+    public void attemptMove(float x, float y, CollisionFilter filter) {
+        float dst = Math.abs(x) + Math.abs(y);
+
+        if(this instanceof PhysicsEntity pe) {
+            float opx = posX;
+            float opy = posY;
+
+            EntityPhysicsBox epb = pe.getPhysicsBox();
+            var result = epb.move(x, y, filter);
+
+            float tx = result.goalX - epb.xOffset;
+            float ty = result.goalY - epb.yOffset;
+
+            // Check if valid chunk, otherwise teleport back to old location.
+            int chunkX = ExpoShared.posToChunk(tx);
+            int chunkY = ExpoShared.posToChunk(ty);
+
+            if(getChunkGrid().isActiveChunk(chunkX, chunkY)) {
+                posX = tx;
+                posY = ty;
+                ServerPackets.p13EntityMove(entityId, velToPos(x), velToPos(y), posX, posY, dst, PacketReceiver.whoCanSee(this));
+            } else {
+                epb.teleport(opx, opy);
+            }
+        } else {
+            float tx = posX + x;
+            float ty = posY + y;
+
+            // Check if valid chunk.
+            int chunkX = ExpoShared.posToChunk(tx);
+            int chunkY = ExpoShared.posToChunk(ty);
+
+            if(getChunkGrid().isActiveChunk(chunkX, chunkY)) {
+                posX = tx;
+                posY = ty;
+                ServerPackets.p13EntityMove(entityId, velToPos(x), velToPos(y), posX, posY, dst, PacketReceiver.whoCanSee(this));
+            }
+        }
+    }
+
     public float movementSpeedMultiplicator() {
         boolean water = isInWater();
         if(water) return 0.6f;
@@ -426,6 +471,10 @@ public abstract class ServerEntity {
                 }
             }
         }
+    }
+
+    public EntityMetadata getMetadata() {
+        return EntityMetadataMapper.get().getFor(getEntityType());
     }
 
     public ServerTile getCurrentTile() {

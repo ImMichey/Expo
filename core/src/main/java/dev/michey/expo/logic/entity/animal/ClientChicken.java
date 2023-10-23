@@ -9,10 +9,11 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientChicken extends ClientEntity implements ReflectableEntity {
+public class ClientChicken extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     private ExpoAnimationHandler animationHandler;
     private boolean cachedMoving;
@@ -27,7 +28,7 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void onCreation() {
-        animationHandler = new ExpoAnimationHandler() {
+        animationHandler = new ExpoAnimationHandler(this) {
             @Override
             public void onAnimationFinish() {
                 if(isInWater() && animationHandler.getActiveAnimationName().equals("idle")) spawnPuddle(false, 0, 1);
@@ -124,6 +125,11 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity {
     @Override
     public void applyPacketPayload(Object[] payload) {
         variant = (int) payload[0];
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAOAuto100(rc);
     }
 
     @Override

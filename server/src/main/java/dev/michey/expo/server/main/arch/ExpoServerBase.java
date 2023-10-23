@@ -15,6 +15,7 @@ import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.packet.ExpoServerPacketReader;
 import dev.michey.expo.server.packet.Packet;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.util.ExpoShared;
 
 import java.io.File;
@@ -45,6 +46,7 @@ public abstract class ExpoServerBase {
     public ExpoServerBase(boolean localServer, String worldName, int worldSeed) {
         this.localServer = localServer;
         EntityHitboxMapper.get();
+        EntityMetadataMapper.get();
         packetReader = new ExpoServerPacketReader();
         serverContainer = new ExpoServerContainer();
         worldSaveFile = new WorldSaveFile(worldName, worldSeed);

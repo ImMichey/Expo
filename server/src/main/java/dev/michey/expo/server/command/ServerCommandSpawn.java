@@ -58,27 +58,57 @@ public class ServerCommandSpawn extends AbstractServerCommand {
             }
         }
 
-        if(args.length >= 4) {
-            float x = parseF(args, 2);
-            float y = parseF(args, 3);
+        float x = 0, y = 0;
+        boolean ix = false, iy = false;
 
-            spawned.posX = x;
-            spawned.posY = y;
+        if(ServerPlayer.getLocalPlayer() != null) {
+            spawned.posX = ServerPlayer.getLocalPlayer().posX;
+            spawned.posY = ServerPlayer.getLocalPlayer().posY;
+        } else if(player != null) {
+            spawned.posX = player.posX;
+            spawned.posY = player.posY;
+        }
 
-            if(args.length == 5) {
-                boolean staticEntity = parseB(args, 4);
-
-                if(staticEntity) {
-                    spawned.setStaticEntity();
-                }
+        if(args.length >= 3) {
+            if(args[2].startsWith("~") && ServerPlayer.getLocalPlayer() != null) {
+                x = parseF(args[2].substring(1), 2) + ServerPlayer.getLocalPlayer().posX;
+            } else {
+                x = parseF(args, 2);
             }
-        } else {
+            ix = true;
+        }
+        if(args.length >= 4) {
+            if(args[3].startsWith("~") && ServerPlayer.getLocalPlayer() != null) {
+                y = parseF(args[3].substring(1), 3) + ServerPlayer.getLocalPlayer().posY;
+            } else {
+                y = parseF(args, 3);
+            }
+            iy = true;
+        }
+
+        if(!ix) {
             if(ServerPlayer.getLocalPlayer() != null) {
-                spawned.posX = ServerPlayer.getLocalPlayer().posX;
-                spawned.posY = ServerPlayer.getLocalPlayer().posY;
+                x = ServerPlayer.getLocalPlayer().posX;
             } else if(player != null) {
-                spawned.posX = player.posX;
-                spawned.posY = player.posY;
+                x = player.posX;
+            }
+        }
+        if(!iy) {
+            if(ServerPlayer.getLocalPlayer() != null) {
+                y = ServerPlayer.getLocalPlayer().posY;
+            } else if(player != null) {
+                y = player.posY;
+            }
+        }
+
+        spawned.posX = x;
+        spawned.posY = y;
+
+        if(args.length == 5) {
+            boolean staticEntity = parseB(args, 4);
+
+            if(staticEntity) {
+                spawned.setStaticEntity();
             }
         }
 

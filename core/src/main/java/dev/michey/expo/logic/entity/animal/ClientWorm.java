@@ -18,7 +18,7 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
     private boolean flipped;
 
     public ClientWorm() {
-        animationHandler = new ExpoAnimationHandler() {
+        animationHandler = new ExpoAnimationHandler(this) {
             @Override
             public void onAnimationFinish() {
                 if(isInWater()) spawnPuddle(false, flipped ? 2.5f : -2.5f, 0);

@@ -1,5 +1,7 @@
 package dev.michey.expo.server.main.logic.ai.module;
 
+import dev.michey.expo.server.util.EntityMetadata;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.AIState;
