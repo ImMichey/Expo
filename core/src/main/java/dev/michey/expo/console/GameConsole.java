@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Align;
 import dev.michey.expo.command.CommandResolver;
 import dev.michey.expo.console.command.*;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.render.RenderContext;
 
 import java.util.*;
@@ -67,7 +66,6 @@ public class GameConsole {
     private int lastDragY;
     private int lastClickX;
     private int lastClickY;
-    private boolean initDrag;
 
     private int displayEntries = 17;
     public int displayFromLineIndex = 0;
@@ -151,7 +149,7 @@ public class GameConsole {
     }
 
     private boolean consoleLineIsEmpty() {
-        return fullConsoleLine.length() == 0;
+        return fullConsoleLine.isEmpty();
     }
 
     private void resetSelection() {
@@ -761,7 +759,7 @@ public class GameConsole {
                 shapeRenderer.end();
 
                 // Draw console history
-                if(messageHistory.size() > 0) {
+                if(!messageHistory.isEmpty()) {
                     batch.begin();
 
                     int yOffset = 0;
@@ -781,7 +779,7 @@ public class GameConsole {
 
                         if(entry.lines == 1) {
                             // Single liner, easy handling.
-                            yOffset += historyGlyph.height;
+                            yOffset += (int) historyGlyph.height;
                             linesDisplayed += 1;
 
                             // Draw console message timer
@@ -799,8 +797,7 @@ public class GameConsole {
 
                             if (entirelyVisible) {
                                 historyGlyph.setText(consoleFont, entry.message, Color.WHITE, CONSOLE_HISTORY_TARGET_WIDTH, Align.left, true);
-                                float bodyHeight = historyGlyph.height;
-                                yOffset += bodyHeight;
+                                yOffset += (int) historyGlyph.height;
                                 linesDisplayed += entry.lines;
 
                                 // Draw console message timer
@@ -819,7 +816,7 @@ public class GameConsole {
                                     int toShow = entry.lines - hidden;
 
                                     for (int x = 0; x < toShow; x++) {
-                                        yOffset += timerHeight;
+                                        yOffset += (int) timerHeight;
                                         consoleFont.draw(batch, entry.strLines[x + h1], textStartX + timerWidth, textStartY + 29 + yOffset);
                                         yOffset += 7;
                                     }
@@ -832,7 +829,7 @@ public class GameConsole {
                                     int toShow = entry.lines - hidden;
 
                                     for (int x = 0; x < toShow; x++) {
-                                        yOffset += timerHeight;
+                                        yOffset += (int) timerHeight;
                                         if (x == toShow - 1) {
                                             // Draw console message timer
                                             consoleFont.draw(batch, "[GRAY][" + entry.timeStr + "] ", textStartX, textStartY + 29 + yOffset);
@@ -849,7 +846,7 @@ public class GameConsole {
                                     int toShow = entry.lines - hidden;
 
                                     for (int x = 0; x < toShow; x++) {
-                                        yOffset += timerHeight;
+                                        yOffset += (int) timerHeight;
                                         consoleFont.draw(batch, entry.strLines[x], textStartX + timerWidth, textStartY + 29 + yOffset);
                                         yOffset += 7;
                                     }

@@ -137,3 +137,6 @@ crab.wav
 
 #bloody_squish;true;0.9-1.1;SFX;1.0
 bloody_squish_1.wav
+
+#crab_snip;true;0.9-1.1;SFX;1.0
+crab_snip_1.wav

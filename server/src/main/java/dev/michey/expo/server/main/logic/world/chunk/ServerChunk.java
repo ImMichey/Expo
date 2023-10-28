@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -112,14 +113,6 @@ public class ServerChunk {
         return new Pair<>(collision, expectedBounds);
     }
 
-    /*
-    public void updateAO() {
-        for(ServerTile tile : tiles) {
-            tile.generateAO();
-        }
-    }
-    */
-
     public LinkedList<ServerTile> getBorderingTiles() {
         LinkedList<ServerTile> list = new LinkedList<>();
 
@@ -213,23 +206,21 @@ public class ServerChunk {
                         int _y = i / ROW_TILES;
 
                         if((_x % populator.skip) == 0 && (_y % populator.skip) == 0) {
-                            if(tile.biome == t) {
-                                float chanceFactor = 1.0f;
+                            boolean spawn = rnd.random() < populator.chance;
 
-                                if(populator.type == ServerEntityType.OAK_TREE && rnd.random() <= 0.075f) {
-                                    chanceFactor = 0.33f;
-                                }
+                            if(spawn) {
+                                float proposedX = ExpoShared.tileToPos(tile.tileX) + 8 + rnd.random(populator.spawnOffsets[0], populator.spawnOffsets[1]);
+                                float proposedY = ExpoShared.tileToPos(tile.tileY) + 8 + rnd.random(populator.spawnOffsets[2], populator.spawnOffsets[3]);
 
-                                boolean spawn = rnd.random() < (populator.chance * chanceFactor);
+                                int proposedChunkX = ExpoShared.posToChunk(proposedX);
+                                int proposedChunkY = ExpoShared.posToChunk(proposedY);
 
-                                if(spawn) {
-                                    float proposedX = ExpoShared.tileToPos(tile.tileX) + 8 + rnd.random(populator.spawnOffsets[0], populator.spawnOffsets[1]);
-                                    float proposedY = ExpoShared.tileToPos(tile.tileY) + 8 + rnd.random(populator.spawnOffsets[2], populator.spawnOffsets[3]);
+                                if(proposedChunkX == chunkX && proposedChunkY == chunkY) {
+                                    int proposedTileX = ExpoShared.posToTile(proposedX);
+                                    int proposedTileY = ExpoShared.posToTile(proposedY);
+                                    ServerTile proposedTile = getDimension().getChunkHandler().getTile(proposedTileX, proposedTileY);
 
-                                    int proposedChunkX = ExpoShared.posToChunk(proposedX);
-                                    int proposedChunkY = ExpoShared.posToChunk(proposedY);
-
-                                    if(proposedChunkX == chunkX && proposedChunkY == chunkY) {
+                                    if(proposedTile != null && proposedTile.biome == t) {
                                         EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
                                         var check = causesCollision(proposedX, proposedY, entry, existingEntityDimensionMap, wx, wy);
 
@@ -241,12 +232,13 @@ public class ServerChunk {
                                                 if(populator.asStaticEntity) generatedEntity.setStaticEntity();
                                                 generatedEntity.onGeneration(false, t, rnd);
 
-                                                addToList(check.value, generatedEntity, existingEntityDimensionMap);
                                                 registerMap.add(generatedEntity);
 
                                                 if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
                                                     doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
                                                 }
+
+                                                addToList(check.value, generatedEntity, existingEntityDimensionMap);
                                             }
                                         }
                                     }
@@ -264,15 +256,9 @@ public class ServerChunk {
                 GenerationRandom rnd = new GenerationRandom(chunkX, chunkY, populator.type);
                 List<Point> points = new PoissonDiskSampler(0, 0, CHUNK_SIZE, CHUNK_SIZE, populator.poissonDiskSamplerDistance).sample(wx, wy, rnd);
 
-                float chanceFactor = 1.0f;
-
-                if(populator.type == ServerEntityType.OAK_TREE && rnd.random() <= 0.075f) {
-                    chanceFactor = 0.33f;
-                }
-
                 for(Point p : points) {
                     if(biomeAt(ExpoShared.posToTile(p.absoluteX), ExpoShared.posToTile(p.absoluteY)) != t) continue;
-                    boolean spawn = rnd.random() < (populator.spawnChance * chanceFactor);
+                    boolean spawn = rnd.random() < populator.spawnChance;
 
                     if(spawn) {
                         EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
@@ -290,12 +276,13 @@ public class ServerChunk {
                                 if(populator.asStaticEntity) generatedEntity.setStaticEntity();
                                 generatedEntity.onGeneration(false, t, rnd);
 
-                                addToList(check.value, generatedEntity, existingEntityDimensionMap);
                                 registerMap.add(generatedEntity);
 
-                                if(populator.spreadData != null && rnd.random() < (populator.spreadData.spreadChance * chanceFactor)) {
+                                if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
                                     doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, p.absoluteX, p.absoluteY, entry, wx, wy);
                                 }
+
+                                addToList(check.value, generatedEntity, existingEntityDimensionMap);
                             }
                         }
                     }

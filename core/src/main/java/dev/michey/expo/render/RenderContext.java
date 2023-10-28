@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -71,7 +70,7 @@ public class RenderContext {
     public float waterSpeed = 0.8f;
     public float brightness = 0.5f;
     public float contrast = 0.5f;
-    public float[] waterColor = new float[] {0f / 255f, 166f / 255f, 255f / 255f};
+    public float[] waterColor = new float[] {0.0f, 166f / 255f, 1.0f};
     public float waterDelta;
     public float waterAlpha = 0.6f;
     public float waterSkewX = 1.5f;
@@ -559,14 +558,6 @@ public class RenderContext {
 
     public TextureRegion getNumberOutline(int number) {
         return numbersOutline[number];
-    }
-
-    public String dump() {
-        return "batch: " + batch.maxSpritesInBatch +
-                " arraySpriteBatch" + arraySpriteBatch.maxSpritesInBatch +
-                " polygonTileBatch" + polygonTileBatch.maxTrianglesInBatch +
-                " hudBatch" + hudBatch.maxSpritesInBatch
-                ;
     }
 
     private ShaderProgram compileShader(String key) {

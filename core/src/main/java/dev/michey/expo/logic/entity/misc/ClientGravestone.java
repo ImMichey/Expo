@@ -46,12 +46,7 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         setSelectionValues();
-
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
-        rc.arraySpriteBatch.end();
-
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -27,6 +28,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private ParticleEmitter leafParticleEmitter;
 
     private int variant;
+    private int leavesVariant;
     private boolean cut;
     private TextureRegion trunk;
     private Texture leaves;
@@ -34,8 +36,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private TextureRegion leavesShadowMask;
     private float[] interactionPointArray;
 
-    private final float leavesDisplacement = -MathUtils.random(0, 4);
-    private final float colorMix = MathUtils.random(0.175f);
+    private final float leavesDisplacement = -MathUtils.random(0, 10);
+    private final float colorMix = MathUtils.random(0.125f);
 
     private float playerBehindDelta = 1.0f;
     private float playerBehindInterpolated = 1.0f;
@@ -46,51 +48,76 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     /*
      *      [0] = LeavesWidth
      *      [1] = LeavesHeight
-     *      [2] = TrunkWidth
-     *      [3] = TrunkHeight
+     *          [2] = TrunkWidth
+     *          [3] = TrunkHeight
      *      [4] = TotalWidth
      *      [5] = TotalHeight
-     *      [6] = LeavesOffsetX
-     *      [7] = LeavesOffsetY
+     *          [6] = LeavesOffsetX
+     *          [7] = LeavesOffsetY
      *      [8] = InteractionOffsetX
      *      [9] = InteractionOffsetY
-     *      [10] = InteractionWidth
-     *      [11] = InteractionHeight
+     *          [10] = InteractionWidth
+     *          [11] = InteractionHeight
      */
-    public static final float[] LEAVES_SMALL = new float[] {
-        46, 58
-    };
-    public static final float[] LEAVES_MEDIUM = new float[] {
-        57, 76
-    };
+    public static final float[] LEAVES_SMALL = new float[] {46, 55};
+    public static final float[] LEAVES_MEDIUM = new float[] {55, 72};
 
     public static final float[][] MATRIX = new float[][] {
-        new float[] {LEAVES_SMALL[0], LEAVES_SMALL[1], 14, 40, 46, 93, 17, 33, 3, 2, 8, 6},
-        new float[] {LEAVES_SMALL[0], LEAVES_SMALL[1], 15, 41, 46, 94, 15, 37, 4, 2, 9, 6},
-        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 15, 41, 57, 112, 21, 37, 4, 2, 9, 6},
-        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 18, 70, 57, 141, 20, 62, 5, 2, 9, 6},
-        new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
-        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 18, 119, 57, 190, 20, 114, 5, 2, 12, 6},
-        new float[] {LEAVES_MEDIUM[0], LEAVES_MEDIUM[1], 18, 96, 57, 167, 20, 91, 5, 2, 12, 6},
+        new float[] {
+                LEAVES_SMALL[0], LEAVES_SMALL[1],
+                14, 40,
+                46, 84,
+                17, 29,
+                3, 2,
+                8, 6
+        },
+        new float[] {
+                LEAVES_SMALL[0], LEAVES_SMALL[1],
+                15, 41,
+                46, 87,
+                16, 32,
+                4, 2,
+                9, 6
+        },
+        new float[] {
+                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
+                15, 41,
+                55, 106,
+                20, 34,
+                4, 2,
+                9, 6
+        },
+        new float[] {
+                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
+                18, 70,
+                55, 136,
+                19, 64,
+                5, 2,
+                9, 6
+        },
+        new float[] {
+                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
+                18, 119,
+                55, 184,
+                18, 112,
+                5, 2,
+                12, 6
+        },
+        new float[] {
+                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
+                18, 96,
+                55, 162,
+                18, 90,
+                5, 2,
+                12, 6
+        },
     };
-
-    /*
-    public static final float[][] MATRIX = new float[][] {
-        new float[] {57, 76, 14, 40, 57, 109, 22, 33, 3, 2, 8, 6},
-        new float[] {57, 76, 15, 41, 57, 113, 21, 37, 4, 2, 9, 6},
-        new float[] {57, 76, 15, 41, 57, 113, 21, 37, 4, 2, 9, 6},
-        new float[] {57, 76, 18, 70, 57, 138, 20, 62, 5, 2, 9, 6},
-        new float[] {75, 101, 20, 95, 75, 191, 30, 90, 5, 2, 12, 6},
-        new float[] {57, 76, 18, 119, 57, 215, 20, 114, 5, 2, 12, 6},
-    };
-     */
 
     public static final float[][] CUT_MATRIX = new float[][] {
         new float[] {0, 0, 14, 17, 14, 17, 0, 0, 3, 2, 8, 6},
         new float[] {0, 0, 15, 17, 15, 17, 0, 0, 4, 2, 9, 6},
         new float[] {0, 0, 15, 17, 15, 17, 0, 0, 4, 2, 9, 6},
         new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
-        new float[] {0, 0, 20, 17, 20, 17, 0, 0, 5, 2, 12, 6},
         new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
         new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
     };
@@ -168,11 +195,23 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         selectionTrunk = generateSelectionTexture(trunk);
 
         if(variant >= 1 && variant <= 2) {
-            leaves = t("foliage/entity_oak_tree/eot_leaves_smol.png");
-            leavesShadowMask = tr("eot_leaves_smol_sm");
+            leavesVariant = 1;
+
+            if(MathUtils.random() <= 0.25f) {
+                leavesVariant = 2;
+            }
+
+            leaves = t("foliage/entity_oak_tree/leaves_oak_small_" + leavesVariant + ".png");
+            leavesShadowMask = tr("leaves_oak_small_sm");
         } else {
-            leavesShadowMask = tr("eot_leaves_sm");
-            leaves = t("foliage/entity_oak_tree/eot_leaves_sized.png");
+            leavesVariant = 1;
+
+            if(MathUtils.random() <= 0.25f) {
+                leavesVariant = 2;
+            }
+
+            leaves = t("foliage/entity_oak_tree/leaves_oak_big_" + leavesVariant + ".png");
+            leavesShadowMask = tr("leaves_oak_big_sm");
         }
 
         if(cut) {
@@ -196,7 +235,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             contactAnimator.STRENGTH = 2.0f;
             contactAnimator.STRENGTH_DECREASE = 0.4f;
 
-            foliageAnimator = new FoliageAnimator(0.5f, 1.2f, 0.03f, 0.05f, 0.06f, 0.07f, 2.0f, 5.0f, 0.5f, 1.5f);
+            foliageAnimator = new FoliageAnimator(0.5f, 1.2f, 0.01f, 0.02f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f);
 
             leafParticleEmitter = new ParticleEmitter(
                     new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
@@ -250,6 +289,24 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         playEntitySound("wood_cut");
 
         ParticleSheet.Common.spawnTreeHitParticles(this, clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f);
+
+        if(GameSettings.get().enableParticles) {
+            Color c = new Color((1.0f - colorMix), 1.0f, (1.0f - colorMix), 1.0f);
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
+                    .amount(4, 8)
+                    .scale(0.4f, 1.0f)
+                    .lifetime(0.7f, 2.0f)
+                    .position(finalTextureStartX + 8, clientPosY + leavesOffsetY())
+                    .offset(leavesWidth() - 16, leavesHeight() * 0.25f)
+                    .velocity(-8, 8, -8, -32)
+                    .fadeout(0.25f)
+                    .randomRotation()
+                    .color(c)
+                    .rotateWithVelocity()
+                    .depth(depth + 0.01f)
+                    .spawn();
+        }
 
         if(!cut) {
             contactAnimator.onContact();
@@ -385,7 +442,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
         if(drawTrunk || drawLeaves) {
             rc.useArrayBatch();
-            float fraction = 1f / (totalHeight() + leavesDisplacement);
+            float fraction = 1f / totalHeight();
+            //float fraction = 1f / (totalHeight() + leavesDisplacement);
 
             if(drawTrunk) {
                 float tt;
@@ -398,7 +456,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                         tt = fraction * (totalHeight() - cutTotalHeight());
                     }
                 } else {
-                    tt = (totalHeight() - trunkHeight()) * fraction;
+                    tt = (totalHeight() - trunkHeight() + leavesDisplacement) * fraction;
                 }
 
                 float topColorT = new Color(0f, 0f, 0f, tt).toFloatBits();
@@ -408,7 +466,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             }
 
             if(drawLeaves) {
-                float tl = 0.0f;
+                float tl = 0f;
                 float bl = fraction * leavesHeight();
                 float topColorL = new Color(0f, 0f, 0f, tl).toFloatBits();
                 float bottomColorL = new Color(0f, 0f, 0f, bl).toFloatBits();
@@ -420,7 +478,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderAO(RenderContext rc) {
-        if(cut) {
+        if(cut && resetShadowFadeTimer <= 0) {
             drawAO33(rc, 0.5f, 0.75f, 1, 3.5f);
         } else {
             drawAO33(rc, 1.0f, 1.25f, 1, 3.5f);
@@ -439,6 +497,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
         fallingTree.leavesDisplacement = leavesDisplacement;
         fallingTree.variant = variant;
+        fallingTree.leavesVariant = leavesVariant;
         fallingTree.fallingRightDirection = fallingDirectionRight;
         fallingTree.animationDelta = ServerOakTree.FALLING_ANIMATION_DURATION - fallingRemaining;
         fallingTree.colorDisplacement = colorMix;

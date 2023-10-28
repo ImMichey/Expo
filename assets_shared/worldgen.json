@@ -212,7 +212,7 @@
                     "biome": "DENSE_FOREST",
                     "type": "OAK_TREE",
                     "static": true,
-                    "chance": 0.725,
+                    "chance": 0.85,
                     "spawnOffsets": [-28.0, 28.0, -28.0, 28.0],
                     "skip": 4,
                     "priority": 100,
@@ -222,7 +222,7 @@
                         "spreadDis": [16.0, 20.0],
                         "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
                         "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
+                        "spreadOffsets": [0.0, 4.0]
                     }
                 },
                 {
@@ -612,12 +612,12 @@
                     "biome": ["BEACH", "RIVER"],
                     "type": "CRAB",
                     "static": false,
-                    "chance": 0.001,
+                    "chance": 0.0005,
                     "spawnOffsets": [0.0, 0.0, 0.0, 0.0],
                     "spreadData": {
                         "spread": [1, 3],
-                        "spreadChance": 0.5,
-                        "spreadDis": [16.0, 32.0],
+                        "spreadChance": 0.33,
+                        "spreadDis": [24.0, 32.0],
                         "spreadType": ["CRAB"],
                         "spreadStatic": false,
                         "spreadOffsets": [0.0, 0.0]

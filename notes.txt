@@ -7,9 +7,9 @@
 * Craft All with Shift+Left
 * Drop Items with Q
 
+* Adjust running animation speed with entity velocity
 * Insect Net -> Left/Right Click Firefly -> Catch Firefly
 * Fix selection system
-* Add particles to Dynamic 3D Tiles
 * Proper Torch Texture
 * Add Flint Sword for now
 * New Oak Plank Wall textures

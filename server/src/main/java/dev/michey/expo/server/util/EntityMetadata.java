@@ -1,6 +1,10 @@
 package dev.michey.expo.server.util;
 
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.LinkedList;
 
 public class EntityMetadata {
 
@@ -16,6 +20,15 @@ public class EntityMetadata {
 
     public float getFloat(String key) {
         return object.getFloat(key);
+    }
+
+    public LinkedList<ServerEntityType> getEntityTypes(String key) {
+        LinkedList<ServerEntityType> list = new LinkedList<>();
+        JSONArray parse = object.getJSONArray(key);
+        for(int i = 0; i < parse.length(); i++) {
+            list.add(ServerEntityType.valueOf(parse.getString(i)));
+        }
+        return list;
     }
 
     public int getInt(String key) {

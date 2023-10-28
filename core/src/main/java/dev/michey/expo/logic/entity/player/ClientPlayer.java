@@ -10,12 +10,11 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
-import dev.michey.expo.logic.entity.misc.ClientCloud;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -33,8 +32,6 @@ import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -160,10 +157,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     /** Player reach */
     public float playerReachCenterX, playerReachCenterY;
 
-    /** Damage tint */
-    private float damageDelta;
-    private boolean damageTint;
-
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
@@ -242,8 +235,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        damageDelta = RenderContext.get().deltaTotal;
-        damageTint = true;
+        setBlink();
+        ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
     }
 
     @Override
@@ -562,11 +555,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     @Override
     public void render(RenderContext rc, float delta) {
         updateDepth();
-
-        if(damageTint) {
-            float MAX_TINT_DURATION = 0.2f;
-            if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
-        }
+        float interpolatedBlink = tickBlink(delta, 7.5f);
 
         { // Updating breathe + blink
             playerBlinkDelta += delta;
@@ -692,12 +681,12 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             offsetXR = 0;
         }
 
-        rc.useRegularBatch();
+        //rc.useRegularBatch();
+        chooseArrayBatch(rc, interpolatedBlink);
+        rc.useArrayBatch();
 
         drawHeldItem(rc, false);
         boolean drawLooseArm = holdingItemId != -1;
-
-        if(damageTint) rc.batch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
 
         // Draw punch
         if(punchAnimation || drawLooseArm) {
@@ -712,38 +701,38 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             float scaleY = 1.0f;
             float rotation = getFinalArmRotation();
 
-            rc.batch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+            rc.arraySpriteBatch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
         } else {
-            rc.batch.draw(draw_tex_arm_right, finalDrawPosX + offsetXR, finalDrawPosY + offsetY);
+            rc.arraySpriteBatch.draw(draw_tex_arm_right, finalDrawPosX + offsetXR, finalDrawPosY + offsetY);
         }
 
         if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
-            rc.batch.draw(draw_tex_base, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(draw_tex_base, finalDrawPosX, finalDrawPosY);
 
             if(pickupAnimation) {
-                rc.batch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL - (flipped ? 2 : 0), finalDrawPosY + offsetY - 2);
+                rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL - (flipped ? 2 : 0), finalDrawPosY + offsetY - 2);
             } else {
-                rc.batch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL, finalDrawPosY + offsetY);
+                rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL, finalDrawPosY + offsetY);
             }
 
             if(holdingArmorHeadId != -1) {
                 ItemMapping map = ItemMapper.get().getMapping(holdingArmorHeadId);
                 int dir = punchAnimation ? punchDirection : playerDirection;
-                rc.batch.draw(holdingArmorHeadTexture, finalDrawPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, finalDrawPosY + 13 + offsetY + map.armorRender.offsetY);
+                rc.arraySpriteBatch.draw(holdingArmorHeadTexture, finalDrawPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, finalDrawPosY + 13 + offsetY + map.armorRender.offsetY);
             }
 
-            if(damageTint) rc.batch.setColor(Color.WHITE);
             drawHeldItem(rc, true);
-            if(damageTint) rc.batch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
         }
 
         { // Draw player blink
             if(playerBlinkDelta < 0) {
-                rc.batch.draw(tex_blink, finalDrawPosX + 5 - (direction() == 0 ? 4 : 0), finalDrawPosY + offsetY + 13);
+                rc.arraySpriteBatch.draw(tex_blink, finalDrawPosX + 5 - (direction() == 0 ? 4 : 0), finalDrawPosY + offsetY + 13);
             }
         }
 
-        if(damageTint) rc.batch.setColor(Color.WHITE);
+        rc.useRegularArrayShader();
+
+        if(!player) drawHealthBar(rc, playerHealth / 100f, 24);
     }
 
     @Override
@@ -1091,7 +1080,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         finalDrawPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
                 );
 
-                holdingItemSprite.draw(rc.batch);
+                holdingItemSprite.draw(rc.arraySpriteBatch);
             }
         }
     }

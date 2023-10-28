@@ -5,6 +5,7 @@ public enum PhysicsMassClassification {
     LIGHT,
     MEDIUM,
     HEAVY,
+    MEDIUM_PLAYER_PASSABLE,
 
     PLAYER,
     ITEM,

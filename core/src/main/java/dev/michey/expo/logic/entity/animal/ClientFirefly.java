@@ -16,11 +16,6 @@ import dev.michey.expo.util.EntityRemovalReason;
 public class ClientFirefly extends ClientEntity {
 
     private final ExpoAnimationHandler animationHandler;
-    private boolean flipped;
-    private boolean cachedMoving;
-
-    private float damageDelta;
-    private boolean damageTint;
 
     private float fadeInDelta;
 
@@ -60,8 +55,7 @@ public class ClientFirefly extends ClientEntity {
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        damageDelta = RenderContext.get().deltaTotal;
-        damageTint = true;
+        setBlink();
     }
 
     @Override
@@ -75,50 +69,33 @@ public class ClientFirefly extends ClientEntity {
 
             fireflyLight.colorAlpha(1.0f - fadeInDelta * 4);
         }
-
-        if(cachedMoving != isMoving()) {
-            cachedMoving = !cachedMoving;
-            animationHandler.reset();
-            animationHandler.switchToAnimation(cachedMoving ? "walk" : "idle");
-        }
     }
 
     @Override
     public void render(RenderContext rc, float delta) {
-        animationHandler.tick(delta);
-        boolean flip = (!flipped && serverDirX == -1) || (flipped && serverDirX == 1);
-
-        if(flip) {
-            animationHandler.flipAllAnimations(true, false);
-            flipped = !flipped;
-        }
-
         TextureRegion f = animationHandler.getActiveFrame();
         updateTextureBounds(f.getRegionWidth(), f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);
 
         visibleToRenderEngine = rc.inDrawBounds(this);
+        float interpolatedBlink = tickBlink(delta);
 
         if(visibleToRenderEngine) {
+            animationHandler.tick(delta);
+
             updateDepth(-flightHeight);
             rc.useArrayBatch();
-            rc.useRegularArrayShader();
+            chooseArrayBatch(rc, interpolatedBlink);
 
-            if(damageTint) {
-                float MAX_TINT_DURATION = 0.2f;
-                if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
-            }
-
-            if(damageTint) {
-                rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
+            if(fadeInDelta > 0) {
+                rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - (fadeInDelta * 4));
             } else {
-                if(fadeInDelta > 0) {
-                    rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - (fadeInDelta * 4));
-                } else {
-                    rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, removalFade * 4);
-                }
+                rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, removalFade * 4);
             }
-            rc.arraySpriteBatch.draw(animationHandler.getActiveFrame(), finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
             rc.arraySpriteBatch.setColor(Color.WHITE);
+
+            rc.useRegularArrayShader();
+            drawHealthBar(rc);
         }
     }
 

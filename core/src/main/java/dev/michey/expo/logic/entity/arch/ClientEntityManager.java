@@ -549,8 +549,8 @@ public class ClientEntityManager {
         if(shortestDistance > p.getPlayerRange()) return null;
 
         // view angle
-        double entityPlayerAngle = GenerationUtils.angleBetween360(p.playerReachCenterX, p.playerReachCenterY, shortestDistanceX, shortestDistanceY);
-        if(!ExpoShared.inAngleProximity(r.mousePlayerAngle, entityPlayerAngle, 225)) return null;
+        //double entityPlayerAngle = GenerationUtils.angleBetween360(p.playerReachCenterX, p.playerReachCenterY, shortestDistanceX, shortestDistanceY);
+        //if(!ExpoShared.inAngleProximity(r.mousePlayerAngle, entityPlayerAngle, 225)) return null;
 
         float sx = entity.finalTextureStartX;
         float sy = entity.finalTextureStartY;

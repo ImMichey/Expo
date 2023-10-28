@@ -16,8 +16,74 @@
         "ai.attackDistance": 16.0,
         "ai.attackCooldown": 1.5,
         "ai.attackDuration": 0.64,
-        "ai.attackDamage": 20.0,
+        "ai.attackDamage": 10.0,
         "ai.attackAt": 0.40,
-        "ai.attackRange": 20.0
+        "ai.attackRange": 20.0,
+        "ai.seekTargets": ["PLAYER", "CHICKEN"]
+    },
+    "ZOMBIE": {
+        "maxHp": 100,
+        "ai.idleMin": 4.0,
+        "ai.idleMax": 8.0,
+        "ai.idleSeekDistance": 96.0,
+        "ai.strollMin": 3.0,
+        "ai.strollMax": 6.0,
+        "ai.strollSpeed": 24.0,
+        "ai.strollSeekDistance": 112.0,
+        "ai.chaseDistance": 64.0,
+        "ai.chaseSpeed": 32.0,
+        "ai.attackDistance": 16.0,
+        "ai.attackCooldown": 1.5,
+        "ai.attackDuration": 0.5,
+        "ai.attackDamage": 20.0,
+        "ai.attackAt": 0.25,
+        "ai.attackRange": 16.0
+    },
+    "PLAYER": {
+        "maxHp": 100
+    },
+    "CHICKEN": {
+        "maxHp": 40,
+        "ai.idleMin": 1.0,
+        "ai.idleMax": 3.0,
+        "ai.strollMin": 1.0,
+        "ai.strollMax": 3.0,
+        "ai.strollSpeed": 12.0,
+        "ai.fleeMin": 6.0,
+        "ai.fleeMax": 8.0,
+        "ai.fleeSpeed": 32.0
+    },
+    "WORM": {
+        "maxHp": 20,
+        "ai.idleMin": 1.0,
+        "ai.idleMax": 3.0,
+        "ai.strollMin": 1.0,
+        "ai.strollMax": 3.0,
+        "ai.strollSpeed": 5.0,
+        "ai.fleeMin": 6.0,
+        "ai.fleeMax": 8.0,
+        "ai.fleeSpeed": 8.0
+    },
+    "MAGGOT": {
+        "maxHp": 30,
+        "ai.idleMin": 1.0,
+        "ai.idleMax": 3.0,
+        "ai.strollMin": 1.0,
+        "ai.strollMax": 3.0,
+        "ai.strollSpeed": 5.0,
+        "ai.fleeMin": 6.0,
+        "ai.fleeMax": 8.0,
+        "ai.fleeSpeed": 8.0
+    },
+    "FIREFLY": {
+        "maxHp": 20,
+        "ai.idleMin": 0.0,
+        "ai.idleMax": 0.1,
+        "ai.strollMin": 0.5,
+        "ai.strollMax": 1.0,
+        "ai.strollSpeed": 32.0,
+        "ai.fleeMin": 6.0,
+        "ai.fleeMax": 8.0,
+        "ai.fleeSpeed": 48.0
     }
 }

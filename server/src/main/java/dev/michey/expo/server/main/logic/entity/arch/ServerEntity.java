@@ -1,6 +1,5 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.dongbat.jbump.CollisionFilter;
@@ -17,6 +16,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.bbox.KnockbackCalculation;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
@@ -58,13 +58,9 @@ public abstract class ServerEntity {
     public ToolType[] damageableWith = null;
 
     /** Knockback fields */
-    public float knockbackStrength;
-    public float knockbackDuration;
-    public float knockbackDelta;
-    public float knockbackOldX, knockbackOldY;
-    public float knockbackAppliedX, knockbackAppliedY;
-    public Vector2 knockbackDir;
     public float invincibility = 0.75f;
+    public List<KnockbackCalculation> knockbackCalculations;
+    public List<KnockbackCalculation> removeKnockback;
 
     /** ServerEntity base methods */
     public void tick(float delta) {
@@ -335,13 +331,6 @@ public abstract class ServerEntity {
         tileY = 0;
     }
 
-    public void applyKnockback(float knockbackStrength, float knockbackDuration, Vector2 knockbackDir) {
-        this.knockbackDelta = 0;
-        this.knockbackStrength = knockbackStrength;
-        this.knockbackDuration = knockbackDuration;
-        this.knockbackDir = knockbackDir;
-    }
-
     public boolean applyDamageWithPacket(ServerEntity damageSource, float damage) {
         boolean applied = onDamage(damageSource, damage);
 
@@ -362,31 +351,41 @@ public abstract class ServerEntity {
 
     }
 
+    public void addKnockback(float knockbackStrength, float knockbackDuration, Vector2 knockbackDirection) {
+        if(knockbackCalculations == null) {
+            knockbackCalculations = new LinkedList<>();
+            removeKnockback = new LinkedList<>();
+        }
+
+        knockbackCalculations.add(new KnockbackCalculation(knockbackStrength, knockbackDuration, knockbackDirection));
+    }
+
     public void tickKnockback(float delta) {
-        if(knockbackDuration > 0) {
-            knockbackDelta += delta;
+        if(knockbackCalculations == null) return;
 
-            float interpolated;
+        for(KnockbackCalculation kc : removeKnockback) {
+            knockbackCalculations.remove(kc);
+        }
+        removeKnockback.clear();
 
-            if(knockbackDelta >= knockbackDuration) {
-                knockbackDelta = knockbackDuration;
-                interpolated = Interpolation.pow2InInverse.apply(knockbackDelta / knockbackDuration);
-                knockbackDuration = 0;
-            } else {
-                interpolated = Interpolation.pow2InInverse.apply(knockbackDelta / knockbackDuration);
+        for(var k : knockbackCalculations) {
+            if(k.tick(delta)) {
+                removeKnockback.add(k);
             }
+        }
+    }
 
-            float ox = knockbackOldX;
-            float oy = knockbackOldY;
-            knockbackOldX = knockbackDir.x * knockbackStrength * interpolated;
-            knockbackOldY = knockbackDir.y * knockbackStrength * interpolated;
-            knockbackAppliedX = (knockbackOldX - ox);
-            knockbackAppliedY = (knockbackOldY - oy);
-        } else {
-            knockbackAppliedX = 0;
-            knockbackAppliedY = 0;
-            knockbackOldX = 0;
-            knockbackOldY = 0;
+    public void applyKnockback() {
+        if(knockbackCalculations == null) return;
+        float moveByX = 0, moveByY = 0;
+
+        for(KnockbackCalculation kc : knockbackCalculations) {
+            moveByX += kc.applyKnockbackX;
+            moveByY += kc.applyKnockbackY;
+        }
+
+        if(moveByX != 0 || moveByY != 0) {
+            attemptMove(moveByX, moveByY);
         }
     }
 
@@ -394,10 +393,6 @@ public abstract class ServerEntity {
         var result = box.move(x, y, PhysicsBoxFilters.generalFilter);
         posX = result.goalX - box.xOffset;
         posY = result.goalY - box.yOffset;
-    }
-
-    public void resetKnockback() {
-        knockbackDuration = 0;
     }
 
     public int velToPos(float vel) {
@@ -460,7 +455,7 @@ public abstract class ServerEntity {
 
                     // Knockback
                     if(preDamageHp > se.health) {
-                        se.applyKnockback(knockbackStrength, knockbackDuration, dirVector.set(se.posX, se.posY)
+                        se.addKnockback(knockbackStrength, knockbackDuration, dirVector.set(se.posX, se.posY)
                                 .sub(useEntityOriginX ? se.posX : originX, useEntityOriginY ? se.posY : originY).nor());
                     }
 

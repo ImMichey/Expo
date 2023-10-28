@@ -14,8 +14,6 @@ import dev.michey.expo.util.EntityRemovalReason;
 public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
     private final ExpoAnimationHandler animationHandler;
-    private boolean cachedMoving;
-    private boolean flipped;
 
     public ClientWorm() {
         animationHandler = new ExpoAnimationHandler(this) {
@@ -47,13 +45,7 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        blinkDelta = 1.0f;
-        /*
-        ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
-        Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
-
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + 8, dir);
-        */
+        setBlink();
     }
 
     @Override
@@ -62,12 +54,6 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
         if(isMoving()) {
             calculateReflection();
-        }
-
-        if(cachedMoving != isMoving()) {
-            cachedMoving = !cachedMoving;
-            animationHandler.reset();
-            animationHandler.switchToAnimation(cachedMoving ? "walk" : "idle");
         }
     }
 
@@ -79,26 +65,23 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        float interpolatedBlink = tickBlink(delta);
-        animationHandler.tick(delta);
-        boolean flip = (!flipped && serverDirX == 0) || (flipped && serverDirX == 1);
-
-        if(flip) {
-            animationHandler.flipAllAnimations(true, false);
-            flipped = !flipped;
-        }
-
         TextureRegion f = animationHandler.getActiveFrame();
         updateTextureBounds(f);
 
         visibleToRenderEngine = rc.inDrawBounds(this);
+        float interpolatedBlink = tickBlink(delta);
 
         if(visibleToRenderEngine) {
+            animationHandler.tick(delta);
+
             updateDepth();
             rc.useArrayBatch();
             chooseArrayBatch(rc, interpolatedBlink);
 
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
+
+            rc.useRegularArrayShader();
+            drawHealthBar(rc);
         }
     }
 

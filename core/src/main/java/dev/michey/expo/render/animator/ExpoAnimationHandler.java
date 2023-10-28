@@ -3,6 +3,7 @@ package dev.michey.expo.render.animator;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.util.ExpoShared;
 
 import java.util.HashMap;
 
@@ -25,11 +26,20 @@ public class ExpoAnimationHandler {
 
     public void addAnimation(String name, ExpoAnimation animation) {
         animationMap.put(name, animation);
+        animation.setHandler(this);
 
         if(animationMap.size() == 1) {
             activeName = name;
             activeAnimation = animation;
         }
+    }
+
+    public void addAnimationSound(String name, String soundGroupName, int frame, float volumeMultiplier) {
+        animationMap.get(name).addAnimationSound(soundGroupName, frame, volumeMultiplier);
+    }
+
+    public void addAnimationSound(String name, String soundGroupName, int frame) {
+        addAnimationSound(name, soundGroupName, frame, 1.0f);
     }
 
     public void tick(float delta) {
@@ -111,6 +121,10 @@ public class ExpoAnimationHandler {
 
     public String getActiveAnimationName() {
         return activeName;
+    }
+
+    public ClientEntity getEntity() {
+        return parent;
     }
 
 }

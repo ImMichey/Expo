@@ -84,20 +84,12 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] mushroomVertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
-        boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
-
-        if(drawMushroom) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
-        }
+        drawShadowIfVisible(texture);
     }
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.125f, 0.125f, 0, 0);
+        drawAO50(rc, 0.25f, 0.25f, 0, 0);
     }
 
     @Override

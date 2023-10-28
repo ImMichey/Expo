@@ -32,7 +32,7 @@ public class BrainModuleIdleHostile extends BrainModuleIdle {
         super.init();
 
         EntityMetadata meta = getBrain().getEntity().getMetadata();
-        seek = BrainModuleIdleHostile.SEEK_PLAYER;
+        seek = meta.getEntityTypes("ai.seekTargets");
         seekDistance = meta.getFloat("ai.idleSeekDistance");
     }
 

@@ -1,8 +1,7 @@
 package dev.michey.expo.logic.entity.animal;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -10,21 +9,12 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientChicken extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     private ExpoAnimationHandler animationHandler;
-    private boolean cachedMoving;
-    private boolean flipped;
-
     private int variant;
-
-    private float damageDelta;
-    private boolean damageTint;
-
-    private int lastFootstepIndex;
 
     @Override
     public void onCreation() {
@@ -32,11 +22,11 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
             @Override
             public void onAnimationFinish() {
                 if(isInWater() && animationHandler.getActiveAnimationName().equals("idle")) spawnPuddle(false, 0, 1);
-                lastFootstepIndex = 0;
             }
         };
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_chicken_var_" + variant + "_idle", 2, 0.75f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_chicken_var_" + variant + "_walk", 8, 0.1f));
+        animationHandler.addFootstepOn(new String[] {"walk"}, 3, 7);
 
         updateTextureBounds(animationHandler.getActiveFrame());
     }
@@ -49,9 +39,15 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
     }
 
     @Override
+    public void playFootstepSound() {
+        playEntitySound(getFootstepSound(), 0.4f);
+    }
+
+
+    @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        damageDelta = RenderContext.get().deltaTotal;
-        damageTint = true;
+        setBlink();
+        ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
         /*
         ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
         Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
@@ -67,12 +63,6 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
         if(isMoving()) {
             calculateReflection();
         }
-
-        if(cachedMoving != isMoving()) {
-            cachedMoving = !cachedMoving;
-            animationHandler.reset();
-            animationHandler.switchToAnimation(cachedMoving ? "walk" : "idle");
-        }
     }
 
     @Override
@@ -83,42 +73,23 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
 
     @Override
     public void render(RenderContext rc, float delta) {
-        animationHandler.tick(delta);
-        boolean flip = (!flipped && serverDirX == -1) || (flipped && serverDirX == 1);
-
-        if(flip) {
-            animationHandler.flipAllAnimations(true, false);
-            flipped = !flipped;
-        }
-
         TextureRegion f = animationHandler.getActiveFrame();
         updateTextureBounds(f);
 
-        int i = animationHandler.getActiveAnimation().getFrameIndex();
-
-        if((i == 3 || i == 7) && (lastFootstepIndex != i)) {
-            lastFootstepIndex = i;
-
-            playEntitySound(getFootstepSound(), 0.4f);
-
-            if(isInWater()) spawnPuddle(false, 0, 1);
-        }
-
         visibleToRenderEngine = rc.inDrawBounds(this);
+        float interpolatedBlink = tickBlink(delta, 7.5f);
 
         if(visibleToRenderEngine) {
+            animationHandler.tick(delta);
+
             updateDepth();
             rc.useArrayBatch();
-            rc.useRegularArrayShader();
+            chooseArrayBatch(rc, interpolatedBlink);
 
-            if(damageTint) {
-                float MAX_TINT_DURATION = 0.2f;
-                if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
-            }
-
-            if(damageTint) rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
-            if(damageTint) rc.arraySpriteBatch.setColor(Color.WHITE);
+
+            rc.useRegularArrayShader();
+            drawHealthBar(rc);
         }
     }
 

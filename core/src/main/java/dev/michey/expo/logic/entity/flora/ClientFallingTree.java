@@ -28,6 +28,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
     public float animationDelta;
     public int variant;
+    public int leavesVariant;
     private float rotation;
     public float colorDisplacement;
     public float windDisplacement;
@@ -48,9 +49,11 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
         treeTrunk = tr("eot_falling_trunk_trim_" + variant);
 
-        String lStr = "eot_falling_leaves";
-        if(variant <= 2) lStr += "_smol";
-        treeLeaves = tr(lStr);
+        if(variant >= 1 && variant <= 2) {
+            treeLeaves = tr("leaves_oak_small_" + leavesVariant);
+        } else {
+            treeLeaves = tr("leaves_oak_big_" + leavesVariant);
+        }
 
         updateTextureBounds(treeLeaves);
 
@@ -179,52 +182,53 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
     private void updateAdjustmentValues() {
         Vector2 disp = GenerationUtils.circular(rotation, 1);
-        float dsp = 21f;
 
         float trunkX = 22f;
         float trunkY = 0f;
 
         float leavesX = 0f;
+        float leavesY = 0f;
 
         if(variant == 1) {
-            leavesX -= 0.5f;
             trunkX -= 5.5f;
+
+            leavesX -= 0.5f;
+            leavesY += 17f;
         } else if(variant == 2) {
             trunkX -= 6.0f;
             trunkY += 1.0f;
-            dsp += 4.0f;
-            leavesX += 1.0f;
+
+            leavesY += 20f;
         } else if(variant == 3) {
-            trunkX -= 0.5f;
+            trunkX -= 1.5f;
+            trunkY += 1.0f;
+
+            leavesY += 22f;
+        } else if(variant == 4) {
+            trunkX -= 3.0f;
+
+            leavesX -= 0.5f;
+            leavesY += 52f;
+        } else if(variant == 5) {
+            trunkX -= 3.0f;
             trunkY += 1.0f;
 
             leavesX += 0.5f;
-            dsp += 4.0f;
-        } else if(variant == 4) {
-            trunkX -= 2.0f;
-            leavesX -= 0.5f;
-
-            dsp += 29.0f;
+            leavesY += 100f;
         } else if(variant == 6) {
-            trunkX -= 2.0f;
+            trunkX -= 3.0f;
             trunkY += 1.0f;
 
-            leavesX -= 0.5f;
-            dsp += 81f;
-        } else if(variant == 7) {
-            trunkX -= 2.0f;
-            trunkY += 1.0f;
-
-            leavesX -= 0.5f;
-            dsp += 58f;
+            leavesX += 0.5f;
+            leavesY += 78f;
         }
 
-        dsp += leavesDisplacement;
+        leavesY += leavesDisplacement;
 
         adjustmentValues[0] = trunkX;
         adjustmentValues[1] = trunkY;
         adjustmentValues[2] = leavesX;
-        adjustmentValues[3] = dsp;
+        adjustmentValues[3] = leavesY;
         adjustmentValues[4] = disp.x;
         adjustmentValues[5] = disp.y;
     }

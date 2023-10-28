@@ -481,6 +481,12 @@ public class ClientWorld {
             }
 
             // Draw final FBO with vignette shader.
+            {
+                r.vignetteShader.bind();
+                float blinkDelta = ClientPlayer.getLocalPlayer() == null ? 0 : ClientPlayer.getLocalPlayer().blinkDelta;
+                r.vignetteShader.setUniformf("u_damageIntensity", blinkDelta != 0 ? Interpolation.smooth2.apply(blinkDelta) : blinkDelta);
+            }
+
             if(displayBlur) {
                 blurPass();
                 drawFboTexture(r.blurTargetBFbo, r.vignetteShader);

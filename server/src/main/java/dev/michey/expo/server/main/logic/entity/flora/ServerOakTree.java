@@ -70,7 +70,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         generateAge(biome, rnd);
         generateVariant(rnd);
 
-        if(rnd.random() <= 0.02f) {
+        if(rnd.random() <= 0.03f) {
             cut = true;
             health = trunkConversionHealth;
         }
@@ -191,11 +191,11 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     public void generateAge(BiomeType biome, GenerationRandom rnd) {
         int r = rnd == null ? MathUtils.random(100) : rnd.random(100);
-        float fFactor = biome == BiomeType.DENSE_FOREST ? 0.875f : 1.0f;
+        //float fFactor = biome == BiomeType.DENSE_FOREST ? 0.875f : 1.0f;
 
-        if(r <= 70 * fFactor) {
+        if(r <= 65) {
             age = 0;
-        } else if(r <= 90 * fFactor) {
+        } else if(r <= 97) {
             age = 1;
         } else {
             age = 2;
@@ -206,20 +206,21 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     public void generateVariant(GenerationRandom rnd) {
         if(age == 0) {
-            variant = rnd == null ? MathUtils.random(1, 3) : rnd.random(1, 3);
+            variant = rnd == null ? MathUtils.random(1, 2) : rnd.random(1, 2);
         } else if(age == 1) {
+            //variant = rnd == null ? MathUtils.random(3, 4) : rnd.random(3, 4);
             variant = 4;
         } else if(age == 2) {
-            variant = rnd == null ? MathUtils.random(6, 7) : rnd.random(6, 7);
+            variant = rnd == null ? MathUtils.random(5, 6) : rnd.random(5, 6);
         }
     }
 
     public void ageFromVariant() {
-        if(variant <= 3) {
+        if(variant <= 2) {
             age = 0;
-        } else if(variant == 4) {
+        } else if(variant == 3 || variant == 4) {
             age = 1;
-        } else if(variant == 6 || variant == 7) {
+        } else if(variant == 5 || variant == 6) {
             age = 2;
         }
     }

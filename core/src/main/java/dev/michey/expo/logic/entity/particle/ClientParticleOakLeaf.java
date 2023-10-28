@@ -44,7 +44,7 @@ public class ClientParticleOakLeaf extends ClientParticle {
             float w = leaf.getRegionWidth() * scaleX;
             float h = leaf.getRegionHeight() * scaleY;
 
-            rc.arraySpriteBatch.draw(leaf, clientPosX, clientPosY, 0, 0, w, h, 1.0f, 1.0f, rotation);
+            rc.arraySpriteBatch.draw(leaf, clientPosX - w * 0.5f, clientPosY - h * 0.5f, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }

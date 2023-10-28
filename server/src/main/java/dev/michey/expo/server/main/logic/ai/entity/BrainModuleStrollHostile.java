@@ -20,7 +20,7 @@ public class BrainModuleStrollHostile extends BrainModuleStroll {
         super.init();
 
         EntityMetadata meta = getBrain().getEntity().getMetadata();
-        seek = BrainModuleIdleHostile.SEEK_PLAYER;
+        seek = meta.getEntityTypes("ai.seekTargets");
         seekDistance = meta.getFloat("ai.strollSeekDistance");
     }
 

@@ -474,6 +474,7 @@ public class PlayerUI {
             drawCursor(PlayerInventory.LOCAL_INVENTORY.cursorItem);
         }
 
+        /*
         if(Expo.get().getImGuiExpo().entityBrainStates.get() && ServerWorld.get() != null) {
             var crabs = ServerWorld.get().getMainDimension().getEntityManager().getEntitiesOf(ServerEntityType.CRAB);
 
@@ -485,6 +486,7 @@ public class PlayerUI {
                 rc.m5x7_border_use.draw(rc.hudBatch, crab.brain.getActiveModule(), drawPos.x, drawPos.y);
             }
         }
+        */
 
         /*
         if(ClientEntityManager.get().selectedEntity != null && currentContainer == null) {

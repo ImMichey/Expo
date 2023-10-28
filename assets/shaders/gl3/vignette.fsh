@@ -12,6 +12,7 @@ in vec2 v_texCoords;
 
 uniform sampler2D u_texture;
 uniform vec2 u_resolution;
+uniform float u_damageIntensity;
 
 const float outerRadius = 0.8;
 const float innerRadius = 0.2;
@@ -30,5 +31,7 @@ void main() {
     float vignette = smoothstep(outerRadius, innerRadius, len);
 
     color.rgb = mix(color.rgb, color.rgb * vignette, intensity);
+    color.rgb -= vec3(0.0, 0.125, 0.125) * len * u_damageIntensity;
+
     fragColor = color;
 }

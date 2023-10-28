@@ -3,9 +3,16 @@ package dev.michey.expo.render.animator;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.util.AnimationSound;
+import dev.michey.expo.util.Pair;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ExpoAnimation {
 
+    private ExpoAnimationHandler handler;
     private final Array<TextureRegion> textureArray;
     private final float frameDuration;
     private final float totalAnimationDuration;
@@ -13,6 +20,7 @@ public class ExpoAnimation {
     private float animationDeltaSinceStart;
     private boolean animationFinished;
     private boolean pingPong;
+    private HashMap<AnimationSound, Boolean> playSoundMap;
 
     public ExpoAnimation(String textureName, int frames, float frameDuration) {
         this(textureName, frames, frameDuration, false);
@@ -24,10 +32,35 @@ public class ExpoAnimation {
         this.totalAnimationDuration = this.frameDuration * frames;
     }
 
+    public void addAnimationSound(String soundGroupName, int frame, float volumeMultiplier) {
+        if(playSoundMap == null) {
+            playSoundMap = new HashMap<>();
+        }
+
+        playSoundMap.put(new AnimationSound(soundGroupName, frame, volumeMultiplier), false);
+    }
+
+    public void setHandler(ExpoAnimationHandler handler) {
+        this.handler = handler;
+    }
+
     public void tick(float delta) {
         animationFinished = false;
         animationDelta += delta;
         animationDeltaSinceStart += delta;
+
+        if(playSoundMap != null) {
+            int currentFrameIndex = getFrameIndex();
+
+            for(AnimationSound as : playSoundMap.keySet()) {
+                if(!playSoundMap.get(as)) {
+                    if(currentFrameIndex >= as.animationIndex) {
+                        handler.getEntity().playEntitySound(as.groupName, as.volumeMultiplier);
+                        playSoundMap.put(as, true);
+                    }
+                }
+            }
+        }
 
         if(animationDeltaSinceStart >= (totalAnimationDuration * (pingPong ? 2 : 1))) {
             animationFinished = true;
@@ -38,6 +71,7 @@ public class ExpoAnimation {
     public void reset() {
         animationDelta = 0;
         animationDeltaSinceStart = 0;
+        if(playSoundMap != null) playSoundMap.replaceAll((p, v) -> false);
     }
 
     public void offset(float delta) {

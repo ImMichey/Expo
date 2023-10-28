@@ -67,7 +67,7 @@ public class BrainModuleAttack extends BrainModule {
 
                         // Apply knockback.
                         if(preDamageHp > attackEntity.health) {
-                            attackEntity.applyKnockback(ExpoShared.PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH, ExpoShared.PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION,
+                            attackEntity.addKnockback(ExpoShared.PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH, ExpoShared.PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION,
                                     new Vector2(attackEntity.posX, attackEntity.posY).sub(getBrain().getEntity().posX, getBrain().getEntity().posY).nor());
                         }
 

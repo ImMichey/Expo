@@ -25,7 +25,7 @@ public enum ServerEntityType {
     BLUEBERRY_BUSH(12, "BlueberryBush", true),
     WORM(13, "Worm", false),
     ROCK(14, "Rock", true),
-    CRAB(15, "Crab", false),
+    CRAB(15, "Crab", true),
     DYNAMIC_3D_TILE(16, "Dynamic3DTile", true),
     WHEAT_PLANT(17, "WheatPlant", false),
     SUNFLOWER(18, "Sunflower", false),

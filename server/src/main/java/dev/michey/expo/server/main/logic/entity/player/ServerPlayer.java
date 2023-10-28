@@ -130,15 +130,14 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         ServerPackets.p24PositionalSound("player_death", posX, posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
 
         // reset health + hunger
-        health = 100.0f;
+        health = getMetadata().getMaxHealth();
         hunger = 100.0f;
         hungerCooldown = 180.0f;
         nextHungerTickDown = 4.0f;
         nextHungerDamageTick = 4.0f;
         nextHealthRegenTickDown = 1.0f;
 
-        // reset knockback
-        resetKnockback();
+        knockbackCalculations.clear();
 
         ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
 
@@ -181,6 +180,11 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     @Override
+    public void attemptMove(float x, float y) {
+        attemptMove(x, y, PhysicsBoxFilters.playerCollisionFilter);
+    }
+
+    @Override
     public void tick(float delta) {
         updateChunks();
 
@@ -204,8 +208,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 normalizer = 1 / len;
             }
 
-            float toMoveX = xDir * delta * playerSpeed * multiplicator * normalizer + knockbackAppliedX;
-            float toMoveY = yDir * delta * playerSpeed * multiplicator * normalizer + knockbackAppliedY;
+            float toMoveX = xDir * delta * playerSpeed * multiplicator * normalizer;
+            float toMoveY = yDir * delta * playerSpeed * multiplicator * normalizer;
 
             // Hook here and check if chunk exists as it's multithreaded as of 21.09.2023
             int chunkX = ExpoShared.posToChunk(toMoveX + posX);
@@ -222,23 +226,10 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             }
         } else if(dirResetPacket) {
             dirResetPacket = false;
-
-            if(knockbackAppliedX != 0 || knockbackAppliedY != 0) {
-                var result = physicsBody.move(knockbackAppliedX, knockbackAppliedY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
-                posX = result.goalX - physicsBody.xOffset;
-                posY = result.goalY - physicsBody.yOffset;
-            }
-
             ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
-        } else {
-            if(knockbackAppliedX != 0 || knockbackAppliedY != 0) {
-                var result = physicsBody.move(knockbackAppliedX, knockbackAppliedY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
-                posX = result.goalX - physicsBody.xOffset;
-                posY = result.goalY - physicsBody.yOffset;
-
-                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
-            }
         }
+
+        applyKnockback();
 
         if(punching) {
             punchDelta += delta;
@@ -321,7 +312,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
                             // Apply knockback.
                             if(preDamageHp > se.health) {
-                                se.applyKnockback(usePunchKnockbackStrength, usePunchKnockbackDuration, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
+                                se.addKnockback(usePunchKnockbackStrength, usePunchKnockbackDuration, new Vector2(se.posX, se.posY).sub(ox, oy).nor());
                             }
 
                             if(se instanceof ServerPlayer otherPlayer) {
@@ -363,7 +354,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             if(nextHealthRegenTickDown <= 0) {
                 nextHealthRegenTickDown += 1.0f;
                 health += 1f;
-                if(health > 100f) health = 100f;
+                float maxHp = getMetadata().getMaxHealth();
+                if(health > maxHp) health = maxHp;
                 ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
             }
         }

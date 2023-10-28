@@ -14,11 +14,6 @@ import dev.michey.expo.util.EntityRemovalReason;
 public class ClientMaggot extends ClientEntity implements ReflectableEntity {
 
     private final ExpoAnimationHandler animationHandler;
-    private boolean cachedMoving;
-    private boolean flipped;
-
-    private float damageDelta;
-    private boolean damageTint;
 
     public ClientMaggot() {
         animationHandler = new ExpoAnimationHandler(this);
@@ -45,8 +40,7 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        damageDelta = RenderContext.get().deltaTotal;
-        damageTint = true;
+        setBlink();
     }
 
     @Override
@@ -55,12 +49,6 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity {
 
         if(isMoving()) {
             calculateReflection();
-        }
-
-        if(cachedMoving != isMoving()) {
-            cachedMoving = !cachedMoving;
-            animationHandler.reset();
-            animationHandler.switchToAnimation(cachedMoving ? "walk" : "idle");
         }
     }
 
@@ -72,32 +60,23 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        animationHandler.tick(delta);
-        boolean flip = (!flipped && serverDirX == 0) || (flipped && serverDirX == 1);
-
-        if(flip) {
-            animationHandler.flipAllAnimations(true, false);
-            flipped = !flipped;
-        }
-
         TextureRegion f = animationHandler.getActiveFrame();
         updateTextureBounds(f);
 
         visibleToRenderEngine = rc.inDrawBounds(this);
+        float interpolatedBlink = tickBlink(delta);
 
         if(visibleToRenderEngine) {
+            animationHandler.tick(delta);
+
             updateDepth();
             rc.useArrayBatch();
-            rc.useRegularArrayShader();
+            chooseArrayBatch(rc, interpolatedBlink);
 
-            if(damageTint) {
-                float MAX_TINT_DURATION = 0.2f;
-                if(RenderContext.get().deltaTotal - damageDelta >= MAX_TINT_DURATION) damageTint = false;
-            }
-
-            if(damageTint) rc.arraySpriteBatch.setColor(ClientStatic.COLOR_DAMAGE_TINT);
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
-            if(damageTint) rc.arraySpriteBatch.setColor(Color.WHITE);
+
+            rc.useRegularArrayShader();
+            drawHealthBar(rc);
         }
     }
 

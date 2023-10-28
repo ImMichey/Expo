@@ -24,6 +24,7 @@ import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.TeleportReason;
 import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -579,7 +580,11 @@ public abstract class ClientEntity {
         }
     }
 
-    public void drawHealthBar(RenderContext rc, float healthPercentage) {
+    public void drawHealthBar(RenderContext rc) {
+        drawHealthBar(rc, serverHealth / EntityMetadataMapper.get().getFor(getEntityType().ENTITY_SERVER_TYPE).getMaxHealth(), textureWidth);
+    }
+
+    public void drawHealthBar(RenderContext rc, float healthPercentage, float barWidth) {
         float diff = rc.deltaTotal - lastBlink;
         float MAX_DIFF = 2.5f;
         if(diff >= MAX_DIFF) return;
@@ -598,7 +603,7 @@ public abstract class ClientEntity {
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 
         RenderContext r = RenderContext.get();
-        float length = Math.max(textureWidth, 3) - 2;
+        float length = Math.max(barWidth, 24) - 2;
 
         float startX = clientPosX - length * 0.5f - 1;
         float startY = clientPosY + textureHeight + 8;

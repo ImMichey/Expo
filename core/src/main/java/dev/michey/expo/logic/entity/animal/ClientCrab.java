@@ -3,7 +3,9 @@ package dev.michey.expo.logic.entity.animal;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
+import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -16,18 +18,18 @@ import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientCrab extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
-    private final ExpoAnimationHandler animationHandler;
-
-    public ClientCrab() {
-        animationHandler = new ExpoAnimationHandler(this);
-        animationHandler.addAnimation("idle", new ExpoAnimation("entity_crab_idle", 4, 0.25f));
-        animationHandler.addAnimation("walk", new ExpoAnimation("entity_crab_walk", 12, 0.05f));
-        animationHandler.addAnimation("attack", new ExpoAnimation("entity_crab_pinch", 8, 0.08f));
-        animationHandler.addFootstepOn(new String[] {"walk"}, 4, 10);
-    }
+    private ExpoAnimationHandler animationHandler;
+    private int variant;
 
     @Override
     public void onCreation() {
+        animationHandler = new ExpoAnimationHandler(this);
+        animationHandler.addAnimation("idle", new ExpoAnimation("entity_crab_variation_" + variant + "_idle", 4, 0.175f));
+        animationHandler.addAnimation("walk", new ExpoAnimation("entity_crab_variation_" + variant + "_walk", 12, 0.05f));
+        animationHandler.addAnimation("attack", new ExpoAnimation("entity_crab_variation_" + variant + "_pinch", 8, 0.08f));
+        animationHandler.addFootstepOn(new String[] {"walk"}, 4, 10);
+        animationHandler.addAnimationSound("attack", "crab_snip", 5, 0.5f);
+
         updateTextureBounds(animationHandler.getActiveFrame());
     }
 
@@ -40,17 +42,11 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, -1.5f);
-
-        ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
-        Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
-
-        //spawnDamageIndicator((int) damage, clientPosX, clientPosY + 8, dir);
     }
 
     @Override
     public void playEntityAnimation(int animationId) {
         if(animationId == 0) {
-            ExpoLogger.log("now attack animation");
             animationHandler.reset();
             animationHandler.switchToAnimation("attack");
         }
@@ -79,14 +75,14 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
 
     @Override
     public void render(RenderContext rc, float delta) {
+        TextureRegion cf = animationHandler.getActiveFrame();
+        updateTextureBounds(cf);
+
         visibleToRenderEngine = rc.inDrawBounds(this);
         float interpolatedBlink = tickBlink(delta, 7.5f);
 
         if(visibleToRenderEngine) {
             animationHandler.tick(delta);
-
-            TextureRegion cf = animationHandler.getActiveFrame();
-            updateTextureBounds(cf);
 
             updateDepth();
             rc.useArrayBatch();
@@ -94,8 +90,14 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
 
             rc.arraySpriteBatch.draw(cf, finalDrawPosX, finalDrawPosY);
 
-            drawHealthBar(rc, serverHealth / EntityMetadataMapper.get().getFor(getEntityType().ENTITY_SERVER_TYPE).getMaxHealth());
+            rc.useRegularArrayShader();
+            drawHealthBar(rc);
         }
+    }
+
+    @Override
+    public void applyPacketPayload(Object[] payload) {
+        variant = (int) payload[0];
     }
 
     @Override

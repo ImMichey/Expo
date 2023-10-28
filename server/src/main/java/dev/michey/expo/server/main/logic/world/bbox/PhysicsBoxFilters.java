@@ -13,7 +13,7 @@ public class PhysicsBoxFilters {
         if(other.userData instanceof PhysicsEntity oe) {
             PhysicsMassClassification otherClassification = oe.getPhysicsMassClassification();
 
-            if(otherClassification == PhysicsMassClassification.PLAYER || otherClassification == PhysicsMassClassification.ITEM) {
+            if(otherClassification == PhysicsMassClassification.PLAYER || otherClassification == PhysicsMassClassification.ITEM || otherClassification == PhysicsMassClassification.MEDIUM_PLAYER_PASSABLE) {
                 return null;
             }
 
