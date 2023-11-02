@@ -3,11 +3,21 @@ package dev.michey.expo.server.main.logic.entity.misc;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import org.json.JSONObject;
 
 public class ServerGravestone extends ServerEntity {
 
     public String owner;
+
+    public ServerGravestone() {
+        setDamageableWith(ToolType.FIST, ToolType.PICKAXE);
+    }
+
+    @Override
+    public void onDie() {
+
+    }
 
     @Override
     public ServerEntityType getEntityType() {

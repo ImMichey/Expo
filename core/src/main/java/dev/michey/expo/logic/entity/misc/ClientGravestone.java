@@ -2,7 +2,7 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
@@ -31,6 +31,12 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
     @Override
     public void onDeletion() {
 
+    }
+
+    @Override
+    public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
+        ParticleSheet.Common.spawnRockHitParticles(this);
+        playEntitySound("stone_hit");
     }
 
     @Override

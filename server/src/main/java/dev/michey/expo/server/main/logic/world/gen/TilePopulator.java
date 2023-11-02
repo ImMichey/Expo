@@ -19,6 +19,7 @@ public class TilePopulator {
     public SpreadData spreadData;
     public int priority;
     public int skip = 1;
+    public float skipChunkChance;
     public BorderRequirement borderRequirement = null;
 
     public TilePopulator(JSONObject entry) {
@@ -38,6 +39,7 @@ public class TilePopulator {
         spawnOffsets = JsonConverter.pullFloats(entry.getJSONArray("spawnOffsets"));
         if(entry.has("priority")) priority = entry.getInt("priority");
         if(entry.has("skip")) skip = entry.getInt("skip");
+        if(entry.has("skipChunkChance")) skipChunkChance = entry.getFloat("skipChunkChance");
 
         // optional
         if(entry.has("spreadData")) {

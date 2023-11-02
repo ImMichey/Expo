@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.entity.animal;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -8,10 +7,10 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
-import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientMaggot extends ClientEntity implements ReflectableEntity {
+public class ClientMaggot extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     private final ExpoAnimationHandler animationHandler;
 
@@ -78,6 +77,11 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity {
             rc.useRegularArrayShader();
             drawHealthBar(rc);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO50(rc, 0.25f, 0.25f, flipped ? 2 : -2, 0.5f);
     }
 
     @Override

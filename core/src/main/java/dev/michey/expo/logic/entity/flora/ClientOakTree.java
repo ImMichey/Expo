@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.entity.flora;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,18 +7,22 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
-import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
+import dev.michey.expo.render.animator.SquishAnimator2D;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
-import dev.michey.expo.util.*;
+import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.GameSettings;
+import dev.michey.expo.util.ParticleBuilder;
+import dev.michey.expo.util.ParticleEmitter;
 
 public class ClientOakTree extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
@@ -36,7 +39,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private TextureRegion leavesShadowMask;
     private float[] interactionPointArray;
 
-    private final float leavesDisplacement = -MathUtils.random(0, 10);
+    private float leavesDisplacement;
     private final float colorMix = MathUtils.random(0.125f);
 
     private float playerBehindDelta = 1.0f;
@@ -44,6 +47,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private float resetShadowFadeTimer;
 
     private TextureRegion selectionTrunk;
+
+    public final SquishAnimator2D squishAnimator2D = new SquishAnimator2D(0.2f, 1.5f, 1.5f);
 
     /*
      *      [0] = LeavesWidth
@@ -194,22 +199,12 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         trunkShadowMask = tr("eot_trunk_" + cutStr + variant);
         selectionTrunk = generateSelectionTexture(trunk);
 
+        leavesVariant = MathUtils.random() <= 0.25f ? 2 : 1;
+
         if(variant >= 1 && variant <= 2) {
-            leavesVariant = 1;
-
-            if(MathUtils.random() <= 0.25f) {
-                leavesVariant = 2;
-            }
-
             leaves = t("foliage/entity_oak_tree/leaves_oak_small_" + leavesVariant + ".png");
             leavesShadowMask = tr("leaves_oak_small_sm");
         } else {
-            leavesVariant = 1;
-
-            if(MathUtils.random() <= 0.25f) {
-                leavesVariant = 2;
-            }
-
             leaves = t("foliage/entity_oak_tree/leaves_oak_big_" + leavesVariant + ".png");
             leavesShadowMask = tr("leaves_oak_big_sm");
         }
@@ -287,6 +282,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("wood_cut");
+        squishAnimator2D.reset();
 
         ParticleSheet.Common.spawnTreeHitParticles(this, clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f);
 
@@ -333,7 +329,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             ClientPlayer local = ClientPlayer.getLocalPlayer();
             boolean playerBehind;
 
-            if(local != null) {
+            if(local != null && local.depth > depth) {
                 playerBehind = ExpoShared.overlap(new float[] {
                         local.finalTextureStartX, local.finalTextureStartY,
                         local.finalTextureStartX + local.textureWidth, local.finalTextureStartY + local.textureHeight
@@ -371,8 +367,10 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             foliageAnimator.calculateWindOnDemand();
         }
         setSelectionValues();
+        squishAnimator2D.calculate(delta);
 
-        rc.arraySpriteBatch.draw(selectionTrunk, finalSelectionDrawPosX, finalSelectionDrawPosY);
+        rc.arraySpriteBatch.draw(selectionTrunk, finalSelectionDrawPosX - squishAnimator2D.squishX * 0.5f, finalSelectionDrawPosY,
+                selectionTrunk.getRegionWidth() + squishAnimator2D.squishX, selectionTrunk.getRegionHeight() + squishAnimator2D.squishY);
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
@@ -381,9 +379,24 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         if(!cut) {
             float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(leaves,
+                    finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f,
+                    finalTextureStartY + leavesOffsetY() + leavesDisplacement + squishAnimator2D.squishY * 0.5f,
+                    leaves.getWidth() + squishAnimator2D.squishX, leaves.getHeight() + squishAnimator2D.squishY, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
+
+        /*
+        if(!cut || resetShadowFadeTimer <= 0) {
+            var meta = EntityMetadataMapper.get().getFor(getEntityType().ENTITY_SERVER_TYPE);
+
+            if(cut) {
+                drawHealthBar(rc, serverHealth / meta.getFloat("maxHp.trunk"), textureWidth, meta.getString("name.trunk"));
+            } else {
+                drawHealthBar(rc, (serverHealth - 30) / (meta.getFloat("maxHp.var" + variant) - 30), textureWidth, meta.getString("name.var" + variant));
+            }
+        }
+        */
     }
 
     @Override
@@ -399,16 +412,21 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             if(!cut) {
                 foliageAnimator.calculateWindOnDemand();
             }
+            squishAnimator2D.calculate(delta);
             updateDepth(5);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(trunk, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY,
+                    trunk.getRegionWidth() + squishAnimator2D.squishX, trunk.getRegionHeight() + squishAnimator2D.squishY);
 
             if(!cut) {
                 float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
                 rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
-                rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY + leavesOffsetY() + leavesDisplacement, leaves.getWidth(), leaves.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+                rc.arraySpriteBatch.drawCustomVertices(leaves,
+                        finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f,
+                        finalTextureStartY + leavesOffsetY() + leavesDisplacement + squishAnimator2D.squishY * 0.5f,
+                        leaves.getWidth() + squishAnimator2D.squishX, leaves.getHeight() + squishAnimator2D.squishY, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
         }
@@ -416,11 +434,13 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(trunk, finalDrawPosX, finalDrawPosY + 2, trunk.getRegionWidth(), trunk.getRegionHeight() * -1);
+        rc.arraySpriteBatch.draw(trunk, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY + 2, trunk.getRegionWidth() + squishAnimator2D.squishX, (trunk.getRegionHeight() + squishAnimator2D.squishY) * -1);
+
         if(!cut) {
             float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp, finalTextureStartY - leavesOffsetY() - leavesDisplacement + 2, leaves.getWidth(), leaves.getHeight() * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f, finalTextureStartY - leavesOffsetY() - leavesDisplacement - squishAnimator2D.squishY * 0.5f + 2,
+                    leaves.getWidth() + squishAnimator2D.squishX, (leaves.getHeight() + squishAnimator2D.squishY) * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
@@ -432,8 +452,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         if(!cut) {
             foliageAnimator.calculateWindOnDemand();
         }
-        Affine2 shadowT = ShadowUtils.createSimpleShadowAffine(finalDrawPosX, finalDrawPosY);
-        Affine2 shadowL = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, -leavesOffsetX(), leavesOffsetY() + leavesDisplacement);
+        Affine2 shadowT = ShadowUtils.createSimpleShadowAffine(finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY);
+        Affine2 shadowL = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, -leavesOffsetX() - squishAnimator2D.squishX * 0.5f, leavesOffsetY() + leavesDisplacement + squishAnimator2D.squishY * 0.5f);
 
         float[] trunkVertices = rc.arraySpriteBatch.obtainShadowVertices(trunkShadowMask, shadowT);
         boolean drawTrunk = rc.verticesInBounds(trunkVertices);
@@ -462,7 +482,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 float topColorT = new Color(0f, 0f, 0f, tt).toFloatBits();
                 float bottomColorT = new Color(0f, 0f, 0f, bt).toFloatBits();
 
-                rc.arraySpriteBatch.drawGradientCustomColor(trunkShadowMask, trunkShadowMask.getRegionWidth(), trunkShadowMask.getRegionHeight(), shadowT, topColorT, bottomColorT);
+                rc.arraySpriteBatch.drawGradientCustomColor(trunkShadowMask,
+                        trunkShadowMask.getRegionWidth() + squishAnimator2D.squishX,
+                        trunkShadowMask.getRegionHeight() + squishAnimator2D.squishY, shadowT, topColorT, bottomColorT);
             }
 
             if(drawLeaves) {
@@ -471,7 +493,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 float topColorL = new Color(0f, 0f, 0f, tl).toFloatBits();
                 float bottomColorL = new Color(0f, 0f, 0f, bl).toFloatBits();
 
-                rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(leavesShadowMask, leavesShadowMask.getRegionWidth(), leavesShadowMask.getRegionHeight(), shadowL, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value, topColorL, bottomColorL);
+                rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(leavesShadowMask,
+                        leavesShadowMask.getRegionWidth(),
+                        leavesShadowMask.getRegionHeight(), shadowL, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value, topColorL, bottomColorL);
             }
         }
     }
@@ -479,9 +503,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void renderAO(RenderContext rc) {
         if(cut && resetShadowFadeTimer <= 0) {
-            drawAO33(rc, 0.5f, 0.75f, 1, 3.5f);
+            drawAO100(rc, 0.5f, 0.75f, 1, 3.5f);
         } else {
-            drawAO33(rc, 1.0f, 1.25f, 1, 3.5f);
+            drawAO50(rc, 1.0f, 1.25f, 1, 3.5f);
         }
     }
 
@@ -504,6 +528,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         fallingTree.windDisplacement = (foliageAnimator == null ? 0 : (foliageAnimator.value * baf)) + (contactAnimator == null ? 0 : (contactAnimator.value * baf));
         fallingTree.windDisplacementBase = fallingTree.windDisplacement;
         fallingTree.transparency = playerBehindInterpolated;
+        fallingTree.inheritedSquishAnimator = squishAnimator2D;
 
         entityManager().addClientSideEntity(fallingTree);
     }
@@ -525,9 +550,15 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         cut = (boolean) payload[1];
         variant = (int) payload[0];
 
+        if(leavesVariant == 0) {
+            leavesVariant = MathUtils.random() <= 0.25f ? 2 : 1;
+        }
+
         if((boolean) payload[2]) {
             spawnFallingTree((float) payload[3], (boolean) payload[4]);
         }
+
+        leavesDisplacement = (float) payload[5];
     }
 
     @Override

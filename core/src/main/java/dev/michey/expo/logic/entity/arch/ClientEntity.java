@@ -5,11 +5,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
 import dev.michey.expo.logic.entity.misc.ClientPuddle;
@@ -21,12 +19,9 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.TeleportReason;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.weather.Weather;
@@ -581,10 +576,11 @@ public abstract class ClientEntity {
     }
 
     public void drawHealthBar(RenderContext rc) {
-        drawHealthBar(rc, serverHealth / EntityMetadataMapper.get().getFor(getEntityType().ENTITY_SERVER_TYPE).getMaxHealth(), textureWidth);
+        var meta = EntityMetadataMapper.get().getFor(getEntityType().ENTITY_SERVER_TYPE);
+        drawHealthBar(rc, serverHealth / meta.getMaxHealth(), textureWidth, meta.getName());
     }
 
-    public void drawHealthBar(RenderContext rc, float healthPercentage, float barWidth) {
+    public void drawHealthBar(RenderContext rc, float healthPercentage, float barWidth, String suppliedName) {
         float diff = rc.deltaTotal - lastBlink;
         float MAX_DIFF = 2.5f;
         if(diff >= MAX_DIFF) return;
@@ -600,12 +596,14 @@ public abstract class ClientEntity {
             alpha = Interpolation.smooth2.apply(dt);
         }
 
+        if(alpha <= 0) return;
+
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 
         RenderContext r = RenderContext.get();
         float length = Math.max(barWidth, 24) - 2;
 
-        float startX = clientPosX - length * 0.5f - 1;
+        float startX = finalTextureCenterX - length * 0.5f - 1;
         float startY = clientPosY + textureHeight + 8;
 
         rc.arraySpriteBatch.draw(r.hbEdge, startX, startY);
@@ -618,6 +616,16 @@ public abstract class ClientEntity {
         rc.arraySpriteBatch.draw(r.hbUnfilled, startX + 1 + lengthFilled, startY, remaining, 3);
 
         rc.arraySpriteBatch.setColor(Color.WHITE);
+
+        // Draw entity name
+        rc.globalGlyph.setText(rc.m5x7_border_all[0], suppliedName);
+
+        float _x = startX + 1 + (length - rc.globalGlyph.width) * 0.5f;
+        float _y = startY + rc.globalGlyph.height + 8;
+
+        rc.m5x7_border_all[0].setColor(1.0f, 1.0f, 1.0f, alpha);
+        rc.m5x7_border_all[0].draw(rc.arraySpriteBatch, suppliedName, (int) _x, (int) _y);
+        rc.m5x7_border_all[0].setColor(Color.WHITE);
     }
 
     public void playEntityAnimation(int animationId) {

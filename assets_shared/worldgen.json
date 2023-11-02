@@ -182,10 +182,10 @@
                     "biome": "LAKE",
                     "chance": 0.015,
                     "type": "CATTAIL",
-                    "spawnOffsets": [-1.0, 1.0, -1.0, 1.0],
+                    "spawnOffsets": [-12.0, 12.0, -12.0, 12.0],
                     "static": true,
                     "spreadData": {
-                        "spread": [1, 5],
+                        "spread": [1, 2],
                         "spreadChance": 1.0,
                         "spreadType": ["CATTAIL"],
                         "spreadDis": [16.0, 20.0],
@@ -197,10 +197,10 @@
                     "biome": "RIVER",
                     "chance": 0.005,
                     "type": "CATTAIL",
-                    "spawnOffsets": [-1.0, 1.0, -1.0, 1.0],
+                    "spawnOffsets": [-12.0, 12.0, -12.0, 12.0],
                     "static": true,
                     "spreadData": {
-                        "spread": [1, 5],
+                        "spread": [1, 2],
                         "spreadChance": 1.0,
                         "spreadType": ["CATTAIL"],
                         "spreadDis": [16.0, 20.0],
@@ -212,10 +212,11 @@
                     "biome": "DENSE_FOREST",
                     "type": "OAK_TREE",
                     "static": true,
-                    "chance": 0.85,
+                    "chance": 0.8,
                     "spawnOffsets": [-28.0, 28.0, -28.0, 28.0],
                     "skip": 4,
                     "priority": 100,
+                    "skipChunkChance": 0.2,
                     "spreadData": {
                         "spread": [1, 5],
                         "spreadChance": 0.025,
@@ -253,7 +254,7 @@
                         "spreadType": ["BUSH"],
                         "spreadStatic": true,
                         "spreadOffsets": [0.0, 0.0],
-                        "spreadUseNextTarget": true
+                        "spreadUseNextTarget": false
                     }
                 },
                 {

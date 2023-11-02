@@ -388,7 +388,7 @@
         {
             "identifier": "item_cord",
             "id": 15,
-            "displayName": "Cord",
+            "displayName": "Weak Cord",
             "displayNameColor": "#ffffff",
             "render": {
                 "ui": {
@@ -854,8 +854,8 @@
                     "texture": "item_carrot",
                     "scaleX": 0.75,
                     "scaleY": 0.75,
-                    "offsetX": -2.0,
-                    "offsetY": 7.0,
+                    "offsetX": -2,
+                    "offsetY": 5.5,
                     "rotations": [45.0, -45.0]
                 }
             },
@@ -939,22 +939,41 @@
             "displayName": "Torch",
             "displayNameColor": "#ffffff",
             "render": {
-                "ui": {
-                    "texture": "item_torch"
-                },
-                "held": {
-                    "texture": "item_torch",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.5,
-                    "offsetY": 7,
-                    "rotations": [45, -45],
-                    "light": {
-                        "color": [0.0, 0.0, 0.0, 0.0],
-                        "pulsating": true,
-                        "distance": 32
+                "ui": [
+                    {
+                        "texture": "item_torch"
+                    },
+                    {
+                        "texture": "flame",
+                        "frames": 11,
+                        "animationSpeed": 0.08,
+                        "offsetX": 2.5,
+                        "offsetY": 5.5
                     }
-                }
+                ],
+                "held": [
+                    {
+                        "texture": "item_torch",
+                        "scaleX": 1,
+                        "scaleY": 1,
+                        "offsetX": -2.5,
+                        "offsetY": 7,
+                        "rotations": [45, -45]
+                    },
+                    {
+                        "texture": "flame",
+                        "frames": 11,
+                        "animationSpeed": 0.08,
+                        "offsetX": -5.0,
+                        "offsetY": 12.5,
+                        "rotationLock": true,
+                        "light": {
+                            "color": [0.0, 0.0, 0.0, 0.0],
+                            "pulsating": true,
+                            "distance": 32
+                        }
+                    }
+                ]
             },
             "logic": {
                 "toolType": "ITEM"

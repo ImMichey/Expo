@@ -1,19 +1,16 @@
 [Known Bugs]
 * Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer
 * AO bug, similar to above, not sure if related or separate bug
-* The starting leaves shadow of falling trees is sometimes off
 
 [Stuff To Fix, Implement...]
 * Craft All with Shift+Left
 * Drop Items with Q
 
 * Adjust running animation speed with entity velocity
-* Insect Net -> Left/Right Click Firefly -> Catch Firefly
 * Fix selection system
 * Proper Torch Texture
 * Add Flint Sword for now
 * New Oak Plank Wall textures
-* Adjust tree fall impact radius for items, particles, etc.
 
 [Long Term Fixes]
 * New physics engine [Performance issues at large scale]

@@ -2,15 +2,21 @@ package dev.michey.expo.server.main.logic.entity.animal;
 
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.ai.entity.BrainModuleFlee;
 import dev.michey.expo.server.main.logic.ai.entity.BrainModuleIdle;
 import dev.michey.expo.server.main.logic.ai.entity.BrainModuleStroll;
 import dev.michey.expo.server.main.logic.ai.entity.EntityBrain;
 import dev.michey.expo.server.main.logic.entity.arch.*;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
-import dev.michey.expo.util.AIState;
+import dev.michey.expo.server.util.PacketReceiver;
+import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoTime;
 
@@ -41,6 +47,24 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
 
     @Override
     public boolean onDamage(ServerEntity damageSource, float damage) {
+        if(damageSource instanceof ServerPlayer sp) {
+            var item = sp.getCurrentItem();
+
+            if(item.itemId == ItemMapper.get().getMapping("item_insect_net").id) {
+                ItemMapping fireflyItem = ItemMapper.get().getMapping("item_firefly");
+                var addResult = sp.playerInventory.addItem(new ServerInventoryItem(fireflyItem.id, 1));
+
+                if(addResult.fullTransfer) {
+                    sp.useItemDurability(item);
+                    ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(addResult.changeResult, PacketReceiver.player(sp));
+                    ServerPackets.p36PlayerReceiveItem(new int[] {fireflyItem.id}, new int[] {1}, PacketReceiver.player(sp));
+                    ServerPackets.p24PositionalSound("pop", this);
+                    killEntityWithPacket(EntityRemovalReason.CAUGHT);
+                    return false;
+                }
+            }
+        }
+
         brain.notifyAttacked(damageSource, damage);
         return super.onDamage(damageSource, damage);
     }

@@ -8,18 +8,18 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ChatMessage;
 import dev.michey.expo.console.GameConsole;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
-import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.particle.ClientParticleFood;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.*;
 
@@ -193,7 +193,7 @@ public class ExpoClientPacketReader {
             if(entity != null) {
                 ClientPlayer player = (ClientPlayer) entity;
                 int particles = MathUtils.random(3, 6);
-                TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(player.holdingItemId).heldRender.textureRegion;
+                TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(player.holdingItemId).heldRender[0].textureRegions[0];
 
                 for(int i = 0; i < particles; i++) {
                     ClientParticleFood cpf = new ClientParticleFood();
@@ -302,28 +302,28 @@ public class ExpoClientPacketReader {
         }
 
         if(player.holdingArmorHeadId != -1) {
-            player.holdingArmorHeadTexture = new TextureRegion(ItemMapper.get().getMapping(player.holdingArmorHeadId).armorRender.textureRegion);
-            if(player.playerDirection == 0) player.holdingArmorHeadTexture.flip(true, false);
+            player.holdingHeadRender = ItemMapper.get().getMapping(player.holdingArmorHeadId).armorRender;
+            if(player.playerDirection == 0) for(ItemRender ir : player.holdingHeadRender) ir.flip();
         }
 
         if(player.holdingArmorChestId != -1) {
-            player.holdingArmorChestTexture = new TextureRegion(ItemMapper.get().getMapping(player.holdingArmorChestId).armorRender.textureRegion);
-            if(player.playerDirection == 0) player.holdingArmorChestTexture.flip(true, false);
+            player.holdingChestRender = ItemMapper.get().getMapping(player.holdingArmorChestId).armorRender;
+            if(player.playerDirection == 0) for(ItemRender ir : player.holdingChestRender) ir.flip();
         }
 
         if(player.holdingArmorGlovesId != -1) {
-            player.holdingArmorGlovesTexture = new TextureRegion(ItemMapper.get().getMapping(player.holdingArmorGlovesId).armorRender.textureRegion);
-            if(player.playerDirection == 0) player.holdingArmorGlovesTexture.flip(true, false);
+            player.holdingGlovesRender = ItemMapper.get().getMapping(player.holdingArmorGlovesId).armorRender;
+            if(player.playerDirection == 0) for(ItemRender ir : player.holdingGlovesRender) ir.flip();
         }
 
         if(player.holdingArmorLegsId != -1) {
-            player.holdingArmorLegsTexture = new TextureRegion(ItemMapper.get().getMapping(player.holdingArmorLegsId).armorRender.textureRegion);
-            if(player.playerDirection == 0) player.holdingArmorLegsTexture.flip(true, false);
+            player.holdingLegsRender = ItemMapper.get().getMapping(player.holdingArmorLegsId).armorRender;
+            if(player.playerDirection == 0) for(ItemRender ir : player.holdingLegsRender) ir.flip();
         }
 
         if(player.holdingArmorFeetId != -1) {
-            player.holdingArmorFeetTexture = new TextureRegion(ItemMapper.get().getMapping(player.holdingArmorFeetId).armorRender.textureRegion);
-            if(player.playerDirection == 0) player.holdingArmorFeetTexture.flip(true, false);
+            player.holdingFeetRender = ItemMapper.get().getMapping(player.holdingArmorFeetId).armorRender;
+            if(player.playerDirection == 0) for(ItemRender ir : player.holdingFeetRender) ir.flip();
         }
     }
 

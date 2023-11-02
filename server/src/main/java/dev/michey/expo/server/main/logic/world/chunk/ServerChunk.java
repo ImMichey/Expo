@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -200,45 +199,47 @@ public class ServerChunk {
                 for(TilePopulator populator : tilePopulators) {
                     GenerationRandom rnd = new GenerationRandom(chunkX, chunkY, populator.type);
 
-                    for(int i = 0; i < tiles.length; i++) {
-                        ServerTile tile = tiles[i];
-                        int _x = i % ROW_TILES;
-                        int _y = i / ROW_TILES;
+                    if(populator.skipChunkChance == 0 || rnd.random() > populator.skipChunkChance) {
+                        for(int i = 0; i < tiles.length; i++) {
+                            ServerTile tile = tiles[i];
+                            int _x = i % ROW_TILES;
+                            int _y = i / ROW_TILES;
 
-                        if((_x % populator.skip) == 0 && (_y % populator.skip) == 0) {
-                            boolean spawn = rnd.random() < populator.chance;
+                            if((_x % populator.skip) == 0 && (_y % populator.skip) == 0) {
+                                boolean spawn = rnd.random() < populator.chance;
 
-                            if(spawn) {
-                                float proposedX = ExpoShared.tileToPos(tile.tileX) + 8 + rnd.random(populator.spawnOffsets[0], populator.spawnOffsets[1]);
-                                float proposedY = ExpoShared.tileToPos(tile.tileY) + 8 + rnd.random(populator.spawnOffsets[2], populator.spawnOffsets[3]);
+                                if(spawn) {
+                                    float proposedX = ExpoShared.tileToPos(tile.tileX) + 8 + rnd.random(populator.spawnOffsets[0], populator.spawnOffsets[1]);
+                                    float proposedY = ExpoShared.tileToPos(tile.tileY) + 8 + rnd.random(populator.spawnOffsets[2], populator.spawnOffsets[3]);
 
-                                int proposedChunkX = ExpoShared.posToChunk(proposedX);
-                                int proposedChunkY = ExpoShared.posToChunk(proposedY);
+                                    int proposedChunkX = ExpoShared.posToChunk(proposedX);
+                                    int proposedChunkY = ExpoShared.posToChunk(proposedY);
 
-                                if(proposedChunkX == chunkX && proposedChunkY == chunkY) {
-                                    int proposedTileX = ExpoShared.posToTile(proposedX);
-                                    int proposedTileY = ExpoShared.posToTile(proposedY);
-                                    ServerTile proposedTile = getDimension().getChunkHandler().getTile(proposedTileX, proposedTileY);
+                                    if(proposedChunkX == chunkX && proposedChunkY == chunkY) {
+                                        int proposedTileX = ExpoShared.posToTile(proposedX);
+                                        int proposedTileY = ExpoShared.posToTile(proposedY);
+                                        ServerTile proposedTile = getDimension().getChunkHandler().getTile(proposedTileX, proposedTileY);
 
-                                    if(proposedTile != null && proposedTile.biome == t) {
-                                        EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
-                                        var check = causesCollision(proposedX, proposedY, entry, existingEntityDimensionMap, wx, wy);
+                                        if(proposedTile != null && proposedTile.biome == t) {
+                                            EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
+                                            var check = causesCollision(proposedX, proposedY, entry, existingEntityDimensionMap, wx, wy);
 
-                                        if(!check.key) {
-                                            if(populator.borderRequirement == null || populator.borderRequirement.meetsRequirements(populator.borderRequirement, tile.getNeighbouringTiles())) {
-                                                ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
-                                                generatedEntity.posX = (int) proposedX;
-                                                generatedEntity.posY = (int) proposedY;
-                                                if(populator.asStaticEntity) generatedEntity.setStaticEntity();
-                                                generatedEntity.onGeneration(false, t, rnd);
+                                            if(!check.key) {
+                                                if(populator.borderRequirement == null || populator.borderRequirement.meetsRequirements(populator.borderRequirement, tile.getNeighbouringTiles())) {
+                                                    ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
+                                                    generatedEntity.posX = (int) proposedX;
+                                                    generatedEntity.posY = (int) proposedY;
+                                                    if(populator.asStaticEntity) generatedEntity.setStaticEntity();
+                                                    generatedEntity.onGeneration(false, t, rnd);
 
-                                                registerMap.add(generatedEntity);
+                                                    registerMap.add(generatedEntity);
 
-                                                if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
-                                                    doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
+                                                    if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
+                                                        doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
+                                                    }
+
+                                                    addToList(check.value, generatedEntity, existingEntityDimensionMap);
                                                 }
-
-                                                addToList(check.value, generatedEntity, existingEntityDimensionMap);
                                             }
                                         }
                                     }

@@ -13,7 +13,6 @@ public class ExpoAnimationHandler {
     private final HashMap<String, ExpoAnimation> animationMap;
     private ExpoAnimation activeAnimation;
     private String activeName;
-    private boolean flipped;
     private int lastFootstepIndex;
     private String[] footstepAnimations;
     private int[] footstepIndexes;
@@ -88,11 +87,11 @@ public class ExpoAnimationHandler {
     }
 
     private void checkForFlip(float xDir) {
-        boolean flip = (!flipped && xDir <= 0) || (flipped && xDir == 1);
+        boolean flip = (!parent.flipped && xDir <= 0) || (parent.flipped && xDir == 1);
 
         if(flip) {
             flipAllAnimations(true, false);
-            flipped = !flipped;
+            parent.flipped = !parent.flipped;
         }
     }
 

@@ -1,5 +1,6 @@
 {
     "CRAB": {
+        "name": "Crab",
         "maxHp": 50,
         "ai.idleMin": 4.0,
         "ai.idleMax": 8.0,
@@ -22,6 +23,7 @@
         "ai.seekTargets": ["PLAYER", "CHICKEN"]
     },
     "ZOMBIE": {
+        "name": "Zombie",
         "maxHp": 100,
         "ai.idleMin": 4.0,
         "ai.idleMax": 8.0,
@@ -43,6 +45,7 @@
         "maxHp": 100
     },
     "CHICKEN": {
+        "name": "Chicken",
         "maxHp": 40,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -54,6 +57,7 @@
         "ai.fleeSpeed": 32.0
     },
     "WORM": {
+        "name": "Worm",
         "maxHp": 20,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -65,6 +69,7 @@
         "ai.fleeSpeed": 8.0
     },
     "MAGGOT": {
+        "name": "Maggot",
         "maxHp": 30,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -76,6 +81,7 @@
         "ai.fleeSpeed": 8.0
     },
     "FIREFLY": {
+        "name": "Firefly",
         "maxHp": 20,
         "ai.idleMin": 0.0,
         "ai.idleMax": 0.1,
@@ -85,5 +91,39 @@
         "ai.fleeMin": 6.0,
         "ai.fleeMax": 8.0,
         "ai.fleeSpeed": 48.0
+    },
+    "OAK_TREE": {
+        "maxHp.var1": 120.0,
+        "maxHp.var2": 120.0,
+        "maxHp.var3": 150.0,
+        "maxHp.var4": 150.0,
+        "maxHp.var5": 180.0,
+        "maxHp.var6": 180.0,
+        "maxHp.trunk": 30.0,
+        "name.var1": "Small Oak Tree",
+        "name.var2": "Small Oak Tree",
+        "name.var3": "Medium Oak Tree",
+        "name.var4": "Medium Oak Tree",
+        "name.var5": "Large Oak Tree",
+        "name.var6": "Large Oak Tree",
+        "name.trunk": "Oak Tree Trunk"
+    },
+    "BUSH": {
+        "maxHp": 40.0,
+        "name": "Bush"
+    },
+    "BOULDER": {
+        "maxHp.var1": 75.0,
+        "maxHp.var2": 90.0,
+        "name.var1": "Boulder",
+        "name.var2": "Coal Boulder"
+    },
+    "DYNAMIC_3D_TILE": {
+        "maxHp.DIRT": 75.0,
+        "maxHp.ROCK": 75.0,
+        "maxHp.OAKPLANKWALL": 75.0,
+        "name.DIRT": "Dirt Wall",
+        "name.ROCK": "Rock Wall",
+        "name.OAKPLANKWALL": "Oak Plank Wall"
     }
 }

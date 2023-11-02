@@ -18,7 +18,6 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
     private int variant;
     private TextureRegion texture;
-    private TextureRegion ao;
     private TextureRegion shadowMask;
     private float[] interactionPointArray;
     private TextureRegion selectionTexture;
@@ -35,7 +34,6 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
             texName += "_iron";
         }
         texture = tr(texName);
-        ao = tr("entity_boulder_ao");
         shadowMask = texture;
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
@@ -83,11 +81,6 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX - squishAnimator2D.squishX * 0.5f, finalSelectionDrawPosY,
                 selectionTexture.getRegionWidth() + squishAnimator2D.squishX, selectionTexture.getRegionHeight() + squishAnimator2D.squishY);
-
-        rc.arraySpriteBatch.end();
-
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
     }
 
     @Override
@@ -114,15 +107,14 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX - squishAnimator2D.squishX * 0.5f, finalTextureStartY);
         float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-           // rc.arraySpriteBatch.draw(ao, finalDrawPosX - 1 - squishAnimator2D.squishX * 0.5f, finalDrawPosY - 1, ao.getRegionWidth() + squishAnimator2D.squishX, ao.getRegionHeight() + squishAnimator2D.squishY);
-            rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth + squishAnimator2D.squishX, textureHeight + squishAnimator2D.squishY, shadow);
         }
     }
 

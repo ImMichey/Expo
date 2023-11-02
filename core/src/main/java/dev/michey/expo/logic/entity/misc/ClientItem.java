@@ -2,17 +2,13 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.util.EntityRemovalReason;
 
@@ -37,16 +33,13 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     private float stackX = 1.0f;
     private float stackY = 1.0f;
 
-    private TextureRegion ao;
-
     @Override
     public void onCreation() {
-        texture = ItemMapper.get().getMapping(itemId).uiRender.textureRegion;
+        texture = ItemMapper.get().getMapping(itemId).uiRender[0].useTextureRegion;
         currentScaleX = 0.75f;
         currentScaleY = 0.75f;
 
         updateTextureBounds(texture.getRegionWidth() * currentScaleX, texture.getRegionHeight() * currentScaleY, 0, 0);
-        ao = tr("item_shadow");
     }
 
     @Override

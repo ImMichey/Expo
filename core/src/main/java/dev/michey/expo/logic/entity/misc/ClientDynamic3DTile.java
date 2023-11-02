@@ -3,26 +3,19 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.ParticleSheet;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
-import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.animator.SquishAnimator2D;
 import dev.michey.expo.render.animator.SquishAnimatorAdvanced2D;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ExpoShared;
-
-import java.util.Arrays;
 
 public class ClientDynamic3DTile extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
@@ -188,14 +181,14 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         if(ServerDynamic3DTile.hasBoundingBox(layerIds, emulatingType)) {
-            Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
+            Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX - squishAnimator2D.squishX1, finalTextureStartY + squishAnimator2D.squishY1);
             float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(created, shadow);
             boolean draw = rc.verticesInBounds(vertices);
 
             if(draw) {
                 rc.useArrayBatch();
                 rc.useRegularArrayShader();
-                rc.arraySpriteBatch.drawGradient(created, textureWidth, textureHeight, shadow);
+                rc.arraySpriteBatch.drawGradient(created, textureWidth + squishAnimator2D.squishX2, textureHeight + squishAnimator2D.squishY2, shadow);
             }
         }
 

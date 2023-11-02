@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.entity.flora;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.assets.ParticleSheet;
@@ -12,8 +11,6 @@ import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ParticleBuilder;
-import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientBush extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
@@ -56,9 +53,7 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         setSelectionValues();
-
         rc.arraySpriteBatch.drawCustomVertices(texture, finalDrawPosX, finalDrawPosY, texture.getWidth(), texture.getHeight(), contactAnimator.value, contactAnimator.value);
-        rc.arraySpriteBatch.end();
     }
 
     @Override

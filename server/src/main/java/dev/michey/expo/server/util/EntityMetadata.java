@@ -18,17 +18,33 @@ public class EntityMetadata {
         return object.getFloat("maxHp");
     }
 
+    public float getMaxHealth(int variant) {
+        return object.getFloat("maxHp.var" + variant);
+    }
+
+    public String getName() {
+        return object.getString("name");
+    }
+
+    public String getName(int variant) {
+        return object.getString("name.var" + variant);
+    }
+
     public float getFloat(String key) {
         return object.getFloat(key);
     }
 
-    public LinkedList<ServerEntityType> getEntityTypes(String key) {
-        LinkedList<ServerEntityType> list = new LinkedList<>();
-        JSONArray parse = object.getJSONArray(key);
-        for(int i = 0; i < parse.length(); i++) {
-            list.add(ServerEntityType.valueOf(parse.getString(i)));
+    public LinkedList<ServerEntityType> getEntityTypes(String key, LinkedList<ServerEntityType> fallback) {
+        if(object.has(key)) {
+            LinkedList<ServerEntityType> list = new LinkedList<>();
+            JSONArray parse = object.getJSONArray(key);
+            for(int i = 0; i < parse.length(); i++) {
+                list.add(ServerEntityType.valueOf(parse.getString(i)));
+            }
+            return list;
         }
-        return list;
+
+        return fallback;
     }
 
     public int getInt(String key) {

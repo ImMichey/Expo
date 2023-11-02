@@ -137,7 +137,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         nextHungerDamageTick = 4.0f;
         nextHealthRegenTickDown = 1.0f;
 
-        knockbackCalculations.clear();
+        if(knockbackCalculations != null) knockbackCalculations.clear();
 
         ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
 
@@ -691,7 +691,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 {
                     if(digLayer == 0 && (tile.biome == BiomeType.PLAINS || tile.biome == BiomeType.FOREST || tile.biome == BiomeType.DENSE_FOREST)) {
                         // SPAWN THE WORM!
-                        if(MathUtils.random() <= 0.05f) {
+                        if(MathUtils.random() <= 0.1f) {
                             ServerWorm worm = new ServerWorm();
                             worm.posX = ExpoShared.tileToPos(tile.tileX) + 8f;
                             worm.posY = ExpoShared.tileToPos(tile.tileY) + 4f;
@@ -785,7 +785,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         ServerPackets.p19ContainerUpdate(ExpoShared.CONTAINER_ID_PLAYER, new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));
     }
 
-    private void useItemDurability(ServerInventoryItem item) {
+    public void useItemDurability(ServerInventoryItem item) {
         item.itemMetadata.durability -= 1;
         boolean itemNowBroken = item.itemMetadata.durability <= 0;
 

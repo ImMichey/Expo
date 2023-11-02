@@ -6,6 +6,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
@@ -24,6 +25,7 @@ import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.GameSettings;
@@ -391,10 +393,27 @@ public class Expo implements ApplicationListener {
 		// load item render
 		for(ItemMapping map : ItemMapper.get().getItemMappings()) {
 			map.color = Color.valueOf(map.displayNameColor);
-			map.heldRender.setTextureRegion(ExpoAssets.get().getItemSheet().get(map.heldRender.texture));
-			map.uiRender.setTextureRegion(ExpoAssets.get().getItemSheet().get(map.uiRender.texture));
-			if(map.armorRender != null) map.armorRender.setTextureRegion(ExpoAssets.get().getItemSheet().get(map.armorRender.texture));
+			for(ItemRender ir : map.heldRender) update(ir);
+			for(ItemRender ir : map.uiRender) update(ir);
+			if(map.armorRender != null) for(ItemRender ir : map.armorRender) update(ir);
 		}
+	}
+
+	private void update(ItemRender ir) {
+		if(ir.animationFrames == 0) {
+			ir.textureRegions = new TextureRegion[] {ExpoAssets.get().getItemSheet().get(ir.texture)};
+		} else {
+			ir.textureRegions = new TextureRegion[ir.animationFrames];
+
+			for(int i = 0; i < ir.animationFrames; i++) {
+				ir.textureRegions[i] = ExpoAssets.get().textureRegion(ir.texture + "_" + (i + 1));
+			}
+		}
+
+		ir.useTextureRegion = ir.textureRegions[0];
+
+		if(ir.useWidth == 0) ir.useWidth = ir.useTextureRegion.getRegionWidth() * ir.scaleX;
+		if(ir.useHeight == 0) ir.useHeight = ir.useTextureRegion.getRegionHeight() * ir.scaleY;
 	}
 
 	public boolean isPlaying() {

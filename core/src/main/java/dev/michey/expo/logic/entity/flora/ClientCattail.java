@@ -39,8 +39,8 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
         float w = 0, h = 0;
 
         if(variant == 1 || variant == 2) {
-            w = 17;
-            h = 24;
+            w = 19;
+            h = 26;
         } else if(variant == 3 || variant == 4) {
             w = 14;
             h = 18;

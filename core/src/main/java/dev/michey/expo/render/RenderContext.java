@@ -2,7 +2,10 @@ package dev.michey.expo.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -10,13 +13,16 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.render.arraybatch.ArrayTextureSpriteBatch;
 import dev.michey.expo.render.camera.ExpoCamera;
 import dev.michey.expo.render.light.ExpoLightEngine;
+import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
@@ -395,6 +401,60 @@ public class RenderContext {
         drawEndY = InputUtils.getMouseWorldY(Gdx.graphics.getHeight());
 
         mouseDirection = mouseX < (Gdx.graphics.getWidth() * 0.5f) ? 0 : 1;
+
+        for(ItemRender ir : ItemMapper.get().getDynamicAnimationList()) {
+            TextureRegion old = ir.useTextureRegion;
+
+            ir.animationDelta += delta;
+            float totalDuration = ir.animationFrames * ir.animationSpeed;
+            ir.animationDelta %= totalDuration;
+            int index = (int) (ir.animationDelta / ir.animationSpeed);
+            ir.useTextureRegion = ir.textureRegions[index];
+
+            ir.updatedAnimation = old != ir.useTextureRegion;
+        }
+    }
+
+    public void drawItemTexturesWithNumber(ItemRender[] itemRenders, float x, float y, float tileW, float tileH, int amount) {
+        PlayerUI ui = PlayerUI.get();
+
+        float ox = (tileW - itemRenders[0].useWidth) * 0.5f * ui.uiScale;
+        float oy = (tileH - itemRenders[0].useHeight) * 0.5f * ui.uiScale;
+
+        for(ItemRender ir : itemRenders) {
+            TextureRegion tr = ir.useTextureRegion;
+            float centeredTextureX = ((tileW - ir.useWidth) * 0.5f * ui.uiScale);
+            float centeredTextureY = ((tileH - ir.useHeight) * 0.5f * ui.uiScale);
+
+            hudBatch.draw(tr, x + centeredTextureX + ir.offsetX * ui.uiScale * ir.scaleX, y + centeredTextureY + ir.offsetY * ui.uiScale * ir.scaleY, tr.getRegionWidth() * ir.scaleX * ui.uiScale, tr.getRegionHeight() * ir.scaleY * ui.uiScale);
+        }
+
+        String amountAsText = String.valueOf(amount);
+
+        ui.glyphLayout.setText(m5x7_shadow_use, amountAsText);
+        float aw = ui.glyphLayout.width;
+        float ah = ui.glyphLayout.height;
+
+        float dw = itemRenders[0].useTextureRegion.getRegionWidth() * itemRenders[0].scaleX * ui.uiScale;
+        float dh = itemRenders[0].useTextureRegion.getRegionHeight() * itemRenders[0].scaleY * ui.uiScale;
+
+        float artificialEx = x + (ui.slotW - dw) * 0.5f - ox;
+        float artificialBy = y - (ui.slotH - dh) * 0.5f + oy;
+
+        m5x7_shadow_use.draw(hudBatch, amountAsText, artificialEx - 1 * ui.uiScale - aw, artificialBy + ah + 1 * ui.uiScale);
+    }
+
+    public void drawItemTextures(ItemRender[] itemRenders, float x, float y, float tileW, float tileH) {
+        PlayerUI ui = PlayerUI.get();
+
+        for(ItemRender ir : itemRenders) {
+            TextureRegion tr = ir.useTextureRegion;
+            float centeredTextureX = (tileW - ir.useWidth) * 0.5f * ui.uiScale;
+            float centeredTextureY = (tileH - ir.useHeight) * 0.5f * ui.uiScale;
+
+            hudBatch.draw(tr, x + centeredTextureX + ir.offsetX * ui.uiScale * ir.scaleX, y + centeredTextureY + ir.offsetY * ui.uiScale * ir.scaleY,
+                    tr.getRegionWidth() * ir.scaleX * ui.uiScale, tr.getRegionHeight() * ir.scaleY * ui.uiScale);
+        }
     }
 
     public void reset() {
@@ -520,6 +580,12 @@ public class RenderContext {
 
     public void takeScreenshot() {
         queueScreenshot = true;
+    }
+
+    public void toggleVsync() {
+        boolean current = GameSettings.get().vsync;
+        Gdx.graphics.setVSync(!current);
+        GameSettings.get().vsync = !current;
     }
 
     public void toggleFullscreen() {

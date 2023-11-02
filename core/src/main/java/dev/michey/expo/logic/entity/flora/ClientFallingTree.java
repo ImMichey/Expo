@@ -1,15 +1,14 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.animator.SquishAnimator2D;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
@@ -42,6 +41,8 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
     private final float[] adjustmentValues = new float[6];
     public int wakeupId;
+
+    public SquishAnimator2D inheritedSquishAnimator;
 
     @Override
     public void onCreation() {
@@ -88,7 +89,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
                     .amount(32, 64)
                     .scale(0.6f, 1.1f)
                     .lifetime(0.6f, 2.5f)
-                    .position(clientPosX + (20 * dir), clientPosY - 12)
+                    .position(clientPosX + ((20 + leavesDisplacement) * dir), clientPosY - 12)
                     .offset(reach * dir, 0)
                     .velocity(-32, 32, 24, 80)
                     .fadeout(0.25f)
@@ -139,16 +140,19 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         float interpolated = Interpolation.exp10In.apply(animationDelta / PHASE_TOTAL_DURATION);
         rotation = (MAX_ROTATION) * negation * interpolated;
 
-        rc.arraySpriteBatch.draw(treeTrunk, finalDrawPosX + adjustmentValues[0], finalDrawPosY - 22 - adjustmentValues[1], treeTrunk.getRegionWidth() * 0.5f, 0,
-                treeTrunk.getRegionWidth(), treeTrunk.getRegionHeight(), 1.0f, -1.0f, -rotation);
+        float isaX = inheritedSquishAnimator.squishX;
+        float isaY = inheritedSquishAnimator.squishY;
+
+        rc.arraySpriteBatch.draw(treeTrunk, finalDrawPosX + adjustmentValues[0] - isaX * 0.5f, finalDrawPosY - 22 - adjustmentValues[1], treeTrunk.getRegionWidth() * 0.5f, 0,
+                treeTrunk.getRegionWidth() + isaX, treeTrunk.getRegionHeight() + isaY, 1.0f, -1.0f, -rotation);
 
         rc.arraySpriteBatch.setColor(1.0f - colorDisplacement, 1.0f, 1.0f - colorDisplacement, transparency);
 
         rc.arraySpriteBatch.drawCustomVertices(treeLeaves,
-                finalDrawPosX + adjustmentValues[2] - adjustmentValues[5] * adjustmentValues[3],
+                finalDrawPosX + adjustmentValues[2] - adjustmentValues[5] * adjustmentValues[3] - isaX * 0.5f,
                 finalDrawPosY - 22 - adjustmentValues[4] * adjustmentValues[3],
                 treeLeaves.getRegionWidth() * 0.5f, 0,
-                treeLeaves.getRegionWidth(), treeLeaves.getRegionHeight(), 1.0f, -1.0f, -rotation, windDisplacement, windDisplacement);
+                treeLeaves.getRegionWidth() + isaX, treeLeaves.getRegionHeight() + isaY, 1.0f, -1.0f, -rotation, windDisplacement, windDisplacement);
 
         rc.arraySpriteBatch.setColor(Color.WHITE);
     }
@@ -166,16 +170,19 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         float interpolated = Interpolation.exp10In.apply(animationDelta / PHASE_TOTAL_DURATION);
         rotation = (MAX_ROTATION) * negation * interpolated;
 
-        rc.arraySpriteBatch.draw(treeTrunk, finalDrawPosX + adjustmentValues[0], finalDrawPosY + adjustmentValues[1], treeTrunk.getRegionWidth() * 0.5f, 0,
-                treeTrunk.getRegionWidth(), treeTrunk.getRegionHeight(), 1.0f, 1.0f, rotation);
+        float isaX = inheritedSquishAnimator.squishX;
+        float isaY = inheritedSquishAnimator.squishY;
+
+        rc.arraySpriteBatch.draw(treeTrunk, finalDrawPosX + adjustmentValues[0] - isaX * 0.5f, finalDrawPosY + adjustmentValues[1], treeTrunk.getRegionWidth() * 0.5f, 0,
+                treeTrunk.getRegionWidth() + isaX, treeTrunk.getRegionHeight() + isaY, 1.0f, 1.0f, rotation);
 
         rc.arraySpriteBatch.setColor(1.0f - colorDisplacement, 1.0f, 1.0f - colorDisplacement, transparency);
 
         rc.arraySpriteBatch.drawCustomVertices(treeLeaves,
-                finalDrawPosX + adjustmentValues[2] - adjustmentValues[5] * adjustmentValues[3],
+                finalDrawPosX + adjustmentValues[2] - adjustmentValues[5] * adjustmentValues[3] - isaX * 0.5f,
                 finalDrawPosY + adjustmentValues[4] * adjustmentValues[3],
                 treeLeaves.getRegionWidth() * 0.5f, 0,
-                treeLeaves.getRegionWidth(), treeLeaves.getRegionHeight(), 1.0f, 1.0f, rotation, windDisplacement, windDisplacement);
+                treeLeaves.getRegionWidth() + isaX, treeLeaves.getRegionHeight() + isaY, 1.0f, 1.0f, rotation, windDisplacement, windDisplacement);
 
         rc.arraySpriteBatch.setColor(Color.WHITE);
     }
@@ -251,7 +258,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         {
             // Trunk
             float b = 1f - trunkDistanceFromGround * fraction;
-            float t = b - treeTrunk.getRegionHeight() * fraction;
+            float t = 1f - (treeTrunk.getRegionHeight() + trunkDistanceFromGround) * fraction;
             float bc = new Color(0, 0, 0, b).toFloatBits();
             float tc = new Color(0, 0, 0, t).toFloatBits();
 
@@ -260,7 +267,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
         {
             // Leaves
-            float b = 0f + treeLeaves.getRegionHeight() * fraction;
+            float b = 0f + ClientOakTree.MATRIX[variant - 1][1] * fraction;
             float t = 0f;
             float bc = new Color(0, 0, 0, b).toFloatBits();
             float tc = new Color(0, 0, 0, t).toFloatBits();

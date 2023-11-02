@@ -14,10 +14,10 @@ import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.logic.entity.arch.ClientEntityManager;
-import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
@@ -32,11 +32,15 @@ import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.TeleportReason;
-import dev.michey.expo.util.*;
+import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.GameSettings;
+import dev.michey.expo.util.PacketUtils;
 
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
@@ -128,18 +132,18 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     /** Player item */
     public int holdingItemId = -1;
-    public Sprite holdingItemSprite = null;
+    public Sprite[] holdingItemSprites = null;
 
     public int holdingArmorHeadId = -1;
-    public TextureRegion holdingArmorHeadTexture;
+    public ItemRender[] holdingHeadRender;
     public int holdingArmorChestId = -1;
-    public TextureRegion holdingArmorChestTexture;
+    public ItemRender[] holdingChestRender;
     public int holdingArmorGlovesId = -1;
-    public TextureRegion holdingArmorGlovesTexture;
+    public ItemRender[] holdingGlovesRender;
     public int holdingArmorLegsId = -1;
-    public TextureRegion holdingArmorLegsTexture;
+    public ItemRender[] holdingLegsRender;
     public int holdingArmorFeetId = -1;
-    public TextureRegion holdingArmorFeetTexture;
+    public ItemRender[] holdingFeetRender;
 
     private static final Vector2 NULL_ROTATION_VECTOR = GenerationUtils.circular(0, 1);
 
@@ -520,7 +524,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         if(draw_tex_base == null) return;
         boolean drawLooseArm = holdingItemId != -1;
 
-        drawHeldItemReflection(rc, false);
+        // drawHeldItemReflection(rc, false);
 
         if(punchAnimation || drawLooseArm) {
             float x = finalDrawPosX + (direction() == 1 ? 8 : 0);
@@ -549,13 +553,24 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL, finalDrawPosY - offsetY, draw_tex_arm_left.getRegionWidth(), draw_tex_arm_left.getRegionHeight() * -1);
         }
 
-        drawHeldItemReflection(rc, true);
+        // drawHeldItemReflection(rc, true);
     }
 
     @Override
     public void render(RenderContext rc, float delta) {
         updateDepth();
         float interpolatedBlink = tickBlink(delta, 7.5f);
+
+        if(holdingItemSprites != null && holdingItemId != -1) {
+            ItemRender[] ir = ItemMapper.get().getMapping(holdingItemId).heldRender;
+
+            for(ItemRender irr : ir) {
+                if(irr.updatedAnimation) {
+                    updateHoldingItemSprite();
+                    break;
+                }
+            }
+        }
 
         { // Updating breathe + blink
             playerBlinkDelta += delta;
@@ -598,11 +613,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 tex_arm_right.flip(true, false);
                 tex_punch_arm.flip(true, false);
 
-                if(holdingArmorHeadTexture != null) holdingArmorHeadTexture.flip(true, false);
-                if(holdingArmorChestTexture != null) holdingArmorChestTexture.flip(true, false);
-                if(holdingArmorGlovesTexture != null) holdingArmorGlovesTexture.flip(true, false);
-                if(holdingArmorLegsTexture != null) holdingArmorLegsTexture.flip(true, false);
-                if(holdingArmorFeetTexture != null) holdingArmorFeetTexture.flip(true, false);
+                if(holdingHeadRender != null) for(ItemRender ir : holdingHeadRender) ir.flip();
+                if(holdingChestRender != null) for(ItemRender ir : holdingChestRender) ir.flip();
+                if(holdingGlovesRender != null) for(ItemRender ir : holdingGlovesRender) ir.flip();
+                if(holdingLegsRender != null) for(ItemRender ir : holdingLegsRender) ir.flip();
+                if(holdingFeetRender != null) for(ItemRender ir : holdingFeetRender) ir.flip();
 
                 for(TextureRegion tex : textures_walk) {
                     tex.flip(true, false);
@@ -664,9 +679,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         draw_tex_arm_right = punchAnimation ? tex_punch_arm : tex_arm_right;
 
-        // Draw player username
-        //rc.m5x7_bordered.draw(rc.currentBatch, username, clientPosX - 12, clientPosY + 48);
-
         if(moving) {
             offsetY = offset_arm_walk_right[playerWalkIndex];
         } else {
@@ -681,7 +693,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             offsetXR = 0;
         }
 
-        //rc.useRegularBatch();
         chooseArrayBatch(rc, interpolatedBlink);
         rc.useArrayBatch();
 
@@ -716,9 +727,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
 
             if(holdingArmorHeadId != -1) {
-                ItemMapping map = ItemMapper.get().getMapping(holdingArmorHeadId);
                 int dir = punchAnimation ? punchDirection : playerDirection;
-                rc.arraySpriteBatch.draw(holdingArmorHeadTexture, finalDrawPosX + (dir == 1 ? 0 : -1) + map.armorRender.offsetX, finalDrawPosY + 13 + offsetY + map.armorRender.offsetY);
+
+                for(ItemRender ir : holdingHeadRender) {
+                    rc.arraySpriteBatch.draw(ir.useTextureRegion, finalDrawPosX + (dir == 1 ? 0 : -1) + ir.offsetX, finalDrawPosY + 13 + offsetY + ir.offsetY);
+                }
             }
 
             drawHeldItem(rc, true);
@@ -732,7 +745,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         rc.useRegularArrayShader();
 
-        if(!player) drawHealthBar(rc, playerHealth / 100f, 24);
+        if(!player) drawHealthBar(rc, playerHealth / 100f, 24, "");
     }
 
     @Override
@@ -777,6 +790,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
             float n = 1f / draw_tex_shadow_base.getRegionHeight();
 
+            /*
             { // Armor shadow
                 if(holdingArmorHeadId != -1) {
                     float t = 0f;
@@ -792,7 +806,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
 
             { // Item shadow
-                if(holdingItemId != -1 && holdingItemSprite != null) {
+                if(holdingItemId != -1 && holdingItemSprites != null) {
                     // position
                     ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
                     int dirCheck = direction();
@@ -858,6 +872,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                             bottomColor);
                 }
             }
+            */
 
             { // Left arm
                 float t = 0f + n * 9;
@@ -927,6 +942,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
     }
 
+    /*
     private void drawHeldItemReflection(RenderContext rc, boolean postArm) {
         if(holdingItemId != -1 && holdingItemSprite != null) {
             ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
@@ -1005,82 +1021,93 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
         }
     }
+    */
 
     private void drawHeldItem(RenderContext rc, boolean postArm) {
-        if(holdingItemId != -1 && holdingItemSprite != null) {
+        if(holdingItemId != -1 && holdingItemSprites != null) {
             ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
 
-            if((map.heldRender.renderPriority && postArm) || (!map.heldRender.renderPriority && !postArm)) {
-                // rotation
-                if(punchAnimation) {
-                    if(punchDirection == 0) { // left
-                        holdingItemSprite.setRotation(currentPunchAngle + 90f - map.heldRender.rotations[0]);
-                    } else { // right
-                        holdingItemSprite.setRotation(currentPunchAngle + map.heldRender.rotations[1]);
-                    }
+            for(int i = 0; i < holdingItemSprites.length; i++) {
+                Sprite holdingItemSprite = holdingItemSprites[i];
+                ItemRender ir = map.heldRender[i];
 
-                    if(map.heldRender.requiresFlip) {
-                        if(punchDirection == 0) {
-                            if(!holdingItemSprite.isFlipX()) {
-                                holdingItemSprite.flip(true, false);
+                if((postArm && ir.renderPriority) || (!postArm && !ir.renderPriority)) {
+                    if(punchAnimation) {
+                        if(!ir.rotationLock) {
+                            if(punchDirection == 0) { // left
+                                holdingItemSprite.setRotation(currentPunchAngle + 90f - ir.rotations[0]);
+                            } else { // right
+                                holdingItemSprite.setRotation(currentPunchAngle + ir.rotations[1]);
                             }
-                        } else {
-                            if(holdingItemSprite.isFlipX()) {
-                                holdingItemSprite.flip(true, false);
+                        }
+
+                        if(ir.requiresFlip) {
+                            if(punchDirection == 0) {
+                                if(!holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
+                            } else {
+                                if(holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
+                            }
+                        }
+                    } else {
+                        float desiredAngle = 0;
+                        if(holdingItemId != -1) desiredAngle += getFinalArmRotation();
+
+                        desiredAngle += (playerDirection == 0 ? (90f - ir.rotations[0]) : (ir.rotations[1]));
+
+                        if(holdingItemSprite.getRotation() != desiredAngle && !ir.rotationLock) {
+                            holdingItemSprite.setRotation(desiredAngle);
+                        }
+
+                        if(ir.requiresFlip) {
+                            if(playerDirection == 0) {
+                                if(!holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
+                            } else {
+                                if(holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
                             }
                         }
                     }
-                } else {
-                    float desiredAngle = 0;
-                    if(holdingItemId != -1) desiredAngle += getFinalArmRotation();
 
-                    desiredAngle += (playerDirection == 0 ? (90f - map.heldRender.rotations[0]) : (map.heldRender.rotations[1]));
+                    // position
+                    int dirCheck = direction();
+                    Vector2 v;
 
-                    if(holdingItemSprite.getRotation() != desiredAngle) {
-                        holdingItemSprite.setRotation(desiredAngle);
+                    if(punchAnimation || (holdingItemId != -1)) {
+                        v = GenerationUtils.circular(getFinalArmRotation(), 1);
+                    } else {
+                        v = NULL_ROTATION_VECTOR;
                     }
 
-                    if(map.heldRender.requiresFlip) {
-                        if(playerDirection == 0) {
-                            if(!holdingItemSprite.isFlipX()) {
-                                holdingItemSprite.flip(true, false);
-                            }
-                        } else {
-                            if(holdingItemSprite.isFlipX()) {
-                                holdingItemSprite.flip(true, false);
-                            }
-                        }
+                    float xshift = dirCheck == 0 ? 1 : 9;
+                    float armHeight = 9;
+                    float ox = ir.offsetX * ir.scaleX;
+                    float oy = ir.offsetY * ir.scaleY;
+                    float inverse = dirCheck == 0 ? -1 : 1;
+
+                    // rotation fix
+                    float w = ir.useTextureRegion.getRegionWidth();
+                    float h = ir.useTextureRegion.getRegionHeight();
+                    float rfx = w * 0.5f;
+                    float rfy = h * 0.5f;
+
+                    if(ir.rotationLock) {
+
                     }
+
+                    holdingItemSprite.setPosition(
+                            finalDrawPosX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
+                            finalDrawPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
+                    );
+
+                    holdingItemSprite.draw(rc.arraySpriteBatch);
                 }
-
-                // position
-                int dirCheck = direction();
-                Vector2 v;
-
-                if(punchAnimation || (holdingItemId != -1)) {
-                    v = GenerationUtils.circular(getFinalArmRotation(), 1);
-                } else {
-                    v = NULL_ROTATION_VECTOR;
-                }
-
-                float xshift = dirCheck == 0 ? 1 : 9;
-                float armHeight = 9;
-                float ox = map.heldRender.offsetX * map.heldRender.scaleX;
-                float oy = map.heldRender.offsetY * map.heldRender.scaleY;
-                float inverse = dirCheck == 0 ? -1 : 1;
-
-                // rotation fix
-                float w = map.heldRender.textureRegion.getRegionWidth();
-                float h = map.heldRender.textureRegion.getRegionHeight();
-                float rfx = w * 0.5f;
-                float rfy = h * 0.5f;
-
-                holdingItemSprite.setPosition(
-                        finalDrawPosX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
-                        finalDrawPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
-                );
-
-                holdingItemSprite.draw(rc.arraySpriteBatch);
             }
         }
     }
@@ -1107,13 +1134,16 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public void updateHoldingItemSprite() {
         if(holdingItemId == -1) return;
         ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
-        holdingItemSprite = new Sprite(mapping.heldRender.textureRegion);
-        holdingItemSprite.setPosition(finalDrawPosX, finalDrawPosY);
-        holdingItemSprite.setScale(mapping.heldRender.scaleX, mapping.heldRender.scaleY);
-        holdingItemSprite.setOrigin(
-                holdingItemSprite.getWidth() * 0.5f,
-                holdingItemSprite.getHeight() * 0.5f
-        );
+
+        holdingItemSprites = new Sprite[mapping.heldRender.length];
+
+        for(int i = 0; i < holdingItemSprites.length; i++) {
+            Sprite s = new Sprite(mapping.heldRender[i].useTextureRegion);
+            s.setPosition(finalDrawPosX, finalDrawPosY);
+            s.setScale(mapping.heldRender[i].scaleX, mapping.heldRender[i].scaleY);
+            s.setOrigin(s.getWidth() * 0.5f, s.getHeight() * 0.5f);
+            holdingItemSprites[i] = s;
+        }
     }
 
     public float toMouthX() {

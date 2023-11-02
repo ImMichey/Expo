@@ -1,4 +1,4 @@
-package dev.michey.expo.server.main.logic.inventory.item.mapping.client;
+package dev.michey.expo.server.main.logic.inventory.item.mapping;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import org.json.JSONArray;
@@ -7,7 +7,10 @@ import org.json.JSONObject;
 public class ItemRender {
 
     public String texture;
-    public TextureRegion textureRegion = null; // will be grabbed by client instance
+    public TextureRegion[] textureRegions = null; // will be grabbed by client instance
+    public TextureRegion useTextureRegion = null;
+    public float useWidth;
+    public float useHeight;
 
     // optional
     public float scaleX;
@@ -15,11 +18,25 @@ public class ItemRender {
     public float offsetX;
     public float offsetY;
     public float[] rotations;
+    public boolean rotationLock;
     public boolean renderPriority;
     public boolean requiresFlip;
+    public float animationSpeed;
+    public int animationFrames;
+    public float animationDelta;
+    public boolean updatedAnimation;
 
     public ItemRender(JSONObject object) {
         texture = object.getString("texture");
+
+        if(object.has("frames")) {
+            animationFrames = object.getInt("frames");
+        }
+
+        if(object.has("animationSpeed")) {
+            animationSpeed = object.getFloat("animationSpeed");
+        }
+
         if(object.has("scaleX") && object.has("scaleY")) {
             scaleX = object.getFloat("scaleX");
             scaleY = object.getFloat("scaleY");
@@ -27,10 +44,26 @@ public class ItemRender {
             scaleX = 1.0f;
             scaleY = 1.0f;
         }
+
+        if(object.has("rotationLock")) {
+            rotationLock = object.getBoolean("rotationLock");
+        } else {
+            rotationLock = false;
+        }
+
         if(object.has("offsetX") && object.has("offsetY")) {
             offsetX = object.getFloat("offsetX");
             offsetY = object.getFloat("offsetY");
         }
+
+        if(object.has("useWidth")) {
+            useWidth = object.getFloat("useWidth");
+        }
+
+        if(object.has("useHeight")) {
+            useHeight = object.getFloat("useHeight");
+        }
+
         if(object.has("rotation")) {
             float r = object.getFloat("rotation");
             rotations = new float[] {r, r};
@@ -43,9 +76,11 @@ public class ItemRender {
         } else {
             rotations = new float[] {0, 0};
         }
+
         if(object.has("renderPriority")) {
             renderPriority = object.getBoolean("renderPriority");
         }
+
         if(object.has("requiresFlip")) {
             requiresFlip = object.getBoolean("requiresFlip");
         } else {
@@ -53,8 +88,8 @@ public class ItemRender {
         }
     }
 
-    public void setTextureRegion(TextureRegion region) {
-        this.textureRegion = region;
+    public void flip() {
+        for(TextureRegion t : textureRegions) t.flip(true, false);
     }
 
 }

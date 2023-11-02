@@ -251,7 +251,11 @@ public class AudioEngine {
         }
 
         if(volume <= 0.0f) {
-            killSound(ambienceTrackMap.get(groupName).id);
+            var retrieve = ambienceTrackMap.get(groupName);
+
+            if(retrieve != null) {
+                killSound(retrieve.id);
+            }
         } else {
             // Update base volume.
             ambienceTrackMap.get(groupName).baseVolume = volume;

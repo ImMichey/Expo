@@ -1,13 +1,11 @@
 package dev.michey.expo.server.main.logic.entity.flora;
 
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
-import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
 public class ServerLilypad extends ServerEntity {
@@ -31,9 +29,11 @@ public class ServerLilypad extends ServerEntity {
 
     @Override
     public void onDie() {
+        /*
         spawnItemsAround(0, 5.5f, 6, 10,
                 new SpawnItem("item_wheat", 1, 2))
         ;
+        */
     }
 
     @Override

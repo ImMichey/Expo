@@ -1,12 +1,13 @@
 package dev.michey.expo.server.main.logic.ai.entity;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.logic.ai.AIConstants;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.util.EntityMetadata;
 
 import java.util.List;
+
+import static dev.michey.expo.server.main.logic.ai.entity.BrainModuleIdleHostile.SEEK_PLAYER;
 
 public class BrainModuleStrollHostile extends BrainModuleStroll {
 
@@ -20,7 +21,7 @@ public class BrainModuleStrollHostile extends BrainModuleStroll {
         super.init();
 
         EntityMetadata meta = getBrain().getEntity().getMetadata();
-        seek = meta.getEntityTypes("ai.seekTargets");
+        seek = meta.getEntityTypes("ai.seekTargets", SEEK_PLAYER);
         seekDistance = meta.getFloat("ai.strollSeekDistance");
     }
 

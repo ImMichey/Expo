@@ -2,13 +2,10 @@ package dev.michey.expo.server.main.logic.inventory.item.mapping;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -18,10 +15,12 @@ public class ItemMapper {
 
     private final HashMap<String, ItemMapping> itemMappings;
     private final HashMap<Integer, ItemMapping> itemMappingsId;
+    private final List<ItemRender> dynamicAnimationList;
 
     public ItemMapper(boolean client, boolean reload) {
         itemMappings = new HashMap<>();
         itemMappingsId = new HashMap<>();
+        dynamicAnimationList = new LinkedList<>();
 
         FileHandle fh = reload ? Gdx.files.absolute("C:\\IDEAProjects\\Expo\\assets_shared\\items.json") : Gdx.files.internal("items.json");
         JSONArray db = new JSONObject(fh.readString()).getJSONArray("database");
@@ -36,9 +35,9 @@ public class ItemMapper {
             int id = entry.getInt("id");
 
             ItemLogic logic = new ItemLogic(entry.getJSONObject("logic"));
-            ItemRender uiRender;
-            ItemRender heldRender;
-            ItemRender armorRender;
+            ItemRender[] uiRender;
+            ItemRender[] heldRender;
+            ItemRender[] armorRender;
 
             if(!client) {
                 // it's a dedicated server with no client presence, skip ItemRender
@@ -46,16 +45,18 @@ public class ItemMapper {
                 heldRender = null;
                 armorRender = null;
             } else {
-                if(entry.getJSONObject("render").has("universal")) {
-                    JSONObject universal = entry.getJSONObject("render").getJSONObject("universal");
-                    uiRender = new ItemRender(universal);
-                    heldRender = new ItemRender(universal);
-                    armorRender = new ItemRender(universal);
+                JSONObject renderData = entry.getJSONObject("render");
+
+                if(renderData.has("universal")) {
+                    ItemRender[] ir = convertToRenderArray(renderData.get("universal"));
+                    uiRender = ir;
+                    heldRender = ir;
+                    armorRender = ir;
                 } else {
-                    uiRender = new ItemRender(entry.getJSONObject("render").getJSONObject("ui"));
-                    heldRender = new ItemRender(entry.getJSONObject("render").getJSONObject("held"));
-                    if(entry.getJSONObject("render").has("armor")) {
-                        armorRender = new ItemRender(entry.getJSONObject("render").getJSONObject("armor"));
+                    uiRender = convertToRenderArray(renderData.get("ui"));
+                    heldRender = convertToRenderArray(renderData.get("held"));
+                    if(renderData.has("armor")) {
+                        armorRender = convertToRenderArray(renderData.get("armor"));
                     } else {
                         armorRender = null;
                     }
@@ -65,14 +66,58 @@ public class ItemMapper {
             ItemMapping mapping = new ItemMapping(identifier, id, displayName, displayNameColor, uiRender, heldRender, armorRender, logic);
             itemMappings.put(identifier, mapping);
             itemMappingsId.put(id, mapping);
+
+            if(uiRender != null) {
+                for(ItemRender ir : uiRender) {
+                    if(ir.animationFrames > 0) {
+                        dynamicAnimationList.add(ir);
+                    }
+                }
+            }
+            if(heldRender != null) {
+                for(ItemRender ir : heldRender) {
+                    if(ir.animationFrames > 0) {
+                        dynamicAnimationList.add(ir);
+                    }
+                }
+            }
+            if(armorRender != null) {
+                for(ItemRender ir : armorRender) {
+                    if(ir.animationFrames > 0) {
+                        dynamicAnimationList.add(ir);
+                    }
+                }
+            }
         }
 
         log("Added " + itemMappings.size() + " item mappings.");
         INSTANCE = this;
     }
 
+    private ItemRender[] convertToRenderArray(Object object) {
+        ItemRender[] ir;
+
+        if(object instanceof JSONArray ja) {
+            ir = new ItemRender[ja.length()];
+
+            for(int j = 0; j < ja.length(); j++) {
+                JSONObject _o = ja.getJSONObject(j);
+                ir[j] = new ItemRender(_o);
+            }
+        } else {
+            ItemRender universalRender = new ItemRender((JSONObject) object);
+            ir = new ItemRender[] {universalRender};
+        }
+
+        return ir;
+    }
+
     public ItemMapping randomMapping() {
         return itemMappingsId.values().stream().skip(new Random().nextInt(itemMappings.size())).findFirst().orElse(null);
+    }
+
+    public List<ItemRender> getDynamicAnimationList() {
+        return dynamicAnimationList;
     }
 
     public Collection<ItemMapping> getItemMappings() {

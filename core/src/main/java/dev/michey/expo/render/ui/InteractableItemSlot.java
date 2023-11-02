@@ -2,15 +2,14 @@ package dev.michey.expo.render.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
+import dev.michey.expo.logic.inventory.ClientInventorySlot;
+import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
-import dev.michey.expo.logic.inventory.ClientInventorySlot;
-import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 
@@ -38,21 +37,26 @@ public class InteractableItemSlot extends InteractableUIElement {
         if(slot.item != null && !slot.item.isEmpty()) {
             PlayerUI parent = PlayerUI.get();
             ItemMapping mapping = ItemMapper.get().getMapping(slot.item.itemId);
-            ItemRender render = mapping.uiRender;
-            TextureRegion draw = render.textureRegion;
 
             RenderContext r = RenderContext.get();
-
-            float dw = draw.getRegionWidth() * render.scaleX * parent.uiScale;
-            float dh = draw.getRegionHeight() * render.scaleY * parent.uiScale;
-
-            float _x = this.x + (parent.slotW - dw) * 0.5f;
-            float _y = this.y + (parent.slotH - dh) * 0.5f;
-
             r.hudBatch.setColor(0f, 0f, 0f, 0.125f);
-            r.hudBatch.draw(draw, _x + parent.uiScale, _y - parent.uiScale * 2, dw, dh);
+
+            for(ItemRender ir : mapping.uiRender) {
+                // Draw background...
+                float _x = this.x + (parent.slotW - ir.useWidth * parent.uiScale) * 0.5f;
+                float _y = this.y + (parent.slotH - ir.useHeight * parent.uiScale) * 0.5f;
+                r.hudBatch.draw(ir.useTextureRegion, _x + parent.uiScale + parent.uiScale * ir.offsetX, _y - parent.uiScale * 2 + parent.uiScale * ir.offsetY,
+                        ir.useTextureRegion.getRegionWidth() * parent.uiScale, ir.useTextureRegion.getRegionHeight() * parent.uiScale);
+            }
+
             r.hudBatch.setColor(Color.WHITE);
-            r.hudBatch.draw(draw, _x, _y, dw, dh);
+            for(ItemRender ir : mapping.uiRender) {
+                // Draw background...
+                float _x = this.x + (parent.slotW - ir.useWidth * parent.uiScale) * 0.5f;
+                float _y = this.y + (parent.slotH - ir.useHeight * parent.uiScale) * 0.5f;
+                r.hudBatch.draw(ir.useTextureRegion, _x + parent.uiScale * ir.offsetX, _y + parent.uiScale * ir.offsetY,
+                        ir.useTextureRegion.getRegionWidth() * parent.uiScale, ir.useTextureRegion.getRegionHeight() * parent.uiScale);
+            }
 
             if(mapping.logic.maxStackSize > 1) {
                 int amount = slot.item.itemAmount;

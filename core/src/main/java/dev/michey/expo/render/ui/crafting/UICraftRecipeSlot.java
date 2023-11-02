@@ -3,10 +3,8 @@ package dev.michey.expo.render.ui.crafting;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
-import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
@@ -14,6 +12,7 @@ import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
@@ -23,7 +22,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
     private final UIContainerInventory parentContainer;
 
     private CraftingRecipe holdingRecipe;
-    private TextureRegion drawItemPreview;
+    private ItemRender[] drawItemPreview;
 
     public UICraftRecipeSlot(UIContainerInventory parentContainer) {
         super(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_RECIPE_BASE,
@@ -34,7 +33,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
 
     public void setHoldingRecipe(CraftingRecipe recipe) {
         this.holdingRecipe = recipe;
-        if(recipe != null) drawItemPreview = ItemMapper.get().getMapping(recipe.outputId).uiRender.textureRegion;
+        if(recipe != null) drawItemPreview = ItemMapper.get().getMapping(recipe.outputId).uiRender;
     }
 
     @Override
@@ -105,12 +104,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
             boolean hasIngredient = ClientPlayer.getLocalPlayer().playerInventory.hasItem(id, am);
 
             ItemMapping m = ItemMapper.get().getMapping(id);
-            TextureRegion ingredientTexture = m.uiRender.textureRegion;
-
-            float centeredTextureX = (24 - ingredientTexture.getRegionWidth()) * 0.5f * ui.uiScale;
-            float centeredTextureY = (24 - ingredientTexture.getRegionHeight()) * 0.5f * ui.uiScale;
-
-            rc.hudBatch.draw(ingredientTexture, _cx + centeredTextureX, _cy + _coy + centeredTextureY, ingredientTexture.getRegionWidth() * ui.uiScale, ingredientTexture.getRegionHeight() * ui.uiScale);
+            rc.drawItemTextures(m.uiRender, _cx, _cy + _coy, 24, 24);
 
             String ingredientText = am + "x " + m.displayName;
             ui.glyphLayout.setText(rc.m5x7_use, ingredientText);
@@ -150,11 +144,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
             RenderContext r = RenderContext.get();
             PlayerUI ui = PlayerUI.get();
 
-            float iw = drawItemPreview.getRegionWidth() * ui.uiScale;
-            float ih = drawItemPreview.getRegionHeight() * ui.uiScale;
-            float _x = this.x + (ui.slotW - iw) * 0.5f;
-            float _y = this.y + (ui.slotH - ih) * 0.5f;
-            r.hudBatch.draw(drawItemPreview, _x, _y, iw, ih);
+            r.drawItemTextures(drawItemPreview, this.x, this.y, ui.slotW / ui.uiScale, ui.slotH / ui.uiScale);
 
             int amount = holdingRecipe.outputAmount;
             String amountAsText = String.valueOf(amount);

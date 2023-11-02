@@ -1,6 +1,7 @@
 package dev.michey.expo.util;
 
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.render.RenderContext;
 
 public class ParticleEmitter {
 
@@ -18,6 +19,7 @@ public class ParticleEmitter {
 
     public void tick(float delta) {
         if(!GameSettings.get().enableParticles) return;
+        if(RenderContext.get().expoCamera.camera.zoom >= 1f) return;
         spawnNextDelta -= delta;
 
         if(spawnNextDelta <= 0) {

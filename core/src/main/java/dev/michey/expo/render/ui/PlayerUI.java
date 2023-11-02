@@ -9,9 +9,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.chat.ExpoClientChat;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -21,24 +19,18 @@ import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.ClientInventorySlot;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.render.ui.container.UIContainer;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
-import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
-import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
-import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.client.ItemRender;
-import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.util.EntityMetadataMapper;
-import dev.michey.expo.util.*;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
+import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.ClientUtils;
+import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.weather.Weather;
 
 import java.util.LinkedList;
@@ -183,6 +175,16 @@ public class PlayerUI {
 
     public void addPickupLine(int itemId, int itemAmount) {
         synchronized(PICKUP_LOCK) {
+            for(PickupLine pl : pickupLines) {
+                if(pl.itemId == itemId) {
+                    pickupLines.remove(pl);
+                    pl.lifetime = 0;
+                    pl.itemAmount += itemAmount;
+                    pickupLines.add(pl);
+                    return;
+                }
+            }
+
             pickupLines.add(new PickupLine(itemId, itemAmount));
         }
     }
@@ -206,8 +208,8 @@ public class PlayerUI {
 
     public void drawTooltipColored(int x, int y, String text, Color color, String... extraLines) {
         RenderContext rc = RenderContext.get();
-        x += 4 * uiScale; // offset
-        y += 4 * uiScale; // offset
+        x += (int) (4 * uiScale); // offset
+        y += (int) (4 * uiScale); // offset
 
         glyphLayout.setText(rc.m5x7_use, text);
         float tw = glyphLayout.width;
@@ -420,14 +422,17 @@ public class PlayerUI {
         }
 
         glyphLayout.setText(rc.m5x7_border_use, "U");
-        Vector2 startHudPos = ClientUtils.entityPosToHudPos(ClientPlayer.getLocalPlayer().clientPosX + 5, ClientPlayer.getLocalPlayer().clientPosY + 32 + glyphLayout.height);
-        float MAX_LINE_LIFETIME = 1.25f;
+        Vector2 startHudPos = ClientUtils.entityPosToHudPos(ClientPlayer.getLocalPlayer().clientPosX, ClientPlayer.getLocalPlayer().clientPosY + 32 + glyphLayout.height);
+        float MAX_LINE_LIFETIME = 1.5f;
 
         // Draw pickup lines
         BitmapFont useFont = rc.m5x7_border_use;
 
         synchronized(PICKUP_LOCK) {
-            for(PickupLine line : pickupLines) {
+            int yOffset = 0;
+
+            for(int i = 0; i < pickupLines.size(); i++) {
+                PickupLine line = pickupLines.get(pickupLines.size() - 1 - i);
                 line.lifetime += rc.delta;
                 if(line.lifetime >= MAX_LINE_LIFETIME) continue;
 
@@ -437,17 +442,21 @@ public class PlayerUI {
                 String displayText = line.itemAmount + "x " + mapping.displayName;
                 glyphLayout.setText(useFont, displayText);
 
-                float itemW = mapping.uiRender.textureRegion.getRegionWidth() * uiScale;
-                float itemH = mapping.uiRender.textureRegion.getRegionHeight() * uiScale;
-                float fullWidth = itemW + 4 * uiScale + glyphLayout.width;
-                float startX = startHudPos.x - fullWidth * 0.5f;
-                float startY = startHudPos.y + alpha * 48;
-
+                float fullWidth = mapping.uiRender[0].useWidth * uiScale + 4 * uiScale + glyphLayout.width;
                 rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
                 useFont.setColor(mapping.color.r, mapping.color.g, mapping.color.b, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
 
-                rc.hudBatch.draw(mapping.uiRender.textureRegion, startX, startY - (itemH - glyphLayout.height) * 0.5f, itemW, itemH);
-                useFont.draw(rc.hudBatch, displayText, startX + itemW + 4 * uiScale, startY + glyphLayout.height);
+                float startX = startHudPos.x - fullWidth * 0.5f;
+                float startY = startHudPos.y + alpha * 48 + yOffset;
+
+                for(ItemRender ir : mapping.uiRender) {
+                    rc.hudBatch.draw(ir.useTextureRegion, startX + ir.offsetX * uiScale, startY + ir.offsetY * uiScale - (ir.useHeight - glyphLayout.height) * 0.5f,
+                            ir.useTextureRegion.getRegionWidth() * uiScale, ir.useTextureRegion.getRegionHeight() * uiScale);
+
+                    useFont.draw(rc.hudBatch, displayText, startX + mapping.uiRender[0].useWidth * uiScale + 4 * uiScale, startY + glyphLayout.height);
+                }
+
+                yOffset += (int) (Math.max(glyphLayout.height, mapping.uiRender[0].useHeight * uiScale) + 4 * uiScale);
             }
 
             rc.hudBatch.setColor(Color.WHITE);
@@ -578,31 +587,12 @@ public class PlayerUI {
 
     public void drawCursor(ClientInventoryItem item) {
         ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
-        ItemRender render = mapping.uiRender;
-        TextureRegion draw = render.textureRegion;
-
         RenderContext rc = RenderContext.get();
 
-        float dw = draw.getRegionWidth() * render.scaleX * uiScale;
-        float dh = draw.getRegionHeight() * render.scaleY * uiScale;
-
-        float _x = rc.mouseX - dw * 0.5f;
-        float _y = rc.mouseY - dh * 0.5f;
-
-        rc.hudBatch.draw(draw, _x, _y, dw, dh);
-
         if(mapping.logic.maxStackSize > 1) {
-            int amount = item.itemAmount;
-            String amountAsText = String.valueOf(amount);
-
-            glyphLayout.setText(rc.m5x7_shadow_use, amountAsText);
-            float aw = glyphLayout.width;
-            float ah = glyphLayout.height;
-
-            float artificialEx = _x + (slotW - dw) * 0.5f + dw;
-            float artificialBy = _y - (slotH - dh) * 0.5f;
-
-            rc.m5x7_shadow_use.draw(rc.hudBatch, amountAsText, artificialEx - 1 * uiScale - aw, artificialBy + ah + 1 * uiScale);
+            rc.drawItemTexturesWithNumber(mapping.uiRender, rc.mouseX, rc.mouseY, 0, 0, item.itemAmount);
+        } else {
+            rc.drawItemTextures(mapping.uiRender, rc.mouseX, rc.mouseY, 0, 0);
         }
     }
 

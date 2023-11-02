@@ -1,8 +1,6 @@
 package dev.michey.expo.server.main.logic.entity.flora;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
@@ -10,16 +8,12 @@ import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
-import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.SpawnItem;
-import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
-
-import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
@@ -30,6 +24,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public int variant;
     public boolean cut;
     public float trunkConversionHealth = 30;
+    public float leavesOffset;
 
     public boolean falling;
     public float fallingEnd;
@@ -69,6 +64,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
         generateAge(biome, rnd);
         generateVariant(rnd);
+        leavesOffset = -rnd.random(0, 10);
 
         if(rnd.random() <= 0.03f) {
             cut = true;
@@ -107,23 +103,23 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                     maxLog -= 1;
                 } else if(variant == 4) {
                     reach = 120;
-                } else if(variant == 6) {
+                } else if(variant == 5) {
                     reach = 220;
                     minLog += 2;
                     maxLog += 2;
-                } else if(variant == 7) {
+                } else if(variant == 6) {
                     reach = 195;
                     minLog += 1;
                     maxLog += 1;
                 }
                 float factor = fallingDirectionRight ? 1 : -1;
 
-                spawnItemsAlongLine(posX + (20 * factor), posY, reach * factor, 0, 8.0f,
+                spawnItemsAlongLine(posX + ((20 + leavesOffset) * factor), posY, reach * factor, 0, 8.0f,
                         new SpawnItem("item_oak_log", minLog, maxLog),
                         new SpawnItem("item_acorn", 1, 2));
 
-                float _x1 = posX + 20f * factor;
-                float _x2 = posX + (20f + reach) * factor;
+                float _x1 = posX + (20 + leavesOffset) * factor;
+                float _x2 = posX + ((20 + leavesOffset) + reach) * factor;
                 float x1 = factor == 1 ? _x1 : _x2;
                 float x2 = factor == 1 ? _x2 : _x1;
 
@@ -148,6 +144,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         return new SavableEntity(this).pack()
                 .add("variant", variant)
                 .add("cut", cut)
+                .add("leavesOffset", leavesOffset)
                 .optional("falling", falling, falling)
                 .optional("fallingEnd", fallingEnd, falling)
                 .optional("fallingDirectionRight", fallingDirectionRight, falling)
@@ -158,6 +155,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public void onLoad(JSONObject saved) {
         variant = saved.getInt("variant");
         cut = saved.getBoolean("cut");
+        leavesOffset = saved.getFloat("leavesOffset");
         if(saved.has("falling")) {
             falling = true;
             fallingEnd = saved.getFloat("fallingEnd");
@@ -168,7 +166,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     @Override
     public Object[] getPacketPayload() {
-        return new Object[] {variant, cut, falling, fallingEnd, fallingDirectionRight};
+        return new Object[] {variant, cut, falling, fallingEnd, fallingDirectionRight, leavesOffset};
     }
 
     @Override
@@ -193,9 +191,9 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         int r = rnd == null ? MathUtils.random(100) : rnd.random(100);
         //float fFactor = biome == BiomeType.DENSE_FOREST ? 0.875f : 1.0f;
 
-        if(r <= 65) {
+        if(r <= 60) {
             age = 0;
-        } else if(r <= 97) {
+        } else if(r <= 99) {
             age = 1;
         } else {
             age = 2;

@@ -1,13 +1,10 @@
 package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
@@ -16,13 +13,11 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
-import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.*;
 
 import java.util.*;
@@ -157,7 +152,7 @@ public class ClientEntityManager {
 
             boolean poll = true;
 
-            if(entity.removalFade > 0 && entity.removalReason != EntityRemovalReason.DEATH) {
+            if(entity.removalFade > 0 && entity.removalReason != EntityRemovalReason.DEATH && entity.removalReason != EntityRemovalReason.CAUGHT) {
                 entity.removalFade -= delta;
                 poll = entity.removalFade <= 0;
             }

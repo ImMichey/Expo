@@ -8,5 +8,6 @@ public enum EntityRemovalReason {
     MERGE,          // When the entity is merged with another entity (only applies to ServerItem at the moment)
     DESPAWN,        // When the entity despawns due to a systematic design choice
     UNSPECIFIED,    // Unspecified
+    CAUGHT
 
 }
