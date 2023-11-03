@@ -21,6 +21,7 @@ import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
@@ -41,6 +42,9 @@ import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.PacketUtils;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
@@ -133,6 +137,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     /** Player item */
     public int holdingItemId = -1;
     public Sprite[] holdingItemSprites = null;
+    public List<ExpoLight> itemLightList = null;
+    public int lightHoldingItemId = -1;
 
     public int holdingArmorHeadId = -1;
     public ItemRender[] holdingHeadRender;
@@ -572,6 +578,16 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
         }
 
+        if((holdingItemId == -1 || (holdingItemId != lightHoldingItemId)) && itemLightList != null) {
+            clearItemLights();
+        }
+
+        if(holdingItemId != -1 && ((holdingItemId != lightHoldingItemId) || itemLightList == null)) {
+            for(ItemRender ir : ItemMapper.get().getMapping(holdingItemId).heldRender) {
+                spawnItemLights(ir);
+            }
+        }
+
         { // Updating breathe + blink
             playerBlinkDelta += delta;
             playerBreatheDelta += delta;
@@ -748,6 +764,15 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         if(!player) drawHealthBar(rc, playerHealth / 100f, 24, "");
     }
 
+    private void clearItemLights() {
+        for(var l : itemLightList) {
+            l.delete();
+        }
+
+        itemLightList.clear();
+        itemLightList = null;
+    }
+
     @Override
     public void calculateReflection() {
         drawReflection = true;
@@ -790,89 +815,101 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
             float n = 1f / draw_tex_shadow_base.getRegionHeight();
 
-            /*
+
             { // Armor shadow
                 if(holdingArmorHeadId != -1) {
-                    float t = 0f;
-                    float b = 1f - n * 21f;
+                    for(ItemRender ir : holdingHeadRender) {
+                        float t = 0f;
+                        float b = 1f - n * 21f;
 
-                    float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
-                    float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
+                        float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
+                        float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
 
-                    int dir = punchAnimation ? punchDirection : playerDirection;
-                    Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, dir == 1 ? 0 : -1, 13 + offsetY);
-                    rc.arraySpriteBatch.drawGradientCustomColor(holdingArmorHeadTexture, holdingArmorHeadTexture.getRegionWidth(), holdingArmorHeadTexture.getRegionHeight(), shadowBase, topColor, bottomColor);
+                        int dir = punchAnimation ? punchDirection : playerDirection;
+                        Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, dir == 1 ? 0 : -1, 13 + offsetY);
+                        rc.arraySpriteBatch.drawGradientCustomColor(ir.useTextureRegion,
+                                ir.useTextureRegion.getRegionWidth(), ir.useTextureRegion.getRegionHeight(), shadowBase, topColor, bottomColor);
+                    }
                 }
             }
 
             { // Item shadow
                 if(holdingItemId != -1 && holdingItemSprites != null) {
-                    // position
                     ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
                     int dirCheck = direction();
                     Vector2 v = (punchAnimation || (holdingItemId != -1)) ? GenerationUtils.circular(getFinalArmRotation(), 1) : NULL_ROTATION_VECTOR;
 
-                    float xshift = dirCheck == 0 ? 1 : 9;
-                    float armHeight = 9;
-                    float ox = map.heldRender.offsetX * map.heldRender.scaleX;
-                    float oy = map.heldRender.offsetY * map.heldRender.scaleY;
-                    float inverse = dirCheck == 0 ? -1 : 1;
+                    for(int i = 0; i < holdingItemSprites.length; i++) {
+                        Sprite holdingItemSprite = holdingItemSprites[i];
+                        ItemRender ir = map.heldRender[i];
 
-                    // rotation fix
-                    float w = map.heldRender.textureRegion.getRegionWidth();
-                    float h = map.heldRender.textureRegion.getRegionHeight();
-                    float rfx = w * 0.5f;
-                    float rfy = h * 0.5f;
+                        if(ir.hideShadow) continue;
 
-                    float shadowFixX = w * 0.5f * (1f - map.heldRender.scaleX);
-                    float shadowFixY = h * 0.5f * (1f - map.heldRender.scaleY);
+                        float xshift = dirCheck == 0 ? 1 : 9;
+                        float armHeight = 9;
+                        float ox = ir.offsetX * ir.scaleX;
+                        float oy = ir.offsetY * ir.scaleY;
+                        float inverse = dirCheck == 0 ? -1 : 1;
 
-                    Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(
-                            finalDrawPosX,
-                            finalDrawPosY,
-                            shadowFixX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
-                            shadowFixY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse),
-                            holdingItemSprite.getOriginX() - shadowFixX,
-                            holdingItemSprite.getOriginY() - shadowFixY,
-                            holdingItemSprite.getRotation()
-                    );
+                        // rotation fix
+                        float w = ir.useTextureRegion.getRegionWidth();
+                        float h = ir.useTextureRegion.getRegionHeight();
+                        float rfx = w * 0.5f;
+                        float rfy = h * 0.5f;
 
-                    float t = 0f + n * 9;
-                    float b; //1f - n * offsetY; // calc
-                    float norm;
-                    int dir = direction();
+                        if(ir.rotationLock) {
+                            rfy = 0;
+                        }
 
-                    if(dir == 1) {
-                        // Right side.
-                        norm = Math.abs(getFinalArmRotation() - 180) / 180;
-                    } else {
-                        norm = (getFinalArmRotation() + 180) / 180;
+                        float shadowFixX = w * 0.5f * (1f - ir.scaleX);
+                        float shadowFixY = h * 0.5f * (1f - ir.scaleY);
+
+                        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(
+                                finalDrawPosX,
+                                finalDrawPosY,
+                                shadowFixX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
+                                shadowFixY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse),
+                                holdingItemSprite.getOriginX() - shadowFixX,
+                                holdingItemSprite.getOriginY() - shadowFixY,
+                                holdingItemSprite.getRotation()
+                        );
+
+                        float t = 0f + n * 9;
+                        float b; //1f - n * offsetY; // calc
+                        float norm;
+                        int dir = direction();
+
+                        if(dir == 1) {
+                            // Right side.
+                            norm = Math.abs(getFinalArmRotation() - 180) / 180;
+                        } else {
+                            norm = (getFinalArmRotation() + 180) / 180;
+                        }
+
+                        if(norm < 0.5f) {
+                            // Upper half.
+                            norm *= 2;
+                            b = 0 + norm * n * 9;
+                            t = 0 + norm * n * 9;
+                        } else {
+                            norm -= 0.5f;
+                            norm *= 2;
+                            b = (1f - n * offsetY) - n * 9 * (1f - norm);
+                        }
+
+                        float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
+                        float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
+
+                        rc.arraySpriteBatch.drawGradientCustomColor(
+                                holdingItemSprite,
+                                holdingItemSprite.getRegionWidth() * holdingItemSprite.getScaleX(),
+                                holdingItemSprite.getRegionHeight() * holdingItemSprite.getScaleY(),
+                                shadow,
+                                topColor,
+                                bottomColor);
                     }
-
-                    if(norm < 0.5f) {
-                        // Upper half.
-                        norm *= 2;
-                        b = 0 + norm * n * 9;
-                        t = 0 + norm * n * 9;
-                    } else {
-                        norm -= 0.5f;
-                        norm *= 2;
-                        b = (1f - n * offsetY) - n * 9 * (1f - norm);
-                    }
-
-                    float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
-                    float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
-
-                    rc.arraySpriteBatch.drawGradientCustomColor(
-                            holdingItemSprite,
-                            holdingItemSprite.getRegionWidth() * holdingItemSprite.getScaleX(),
-                            holdingItemSprite.getRegionHeight() * holdingItemSprite.getScaleY(),
-                            shadow,
-                            topColor,
-                            bottomColor);
                 }
             }
-            */
 
             { // Left arm
                 float t = 0f + n * 9;
@@ -1098,7 +1135,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     float rfy = h * 0.5f;
 
                     if(ir.rotationLock) {
-
+                        rfy = 0;
                     }
 
                     holdingItemSprite.setPosition(
@@ -1107,6 +1144,22 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     );
 
                     holdingItemSprite.draw(rc.arraySpriteBatch);
+
+                    if(ir.particleEmitter != null) {
+                        if(ir.particleEmitter.spawnParticlesThisTick) {
+                            String st = ir.particleEmitter.emitterName;
+
+                            if(st.equals("torch")) {
+                                ParticleSheet.Common.spawnTorchParticles(depth, holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + h * 0.5f);
+                            }
+                        }
+                    }
+
+                    if(itemLightList != null) {
+                        for(ExpoLight light : itemLightList) {
+                            light.update(holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + rfy, rc.delta);
+                        }
+                    }
                 }
             }
         }
@@ -1134,15 +1187,36 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public void updateHoldingItemSprite() {
         if(holdingItemId == -1) return;
         ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
-
         holdingItemSprites = new Sprite[mapping.heldRender.length];
 
         for(int i = 0; i < holdingItemSprites.length; i++) {
-            Sprite s = new Sprite(mapping.heldRender[i].useTextureRegion);
+            ItemRender ir = mapping.heldRender[i];
+
+            Sprite s = new Sprite(ir.useTextureRegion);
             s.setPosition(finalDrawPosX, finalDrawPosY);
-            s.setScale(mapping.heldRender[i].scaleX, mapping.heldRender[i].scaleY);
+            s.setScale(ir.scaleX, ir.scaleY);
             s.setOrigin(s.getWidth() * 0.5f, s.getHeight() * 0.5f);
             holdingItemSprites[i] = s;
+        }
+    }
+
+    private void spawnItemLights(ItemRender ir) {
+        if(ir.renderLight != null && itemLightList == null) {
+            lightHoldingItemId = holdingItemId;
+            itemLightList = new LinkedList<>();
+
+            ExpoLight expoLight = new ExpoLight(ir.renderLight.distanceMin, ir.renderLight.rayCount, ir.renderLight.emissionConstant, ir.renderLight.emissionQuadratic);
+            expoLight.color(ir.renderLight.color);
+
+            if(ir.renderLight.pulsating) {
+                expoLight.setPulsating(ir.renderLight.pulsatingSpeed, ir.renderLight.distanceMin, ir.renderLight.distanceMax);
+            }
+
+            if(ir.renderLight.flicker) {
+                expoLight.setFlickering(ir.renderLight.flickerStrength, ir.renderLight.flickerCooldown);
+            }
+
+            itemLightList.add(expoLight);
         }
     }
 

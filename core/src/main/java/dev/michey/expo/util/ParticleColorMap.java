@@ -54,6 +54,10 @@ public class ParticleColorMap {
     public static final Color COLOR_PARTICLE_BLOOD_1 = Color.valueOf("#bb2525");
     public static final Color COLOR_PARTICLE_BLOOD_2 = Color.valueOf("#721d1d");
 
+    public static final Color COLOR_PARTICLE_SMOKE_1 = Color.valueOf("#978d8d");
+    public static final Color COLOR_PARTICLE_SMOKE_2 = Color.valueOf("#b6b0b0");
+    public static final Color COLOR_PARTICLE_SMOKE_3 = Color.valueOf("#777373");
+
     static {
         COLOR_MAP = new HashMap<>();
 
@@ -100,6 +104,10 @@ public class ParticleColorMap {
 
         colorEntry(13, COLOR_PARTICLE_BLOOD_1);
         colorEntry(13, COLOR_PARTICLE_BLOOD_2);
+
+        colorEntry(14, COLOR_PARTICLE_SMOKE_1);
+        colorEntry(14, COLOR_PARTICLE_SMOKE_2);
+        colorEntry(14, COLOR_PARTICLE_SMOKE_3);
     }
 
     public static List<Color> of(int id) {

@@ -571,7 +571,16 @@
                     "scaleY": 0.75,
                     "offsetX": -1,
                     "offsetY": 3,
-                    "rotations": [0, -90]
+                    "rotations": [0, -90],
+                    "light": {
+                        "color": [0.0, 0.5, 1.0, 1.0],
+                        "distanceMin": 112,
+                        "distanceMax": 128,
+                        "emissionQuadratic": 0.9,
+                        "emissionConstant": 0.7,
+                        "pulsating": true,
+                        "rayCount": 32
+                    }
                 }
             },
             "logic": {
@@ -947,15 +956,13 @@
                         "texture": "flame",
                         "frames": 11,
                         "animationSpeed": 0.08,
-                        "offsetX": 2.5,
-                        "offsetY": 5.5
+                        "offsetX": 4,
+                        "offsetY": 7
                     }
                 ],
                 "held": [
                     {
                         "texture": "item_torch",
-                        "scaleX": 1,
-                        "scaleY": 1,
                         "offsetX": -2.5,
                         "offsetY": 7,
                         "rotations": [45, -45]
@@ -964,13 +971,23 @@
                         "texture": "flame",
                         "frames": 11,
                         "animationSpeed": 0.08,
-                        "offsetX": -5.0,
-                        "offsetY": 12.5,
+                        "offsetX": -1.5,
+                        "offsetY": 8.5,
                         "rotationLock": true,
+                        "hideShadow": true,
                         "light": {
-                            "color": [0.0, 0.0, 0.0, 0.0],
-                            "pulsating": true,
-                            "distance": 32
+                            "color": [0.992, 0.541, 0.184, 1.0],
+                            "distance": 140,
+                            "emissionQuadratic": 0.675,
+                            "emissionConstant": 0.375,
+                            "flicker": true,
+                            "flickerStrength": 6.0,
+                            "flickerCooldown": 0.15,
+                            "rayCount": 48
+                        },
+                        "particleEmitter": {
+                            "emitterName": "torch",
+                            "emitterDelay": 0.05
                         }
                     }
                 ]

@@ -450,8 +450,11 @@ public class PlayerUI {
                 float startY = startHudPos.y + alpha * 48 + yOffset;
 
                 for(ItemRender ir : mapping.uiRender) {
-                    rc.hudBatch.draw(ir.useTextureRegion, startX + ir.offsetX * uiScale, startY + ir.offsetY * uiScale - (ir.useHeight - glyphLayout.height) * 0.5f,
-                            ir.useTextureRegion.getRegionWidth() * uiScale, ir.useTextureRegion.getRegionHeight() * uiScale);
+                    rc.hudBatch.draw(ir.useTextureRegion,
+                            startX + ir.offsetX * uiScale,
+                            startY + ir.offsetY * uiScale - (mapping.uiRender[0].useHeight * uiScale - glyphLayout.height) * 0.25f,
+                            ir.useTextureRegion.getRegionWidth() * uiScale,
+                            ir.useTextureRegion.getRegionHeight() * uiScale);
 
                     useFont.draw(rc.hudBatch, displayText, startX + mapping.uiRender[0].useWidth * uiScale + 4 * uiScale, startY + glyphLayout.height);
                 }

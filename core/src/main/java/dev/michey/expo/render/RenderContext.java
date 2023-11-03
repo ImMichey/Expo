@@ -413,6 +413,10 @@ public class RenderContext {
 
             ir.updatedAnimation = old != ir.useTextureRegion;
         }
+
+        for(ItemRender ir : ItemMapper.get().getDynamicParticleEmitterList()) {
+            ir.particleEmitter.update(delta);
+        }
     }
 
     public void drawItemTexturesWithNumber(ItemRender[] itemRenders, float x, float y, float tileW, float tileH, int amount) {
@@ -449,8 +453,8 @@ public class RenderContext {
 
         for(ItemRender ir : itemRenders) {
             TextureRegion tr = ir.useTextureRegion;
-            float centeredTextureX = (tileW - ir.useWidth) * 0.5f * ui.uiScale;
-            float centeredTextureY = (tileH - ir.useHeight) * 0.5f * ui.uiScale;
+            float centeredTextureX = (tileW - itemRenders[0].useWidth) * 0.5f * ui.uiScale;
+            float centeredTextureY = (tileH - itemRenders[0].useHeight) * 0.5f * ui.uiScale;
 
             hudBatch.draw(tr, x + centeredTextureX + ir.offsetX * ui.uiScale * ir.scaleX, y + centeredTextureY + ir.offsetY * ui.uiScale * ir.scaleY,
                     tr.getRegionWidth() * ir.scaleX * ui.uiScale, tr.getRegionHeight() * ir.scaleY * ui.uiScale);

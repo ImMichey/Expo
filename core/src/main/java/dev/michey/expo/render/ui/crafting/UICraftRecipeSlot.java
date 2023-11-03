@@ -144,6 +144,9 @@ public class UICraftRecipeSlot extends InteractableUIElement {
             RenderContext r = RenderContext.get();
             PlayerUI ui = PlayerUI.get();
 
+            r.hudBatch.setColor(0f, 0f, 0f, 0.125f);
+            r.drawItemTextures(drawItemPreview, this.x + ui.uiScale, this.y - 2 * ui.uiScale, ui.slotW / ui.uiScale, ui.slotH / ui.uiScale);
+            r.hudBatch.setColor(Color.WHITE);
             r.drawItemTextures(drawItemPreview, this.x, this.y, ui.slotW / ui.uiScale, ui.slotH / ui.uiScale);
 
             int amount = holdingRecipe.outputAmount;

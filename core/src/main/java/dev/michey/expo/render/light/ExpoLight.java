@@ -18,15 +18,18 @@ public class ExpoLight {
     public float pulsatingMinDistance;
     public float pulsatingMaxDistance;
 
+    public boolean flickering = false;
+    public float flickerStrength;
+    public float flickerCooldown;
+    public float flickerDelta;
+    public float flickerValue;
+
     public ExpoLight(float distance, int rays, float constant, float quadratic) {
         box2dLight = new PointLight(RenderContext.get().lightEngine.rayHandler, rays);
         box2dLight.setXray(true);
         box2dLight.setFalloff(constant, 0.0f, quadratic);
         box2dLight.setDistance(distance);
-    }
-
-    public ExpoLight(float distance) {
-        this(distance, (int) distance, 1.0f, 0f);
+        pulsatingMinDistance = distance;
     }
 
     public void update(float x, float y, float delta) {
@@ -49,7 +52,25 @@ public class ExpoLight {
                 }
             }
 
-            box2dLight.setDistance(pulsatingMinDistance + pulsatingMaxDistance * Interpolation.smooth.apply(pulsatingAlpha));
+            if(flickering) {
+                flickerDelta += delta;
+
+                if(flickerDelta >= flickerCooldown) {
+                    flickerDelta %= flickerCooldown;
+                    flickerValue = MathUtils.random(flickerStrength);
+                }
+            }
+
+            box2dLight.setDistance(pulsatingMinDistance + pulsatingMaxDistance * Interpolation.smooth.apply(pulsatingAlpha) + flickerValue);
+        } else if(flickering) {
+            flickerDelta += delta;
+
+            if(flickerDelta >= flickerCooldown) {
+                flickerDelta %= flickerCooldown;
+                flickerValue = MathUtils.random(flickerStrength);
+            }
+
+            box2dLight.setDistance(pulsatingMinDistance + flickerValue);
         }
     }
 
@@ -59,6 +80,12 @@ public class ExpoLight {
         pulsatingMinDistance = minDistance;
         pulsatingMaxDistance = maxDistance - minDistance;
         pulsatingAlpha = MathUtils.random();
+    }
+
+    public void setFlickering(float strength, float cooldown) {
+        flickering = true;
+        flickerStrength = strength;
+        flickerCooldown = cooldown;
     }
 
     public void color(Color color) {

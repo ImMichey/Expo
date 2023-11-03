@@ -1,8 +1,10 @@
 package dev.michey.expo.logic.world;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -11,18 +13,15 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
-import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
-import dev.michey.expo.logic.entity.flora.ClientLilypad;
+import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.misc.ClientPuddle;
 import dev.michey.expo.logic.entity.misc.ClientRaindrop;
-import dev.michey.expo.logic.entity.arch.ClientEntity;
-import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
-import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
@@ -32,17 +31,17 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
-import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.gen.EntityPopulationBounds;
-import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-import static com.badlogic.gdx.graphics.GL20.GL_COVERAGE_BUFFER_BIT_NV;
 import static dev.michey.expo.util.ExpoShared.*;
 
 public class ClientWorld {
@@ -630,6 +629,13 @@ public class ClientWorld {
                         float tpx = all.finalTextureStartX;
                         float tpy = all.finalTextureStartY;
 
+                        /*
+                        if(all instanceof ClientPlayer cp && Expo.get().getImGuiExpo().renderPunchData.get()) {
+                            r.chunkRenderer.setColor(Color.RED);
+                            r.chunkRenderer.circle(cp.test_0, cp.test_1, 0.25f, 8)
+                        }
+                        */
+
                         if(Expo.get().getImGuiExpo().renderDrawPos.get()) {
                             r.chunkRenderer.setColor(Color.GREEN);
                             r.chunkRenderer.circle(dpx, dpy, 0.4f, 8);
@@ -681,8 +687,6 @@ public class ClientWorld {
                         if(Expo.get().getImGuiExpo().renderVisualCenter.get()) {
                             r.chunkRenderer.setColor(Color.YELLOW);
                             r.chunkRenderer.circle(all.finalTextureCenterX, all.finalTextureCenterY, 0.33f, 8);
-
-
                         }
 
                         if(Expo.get().getImGuiExpo().renderInteractionPoints.get()) {

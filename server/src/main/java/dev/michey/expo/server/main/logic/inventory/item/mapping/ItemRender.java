@@ -25,6 +25,9 @@ public class ItemRender {
     public int animationFrames;
     public float animationDelta;
     public boolean updatedAnimation;
+    public ItemRenderLight renderLight;
+    public ItemRenderParticleEmitter particleEmitter;
+    public boolean hideShadow;
 
     public ItemRender(JSONObject object) {
         texture = object.getString("texture");
@@ -85,6 +88,24 @@ public class ItemRender {
             requiresFlip = object.getBoolean("requiresFlip");
         } else {
             requiresFlip = true;
+        }
+
+        if(object.has("hideShadow")) {
+            hideShadow = object.getBoolean("hideShadow");
+        } else {
+            hideShadow = false;
+        }
+
+        if(object.has("light")) {
+            renderLight = new ItemRenderLight(object.getJSONObject("light"));
+        } else {
+            renderLight = null;
+        }
+
+        if(object.has("particleEmitter")) {
+            particleEmitter = new ItemRenderParticleEmitter(object.getJSONObject("particleEmitter"));
+        } else {
+            particleEmitter = null;
         }
     }
 

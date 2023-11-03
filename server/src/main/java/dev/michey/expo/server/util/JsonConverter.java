@@ -1,6 +1,7 @@
 package dev.michey.expo.server.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.ServerLauncher;
 import org.json.JSONArray;
@@ -25,6 +26,19 @@ public class JsonConverter {
         }
 
         return new JSONObject(data);
+    }
+
+    public static Color pullColor(JSONArray array) {
+        Color color = new Color();
+        float[] colors = new float[4];
+        for(int i = 0; i < array.length(); i++) {
+            colors[i] = array.getFloat(i);
+        }
+        color.r = colors[0];
+        color.g = colors[1];
+        color.b = colors[2];
+        color.a = colors[3];
+        return color;
     }
 
     public static String[] pullStrings(JSONArray array) {

@@ -53,6 +53,25 @@ public class ParticleSheet {
 
     public static class Common {
 
+        public static void spawnTorchParticles(float depth, float x, float y) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(2, 4)
+                    .scale(0.3f, 0.7f)
+                    .lifetime(0.35f, 0.55f)
+                    .color(ParticleColorMap.of(14))
+                    .position(x - 2, y - 4)
+                    .velocity(-16, 16, 48, 112)
+                    .fadeout(0.3f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .decreaseSpeed()
+                    .offset(4, 6)
+                    .depth(depth + 0.0001f)
+                    .spawn();
+        }
+
         public static void spawnBloodParticles(ClientEntity entity, float ox, float oy) {
             if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)

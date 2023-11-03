@@ -10,6 +10,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.EntityRemovalReason;
 
 import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
@@ -19,7 +20,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     public int itemId;
     public int itemAmount;
 
-    public TextureRegion texture;
+    public ItemRender[] ir;
     public float currentScaleX, currentScaleY;
     public float floatingPos;
     private final float floatingOffset = MathUtils.random(360f);
@@ -35,11 +36,11 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
 
     @Override
     public void onCreation() {
-        texture = ItemMapper.get().getMapping(itemId).uiRender[0].useTextureRegion;
+        ir = ItemMapper.get().getMapping(itemId).uiRender;
         currentScaleX = 0.75f;
         currentScaleY = 0.75f;
 
-        updateTextureBounds(texture.getRegionWidth() * currentScaleX, texture.getRegionHeight() * currentScaleY, 0, 0);
+        updateTextureBounds(ir[0].useWidth * currentScaleX, ir[0].useHeight * currentScaleY, 0, 0);
     }
 
     @Override
@@ -105,7 +106,16 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             float dsp = textureWidth - textureWidth * stackX;
 
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
-            rc.arraySpriteBatch.draw(texture, finalDrawPosX + dsp * 0.5f, finalDrawPosY + floatingPos, textureWidth * stackX, textureHeight * stackY);
+
+            for(ItemRender ir : ir) {
+                TextureRegion tr = ir.useTextureRegion;
+
+                rc.arraySpriteBatch.draw(tr,
+                        finalDrawPosX + ir.offsetX * currentScaleX,
+                        finalDrawPosY + floatingPos + ir.offsetY * currentScaleY,
+                        tr.getRegionWidth() * stackX * currentScaleX,
+                        tr.getRegionHeight() * stackY * currentScaleY);
+            }
 
             String numberAsString = String.valueOf(itemAmount);
 
@@ -114,7 +124,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             float vy = finalTextureStartY;
             float fontScale = 0.5f;
 
-            float ex = (slotW - texture.getRegionWidth()) * 0.5f * currentScaleX + texture.getRegionWidth() * currentScaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * currentScaleX;
+            float ex = (slotW - ir[0].useWidth) * 0.5f * currentScaleX + ir[0].useWidth * currentScaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * currentScaleX;
             float y = vy + floatingPos - 7 * fontScale;
 
             int add = 0;
@@ -122,7 +132,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             for(char c : numberAsString.toCharArray()) {
                 TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
                 rc.arraySpriteBatch.draw(indiNumber, ex + add - dsp * 0.5f, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
-                add += 6 * fontScale;
+                add += (int) (6 * fontScale);
             }
 
             rc.arraySpriteBatch.setColor(Color.WHITE);
@@ -132,12 +142,21 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     @Override
     public void renderReflection(RenderContext rc, float delta) {
         float dsp = textureWidth - textureWidth * stackX;
-        rc.arraySpriteBatch.draw(texture, finalDrawPosX + dsp * 0.5f, finalDrawPosY + floatingPos, textureWidth * stackX, textureHeight * stackY * -1);
+
+        for(ItemRender ir : ir) {
+            TextureRegion tr = ir.useTextureRegion;
+
+            rc.arraySpriteBatch.draw(tr,
+                    finalDrawPosX + dsp * 0.5f + ir.offsetX * currentScaleX,
+                    finalDrawPosY + floatingPos - ir.offsetY * currentScaleY,
+                    tr.getRegionWidth() * stackX * currentScaleX,
+                    tr.getRegionHeight() * stackY * currentScaleY * -1);
+        }
     }
 
     private void spawnGhostEntity(int amount) {
         ClientGhostItem ghostItem = new ClientGhostItem();
-        ghostItem.texture = texture;
+        ghostItem.ir = ir;
         ghostItem.amount = amount;
         ghostItem.clientPosX = clientPosX;
         ghostItem.clientPosY = clientPosY;

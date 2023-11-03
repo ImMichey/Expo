@@ -2,20 +2,16 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.render.shadow.ShadowUtils;
-
-import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 
 public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEntity {
 
-    public TextureRegion texture;
+    public ItemRender[] ir;
     public int amount;
 
     public float floatingPos;
@@ -52,7 +48,14 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
         float SCALE_Y = 0.75f;
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
-        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY + floatingPos + floatingPosAnimation, texture.getRegionWidth() * SCALE_X, texture.getRegionHeight() * SCALE_Y);
+
+        for(ItemRender ir : ir) {
+            rc.arraySpriteBatch.draw(ir.useTextureRegion,
+                    finalDrawPosX + ir.offsetX * SCALE_X,
+                    finalDrawPosY + ir.offsetY * SCALE_Y + floatingPos + floatingPosAnimation,
+                    ir.useTextureRegion.getRegionWidth() * SCALE_X,
+                    ir.useTextureRegion.getRegionHeight() * SCALE_Y);
+        }
 
         String numberAsString = String.valueOf(amount);
 
@@ -61,7 +64,7 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
         float vy = finalTextureStartY;
         float fontScale = 0.5f;
 
-        float ex = (slotW - texture.getRegionWidth()) * 0.5f * SCALE_X + texture.getRegionWidth() * SCALE_X + vx - (numberAsString.length() * 6 * fontScale) - 1 * SCALE_X;
+        float ex = (slotW - ir[0].useWidth) * 0.5f * SCALE_X + ir[0].useWidth * SCALE_X + vx - (numberAsString.length() * 6 * fontScale) - 1 * SCALE_X;
         float y = vy + floatingPosAnimation + floatingPos - 7 * fontScale;
 
         int add = 0;
@@ -90,7 +93,7 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
 
         float tw = rc.aoTexture.getWidth();
         float th = rc.aoTexture.getHeight();
-        float relative = (texture.getRegionWidth() * 0.75f + texture.getRegionHeight() * 0.75f) / 1.5f / tw * _norm;
+        float relative = (ir[0].useWidth * 0.75f + ir[0].useHeight * 0.75f) / 1.5f / tw * _norm;
 
         float packed = new Color(0.0f, 0.0f, 0.f, useAlpha).toFloatBits();
         if(rc.aoBatch.getPackedColor() != packed) rc.aoBatch.setPackedColor(packed);

@@ -16,11 +16,13 @@ public class ItemMapper {
     private final HashMap<String, ItemMapping> itemMappings;
     private final HashMap<Integer, ItemMapping> itemMappingsId;
     private final List<ItemRender> dynamicAnimationList;
+    private final List<ItemRender> dynamicParticleEmitterList;
 
     public ItemMapper(boolean client, boolean reload) {
         itemMappings = new HashMap<>();
         itemMappingsId = new HashMap<>();
         dynamicAnimationList = new LinkedList<>();
+        dynamicParticleEmitterList = new LinkedList<>();
 
         FileHandle fh = reload ? Gdx.files.absolute("C:\\IDEAProjects\\Expo\\assets_shared\\items.json") : Gdx.files.internal("items.json");
         JSONArray db = new JSONObject(fh.readString()).getJSONArray("database");
@@ -72,6 +74,9 @@ public class ItemMapper {
                     if(ir.animationFrames > 0) {
                         dynamicAnimationList.add(ir);
                     }
+                    if(ir.particleEmitter != null) {
+                        dynamicParticleEmitterList.add(ir);
+                    }
                 }
             }
             if(heldRender != null) {
@@ -79,12 +84,18 @@ public class ItemMapper {
                     if(ir.animationFrames > 0) {
                         dynamicAnimationList.add(ir);
                     }
+                    if(ir.particleEmitter != null) {
+                        dynamicParticleEmitterList.add(ir);
+                    }
                 }
             }
             if(armorRender != null) {
                 for(ItemRender ir : armorRender) {
                     if(ir.animationFrames > 0) {
                         dynamicAnimationList.add(ir);
+                    }
+                    if(ir.particleEmitter != null) {
+                        dynamicParticleEmitterList.add(ir);
                     }
                 }
             }
@@ -118,6 +129,10 @@ public class ItemMapper {
 
     public List<ItemRender> getDynamicAnimationList() {
         return dynamicAnimationList;
+    }
+
+    public List<ItemRender> getDynamicParticleEmitterList() {
+        return dynamicParticleEmitterList;
     }
 
     public Collection<ItemMapping> getItemMappings() {

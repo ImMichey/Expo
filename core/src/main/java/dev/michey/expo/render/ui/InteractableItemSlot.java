@@ -43,17 +43,18 @@ public class InteractableItemSlot extends InteractableUIElement {
 
             for(ItemRender ir : mapping.uiRender) {
                 // Draw background...
-                float _x = this.x + (parent.slotW - ir.useWidth * parent.uiScale) * 0.5f;
-                float _y = this.y + (parent.slotH - ir.useHeight * parent.uiScale) * 0.5f;
+                float _x = this.x + (parent.slotW - mapping.uiRender[0].useWidth * parent.uiScale) * 0.5f;
+                float _y = this.y + (parent.slotH - mapping.uiRender[0].useHeight * parent.uiScale) * 0.5f;
+
                 r.hudBatch.draw(ir.useTextureRegion, _x + parent.uiScale + parent.uiScale * ir.offsetX, _y - parent.uiScale * 2 + parent.uiScale * ir.offsetY,
                         ir.useTextureRegion.getRegionWidth() * parent.uiScale, ir.useTextureRegion.getRegionHeight() * parent.uiScale);
             }
 
             r.hudBatch.setColor(Color.WHITE);
             for(ItemRender ir : mapping.uiRender) {
-                // Draw background...
-                float _x = this.x + (parent.slotW - ir.useWidth * parent.uiScale) * 0.5f;
-                float _y = this.y + (parent.slotH - ir.useHeight * parent.uiScale) * 0.5f;
+                float _x = this.x + (parent.slotW - mapping.uiRender[0].useWidth * parent.uiScale) * 0.5f;
+                float _y = this.y + (parent.slotH - mapping.uiRender[0].useHeight * parent.uiScale) * 0.5f;
+
                 r.hudBatch.draw(ir.useTextureRegion, _x + parent.uiScale * ir.offsetX, _y + parent.uiScale * ir.offsetY,
                         ir.useTextureRegion.getRegionWidth() * parent.uiScale, ir.useTextureRegion.getRegionHeight() * parent.uiScale);
             }
