@@ -216,7 +216,7 @@
                     "spawnOffsets": [-28.0, 28.0, -28.0, 28.0],
                     "skip": 4,
                     "priority": 100,
-                    "skipChunkChance": 0.2,
+                    "skipChunkChance": 0.08,
                     "spreadData": {
                         "spread": [1, 5],
                         "spreadChance": 0.025,
@@ -329,14 +329,14 @@
                         "spreadDis": [12.0, 28.0],
                         "spreadType": ["ROCK"],
                         "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
+                        "spreadOffsets": [0.0, 2.0]
                     }
                 },
                 {
                     "biome": "LAKE",
                     "type": "LILYPAD",
                     "static": true,
-                    "chance": 0.125,
+                    "chance": 0.075,
                     "spawnOffsets": [-2, 2, -2, 2],
                     "borderRequirement": "WATER"
                 },
@@ -375,7 +375,7 @@
                         "spreadDis": [12.0, 28.0],
                         "spreadType": ["ROCK"],
                         "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
+                        "spreadOffsets": [0.0, 2.0]
                     }
                 },
                 {
@@ -390,7 +390,7 @@
                         "spreadDis": [12.0, 28.0],
                         "spreadType": ["ROCK"],
                         "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
+                        "spreadOffsets": [0.0, 2.0]
                     }
                 },
                 {
@@ -436,7 +436,7 @@
                         "spreadDis": [12.0, 28.0],
                         "spreadType": ["ROCK"],
                         "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
+                        "spreadOffsets": [0.0, 2.0]
                     }
                 },
                 {
@@ -591,7 +591,7 @@
                         "spreadDis": [12.0, 28.0],
                         "spreadType": ["ROCK"],
                         "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
+                        "spreadOffsets": [0.0, 2.0]
                     }
                 },
                 {

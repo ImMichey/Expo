@@ -59,6 +59,7 @@ public class ItemSheet {
         add("item_insect_net", 40, 14, 16);
         add("item_firefly", 41, 9, 6);
         add("item_crab_claw", 42, 10, 10);
+        add("item_flint_spear", 43, 30, 30);
     }
 
     public TextureRegion get(String name) {

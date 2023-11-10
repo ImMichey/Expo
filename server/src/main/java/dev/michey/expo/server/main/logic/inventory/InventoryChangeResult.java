@@ -26,4 +26,19 @@ public class InventoryChangeResult {
         changedItems.get(containerId).add(item);
     }
 
+    public void merge(InventoryChangeResult changeResult) {
+        for(int slot : changeResult.changedSlots.keySet()) {
+            var a = changeResult.changedSlots.get(slot);
+            var b = changeResult.changedItems.get(slot);
+
+            for(int i : a) {
+                changedSlots.get(slot).add(i);
+            }
+
+            for(ServerInventoryItem i : b) {
+                changedItems.get(slot).add(i);
+            }
+        }
+    }
+
 }

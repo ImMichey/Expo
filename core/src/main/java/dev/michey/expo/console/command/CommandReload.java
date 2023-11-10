@@ -28,7 +28,7 @@ public class CommandReload extends AbstractConsoleCommand {
         Expo.get().loadItemMapperTextures();
         success("Reloaded internal item mappings");
 
-        if(ClientPlayer.getLocalPlayer() != null) ClientPlayer.getLocalPlayer().updateHoldingItemSprite();
+        if(ClientPlayer.getLocalPlayer() != null) ClientPlayer.getLocalPlayer().updateHoldingItemSprite(ClientPlayer.getLocalPlayer().holdingItemId);
     }
 
 }

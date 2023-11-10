@@ -8,20 +8,18 @@ import dev.michey.expo.server.fs.world.WorldSaveFile;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.entity.container.ContainerRegistry;
-import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
-import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.packet.ExpoServerPacketReader;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.server.util.EntityMetadataMapper;
-import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.server.util.PacketReceiver;
+import dev.michey.expo.server.util.ServerPackets;
 
 import java.io.File;
 
 import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ExpoShared.SPAWN_AREA_CHUNK_RANGE;
 
 public abstract class ExpoServerBase {
 
@@ -77,6 +75,10 @@ public abstract class ExpoServerBase {
         log("Registered " + commandResolver.getCommandMap().size() + " commands.");
         INSTANCE = this;
         applyFileProperties();
+    }
+
+    public void broadcastMessage(String s) {
+        ServerPackets.p25ChatMessage("SERVER", s, PacketReceiver.all());
     }
 
     private void applyFileProperties() {

@@ -3,12 +3,10 @@
 * AO bug, similar to above, not sure if related or separate bug
 
 [Stuff To Fix, Implement...]
-* Craft All with Shift+Left
 * Drop Items with Q
 
 * Adjust running animation speed with entity velocity
 * Fix selection system
-* Proper Torch Texture
 * Add Flint Sword for now
 * New Oak Plank Wall textures
 

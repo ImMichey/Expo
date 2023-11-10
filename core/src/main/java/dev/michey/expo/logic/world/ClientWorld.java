@@ -434,16 +434,6 @@ public class ClientWorld {
             r.mainFbo.end();
         }
 
-        /*
-        {
-            // Draw shadows to shadow FBO.
-            r.shadowFbo.begin();
-                transparentScreen();
-                clientEntityManager.renderEntityShadows(r.delta);
-            r.shadowFbo.end();
-        }
-         */
-
         {
             // Draw entities to entity FBO.
             r.entityFbo.begin();
@@ -455,11 +445,6 @@ public class ClientWorld {
         {
             // Draw shadow FBO to main FBO.
             r.mainFbo.begin();
-                /*
-                r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
-                drawFboTexture(r.shadowFbo, null);
-                r.batch.setColor(Color.WHITE);
-                 */
                 r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
                 drawFboTexture(r.entityFbo, null);
                 r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode
@@ -486,19 +471,37 @@ public class ClientWorld {
                 r.vignetteShader.setUniformf("u_damageIntensity", blinkDelta != 0 ? Interpolation.smooth2.apply(blinkDelta) : blinkDelta);
             }
 
+            var ote = clientEntityManager.getEntitiesByTypeSorted(ClientEntityType.HEALTH_BAR, ClientEntityType.DAMAGE_INDICATOR);
+
             if(displayBlur) {
-                blurPass();
+                blurPass(r.mainFbo);
                 drawFboTexture(r.blurTargetBFbo, r.vignetteShader);
             } else {
                 drawFboTexture(r.mainFbo, r.vignetteShader);
             }
-        }
 
-        {
             // Draw light engine.
             if(!isFullDay()) {
                 r.lightEngine.setLighting(ambientLightingR, ambientLightingG, ambientLightingB, ambientLightingDarkness);
                 r.lightEngine.render();
+            }
+
+            if(!ote.isEmpty()) {
+                r.entityFbo.begin();
+                transparentScreen();
+                clientEntityManager.renderTopEntities(ote);
+                r.entityFbo.end();
+
+                ote.clear();
+
+                if(displayBlur) {
+                    r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                    blurPass(r.entityFbo);
+                    r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode cause fbo is mostly transparent
+                    drawFboTexture(r.blurTargetBFbo, r.vignetteShader);
+                } else {
+                    drawFboTexture(r.entityFbo, r.vignetteShader);
+                }
             }
         }
 
@@ -509,61 +512,6 @@ public class ClientWorld {
                 r.chunkRenderer.setColor(Color.WHITE);
                 r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE, TILE_SIZE);
                 r.chunkRenderer.end();
-
-                /*
-                var tileMap = ExpoAssets.get().getTileSheet().getTilesetTextureMap();
-                int amount = tileMap.size();
-
-                int breakLine = 0;
-                int lines = 0;
-                int space = 2;
-                int drawPerLine = 16;
-                int tileSize = 32;
-                int totalLines = amount / drawPerLine + 1;
-
-                r.hudBatch.begin();
-                r.hudBatch.setColor(Color.BLACK);
-                r.hudBatch.draw(ExpoAssets.get().textureRegion("square16x16"),
-                        r.mouseX + 50 - 4,
-                        r.mouseY + 50 - 4 - (totalLines - 1) * tileSize + ((totalLines - 1) * space) - 8,
-                        (tileSize + space) * 16 + 8,
-                        totalLines * tileSize + ((totalLines - 1) * space) + 8);
-                r.hudBatch.setColor(Color.WHITE);
-
-                for(int i = 0; i < amount; i++) {
-                    float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
-                    float tileY = r.mouseY + 50 - lines * (tileSize + space);
-
-                    r.hudBatch.draw(tileMap.get(i), tileX, tileY, tileSize, tileSize);
-
-                    breakLine++;
-
-                    if(breakLine == drawPerLine) {
-                        breakLine = 0;
-                        lines++;
-                    }
-                }
-
-                breakLine = 0;
-                lines = 0;
-
-                for(int i = 0; i < amount; i++) {
-                    float tileX = r.mouseX + 50 + (tileSize + space) * i - lines * (tileSize + space) * drawPerLine;
-                    float tileY = r.mouseY + 50 - lines * (tileSize + space);
-
-                    r.m5x7_border_all[1].draw(r.hudBatch, String.valueOf(i), tileX + 2, tileY + 14 + 9);
-
-                    breakLine++;
-
-                    if(breakLine == drawPerLine) {
-                        breakLine = 0;
-                        lines++;
-                    }
-                }
-
-                r.hudBatch.end();
-
-                 */
             }
 
             // Render debug shapes
@@ -924,7 +872,7 @@ public class ClientWorld {
         return true;
     }
 
-    private void blurPass() {
+    private void blurPass(FrameBuffer drawBuffer) {
         RenderContext r = RenderContext.get();
 
         r.blurShader.bind();
@@ -934,7 +882,8 @@ public class ClientWorld {
 
         {
             r.blurTargetAFbo.begin();
-            drawFboTexture(r.mainFbo, r.blurShader);
+            transparentScreen();
+            drawFboTexture(drawBuffer, r.blurShader); // r.mainFbo
             r.blurTargetAFbo.end();
         }
 
@@ -944,6 +893,7 @@ public class ClientWorld {
 
         {
             r.blurTargetBFbo.begin();
+            transparentScreen();
             drawFboTexture(r.blurTargetAFbo, r.blurShader);
             r.blurTargetBFbo.end();
         }
@@ -962,7 +912,6 @@ public class ClientWorld {
         TextureRegion fboTex = new TextureRegion(texture);
         fboTex.flip(false, true);
 
-        //float s = (float) Gdx.graphics.getWidth() / fboTex.getRegionWidth();
         float newWidth = fboTex.getRegionWidth() * r.expoCamera.camera.zoom;
         float newHeight = fboTex.getRegionHeight() * r.expoCamera.camera.zoom;
 

@@ -3,9 +3,6 @@ package dev.michey.expo.logic.entity.animal;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
-import dev.michey.expo.client.ExpoClient;
-import dev.michey.expo.log.ExpoLogger;
-import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -13,7 +10,6 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientCrab extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
@@ -42,6 +38,11 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, -1.5f);
+
+        ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
+        Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
+
+        spawnDamageIndicator((int) damage, clientPosX, clientPosY + 8, dir);
     }
 
     @Override

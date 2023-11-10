@@ -1111,6 +1111,32 @@
                     "hungerCooldownRestore": 30.0
                 }
             }
+        },
+        {
+            "identifier": "item_flint_spear",
+            "id": 43,
+            "displayName": "Flint Spear",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_flint_spear"
+                },
+                "held": {
+                    "texture": "item_flint_spear",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -1.5,
+                    "offsetY": 15,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 88,
+                "toolType": "WEAPON",
+                "range": 36.0,
+                "attackSpeed": 0.6
+            }
         }
     ]
 }

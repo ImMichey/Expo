@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.entity.misc;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
@@ -71,9 +72,16 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
             coal = new SpawnItem("item_coal", 2, 3);
         }
 
+        SpawnItem flint = null;
+
+        if(MathUtils.random() <= 0.5f) {
+            flint = new SpawnItem("item_flint", 1, 1);
+        }
+
         spawnItemsAround(0, 4.875f, 11, 13,
                 new SpawnItem("item_rock", rocksMin, rocksMax),
-                coal);
+                coal,
+                flint);
     }
 
     @Override

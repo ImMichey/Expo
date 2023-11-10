@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -17,8 +16,6 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ParticleBuilder;
-import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientCattail extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
@@ -39,8 +36,8 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
         float w = 0, h = 0;
 
         if(variant == 1 || variant == 2) {
-            w = 19;
-            h = 26;
+            w = 17;
+            h = 25;
         } else if(variant == 3 || variant == 4) {
             w = 14;
             h = 18;

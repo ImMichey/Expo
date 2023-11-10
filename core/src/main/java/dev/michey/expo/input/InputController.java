@@ -6,6 +6,7 @@ import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
@@ -181,12 +182,27 @@ public class InputController {
                 case Input.Keys.F12 -> RenderContext.get().toggleVsync();
                 case Input.Keys.F11 -> RenderContext.get().toggleFullscreen();
                 case Input.Keys.F10 -> RenderContext.get().takeScreenshot();
-                case Input.Keys.TAB -> ExpoClientContainer.get().getPlayerUI().toggleTablist();
-                case Input.Keys.ENTER -> ExpoClientChat.get().toggleFocus(true);
+                case Input.Keys.TAB -> onIngameTab();
+                case Input.Keys.ENTER -> onIngameEnter();
+                case Input.Keys.Q -> onIngameDrop();
                 case Input.Keys.Z, Input.Keys.Y -> RenderContext.get().expoCamera.resetZoom();
                 case Input.Keys.T -> RenderContext.get().expoCamera.cycleZoom();
             }
         }
+    }
+
+    private void onIngameTab() {
+        if(ExpoClientContainer.get() == null) return;
+        ExpoClientContainer.get().getPlayerUI().toggleTablist();
+    }
+
+    private void onIngameEnter() {
+        if(ExpoClientChat.get() == null) return;
+        ExpoClientChat.get().toggleFocus(true);
+    }
+
+    private void onIngameDrop() {
+        if(ClientPlayer.getLocalPlayer() == null) return;
     }
 
     public void onKeyUp(int keycode, boolean consoleOpen, boolean chatOpen, boolean inventoryOpen) {

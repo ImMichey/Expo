@@ -7,6 +7,7 @@ import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.arch.*;
 import dev.michey.expo.server.main.logic.inventory.ServerInventory;
@@ -113,7 +114,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     @Override
     public void onDie() {
-        playerInventory.dropAllItems(28, 56);
+        playerInventory.dropAllItems(0, 4, 32, 32);
         playerInventory.clear();
 
         // update held item
@@ -148,7 +149,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         );
 
         // chat message
-        ServerPackets.p25ChatMessage("SERVER", "Player " + username + " died.", PacketReceiver.all());
+        ExpoServerBase.get().broadcastMessage("Player " + username + " died.");
     }
 
     public void teleportPlayer(float x, float y, TeleportReason teleportReason) {

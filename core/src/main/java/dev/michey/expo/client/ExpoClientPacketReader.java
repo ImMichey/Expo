@@ -289,6 +289,9 @@ public class ExpoClientPacketReader {
     }
 
     private void applyHeldItemIds(ClientPlayer player, int[] ids) {
+        if(ids[0] != -1) {
+            player.updateHoldingItemSprite(ids[0]);
+        }
         player.holdingItemId = ids[0];
 
         player.holdingArmorHeadId = ids[1];
@@ -296,10 +299,6 @@ public class ExpoClientPacketReader {
         player.holdingArmorGlovesId = ids[3];
         player.holdingArmorLegsId = ids[4];
         player.holdingArmorFeetId = ids[5];
-
-        if(player.holdingItemId != -1) {
-            player.updateHoldingItemSprite();
-        }
 
         if(player.holdingArmorHeadId != -1) {
             player.holdingHeadRender = ItemMapper.get().getMapping(player.holdingArmorHeadId).armorRender;

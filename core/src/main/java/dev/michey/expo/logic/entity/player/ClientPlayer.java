@@ -437,7 +437,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE) {
                 new ItemMapper(true, true);
                 Expo.get().loadItemMapperTextures();
-                if(ClientPlayer.getLocalPlayer() != null) ClientPlayer.getLocalPlayer().updateHoldingItemSprite();
+                if(ClientPlayer.getLocalPlayer() != null && ClientPlayer.getLocalPlayer().holdingItemId != -1) {
+                    ClientPlayer.getLocalPlayer().updateHoldingItemSprite(holdingItemId);
+                }
             }
 
             // Sending arm rotation packet if needed
@@ -572,7 +574,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
             for(ItemRender irr : ir) {
                 if(irr.updatedAnimation) {
-                    updateHoldingItemSprite();
+                    updateHoldingItemSprite(holdingItemId);
                     break;
                 }
             }
@@ -1184,9 +1186,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
     }
 
-    public void updateHoldingItemSprite() {
-        if(holdingItemId == -1) return;
-        ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
+    public void updateHoldingItemSprite(int itemId) {
+        ItemMapping mapping = ItemMapper.get().getMapping(itemId);
         holdingItemSprites = new Sprite[mapping.heldRender.length];
 
         for(int i = 0; i < holdingItemSprites.length; i++) {

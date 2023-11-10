@@ -4,8 +4,6 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.server.packet.*;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ClientPackets {
 
     /** Sends the P0_Auth_Req packet via TCP protocol. */

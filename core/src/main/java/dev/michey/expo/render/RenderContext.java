@@ -402,6 +402,8 @@ public class RenderContext {
 
         mouseDirection = mouseX < (Gdx.graphics.getWidth() * 0.5f) ? 0 : 1;
 
+        if(ItemMapper.get() == null) return;
+
         for(ItemRender ir : ItemMapper.get().getDynamicAnimationList()) {
             TextureRegion old = ir.useTextureRegion;
 

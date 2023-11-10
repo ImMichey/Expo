@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.inventory;
 
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
@@ -236,113 +235,128 @@ public class ServerPlayerInventory extends ServerInventory {
     public void craft(CraftingRecipe recipe, boolean tryCraftAll) {
         int[] oldIds = getOwner().getEquippedItemIds();
 
-        // ================================================================================== Checking for existing input
-        boolean hasAllIngredients = true;
-        List<Pair<Integer, Integer>> slotsVisited = null;
-
-        for(int i = 0; i < recipe.inputIds.length; i++) {
-            int id = recipe.inputIds[i];
-            int amount = recipe.inputAmounts[i];
-
-            var pair = containsItem(id, amount);
-
-            if(!pair.key) {
-                hasAllIngredients = false;
-                break;
-            } else {
-                if(slotsVisited == null) slotsVisited = new LinkedList<>();
-                slotsVisited.addAll(pair.value);
-            }
-        }
-
-        if(!hasAllIngredients) return;
-        slotsVisited.sort(Comparator.comparingInt(o -> o.value));
-
-        // ================================================================================== Checking for output space
-        boolean hasSpaceForOutput = false;
         int maxStack = ItemMapper.get().getMapping(recipe.outputId).logic.maxStackSize;
-        int needToFillRemaining = recipe.outputAmount;
+        int loops = tryCraftAll ? maxStack : 1;
+        int crafted = 0;
 
-        total: for(int i = 0; i < recipe.inputIds.length; i++) {
-            int checkForId = recipe.inputIds[i];
-            int checkForAmount = recipe.inputAmounts[i];
+        InventoryChangeResult result = null;
 
-            for(var pair : slotsVisited) {
-                int slotIndex = pair.key;
-                int _id = slots[slotIndex].item.itemId;
+        while(loops > 0) {
+            loops--;
 
-                if(_id == checkForId) {
-                    if(slots[slotIndex].item.itemAmount <= checkForAmount) {
-                        hasSpaceForOutput = true;
-                        break total;
+            // ================================================================================== Checking for existing input
+            boolean hasAllIngredients = true;
+            List<Pair<Integer, Integer>> slotsVisited = null;
+
+            for(int i = 0; i < recipe.inputIds.length; i++) {
+                int id = recipe.inputIds[i];
+                int amount = recipe.inputAmounts[i];
+
+                var pair = containsItem(id, amount);
+
+                if(!pair.key) {
+                    hasAllIngredients = false;
+                    break;
+                } else {
+                    if(slotsVisited == null) slotsVisited = new LinkedList<>();
+                    slotsVisited.addAll(pair.value);
+                }
+            }
+
+            if(!hasAllIngredients) break;
+            slotsVisited.sort(Comparator.comparingInt(o -> o.value));
+
+            // ================================================================================== Checking for output space
+            boolean hasSpaceForOutput = false;
+
+            int needToFillRemaining = recipe.outputAmount;
+
+            total: for(int i = 0; i < recipe.inputIds.length; i++) {
+                int checkForId = recipe.inputIds[i];
+                int checkForAmount = recipe.inputAmounts[i];
+
+                for(var pair : slotsVisited) {
+                    int slotIndex = pair.key;
+                    int _id = slots[slotIndex].item.itemId;
+
+                    if(_id == checkForId) {
+                        if(slots[slotIndex].item.itemAmount <= checkForAmount) {
+                            hasSpaceForOutput = true;
+                            break total;
+                        }
                     }
                 }
             }
-        }
 
-        if(!hasSpaceForOutput) {
-            for(int i = 0; i < PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT; i++) {
-                ServerInventorySlot slot = slots[i];
+            if(!hasSpaceForOutput) {
+                for(int i = 0; i < PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT; i++) {
+                    ServerInventorySlot slot = slots[i];
 
-                if(slot.item.isEmpty()) {
-                    hasSpaceForOutput = true;
-                    break;
-                }
-
-                if(slot.item.itemId == recipe.outputId) {
-                    int diff = maxStack - slot.item.itemAmount;
-                    needToFillRemaining -= diff;
-
-                    if(needToFillRemaining <= 0) {
+                    if(slot.item.isEmpty()) {
                         hasSpaceForOutput = true;
                         break;
                     }
-                }
-            }
-        }
 
-        if(!hasSpaceForOutput) return;
+                    if(slot.item.itemId == recipe.outputId) {
+                        int diff = maxStack - slot.item.itemAmount;
+                        needToFillRemaining -= diff;
 
-        // ================================================================================== Actual adding/removing + packets
-        InventoryChangeResult result = new InventoryChangeResult();
-
-        // Do inventory stuff here
-        nextInput: for(int i = 0; i < recipe.inputIds.length; i++) {
-            int id = recipe.inputIds[i];
-            int amount = recipe.inputAmounts[i];
-
-            for(var entry : slotsVisited) {
-                int index = entry.key;
-
-                if(slots[index].item.itemId == id) {
-                    int slotAmount = slots[index].item.itemAmount;
-
-                    if(amount > slotAmount) {
-                        slots[index].item.setEmpty();
-                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
-                        amount -= slotAmount;
-                    } else if(amount == slotAmount) {
-                        slots[index].item.setEmpty();
-                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
-                        continue nextInput;
-                    } else {
-                        slots[index].item.itemAmount -= amount;
-                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
-                        continue nextInput;
+                        if(needToFillRemaining <= 0) {
+                            hasSpaceForOutput = true;
+                            break;
+                        }
                     }
                 }
             }
+
+            if(!hasSpaceForOutput) {
+                break;
+            }
+
+            // ================================================================================== Actual adding/removing + packets
+            result = new InventoryChangeResult();
+            crafted++;
+
+            // Do inventory stuff here
+            nextInput: for(int i = 0; i < recipe.inputIds.length; i++) {
+                int id = recipe.inputIds[i];
+                int amount = recipe.inputAmounts[i];
+
+                for(var entry : slotsVisited) {
+                    int index = entry.key;
+
+                    if(slots[index].item.itemId == id) {
+                        int slotAmount = slots[index].item.itemAmount;
+
+                        if(amount > slotAmount) {
+                            slots[index].item.setEmpty();
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
+                            amount -= slotAmount;
+                        } else if(amount == slotAmount) {
+                            slots[index].item.setEmpty();
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
+                            continue nextInput;
+                        } else {
+                            slots[index].item.itemAmount -= amount;
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, index, slots[index].item);
+                            continue nextInput;
+                        }
+                    }
+                }
+            }
+
+            var addResult = addItem(new ServerInventoryItem(recipe.outputId, recipe.outputAmount));
+            result.merge(addResult.changeResult);
         }
 
-        ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(result, PacketReceiver.player(getOwner()));
+        if(result != null) {
+            ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(result, PacketReceiver.player(getOwner()));
+            ServerPackets.p36PlayerReceiveItem(new int[] {recipe.outputId}, new int[] {recipe.outputAmount * crafted}, PacketReceiver.player(getOwner()));
 
-        var addResult = addItem(new ServerInventoryItem(recipe.outputId, recipe.outputAmount));
-        ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(addResult.changeResult, PacketReceiver.player(getOwner()));
-        ServerPackets.p36PlayerReceiveItem(new int[] {recipe.outputId}, new int[] {recipe.outputAmount}, PacketReceiver.player(getOwner()));
-
-        int[] newIds = getOwner().getEquippedItemIds();
-        boolean sameIds = Arrays.equals(oldIds, newIds);
-        if(!sameIds) getOwner().heldItemPacket(PacketReceiver.whoCanSee(getOwner()));
+            int[] newIds = getOwner().getEquippedItemIds();
+            boolean sameIds = Arrays.equals(oldIds, newIds);
+            if(!sameIds) getOwner().heldItemPacket(PacketReceiver.whoCanSee(getOwner()));
+        }
     }
 
     private boolean armorCheck(int slot, int itemId) {

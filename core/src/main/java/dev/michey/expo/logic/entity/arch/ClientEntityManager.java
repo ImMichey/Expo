@@ -13,6 +13,7 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
+import dev.michey.expo.render.visbility.TopVisibilityEntity;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
@@ -42,6 +43,7 @@ public class ClientEntityManager {
 
     /** Method helper */
     public final List<List<ClientEntity>> listOfEntities;
+    public final List<ClientEntity> listOfEntitiesSorted;
 
     /** Selectable entities */
     private final HashMap<ClientEntity, Object[]> selectableEntities;
@@ -69,6 +71,7 @@ public class ClientEntityManager {
         }
 
         listOfEntities = new LinkedList<>();
+        listOfEntitiesSorted = new LinkedList<>();
         selectableEntities = new HashMap<>();
 
         INSTANCE = this;
@@ -329,6 +332,21 @@ public class ClientEntityManager {
         if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
     }
 
+    public void renderTopEntities(List<ClientEntity> list) {
+        RenderContext rc = RenderContext.get();
+
+        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+        rc.arraySpriteBatch.begin();
+        rc.arraySpriteBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        for(ClientEntity ce : list) {
+            TopVisibilityEntity tve = (TopVisibilityEntity) ce;
+            tve.renderTop(rc, rc.delta);
+        }
+
+        rc.arraySpriteBatch.end();
+    }
+
     @SuppressWarnings("GDXJavaFlushInsideLoop")
     public void renderEntities(float delta) {
         RenderContext rc = RenderContext.get();
@@ -417,6 +435,15 @@ public class ClientEntityManager {
         }
 
         return listOfEntities;
+    }
+
+    public List<ClientEntity> getEntitiesByTypeSorted(ClientEntityType... types) {
+        for(ClientEntityType type : types) {
+            listOfEntitiesSorted.addAll(getEntitiesByType(type));
+        }
+
+        listOfEntitiesSorted.sort((o1, o2) -> Float.compare(o1.depth, o2.depth));
+        return listOfEntitiesSorted;
     }
 
     public List<List<ClientEntity>> getEntitiesByType(List<ClientEntityType> list) {

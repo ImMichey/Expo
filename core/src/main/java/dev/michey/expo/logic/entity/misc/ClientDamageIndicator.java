@@ -1,15 +1,15 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.visbility.TopVisibilityEntity;
 
-public class ClientDamageIndicator extends ClientEntity {
+public class ClientDamageIndicator extends ClientEntity implements TopVisibilityEntity {
 
     public int damageNumber;
     public Vector2 moveDir;
@@ -19,7 +19,7 @@ public class ClientDamageIndicator extends ClientEntity {
     public float scaleDelta;
     public float scaleAlpha;
 
-    private final float MAX_LIFETIME = 0.5f;
+    private final float MAX_LIFETIME = 5.5f;
     public float lifetime = MAX_LIFETIME;
     public float alpha;
     public float interpolatedAlpha;
@@ -78,9 +78,21 @@ public class ClientDamageIndicator extends ClientEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        rc.useArrayBatch();
-        rc.useRegularArrayShader();
 
+    }
+
+    @Override
+    public void renderShadow(RenderContext rc, float delta) {
+
+    }
+
+    @Override
+    public ClientEntityType getEntityType() {
+        return ClientEntityType.DAMAGE_INDICATOR;
+    }
+
+    @Override
+    public void renderTop(RenderContext rc, float delta) {
         float dx = 0;
         float tw = 0;
 
@@ -103,16 +115,6 @@ public class ClientDamageIndicator extends ClientEntity {
         }
 
         rc.arraySpriteBatch.setColor(Color.WHITE);
-    }
-
-    @Override
-    public void renderShadow(RenderContext rc, float delta) {
-
-    }
-
-    @Override
-    public ClientEntityType getEntityType() {
-        return ClientEntityType.DAMAGE_INDICATOR;
     }
 
 }

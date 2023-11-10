@@ -4,8 +4,6 @@ import dev.michey.expo.noise.BiomeType;
 
 import java.util.Random;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ExpoShared {
 
     /** Server constants */
