@@ -494,14 +494,16 @@ public class ClientWorld {
 
                 ote.clear();
 
+                r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
                 if(displayBlur) {
-                    r.batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
                     blurPass(r.entityFbo);
-                    r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); //default blend mode cause fbo is mostly transparent
                     drawFboTexture(r.blurTargetBFbo, r.vignetteShader);
                 } else {
                     drawFboTexture(r.entityFbo, r.vignetteShader);
                 }
+
+                r.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
             }
         }
 

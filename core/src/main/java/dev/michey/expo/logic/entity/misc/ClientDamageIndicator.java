@@ -19,7 +19,7 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
     public float scaleDelta;
     public float scaleAlpha;
 
-    private final float MAX_LIFETIME = 5.5f;
+    private final float MAX_LIFETIME = 0.5f;
     public float lifetime = MAX_LIFETIME;
     public float alpha;
     public float interpolatedAlpha;
