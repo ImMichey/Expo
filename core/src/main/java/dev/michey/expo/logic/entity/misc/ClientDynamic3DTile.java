@@ -3,6 +3,8 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -92,6 +94,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         }
 
         ParticleSheet.Common.spawnDynamic3DHitParticles(this);
+        spawnDamageIndicator((int) damage, clientPosX + 8 + MathUtils.random(-2f, 2f), clientPosY + textureHeight + 4, new Vector2(0, 1));
     }
 
     @Override

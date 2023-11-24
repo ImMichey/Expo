@@ -1137,6 +1137,35 @@
                 "range": 36.0,
                 "attackSpeed": 0.6
             }
+        },
+        {
+            "identifier": "item_sign",
+            "id": 44,
+            "displayName": "Sign",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_sign"
+                },
+                "held": {
+                    "texture": "item_sign",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "SIGN",
+                    "previewTexture": "entity_sign",
+                    "placeAlignmentOffsetX": 8
+                }
+            }
         }
     ]
 }

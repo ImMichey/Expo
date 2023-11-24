@@ -1,18 +1,14 @@
 package dev.michey.expo.client.serialization;
 
-import java.nio.ByteBuffer;
-
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
-import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
-import com.esotericsoftware.kryonet.FrameworkMessage.Ping;
-import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
-import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
+import com.esotericsoftware.kryonet.FrameworkMessage.*;
 import com.esotericsoftware.kryonet.serialization.Serialization;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+
+import java.nio.ByteBuffer;
 
 public class ExpoClientSerialization implements Serialization {
 
@@ -51,7 +47,7 @@ public class ExpoClientSerialization implements Serialization {
         kryo.getContext().put("connection", connection);
         kryo.writeClassAndObject(output, object);
         int totalBytes = buffer.position() - startPos;
-        if(ExpoClientContainer.get() != null) ExpoClientContainer.get().getClient().bytesOutTcp += totalBytes;
+        if(ExpoClientContainer.get() != null && ExpoClientContainer.get().getClient() != null) ExpoClientContainer.get().getClient().bytesOutTcp += totalBytes;
         output.flush();
     }
 
@@ -62,7 +58,7 @@ public class ExpoClientSerialization implements Serialization {
         kryo.getContext().put("connection", connection);
         Object o = kryo.readClassAndObject(input);
         int totalBytes = buffer.position() - startPos;
-        if(ExpoClientContainer.get() != null) ExpoClientContainer.get().getClient().bytesInTcp += totalBytes;
+        if(ExpoClientContainer.get() != null && ExpoClientContainer.get().getClient() != null) ExpoClientContainer.get().getClient().bytesInTcp += totalBytes;
         return o;
     }
 

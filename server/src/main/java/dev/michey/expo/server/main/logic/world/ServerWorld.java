@@ -6,13 +6,15 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionCave;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimensionOverworld;
-import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnDatabase;
 import dev.michey.expo.util.ExpoShared;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -60,6 +62,7 @@ public class ServerWorld {
             } catch (InterruptedException e) {
                 log("ServerWorld ExecutorService crashed");
                 e.printStackTrace();
+                executorService.shutdown();
             } catch (RejectedExecutionException ignored) { }
         }
     }

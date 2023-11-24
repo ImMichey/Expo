@@ -60,6 +60,7 @@ public class ItemSheet {
         add("item_firefly", 41, 9, 6);
         add("item_crab_claw", 42, 10, 10);
         add("item_flint_spear", 43, 30, 30);
+        add("item_sign", 33, 14, 11);
     }
 
     public TextureRegion get(String name) {

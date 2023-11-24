@@ -211,6 +211,7 @@ public class RenderContext {
                 m5x7_all[i] = generator.generateFont(parameter);
                 m5x7_all[i].getData().markupEnabled = true;
                 m5x7_all[i].getData().setLineHeight(11 * (i + 1));
+                m5x7_all[i].setUseIntegerPositions(false);
                 if(i == 0) m5x7_base = m5x7_all[i];
             }
 
@@ -223,6 +224,7 @@ public class RenderContext {
                 m5x7_shadow_all[i] = generator.generateFont(parameter);
                 m5x7_shadow_all[i].getData().markupEnabled = true;
                 m5x7_shadow_all[i].getData().setLineHeight(11 * (i + 1));
+                m5x7_shadow_all[i].setUseIntegerPositions(false);
                 if(i == 0) m5x7_shadowed = m5x7_shadow_all[i];
             }
 
@@ -237,6 +239,7 @@ public class RenderContext {
                 m5x7_border_all[i] = generator.generateFont(parameter);
                 m5x7_border_all[i].getData().markupEnabled = true;
                 m5x7_border_all[i].getData().setLineHeight(11 * (i + 1));
+                m5x7_border_all[i].setUseIntegerPositions(false);
                 if(i == 0) m5x7_bordered = m5x7_border_all[i];
             }
 
@@ -252,6 +255,7 @@ public class RenderContext {
                 parameter.size = 16 + i * 16;
                 m6x11_all[i] = generator.generateFont(parameter);
                 m6x11_all[i].getData().markupEnabled = true;
+                m6x11_all[i].setUseIntegerPositions(false);
                 if(i == 0) m6x11_base = m6x11_all[i];
             }
 
@@ -262,6 +266,7 @@ public class RenderContext {
             for(int i = 0; i < 5; i++) {
                 parameter.size = 16 + i * 16;
                 m6x11_border_all[i] = generator.generateFont(parameter);
+                m6x11_border_all[i].setUseIntegerPositions(false);
                 if(i == 0) m6x11_bordered = m6x11_border_all[i];
             }
 

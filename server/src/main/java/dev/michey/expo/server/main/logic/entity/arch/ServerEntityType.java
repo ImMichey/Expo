@@ -41,6 +41,7 @@ public enum ServerEntityType {
     OAK_TREE_SAPLING(28, "OakTreeSapling", false),
     CATTAIL(29, "Cattail", true),
     CHICKEN(30, "Chicken", true),
+    SIGN(31, "Sign", true),
     ;
 
     public final int ENTITY_ID;
@@ -86,6 +87,7 @@ public enum ServerEntityType {
             case 28 -> new ServerOakTreeSapling();
             case 29 -> new ServerCattail();
             case 30 -> new ServerChicken();
+            case 31 -> new ServerSign();
             default -> null;
         };
     }
@@ -123,6 +125,7 @@ public enum ServerEntityType {
             case "OAKTREESAPLING", "OAK_TREE_SAPLING", "SAPLING" -> new ServerOakTreeSapling();
             case "CATTAIL", "CAT_TAIL" -> new ServerCattail();
             case "CHICKEN" -> new ServerChicken();
+            case "SIGN" -> new ServerSign();
             default -> null;
         };
     }

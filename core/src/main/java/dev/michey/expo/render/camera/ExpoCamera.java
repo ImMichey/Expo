@@ -6,8 +6,8 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.GameSettings;
@@ -90,9 +90,7 @@ public class ExpoCamera {
             RenderContext.get().expoCamera.camera.zoom = newZoom;
         }
 
-        if(p.finishedWorldEnterAnimation) {
-            cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
-        }
+        cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
 
         cameraLerpMouse();
         cameraScreenShake();
@@ -105,7 +103,7 @@ public class ExpoCamera {
     }
 
     public void centerToPlayer(ClientPlayer player) {
-        center(player.finalTextureCenterX, player.clientPosY + player.textureOffsetY + 13);
+        center(player.clientPosX, player.clientPosY + player.textureOffsetY + 13);
     }
 
     public void centerToEntity(ClientEntity entity) {

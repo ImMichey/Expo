@@ -177,6 +177,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             selector.clientPosX = clientPosX;
             selector.clientPosY = clientPosY;
             entityManager().addClientSideEntity(selector);
+
+            updateTexturePositionData();
+            RenderContext.get().expoCamera.centerToPlayer(this);
         }
 
         TextureRegion baseSheet = trn("player_sheet");
@@ -247,6 +250,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
+
+        if(!player) spawnHealthBar();
     }
 
     @Override
@@ -380,29 +385,26 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         worldAnimDelta = 1.0f;
                     }
 
-                    RenderContext.get().expoCamera.centerToPlayer(this);
                     RenderContext.get().expoCamera.camera.zoom = CAMERA_ANIMATION_MIN_ZOOM + (DEFAULT_CAMERA_ZOOM - CAMERA_ANIMATION_MIN_ZOOM) * Interpolation.pow5.apply(worldAnimDelta);
                 }
             }
 
             // Player input + movement
             int xDir = 0, yDir = 0;
-            boolean sprinting = false;
+            boolean sprinting;
 
-            if(finishedWorldEnterAnimation) {
-                if(IngameInput.get().keyPressed(Input.Keys.W)) yDir += 1;
-                if(IngameInput.get().keyPressed(Input.Keys.S)) yDir -= 1;
-                if(IngameInput.get().keyPressed(Input.Keys.A)) xDir -= 1;
-                if(IngameInput.get().keyPressed(Input.Keys.D)) xDir += 1;
+            if(IngameInput.get().keyPressed(Input.Keys.W)) yDir += 1;
+            if(IngameInput.get().keyPressed(Input.Keys.S)) yDir -= 1;
+            if(IngameInput.get().keyPressed(Input.Keys.A)) xDir -= 1;
+            if(IngameInput.get().keyPressed(Input.Keys.D)) xDir += 1;
 
-                boolean defaultSprint = GameSettings.get().runDefault;
-                boolean sprintKey = IngameInput.get().keyPressed(Input.Keys.SHIFT_LEFT);
+            boolean defaultSprint = GameSettings.get().runDefault;
+            boolean sprintKey = IngameInput.get().keyPressed(Input.Keys.SHIFT_LEFT);
 
-                if(sprintKey) {
-                    sprinting = !defaultSprint;
-                } else {
-                    sprinting = defaultSprint;
-                }
+            if(sprintKey) {
+                sprinting = !defaultSprint;
+            } else {
+                sprinting = defaultSprint;
             }
 
             int numberPressed = IngameInput.get().pressedNumber();
@@ -762,8 +764,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         rc.useRegularArrayShader();
-
-        if(!player) drawHealthBar(rc, playerHealth / 100f, 24, "");
     }
 
     private void clearItemLights() {

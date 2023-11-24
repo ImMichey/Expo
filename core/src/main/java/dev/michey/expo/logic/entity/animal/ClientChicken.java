@@ -48,12 +48,8 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
-        /*
-        ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
-        Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
-
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + 8, dir);
-        */
+        spawnHealthBar();
+        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override
@@ -89,7 +85,6 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
 
             rc.useRegularArrayShader();
-            drawHealthBar(rc);
         }
     }
 

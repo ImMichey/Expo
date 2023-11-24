@@ -10,7 +10,6 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientFirefly extends ClientEntity {
@@ -56,6 +55,8 @@ public class ClientFirefly extends ClientEntity {
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
+        spawnHealthBar();
+        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override
@@ -95,7 +96,6 @@ public class ClientFirefly extends ClientEntity {
             rc.arraySpriteBatch.setColor(Color.WHITE);
 
             rc.useRegularArrayShader();
-            drawHealthBar(rc);
         }
     }
 

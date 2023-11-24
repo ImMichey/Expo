@@ -1,7 +1,7 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -13,27 +13,18 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     public int damageNumber;
     public Vector2 moveDir;
-    public TextureRegion[] damageNumbers;
 
-    public float currentScale;
-    public float scaleDelta;
-    public float scaleAlpha;
-
-    private final float MAX_LIFETIME = 0.5f;
-    public float lifetime = MAX_LIFETIME;
-    public float alpha;
-    public float interpolatedAlpha;
+    private float lifetime = 1.0f;
+    private float startX;
+    private float startY;
+    private float alpha = 1.0f;
+    private float scale = 1.0f;
 
     @Override
     public void onCreation() {
-        String numberAsString = String.valueOf(damageNumber);
-        damageNumbers = new TextureRegion[numberAsString.length()];
-
-        for(int i = 0; i < numberAsString.length(); i++) {
-            damageNumbers[i] = RenderContext.get().getNumber(Integer.parseInt(String.valueOf(numberAsString.charAt(i))));
-        }
-
         updateDepth();
+        startX = clientPosX;
+        startY = clientPosY;
     }
 
     @Override
@@ -43,37 +34,30 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     @Override
     public void tick(float delta) {
-        lifetime -= delta;
+        float LIFETIME_SPEED = 1.5f;
+        lifetime -= delta * LIFETIME_SPEED;
 
         if(lifetime <= 0) {
             entityManager().removeEntity(this);
-            return;
         } else {
-            clientPosX += -moveDir.x * delta * 24;
-            clientPosY += -moveDir.y * delta * 24;
-            clientPosY += delta * 32;
+            float _i = Interpolation.exp5Out.apply(1f - lifetime);
+            clientPosX = startX;
+            clientPosY = startY + _i * 40;
 
-            float ALPHA_BOUNDS = 0.125f;
-            float ALPHA_LOW_THRESHOLD = ALPHA_BOUNDS;
-            float ALPHA_HIGH_THRESHOLD = MAX_LIFETIME - ALPHA_BOUNDS;
-
-            if(lifetime >= ALPHA_HIGH_THRESHOLD) {
-                alpha = Math.abs(lifetime - (ALPHA_HIGH_THRESHOLD + ALPHA_LOW_THRESHOLD)) / ALPHA_LOW_THRESHOLD;
-            } else if(lifetime <= ALPHA_LOW_THRESHOLD) {
-                alpha = lifetime / ALPHA_LOW_THRESHOLD;
-            } else {
+            if(lifetime >= 0.75f) {
                 alpha = 1.0f;
+            } else {
+                alpha = Interpolation.smooth.apply(lifetime * 4 / 3);
             }
 
-            interpolatedAlpha = Interpolation.smooth2.apply(alpha);
+            if(lifetime >= 0.75f) {
+                scale = 1f + Interpolation.exp10Out.apply((lifetime - 0.75f) * 4) * 0.25f;
+            } else {
+                scale = 1f;
+            }
+
+            depth = clientPosY;
         }
-
-        float MIN_SCALE = 0.25f;
-        float MAX_SCALE = 1.0f;
-
-        scaleDelta += delta;
-        scaleAlpha = Interpolation.smooth2.apply(scaleDelta);
-        currentScale = MIN_SCALE + (Interpolation.pow4Out.apply(scaleAlpha / MAX_LIFETIME)) * (MAX_SCALE - MIN_SCALE);
     }
 
     @Override
@@ -93,28 +77,21 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     @Override
     public void renderTop(RenderContext rc, float delta) {
-        float dx = 0;
-        float tw = 0;
+        float _r = 1.0f;
+        float _g = 220f / 255f;
+        float _b = 0.0f;
 
-        float _r = 255f / 255f;
-        float _g = 28f / 255f;
-        float _b = 28f / 255f;
-        rc.arraySpriteBatch.setColor(_r, _g, _b, interpolatedAlpha);
+        BitmapFont use = rc.m5x7_border_all[0];
 
-        for(TextureRegion n : damageNumbers) {
-            tw += n.getRegionWidth() * currentScale;
-        }
+        use.getData().setScale(scale);
+        String s = String.valueOf(damageNumber);
+        rc.globalGlyph.setText(use, s);
 
-        for(TextureRegion n : damageNumbers) {
-            float w = n.getRegionWidth() * currentScale;
-            float h = n.getRegionHeight() * currentScale;
+        use.setColor(_r, _g, _b, alpha);
+        use.draw(rc.arraySpriteBatch, s, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY);
+        use.setColor(Color.WHITE);
 
-            rc.arraySpriteBatch.draw(n, clientPosX + dx - tw * 0.5f, clientPosY, w, h);
-
-            dx += w;
-        }
-
-        rc.arraySpriteBatch.setColor(Color.WHITE);
+        use.getData().setScale(1.0f);
     }
 
 }

@@ -471,7 +471,7 @@ public class ClientWorld {
                 r.vignetteShader.setUniformf("u_damageIntensity", blinkDelta != 0 ? Interpolation.smooth2.apply(blinkDelta) : blinkDelta);
             }
 
-            var ote = clientEntityManager.getEntitiesByTypeSorted(ClientEntityType.HEALTH_BAR, ClientEntityType.DAMAGE_INDICATOR);
+            var ote = clientEntityManager.getEntitiesByTypeSorted(ClientEntityType.HEALTH_BAR, ClientEntityType.DAMAGE_INDICATOR, ClientEntityType.SIGN);
 
             if(displayBlur) {
                 blurPass(r.mainFbo);

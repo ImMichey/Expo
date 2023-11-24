@@ -46,6 +46,7 @@ public enum ClientEntityType {
     OAK_TREE_SAPLING(28, "OakTreeSapling", ServerEntityType.OAK_TREE_SAPLING),
     CATTAIL(29, "Cattail", ServerEntityType.CATTAIL),
     CHICKEN(30, "Chicken", ServerEntityType.CHICKEN),
+    SIGN(31, "Sign", ServerEntityType.SIGN),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -114,6 +115,7 @@ public enum ClientEntityType {
             case 28 -> new ClientOakTreeSapling();
             case 29 -> new ClientCattail();
             case 30 -> new ClientChicken();
+            case 31 -> new ClientSign();
             default -> null;
         };
     }

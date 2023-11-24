@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.entity.animal;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -39,10 +38,8 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, -1.5f);
 
-        ClientEntity existing = entityManager().getEntityById(damageSourceEntityId);
-        Vector2 dir = existing == null ? null : new Vector2(existing.clientPosX, existing.clientPosY).sub(clientPosX, clientPosY).nor();
-
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + 8, dir);
+        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnHealthBar();
     }
 
     @Override
@@ -92,7 +89,6 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
             rc.arraySpriteBatch.draw(cf, finalDrawPosX, finalDrawPosY);
 
             rc.useRegularArrayShader();
-            drawHealthBar(rc);
         }
     }
 

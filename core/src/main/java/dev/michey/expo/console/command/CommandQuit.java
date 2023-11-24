@@ -4,6 +4,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.util.ClientStatic;
 
 public class CommandQuit extends AbstractConsoleCommand {
@@ -35,6 +36,7 @@ public class CommandQuit extends AbstractConsoleCommand {
 
             new Thread(() -> {
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
+                ExpoServerBase.get().resetInstance();
                 unlock();
             }).start();
         } else {

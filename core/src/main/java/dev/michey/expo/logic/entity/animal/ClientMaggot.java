@@ -40,6 +40,8 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity, Amb
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
+        spawnHealthBar();
+        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override
@@ -75,7 +77,6 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity, Amb
             rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
 
             rc.useRegularArrayShader();
-            drawHealthBar(rc);
         }
     }
 

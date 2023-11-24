@@ -1,41 +1,29 @@
 package dev.michey.expo.logic.container;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.ExpoClientPacketReader;
-import dev.michey.expo.console.ConsoleMessage;
-import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.ClientWorld;
-import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.ExpoServerContainer;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
-import dev.michey.expo.util.ClientUtils;
-import dev.michey.expo.util.ExpoShared;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class ExpoClientContainer {
 
@@ -86,6 +74,7 @@ public class ExpoClientContainer {
         clientWorld = new ClientWorld();
         playerUI = new PlayerUI();
         playerOnlineList = new ConcurrentHashMap<>();
+        ExpoLogger.log("ECC INIT");
         INSTANCE = this;
     }
 
@@ -248,6 +237,7 @@ public class ExpoClientContainer {
         }
 
         AudioEngine.get().killAll();
+        INSTANCE = null;
     }
 
     public ExpoClient getClient() {

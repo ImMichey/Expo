@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -307,6 +308,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         if(!cut) {
             contactAnimator.onContact();
         }
+
+        spawnDamageIndicator((int) damage, clientPosX + MathUtils.random(-2f, 2f), clientPosY + (cut ? cutTrunkHeight() : trunkHeight()) + 16, new Vector2(0, 1));
     }
 
     @Override

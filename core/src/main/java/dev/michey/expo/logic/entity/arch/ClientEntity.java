@@ -10,6 +10,7 @@ import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
+import dev.michey.expo.logic.entity.misc.ClientHealthBar;
 import dev.michey.expo.logic.entity.misc.ClientPuddle;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
@@ -20,7 +21,6 @@ import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.TeleportReason;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
@@ -70,8 +70,8 @@ public abstract class ClientEntity {
     public float textureOffsetY;    // The required offset within the texture to the draw start position
     public float textureWidth;      // Actual width of the texture you want to draw
     public float textureHeight;     // Actual height of the texture you want to draw
-    public float positionOffsetX;   // Position offset to sync server->client positions
     public float positionOffsetY;   // Position offset to sync server->client positions
+    public float positionOffsetX;   // Position offset to sync server->client positions
     public float finalDrawPosX, finalDrawPosY;                  // The world position where to draw the texture at
     public float finalTextureCenterX, finalTextureCenterY;      // The world position where the texture is at center visually
     public float finalTextureStartX, finalTextureStartY;        // The world position where the texture is starting visually
@@ -361,6 +361,17 @@ public abstract class ClientEntity {
         ClientEntityManager.get().addClientSideEntity(damageIndicator);
     }
 
+    public void spawnDamageIndicator(int damage, float posX, float posY, ClientEntity e) {
+        Vector2 dir = e == null ? null : new Vector2(clientPosX, clientPosY).sub(e.clientPosX, e.clientPosY).nor();
+
+        ClientDamageIndicator damageIndicator = new ClientDamageIndicator();
+        damageIndicator.damageNumber = damage;
+        damageIndicator.moveDir = dir == null ? new Vector2(0, 0) : dir;
+        damageIndicator.clientPosX = posX + damageIndicator.moveDir.x * 8f;
+        damageIndicator.clientPosY = posY + damageIndicator.moveDir.y * 8f;
+        ClientEntityManager.get().addClientSideEntity(damageIndicator);
+    }
+
     public void drawShadowIfVisible(TextureRegion texture) {
         RenderContext rc = RenderContext.get();
 
@@ -575,57 +586,26 @@ public abstract class ClientEntity {
         }
     }
 
-    public void drawHealthBar(RenderContext rc) {
-        var meta = EntityMetadataMapper.get().getFor(getEntityType().ENTITY_SERVER_TYPE);
-        drawHealthBar(rc, serverHealth / meta.getMaxHealth(), textureWidth, meta.getName());
-    }
+    public void spawnHealthBar() {
+        var hb = ClientEntityManager.get().getEntitiesByType(ClientEntityType.HEALTH_BAR);
+        ClientHealthBar use = null;
 
-    public void drawHealthBar(RenderContext rc, float healthPercentage, float barWidth, String suppliedName) {
-        float diff = rc.deltaTotal - lastBlink;
-        float MAX_DIFF = 2.5f;
-        if(diff >= MAX_DIFF) return;
-        float TRANS_DUR = 0.25f;
+        for(ClientEntity e : hb) {
+            ClientHealthBar chb = (ClientHealthBar) e;
 
-        float alpha = 1.0f;
-
-        if(diff <= TRANS_DUR) {
-            float dt = diff / TRANS_DUR;
-            alpha = Interpolation.smooth2.apply(dt);
-        } else if(diff >= (MAX_DIFF - TRANS_DUR)) {
-            float dt = 1f - (diff - (MAX_DIFF - TRANS_DUR)) / TRANS_DUR;
-            alpha = Interpolation.smooth2.apply(dt);
+            if(entityId == chb.parentEntity.entityId) {
+                use = chb;
+                break;
+            }
         }
 
-        if(alpha <= 0) return;
-
-        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
-
-        RenderContext r = RenderContext.get();
-        float length = Math.max(barWidth, 24) - 2;
-
-        float startX = finalTextureCenterX - length * 0.5f - 1;
-        float startY = clientPosY + textureHeight + 8;
-
-        rc.arraySpriteBatch.draw(r.hbEdge, startX, startY);
-        rc.arraySpriteBatch.draw(r.hbEdge, startX + length + 1, startY);
-
-        float lengthFilled = (healthPercentage * length);
-        float remaining = length - lengthFilled;
-
-        rc.arraySpriteBatch.draw(r.hbFilled, startX + 1, startY, lengthFilled, 3);
-        rc.arraySpriteBatch.draw(r.hbUnfilled, startX + 1 + lengthFilled, startY, remaining, 3);
-
-        rc.arraySpriteBatch.setColor(Color.WHITE);
-
-        // Draw entity name
-        rc.globalGlyph.setText(rc.m5x7_border_all[0], suppliedName);
-
-        float _x = startX + 1 + (length - rc.globalGlyph.width) * 0.5f;
-        float _y = startY + rc.globalGlyph.height + 8;
-
-        rc.m5x7_border_all[0].setColor(1.0f, 1.0f, 1.0f, alpha);
-        rc.m5x7_border_all[0].draw(rc.arraySpriteBatch, suppliedName, (int) _x, (int) _y);
-        rc.m5x7_border_all[0].setColor(Color.WHITE);
+        if(use == null) {
+            use = new ClientHealthBar();
+            use.parentEntity = this;
+            use.clientPosX = use.parentEntity.clientPosX;
+            use.clientPosY = use.parentEntity.clientPosY;
+            ClientEntityManager.get().addClientSideEntity(use);
+        }
     }
 
     public void playEntityAnimation(int animationId) {
