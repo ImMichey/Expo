@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
@@ -503,19 +504,21 @@ public class ServerChunk {
         String worldName = ExpoServerBase.get().getWorldSaveHandler().getWorldName();
         if(worldName.startsWith("dev-world-")) return;
 
+        Path path = getChunkFile().toPath();
+
         if(shutdown) {
-            new Thread(this::_onSave).start();
+            new Thread(() -> _onSave(path)).start();
         } else {
-            dimension.getChunkHandler().ioExecutorService.execute(this::_onSave);
+            dimension.getChunkHandler().ioExecutorService.execute(() -> _onSave(path));
         }
     }
 
-    private void _onSave() {
+    private void _onSave(Path path) {
         for(ServerTile tile : tiles) {
             dimension.getChunkHandler().removeNoiseCache(tile.tileX, tile.tileY);
             dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
         }
-        save();
+        save(path);
     }
 
     /** Attaches an entity to a tile within the chunk tile structure. */
@@ -595,10 +598,10 @@ public class ServerChunk {
         }
     }
 
-    public void save() {
+    public void save(Path path) {
         try {
             //log("Saving " + chunkIdentifier() + " -> " + inactiveEntities.size() + " inactive entities to save");
-            Files.writeString(getChunkFile().toPath(), chunkToSavableString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(path, chunkToSavableString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             log("Failed to save " + chunkIdentifier());
             e.printStackTrace();

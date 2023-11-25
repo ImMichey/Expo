@@ -3,6 +3,9 @@ package dev.michey.expo.util;
 import dev.michey.expo.noise.BiomeType;
 
 import java.util.Random;
+import java.util.Set;
+
+import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ExpoShared {
 
@@ -182,6 +185,27 @@ public class ExpoShared {
                 && vertices1[2] > drawStartX
                 && vertices1[1] < drawEndY
                 && vertices1[3] > drawStartY;
+    }
+
+    public static void threadDump() {
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            var all = Thread.getAllStackTraces();
+            Set<Thread> threadSet = all.keySet();
+
+            for(var x : threadSet) {
+                log(x.toString() + " . " + x.isAlive() + "/" + x.isInterrupted());
+
+                for(StackTraceElement ste : all.get(x)) {
+                    log("\t" + ste.toString());
+                }
+            }
+        }).start();
     }
 
 }

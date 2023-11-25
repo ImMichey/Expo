@@ -3,7 +3,6 @@ package dev.michey.expo.render.ui.container;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.Expo;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableItemSlot;
@@ -154,13 +153,13 @@ public class UIContainerInventory extends UIContainer {
         ui.glyphLayout.setText(r.m5x7_shadow_use, "Inventory");
         float invTextOffsetX = ((244 * ui.uiScale) - ui.glyphLayout.width) * 0.5f;
         float invTextOffsetY = ui.glyphLayout.height + (craftingOpen ? 15 * ui.uiScale : 0) + 156 * ui.uiScale;
-        r.m5x7_shadow_use.draw(r.hudBatch, "Inventory", invX + 35 * ui.uiScale + invTextOffsetX, invY + invTextOffsetY);
+        r.m5x7_shadow_use.draw(r.hudBatch, "Inventory", (int) (invX + 35 * ui.uiScale + invTextOffsetX), (int) (invY + invTextOffsetY));
 
         // Draw Crafting text
         if(craftingOpen) {
             ui.glyphLayout.setText(r.m5x7_shadow_use, "Crafting");
             float cTextOffsetX = (150 * ui.uiScale - ui.glyphLayout.width) * 0.5f;
-            r.m5x7_shadow_use.draw(r.hudBatch, "Crafting", invX + 278 * ui.uiScale + cTextOffsetX, invY + 199 * ui.uiScale + ui.glyphLayout.height);
+            r.m5x7_shadow_use.draw(r.hudBatch, "Crafting", (int) (invX + 278 * ui.uiScale + cTextOffsetX), (int) (invY + 199 * ui.uiScale + ui.glyphLayout.height));
         }
     }
 

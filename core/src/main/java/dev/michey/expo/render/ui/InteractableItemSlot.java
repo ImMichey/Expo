@@ -67,7 +67,7 @@ public class InteractableItemSlot extends InteractableUIElement {
                 float aw = parent.glyphLayout.width;
                 float ah = parent.glyphLayout.height;
 
-                r.m5x7_shadow_use.draw(r.hudBatch, amountAsText, this.ex - this.extX - aw - 1 * parent.uiScale, this.y + ah + 1 * parent.uiScale);
+                r.m5x7_shadow_use.draw(r.hudBatch, amountAsText, (int) (this.ex - this.extX - aw - 1 * parent.uiScale), (int) (this.y + ah + 1 * parent.uiScale));
             }
 
             if(mapping.logic.durability != -1) {
@@ -110,7 +110,7 @@ public class InteractableItemSlot extends InteractableUIElement {
         float w = parent.glyphLayout.width;
         float h = parent.glyphLayout.height;
 
-        r.m5x7_use.draw(r.hudBatch, text, x + (parent.slotW - w) * 0.5f, y + h + (parent.slotH - h) * 0.5f);
+        r.m5x7_use.draw(r.hudBatch, text, (int) (x + (parent.slotW - w) * 0.5f), (int) (y + h + (parent.slotH - h) * 0.5f));
     }
 
     @Override

@@ -96,6 +96,7 @@ public class RenderContext {
     public ShaderProgram simplePassthroughShader;
     public ShaderProgram aoShader;
     public ShaderProgram blinkShader;
+    public ShaderProgram whiteShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -336,6 +337,7 @@ public class RenderContext {
         simplePassthroughShader = compileShader("gl3/simple_passthrough");
         aoShader = compileShader("gl3/ao");
         blinkShader = compileShader("gl3/blink");
+        whiteShader = compileShader("gl3/white");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         lightEngine = new ExpoLightEngine();
@@ -437,7 +439,7 @@ public class RenderContext {
             float centeredTextureX = ((tileW - ir.useWidth) * 0.5f * ui.uiScale);
             float centeredTextureY = ((tileH - ir.useHeight) * 0.5f * ui.uiScale);
 
-            hudBatch.draw(tr, x + centeredTextureX + ir.offsetX * ui.uiScale * ir.scaleX, y + centeredTextureY + ir.offsetY * ui.uiScale * ir.scaleY, tr.getRegionWidth() * ir.scaleX * ui.uiScale, tr.getRegionHeight() * ir.scaleY * ui.uiScale);
+            hudBatch.draw(tr, (int) (x + centeredTextureX + ir.offsetX * ui.uiScale * ir.scaleX), (int) (y + centeredTextureY + ir.offsetY * ui.uiScale * ir.scaleY), tr.getRegionWidth() * ir.scaleX * ui.uiScale, tr.getRegionHeight() * ir.scaleY * ui.uiScale);
         }
 
         String amountAsText = String.valueOf(amount);
@@ -452,7 +454,7 @@ public class RenderContext {
         float artificialEx = x + (ui.slotW - dw) * 0.5f - ox;
         float artificialBy = y - (ui.slotH - dh) * 0.5f + oy;
 
-        m5x7_shadow_use.draw(hudBatch, amountAsText, artificialEx - 1 * ui.uiScale - aw, artificialBy + ah + 1 * ui.uiScale);
+        m5x7_shadow_use.draw(hudBatch, amountAsText, (int) (artificialEx - 1 * ui.uiScale - aw), (int) (artificialBy + ah + 1 * ui.uiScale));
     }
 
     public void drawItemTextures(ItemRender[] itemRenders, float x, float y, float tileW, float tileH) {
@@ -463,7 +465,7 @@ public class RenderContext {
             float centeredTextureX = (tileW - itemRenders[0].useWidth) * 0.5f * ui.uiScale;
             float centeredTextureY = (tileH - itemRenders[0].useHeight) * 0.5f * ui.uiScale;
 
-            hudBatch.draw(tr, x + centeredTextureX + ir.offsetX * ui.uiScale * ir.scaleX, y + centeredTextureY + ir.offsetY * ui.uiScale * ir.scaleY,
+            hudBatch.draw(tr, (int) (x + centeredTextureX + ir.offsetX * ui.uiScale * ir.scaleX), (int) (y + centeredTextureY + ir.offsetY * ui.uiScale * ir.scaleY),
                     tr.getRegionWidth() * ir.scaleX * ui.uiScale, tr.getRegionHeight() * ir.scaleY * ui.uiScale);
         }
     }

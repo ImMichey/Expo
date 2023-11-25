@@ -15,7 +15,6 @@ import dev.michey.expo.util.ExpoShared;
 
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.Set;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -105,25 +104,6 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
         getWorldSaveHandler().updateAndSave(ServerWorld.get());
         getWorldSaveHandler().getPlayerSaveHandler().saveAll();
         Gdx.app.exit();
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            var all = Thread.getAllStackTraces();
-            Set<Thread> threadSet = all.keySet();
-
-            for(var x : threadSet) {
-                log(x.toString() + " . " + x.isAlive() + "/" + x.isInterrupted());
-
-                for(StackTraceElement ste : all.get(x)) {
-                    log("\t" + ste.toString());
-                }
-            }
-        }).start();
     }
 
     @Override

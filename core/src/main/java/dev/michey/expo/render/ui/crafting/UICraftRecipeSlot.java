@@ -111,7 +111,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
             float th = ui.glyphLayout.height;
 
             rc.m5x7_use.setColor(hasIngredient ? ClientStatic.COLOR_CRAFT_GREEN : ClientStatic.COLOR_CRAFT_RED);
-            rc.m5x7_use.draw(rc.hudBatch, ingredientText, _cx + 24 * ui.uiScale, _cy + _coy + th + (24 * ui.uiScale - th) * 0.5f);
+            rc.m5x7_use.draw(rc.hudBatch, ingredientText, (int) (_cx + 24 * ui.uiScale), (int) (_cy + _coy + th + (24 * ui.uiScale - th) * 0.5f));
             rc.m5x7_use.setColor(Color.WHITE);
 
             _coy += 24 * ui.uiScale + 1 * ui.uiScale;
@@ -121,13 +121,13 @@ public class UICraftRecipeSlot extends InteractableUIElement {
 
         // Ingredients: text
         rc.m5x7_use.setColor(ClientStatic.COLOR_CRAFT_INGREDIENTS);
-        rc.m5x7_use.draw(rc.hudBatch, "Ingredients:", _cx, _iy + generalM5X7Height);
+        rc.m5x7_use.draw(rc.hudBatch, "Ingredients:", (int) _cx, (int) (_iy + generalM5X7Height));
         rc.m5x7_use.setColor(Color.WHITE);
 
         // Header line
         float headerY = _iy + generalM5X7Height + 11 * ui.uiScale;
         ui.glyphLayout.setText(rc.m6x11_use, outputText);
-        rc.m6x11_use.draw(rc.hudBatch, outputText, _cx, headerY + ui.glyphLayout.height);
+        rc.m6x11_use.draw(rc.hudBatch, outputText, (int) _cx, (int) (headerY + ui.glyphLayout.height));
 
         float endY = headerY + ui.glyphLayout.height + 4 * ui.uiScale;
         ui.drawBorderAt(rc, x, y, maxIngredientRowWidth + 2 * ui.uiScale, endY - y - 9 * ui.uiScale);
@@ -156,7 +156,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
             float aw = ui.glyphLayout.width;
             float ah = ui.glyphLayout.height;
 
-            r.m5x7_shadow_use.draw(r.hudBatch, amountAsText, this.ex - aw - 1 * ui.uiScale, this.y + ah + 1 * ui.uiScale);
+            r.m5x7_shadow_use.draw(r.hudBatch, amountAsText, (int) (this.ex - aw - 1 * ui.uiScale), (int) (this.y + ah + 1 * ui.uiScale));
         }
     }
 }
