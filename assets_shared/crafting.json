@@ -10,7 +10,8 @@
             "recipe_dirt_floor",
             "recipe_oak_wood_wall",
             "recipe_rock_wall",
-            "recipe_dirt_wall"
+            "recipe_dirt_wall",
+            "recipe_sign"
         ],
         "tools": [
             "recipe_flint_pickaxe",
@@ -287,6 +288,23 @@
                 {
                     "id": 15,
                     "amount": 3
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_sign",
+            "output": {
+                "id": 44,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 21,
+                    "amount": 2
                 }
             ]
         }

@@ -1,5 +1,6 @@
 package dev.michey.expo.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.menu.BaseMenu;
@@ -38,6 +39,11 @@ public class MenuScreen extends AbstractScreen {
 
             RenderContext.get().hudBatch.end();
         }
+    }
+
+    @Override
+    public void onActive() {
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
