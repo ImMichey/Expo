@@ -402,6 +402,17 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P43_EntityDeleteAdvanced packet via TCP protocol. */
+    public static void p43EntityDeleteAdvanced(int entityId, EntityRemovalReason reason, float damage, float newHealth, int damageSourceEntityId, PacketReceiver receiver) {
+        P43_EntityDeleteAdvanced p = new P43_EntityDeleteAdvanced();
+        p.entityId = entityId;
+        p.reason = reason;
+        p.damage = damage;
+        p.newHealth = newHealth;
+        p.damageSourceEntityId = damageSourceEntityId;
+        tcp(p, receiver);
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

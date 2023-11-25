@@ -1,6 +1,5 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -8,8 +7,6 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.*;
-import dev.michey.expo.server.util.PacketReceiver;
-import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
@@ -19,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -67,8 +65,24 @@ public class ServerChunkGrid {
         unloadAfterMillis = ExpoShared.UNLOAD_CHUNKS_AFTER_MILLIS;
         saveAfterMillis = ExpoShared.SAVE_CHUNKS_AFTER_MILLIS;
 
-        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        ioExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ThreadFactory tf = new ThreadFactory() {
+            private int nr = -1;
+            @Override
+            public Thread newThread(Runnable r) {
+                nr++;
+                return new Thread(r, "exs-" + nr);
+            }
+        };
+        ThreadFactory io = new ThreadFactory() {
+            private int nr = -1;
+            @Override
+            public Thread newThread(Runnable r) {
+                nr++;
+                return new Thread(r, "io-" + nr);
+            }
+        };
+        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tf);
+        ioExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), io);
 
         genSettings = WorldGen.get().getSettings(dimension.getDimensionName());
         WorldGenNoiseSettings settings = genSettings.getNoiseSettings();
@@ -496,7 +510,7 @@ public class ServerChunkGrid {
 
     /** Called when the server shuts down and all chunks in memory have to be saved. */
     public void saveAllChunks() {
-        log("Saving all chunks for dimension " + dimension.getDimensionName());
+        log("Saving all chunks for dimension " + dimension.getDimensionName() + " :: " + activeChunkMap.size() + " " + inactiveChunkMap.size());
         for(var v : activeChunkMap.values()) {
             v.key.onInactive();
             v.key.onSave(true);

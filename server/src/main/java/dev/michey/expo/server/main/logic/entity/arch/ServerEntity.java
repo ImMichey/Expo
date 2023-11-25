@@ -337,10 +337,10 @@ public abstract class ServerEntity {
         if(applied) {
             health -= damage;
 
-            ServerPackets.p26EntityDamage(entityId, damage, health, damageSource.entityId, PacketReceiver.whoCanSee(this));
-
             if(health <= 0) {
-                killEntityWithPacket();
+                killEntityWithAdvancedPacket(damage, health, damageSource.entityId);
+            } else {
+                ServerPackets.p26EntityDamage(entityId, damage, health, damageSource.entityId, PacketReceiver.whoCanSee(this));
             }
         }
 
@@ -403,6 +403,22 @@ public abstract class ServerEntity {
 
     public void killEntityWithPacket() {
         killEntityWithPacket(EntityRemovalReason.DEATH);
+    }
+
+    public void killEntityWithAdvancedPacket(float damage, float newHealth, int damageSourceEntityId) {
+        // Detach from internal tile entity structure if existing
+        if(tileEntity) detachFromTile(getChunkGrid().getChunkSafe(chunkX, chunkY));
+
+        onDie();
+
+        if(getEntityType() != ServerEntityType.PLAYER) {
+            getDimension().getEntityManager().removeEntitySafely(this);
+            ServerPackets.p43EntityDeleteAdvanced(entityId, EntityRemovalReason.DEATH, damage, newHealth, damageSourceEntityId, PacketReceiver.whoCanSee(this));
+            // untrack entity
+            for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
+                player.entityVisibilityController.removeTrackedEntity(entityId);
+            }
+        }
     }
 
     public void killEntityWithPacket(EntityRemovalReason reason) {

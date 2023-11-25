@@ -135,6 +135,7 @@ public class ServerWorld {
     public void cancelAll() {
         for(ServerDimension dim : getDimensions()) {
             dim.getChunkHandler().executorService.shutdown();
+            dim.getChunkHandler().ioExecutorService.shutdown();
         }
         executorService.shutdown();
     }

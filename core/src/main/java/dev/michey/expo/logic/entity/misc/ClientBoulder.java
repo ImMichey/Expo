@@ -53,7 +53,7 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
             CameraShake.invoke(1.0f, 0.33f);
         }
 
-        spawnDamageIndicator((int) damage, clientPosX + MathUtils.random(-2f, 2f), clientPosY + textureHeight + 28, new Vector2(0, 1));
+        //spawnDamageIndicator((int) damage, clientPosX + MathUtils.random(-2f, 2f), clientPosY + textureHeight + 28, new Vector2(0, 1));
     }
 
     @Override

@@ -285,6 +285,15 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P42_EntityAnimation p) {
             ClientEntity entity = entityFromId(p.entityId);
             if(entity != null) entity.playEntityAnimation(p.animationId);
+        } else if(o instanceof P43_EntityDeleteAdvanced p) {
+            ClientEntity entity = entityFromId(p.entityId);
+
+            if(entity != null) {
+                entity.serverHealth = p.newHealth;
+                entity.onDamage(p.damage, p.newHealth, p.damageSourceEntityId);
+            }
+
+            ClientEntityManager.get().removeEntity(p.entityId, p.reason);
         }
     }
 

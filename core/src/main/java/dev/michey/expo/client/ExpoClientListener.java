@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ExpoClientListener implements Listener {
 
     /** Packet queue */
-    private ConcurrentLinkedQueue<Object> incomingPacketQueue;
-    private ExpoClientPacketReader packetReader;
+    private final ConcurrentLinkedQueue<Object> incomingPacketQueue;
+    private final ExpoClientPacketReader packetReader;
 
     public ExpoClientListener(ExpoClientPacketReader packetReader) {
         this.packetReader = packetReader;

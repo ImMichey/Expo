@@ -94,7 +94,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         }
 
         ParticleSheet.Common.spawnDynamic3DHitParticles(this);
-        spawnDamageIndicator((int) damage, clientPosX + 8 + MathUtils.random(-2f, 2f), clientPosY + textureHeight + 4, new Vector2(0, 1));
+        //spawnDamageIndicator((int) damage, clientPosX + 8 + MathUtils.random(-2f, 2f), clientPosY + textureHeight + 4, new Vector2(0, 1));
     }
 
     @Override

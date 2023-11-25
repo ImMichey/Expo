@@ -104,7 +104,8 @@ public class ExpoServerRegistry {
                 P39_PlayerInteractEntity.class,
                 P40_InventoryView.class,
                 P41_InventoryViewQuit.class,
-                P42_EntityAnimation.class
+                P42_EntityAnimation.class,
+                P43_EntityDeleteAdvanced.class
         );
     }
 

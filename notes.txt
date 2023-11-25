@@ -1,7 +1,7 @@
 [Known Bugs]
 * Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer
 * AO bug, similar to above, not sure if related or separate bug
-* Sometimes server shutdown on dedicated servers is stuck due to saving
+* Sometimes the client hangs on close (due to KryoNet probably)
 
 [Stuff To Fix, Implement...]
 * Drop Items with Q

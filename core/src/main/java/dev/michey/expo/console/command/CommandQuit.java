@@ -36,7 +36,7 @@ public class CommandQuit extends AbstractConsoleCommand {
 
             new Thread(() -> {
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
-                ExpoServerBase.get().resetInstance();
+                if(ExpoServerBase.get() != null) ExpoServerBase.get().resetInstance();
                 unlock();
             }).start();
         } else {
