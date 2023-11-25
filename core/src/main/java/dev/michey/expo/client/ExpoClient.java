@@ -2,15 +2,12 @@ package dev.michey.expo.client;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.minlog.Log;
 import dev.michey.expo.client.serialization.ExpoClientSerialization;
 import dev.michey.expo.server.main.packet.ExpoServerRegistry;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ExpoShared;
 
 import java.io.IOException;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ExpoClient {
 
