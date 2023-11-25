@@ -2,6 +2,7 @@ package dev.michey.expo.server;
 
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
+import com.esotericsoftware.minlog.Log;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.main.arch.ExpoServerDedicated;
@@ -17,6 +18,7 @@ public class ServerLauncher {
 	public static void main(String[] args) {
 		// Enable logging to file + console for debugging
 		ExpoLogger.enableDualLogging("serverlogs");
+		overrideKryoLogger();
 
 		// Create a server configuration
 		ExpoServerConfiguration fileConfig = new ExpoServerConfiguration();
@@ -39,6 +41,24 @@ public class ServerLauncher {
 		// Item Mapper
 		new ItemMapper(false, false);
 		new CraftingRecipeMapping(false);
+	}
+
+	public static void overrideKryoLogger() {
+		Log.setLogger(new Log.Logger() {
+			@Override
+			public void log(int level, String category, String message, Throwable ex) {
+				String levelStr = switch (level) {
+					case 1 -> "TRACE";
+					case 2 -> "DEBUG";
+					case 3 -> "INFO";
+					case 4 -> "WARN";
+					case 5 -> "ERROR";
+					default -> "";
+				};
+
+				ExpoLogger.log("[KryoNet-" + levelStr + "] " + message);
+			}
+		});
 	}
 
 }

@@ -11,19 +11,20 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.TileMergerV2;
-import dev.michey.expo.debug.DebugGL;
-import dev.michey.expo.noise.TileLayerType;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.console.ConsoleMessage;
 import dev.michey.expo.console.GameConsole;
+import dev.michey.expo.debug.DebugGL;
 import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.input.GameInput;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
+import dev.michey.expo.server.ServerLauncher;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.ClientStatic;
@@ -81,26 +82,8 @@ public class Expo implements ApplicationListener {
 
 		if(!DEV_MODE) {
 			ExpoLogger.enableDualLogging("clientlogs");
-		} else {
-			/*
-			Delete temporary ImGui Java files in OS temp folder on each startup to fix pollution
-			File[] list = Paths.get(System.getProperty("java.io.tmpdir")).toFile().listFiles();
-
-			if(list != null) {
-				for(File f : list) {
-					if(!f.isFile() && f.getName().startsWith("imgui-java-natives_")) {
-						File dllFile = new File(f.getAbsolutePath() + File.separator + "imgui-java64.dll");
-						boolean fileDeletion = dllFile.delete();
-						boolean folderDeletion = f.delete();
-
-						if(fileDeletion && folderDeletion) {
-							ExpoLogger.log("Deleted ImGui debug dll files in temp folder: " + dllFile.getPath());
-						}
-					}
-				}
-			}
-			*/
 		}
+		ServerLauncher.overrideKryoLogger();
 
 		inactiveScreens = new HashMap<>();
 		this.gameSettings = gameSettings;

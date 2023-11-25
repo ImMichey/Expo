@@ -74,7 +74,6 @@ public class ExpoClientContainer {
         clientWorld = new ClientWorld();
         playerUI = new PlayerUI();
         playerOnlineList = new ConcurrentHashMap<>();
-        ExpoLogger.log("ECC INIT");
         INSTANCE = this;
     }
 
