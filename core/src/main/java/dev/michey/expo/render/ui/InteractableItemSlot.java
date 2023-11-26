@@ -78,11 +78,17 @@ public class InteractableItemSlot extends InteractableUIElement {
                     float percentage = (float) slot.item.itemMetadata.durability / mapping.logic.durability;
                     int space = 5;
                     int thickness = 1;
-                    float yOffset = 5 * parent.uiScale;
+                    float yOffset = 3 * parent.uiScale;
                     float fullW = parent.slotW - space * parent.uiScale * 2;
 
+                    int dbx = (int) (this.x + space * parent.uiScale);
+                    int dby = (int) (this.y + yOffset);
+
                     r.hudBatch.setColor(26f / 255f, 16f / 255f, 16f / 255f, 1.0f);
-                    r.hudBatch.draw(parent.whiteSquare, (int) (this.x + space * parent.uiScale), (int) (this.y + yOffset), fullW, thickness * parent.uiScale);
+                    r.hudBatch.draw(parent.whiteSquare, dbx - parent.uiScale, dby, fullW + 2 * parent.uiScale, thickness * parent.uiScale);
+                    r.hudBatch.draw(parent.whiteSquare, dbx, dby - parent.uiScale, fullW, thickness * parent.uiScale + 2 * parent.uiScale);
+                    r.hudBatch.setColor(39f / 255f, 24f / 255f, 24f / 255f, 1.0f);
+                    r.hudBatch.draw(parent.whiteSquare, dbx, dby, fullW, thickness * parent.uiScale);
 
                     if(percentage > 0.66f) {
                         r.hudBatch.setColor(35f / 255f, 187f / 255f, 67f / 255f, 1f);
@@ -93,7 +99,7 @@ public class InteractableItemSlot extends InteractableUIElement {
                     }
 
                     float percToPx = fullW * percentage;
-                    r.hudBatch.draw(parent.whiteSquare, (int) (this.x + space * parent.uiScale), (int) (this.y + yOffset), percToPx, thickness * parent.uiScale);
+                    r.hudBatch.draw(parent.whiteSquare, dbx, dby, percToPx, thickness * parent.uiScale);
 
                     r.hudBatch.setColor(Color.WHITE);
                 }
@@ -125,7 +131,7 @@ public class InteractableItemSlot extends InteractableUIElement {
         if(item != null && !item.isEmpty()) {
             ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
 
-            if(mapping.logic.isTool() || mapping.logic.isArmor() || mapping.logic.isTool(ToolType.NET)) {
+            if(mapping.logic.isTool() || mapping.logic.isArmor() || mapping.logic.isWeapon() || mapping.logic.isTool(ToolType.NET)) {
                 float percentage = item.itemMetadata.durability / (float) mapping.logic.durability * 100f;
                 float[] rgb = parent.percentageToColor(percentage);
                 String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();

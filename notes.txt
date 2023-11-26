@@ -1,13 +1,13 @@
 [Known Bugs]
 * Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer
 * AO bug, similar to above, not sure if related or separate bug
+* Some shift-click crafting visual glitches
 
 [Stuff To Fix, Implement...]
 * Drop Items with Q
 
 * Adjust running animation speed with entity velocity
 * Fix selection system
-* Add Flint Sword for now
 * New Oak Plank Wall textures
 
 [Long Term Fixes]

@@ -93,6 +93,13 @@ public class ItemLogic {
         }
     }
 
+    public boolean isWeapon() {
+        return isSpecialType() && (
+                toolType == ToolType.WEAPON
+                        || toolType == ToolType.BOW
+        );
+    }
+
     public boolean isArmor() {
         return isSpecialType() && (
                 toolType == ToolType.HELMET

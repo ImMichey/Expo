@@ -18,8 +18,10 @@
             "recipe_flint_axe",
             "recipe_flint_shovel",
             "recipe_flint_scythe",
+            "recipe_wood_club",
             "recipe_torch",
-            "recipe_insect_net"
+            "recipe_insect_net",
+            "recipe_wood_mask"
         ],
         "food": [
             "recipe_wheat_seeds"
@@ -146,6 +148,23 @@
                 {
                     "id": 13,
                     "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_wood_club",
+            "output": {
+                "id": 45,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 17,
+                    "amount": 3
+                },
+                {
+                    "id": 0,
+                    "amount": 1
                 }
             ]
         },
@@ -305,6 +324,19 @@
                 {
                     "id": 21,
                     "amount": 2
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_wood_mask",
+            "output": {
+                "id": 27,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 21,
+                    "amount": 3
                 }
             ]
         }

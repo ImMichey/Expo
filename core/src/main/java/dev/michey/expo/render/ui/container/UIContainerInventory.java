@@ -1,6 +1,7 @@
 package dev.michey.expo.render.ui.container;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.Expo;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
@@ -149,17 +150,36 @@ public class UIContainerInventory extends UIContainer {
             }
         }
 
+        int borderGap = 4;
+
         // Draw inventory text [244]
         ui.glyphLayout.setText(r.m5x7_shadow_use, "Inventory");
         float invTextOffsetX = ((244 * ui.uiScale) - ui.glyphLayout.width) * 0.5f;
         float invTextOffsetY = ui.glyphLayout.height + (craftingOpen ? 15 * ui.uiScale : 0) + 156 * ui.uiScale;
-        r.m5x7_shadow_use.draw(r.hudBatch, "Inventory", (int) (invX + 35 * ui.uiScale + invTextOffsetX), (int) (invY + invTextOffsetY));
+
+        {
+            int cpx = (int) (invX + 35 * ui.uiScale + invTextOffsetX);
+            int cpy = (int) (invY + invTextOffsetY);
+
+            r.hudBatch.setColor(0f, 0f, 0f, 0.25f);
+            r.hudBatch.draw(r.square, cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
+
+            r.hudBatch.setColor(Color.WHITE);
+            r.m5x7_shadow_use.draw(r.hudBatch, "Inventory", cpx, cpy);
+        }
 
         // Draw Crafting text
         if(craftingOpen) {
             ui.glyphLayout.setText(r.m5x7_shadow_use, "Crafting");
             float cTextOffsetX = (150 * ui.uiScale - ui.glyphLayout.width) * 0.5f;
-            r.m5x7_shadow_use.draw(r.hudBatch, "Crafting", (int) (invX + 278 * ui.uiScale + cTextOffsetX), (int) (invY + 199 * ui.uiScale + ui.glyphLayout.height));
+            int cpx = (int) (invX + 278 * ui.uiScale + cTextOffsetX);
+            int cpy = (int) (invY + 199 * ui.uiScale + ui.glyphLayout.height);
+
+            r.hudBatch.setColor(0f, 0f, 0f, 0.25f);
+            r.hudBatch.draw(r.square, cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
+
+            r.hudBatch.setColor(Color.WHITE);
+            r.m5x7_shadow_use.draw(r.hudBatch, "Crafting", cpx, cpy);
         }
     }
 
@@ -200,7 +220,7 @@ public class UIContainerInventory extends UIContainer {
                 var el = craftRecipeSlots[i];
                 int x = i % 5;
                 int y = i / 5;
-                el.update(invX + 390 * ui.uiScale - x * ui.slotW - ui.uiScale * x, invY + 4 * ui.uiScale + y * ui.slotH + ui.uiScale * y, ui.slotW, ui.slotH, ui.uiScale, 2 * ui.uiScale * (y == 4 ? 0 : 1));
+                el.update(invX + 390 * ui.uiScale - x * ui.slotW - ui.uiScale * x, invY + 4 * ui.uiScale + y * ui.slotH + ui.uiScale * y, ui.slotW, ui.slotH, ui.uiScale, ui.uiScale * (y == 4 ? 0 : 1));
             }
         } else {
             craftOpenButton.update(invX + 282 * ui.uiScale, invY + 63 * ui.uiScale, ui.slotW, ui.slotH);

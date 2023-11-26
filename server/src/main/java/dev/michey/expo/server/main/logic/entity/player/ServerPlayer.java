@@ -292,6 +292,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 float currentAngle = convertedStartAngle - usePunchSpan * punchDelta / punchDeltaFinish * usePunchDirection;
                 float convertedAngle = currentAngle < 0 ? 360f + currentAngle : currentAngle;
                 Collection<ServerEntity> check = getDimension().getEntityManager().getAllDamageableEntities();
+                int removeDurability = 0;
 
                 for(ServerEntity se : check) {
                     if(se.entityId == entityId) continue;
@@ -309,6 +310,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                         boolean applied = se.applyDamageWithPacket(this, usePunchDamage);
 
                         if(applied) {
+                            removeDurability++;
                             ServerPackets.p24PositionalSound("slap", se.posX, se.posY, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(se));
 
                             // Apply knockback.
@@ -321,6 +323,10 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                             }
                         }
                     }
+                }
+
+                if(removeDurability > 0) {
+                    useItemDurability(getCurrentItem());
                 }
             }
         }
