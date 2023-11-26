@@ -78,15 +78,15 @@ public class InteractableItemSlot extends InteractableUIElement {
                     float percentage = (float) slot.item.itemMetadata.durability / mapping.logic.durability;
                     int space = 5;
                     int thickness = 1;
-                    float yOffset = 3 * parent.uiScale;
+                    float yOffset = 4 * parent.uiScale;
                     float fullW = parent.slotW - space * parent.uiScale * 2;
 
                     int dbx = (int) (this.x + space * parent.uiScale);
                     int dby = (int) (this.y + yOffset);
 
                     r.hudBatch.setColor(26f / 255f, 16f / 255f, 16f / 255f, 1.0f);
-                    r.hudBatch.draw(parent.whiteSquare, dbx - parent.uiScale, dby, fullW + 2 * parent.uiScale, thickness * parent.uiScale);
-                    r.hudBatch.draw(parent.whiteSquare, dbx, dby - parent.uiScale, fullW, thickness * parent.uiScale + 2 * parent.uiScale);
+                    r.hudBatch.draw(parent.whiteSquare, dbx - 1, dby, fullW + 2, thickness * parent.uiScale);
+                    r.hudBatch.draw(parent.whiteSquare, dbx, dby - 1, fullW, thickness * parent.uiScale + 2);
                     r.hudBatch.setColor(39f / 255f, 24f / 255f, 24f / 255f, 1.0f);
                     r.hudBatch.draw(parent.whiteSquare, dbx, dby, fullW, thickness * parent.uiScale);
 

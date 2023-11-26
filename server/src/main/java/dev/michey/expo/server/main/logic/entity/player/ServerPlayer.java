@@ -325,7 +325,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     }
                 }
 
-                if(removeDurability > 0) {
+                if(removeDurability > 0 && getCurrentItem().isBreakableItem()) {
                     useItemDurability(getCurrentItem());
                 }
             }

@@ -67,6 +67,12 @@ public class ServerInventoryItem {
         return null;
     }
 
+    public boolean isBreakableItem() {
+        if(itemMetadata == null) return false;
+        return itemMetadata.toolType == ToolType.AXE || itemMetadata.toolType == ToolType.PICKAXE || itemMetadata.toolType == ToolType.SCYTHE || itemMetadata.toolType == ToolType.SHOVEL
+                || itemMetadata.toolType == ToolType.WEAPON || itemMetadata.toolType == ToolType.BOW;
+    }
+
     public boolean isTool(ToolType type) {
         if(itemMetadata == null) return false;
         return itemMetadata.toolType == type;

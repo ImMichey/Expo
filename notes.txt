@@ -2,6 +2,7 @@
 * Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer
 * AO bug, similar to above, not sure if related or separate bug
 * Some shift-click crafting visual glitches
+* Sometimes entities are not being deleted instantly (only happens in multiplayer?)
 
 [Stuff To Fix, Implement...]
 * Drop Items with Q
