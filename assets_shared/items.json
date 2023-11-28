@@ -1163,11 +1163,12 @@
                 "stackSize": 1,
                 "durability": 88,
                 "toolType": "WEAPON",
-                "range": 32.0,
+                "range": 26.0,
                 "attackSpeed": 0.5,
                 "attackDamage": 18.0,
                 "attackAngleSpan": 225.0,
-                "attackKnockbackStrength": 24.0
+                "attackKnockbackStrength": 20.0,
+                "attackKnockbackDuration": 0.15
             }
         }
     ]

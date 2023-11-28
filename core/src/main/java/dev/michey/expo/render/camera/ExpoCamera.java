@@ -104,8 +104,7 @@ public class ExpoCamera {
 
     public void centerToPlayer(ClientPlayer player) {
         center(player.clientPosX, player.clientPosY + player.textureOffsetY + 13);
-        movementPosition = null;
-        mousePosition = null;
+        resetLerp();
     }
 
     public void centerToEntity(ClientEntity entity) {

@@ -34,11 +34,20 @@ public class InteractableItemSlot extends InteractableUIElement {
     }
 
     public void drawContents(ClientInventorySlot slot) {
+        if(selected) {
+            RenderContext r = RenderContext.get();
+            PlayerUI parent = PlayerUI.get();
+
+            float mw = parent.slotSelectionMarker.getRegionWidth() * parent.uiScale;
+            float mh = parent.slotSelectionMarker.getRegionHeight() * parent.uiScale;
+
+            r.hudBatch.draw(parent.slotSelectionMarker, x + (w - mw) * 0.5f, y + h - mh - parent.uiScale, mw, mh);
+        }
+
         if(slot.item != null && !slot.item.isEmpty()) {
+            RenderContext r = RenderContext.get();
             PlayerUI parent = PlayerUI.get();
             ItemMapping mapping = ItemMapper.get().getMapping(slot.item.itemId);
-
-            RenderContext r = RenderContext.get();
             r.hudBatch.setColor(0f, 0f, 0f, 0.125f);
 
             for(ItemRender ir : mapping.uiRender) {

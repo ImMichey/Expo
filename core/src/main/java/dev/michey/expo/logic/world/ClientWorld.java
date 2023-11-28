@@ -1154,18 +1154,20 @@ public class ClientWorld {
             // Draw reflections
             rc.batch.end();
             rc.arraySpriteBatch.begin();
-            rc.arraySpriteBatch.setColor(Color.WHITE);
 
             for(ClientEntity entity : clientEntityManager.getDepthEntityList()) {
                 // TODO: Possible optimization, check for visibleForRender && chunk.visible before drawing
                 if(!entity.drawReflection) continue;
                 if(!(entity instanceof ReflectableEntity reflectableEntity)) continue;
+                rc.arraySpriteBatch.setColor(0.666f, 0.875f, 1.0f, 1.0f);
                 reflectableEntity.renderReflection(rc, rc.delta);
             }
 
             for(ClientEntity puddles : clientEntityManager.getEntitiesByType(ClientEntityType.PUDDLE)) {
                 ((ClientPuddle) puddles).renderReflection(rc, rc.delta);
             }
+
+            rc.arraySpriteBatch.setColor(Color.WHITE);
 
             rc.arraySpriteBatch.end();
             rc.batch.begin();

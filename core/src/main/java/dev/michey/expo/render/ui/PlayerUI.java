@@ -114,6 +114,8 @@ public class PlayerUI {
     public final TextureRegion tooltipFillerLight;
     public final TextureRegion tooltipFillerCrafting;
 
+    public final TextureRegion slotSelectionMarker;
+
     public UIContainer currentContainer = null;
 
     /** Singleton instance */
@@ -124,6 +126,7 @@ public class PlayerUI {
         invSlotS = tr("inv_slotS");
 
         hotbarBase = tr("hotbar_base");
+        slotSelectionMarker = tr("selected_slot_indicator");
 
         TextureRegion tab = tr("tab");
 

@@ -1504,7 +1504,7 @@ entity_mushroom_redn
   index: -1
 entity_mushroom_redn_ao
   rotate: false
-  xy: 331, 209
+  xy: 1397, 1991
   size: 4, 2
   orig: 4, 2
   offset: 0, 0
@@ -1854,7 +1854,7 @@ entity_zombie
   index: -1
 entity_zombie_blink
   rotate: false
-  xy: 1397, 1992
+  xy: 565, 1439
   size: 4, 1
   orig: 4, 1
   offset: 0, 0
@@ -2449,7 +2449,7 @@ item_shadow_1
   index: -1
 item_shadow_2
   rotate: false
-  xy: 49, 5
+  xy: 378, 722
   size: 4, 3
   orig: 4, 3
   offset: 0, 0
@@ -2540,7 +2540,7 @@ mushroom_brown_var2
   index: -1
 mushroom_proximity_shadow
   rotate: false
-  xy: 378, 723
+  xy: 331, 209
   size: 6, 2
   orig: 6, 2
   offset: 0, 0
@@ -2617,7 +2617,7 @@ player_arm_r
   index: -1
 player_blink
   rotate: false
-  xy: 565, 1439
+  xy: 565, 1433
   size: 4, 1
   orig: 4, 1
   offset: 0, 0
@@ -3098,6 +3098,13 @@ rainsplash_4
   orig: 7, 5
   offset: 0, 0
   index: -1
+selected_slot_indicator
+  rotate: false
+  xy: 49, 5
+  size: 5, 3
+  orig: 5, 3
+  offset: 0, 0
+  index: -1
 selector
   rotate: false
   xy: 348, 963
@@ -3317,7 +3324,7 @@ ui_discord
   index: -1
 ui_entity_healthbar
   rotate: false
-  xy: 58, 5
+  xy: 59, 5
   size: 3, 3
   orig: 3, 3
   offset: 0, 0

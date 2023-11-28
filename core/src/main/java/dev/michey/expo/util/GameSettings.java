@@ -16,6 +16,7 @@ public class GameSettings {
 
     private static GameSettings INSTANCE;
     private final String SETTINGS_FILE_NAME = "settings.json";
+    public int maxTickRate = 60;
 
     // Window variables
     public int preferredWidth = 1280;

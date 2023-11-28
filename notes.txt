@@ -3,6 +3,7 @@
 * AO bug, similar to above, not sure if related or separate bug
 * Some shift-click crafting visual glitches
 * Sometimes entities are not being deleted instantly (only happens in multiplayer?)
+* Head armor glitches (not implemented properly yet)
 
 [Stuff To Fix, Implement...]
 * Drop Items with Q

@@ -2,6 +2,8 @@ package dev.michey.expo;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
@@ -29,6 +31,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ClientUtils;
+import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
 import imgui.ImFontAtlas;
 import imgui.ImGui;
@@ -66,7 +69,6 @@ public class Expo implements ApplicationListener {
 	private final GameSettings gameSettings;
 
 	public Expo(GameSettings gameSettings) {
-		// Enable logging to file + console for debugging
 		if(gameSettings.enableDebugMode) DEV_MODE = true;
 
 		if(gameSettings.zoomLevel == 0) {
@@ -80,13 +82,30 @@ public class Expo implements ApplicationListener {
 			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 2;
 		}
 
+		// Enable logging to file + console for debugging
 		if(!DEV_MODE) {
 			ExpoLogger.enableDualLogging("clientlogs");
 		}
+
 		ServerLauncher.overrideKryoLogger();
 
 		inactiveScreens = new HashMap<>();
 		this.gameSettings = gameSettings;
+
+		{
+			// Find the max refresh rate for local server tick rate
+			int proposedRefreshRate = 60;
+
+			for(Graphics.DisplayMode dm : Lwjgl3ApplicationConfiguration.getDisplayModes()) {
+				if(dm.refreshRate > proposedRefreshRate) {
+					proposedRefreshRate = dm.refreshRate;
+				}
+			}
+
+			this.gameSettings.maxTickRate = proposedRefreshRate;
+			ExpoShared.DEFAULT_LOCAL_TICK_RATE = proposedRefreshRate;
+			ExpoLogger.log("Using maxTickRate: " + proposedRefreshRate);
+		}
 	}
 
 	@Override
