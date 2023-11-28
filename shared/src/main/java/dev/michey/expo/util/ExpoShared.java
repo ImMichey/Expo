@@ -64,9 +64,9 @@ public class ExpoShared {
     public static final float PLAYER_DEFAULT_ATTACK_SPEED = 0.4f;
     public static final float PLAYER_DEFAULT_ATTACK_DAMAGE = 10.0f;
     public static final float PLAYER_DEFAULT_HARVEST_SPEED = 10.0f;
-    public static final float PLAYER_DEFAULT_ATTACK_ANGLE_SPAN = 180;
-    public static final float PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH = 12.0f;
-    public static final float PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION = 0.25f;
+    public static final float PLAYER_DEFAULT_ATTACK_ANGLE_SPAN = 180;                   // Attack Angle Span
+    public static final float PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH = 12.0f;         // Knockback Strength
+    public static final float PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION = 0.25f;         // Knockback Duration
     public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / 60f;
 
     public static final int CRAFTING_CATEGORY_MISC = 0;

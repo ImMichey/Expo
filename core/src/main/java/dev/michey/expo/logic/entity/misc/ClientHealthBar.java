@@ -50,7 +50,7 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
     public void drawHealthBar(RenderContext rc) {
         var meta = EntityMetadataMapper.get().getFor(parentEntity.getEntityType().ENTITY_SERVER_TYPE);
         String name = parentEntity.getEntityType() == ClientEntityType.PLAYER ? null : meta.getName();
-        float offsetY = parentEntity.getEntityType() == ClientEntityType.PLAYER ? 8 : 0;
+        float offsetY = meta.getHealthBarOffsetY();
         drawHealthBar(rc, parentEntity.serverHealth / meta.getMaxHealth(), parentEntity.textureWidth, offsetY, name);
     }
 

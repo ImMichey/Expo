@@ -1167,7 +1167,35 @@
                 "attackSpeed": 0.5,
                 "attackDamage": 18.0,
                 "attackAngleSpan": 225.0,
-                "attackKnockbackStrength": 20.0
+                "attackKnockbackStrength": 22.0,
+                "attackKnockbackDuration": 0.35
+            }
+        },
+        {
+            "identifier": "item_flint_dagger",
+            "id": 46,
+            "displayName": "Flint Dagger",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_flint_dagger"
+                },
+                "held": {
+                    "texture": "item_flint_dagger",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2.0,
+                    "offsetY": 6.5,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 142,
+                "toolType": "WEAPON",
+                "attackSpeed": 0.25,
+                "attackDamage": 9.0,
+                "attackKnockbackStrength": 10.0
             }
         }
     ]

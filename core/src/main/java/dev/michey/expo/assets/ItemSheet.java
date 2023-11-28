@@ -35,7 +35,7 @@ public class ItemSheet {
         add("item_rock", 16, 8, 7);
         add("item_oak_log", 17, 15, 15);
         add("item_acorn", 18, 12, 12);
-        add("item_mushroom_red", 19, 8, 8);
+        add("item_mushroom_red", 19, 8, 9);
         add("item_mushroom_brown", 20, 8, 9);
         add("item_oak_plank", 21, 14, 11);
         add("item_mushroom_glowing", 22, 8, 9);
@@ -61,6 +61,7 @@ public class ItemSheet {
         add("item_crab_claw", 42, 10, 10);
         add("item_sign", 44, 16, 17);
         add("item_wood_club", 43, 16, 16);
+        add("item_flint_dagger", 45, 11, 11);
     }
 
     public TextureRegion get(String name) {

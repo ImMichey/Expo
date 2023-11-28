@@ -48,6 +48,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     private boolean dirResetPacket = false;
 
     public boolean noclip = false;
+    public boolean god = false;
 
     public int playerDirection = 1; // default in client
 
@@ -269,7 +270,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                             if(!used && fist) {
                                 selected.applyDamageWithPacket(this, dmg);
                             }
-                        } else {
+                        }  else {
                             for(ToolType checkFor : selected.damageableWith) {
                                 if(checkFor == ToolType.FIST) {
                                     selected.applyDamageWithPacket(this, dmg);
@@ -443,6 +444,12 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public void removeHunger(float remove) {
         hunger -= remove;
         if(hunger < 0) hunger = 0;
+    }
+
+    @Override
+    public boolean onDamage(ServerEntity damageSource, float damage) {
+        if(god) return false;
+        return super.onDamage(damageSource, damage);
     }
 
     public void parsePunchPacket(P16_PlayerPunch p) {

@@ -18,6 +18,7 @@
             "recipe_flint_axe",
             "recipe_flint_shovel",
             "recipe_flint_scythe",
+            "recipe_flint_dagger",
             "recipe_wood_club",
             "recipe_torch",
             "recipe_insect_net",
@@ -148,6 +149,23 @@
                 {
                     "id": 13,
                     "amount": 4
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_flint_dagger",
+            "output": {
+                "id": 46,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 13,
+                    "amount": 3
                 }
             ]
         },

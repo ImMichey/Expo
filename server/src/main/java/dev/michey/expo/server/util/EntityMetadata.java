@@ -34,6 +34,13 @@ public class EntityMetadata {
         return object.getFloat(key);
     }
 
+    public float getHealthBarOffsetY() {
+        if(object.has("healthBar.offsetY")) {
+            return getFloat("healthBar.offsetY");
+        }
+        return 0;
+    }
+
     public LinkedList<ServerEntityType> getEntityTypes(String key, LinkedList<ServerEntityType> fallback) {
         if(object.has(key)) {
             LinkedList<ServerEntityType> list = new LinkedList<>();

@@ -55,7 +55,7 @@ public class UIContainerInventory extends UIContainer {
 
         craftGroupCategoryButtons = new UICraftGroupCategory[4];
         craftGroupCategoryButtons[0] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_MISC, "misc", "Misc");
-        craftGroupCategoryButtons[1] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_TOOLS, "tools", "Tools");
+        craftGroupCategoryButtons[1] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_TOOLS, "tools", "Tools & Armor");
         craftGroupCategoryButtons[2] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_FOOD, "food", "Food");
         craftGroupCategoryButtons[3] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_3, null, "Unknown");
 

@@ -254,8 +254,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         if(cut) {
             finalDrawPosX = clientPosX - cutTrunkWidth() * 0.5f;
             finalDrawPosY = clientPosY;
-            finalSelectionDrawPosX = clientPosX - cutTrunkWidth() * 0.5f - 1;  // Avoid when using Texture classes
-            finalSelectionDrawPosY = finalDrawPosY - 1;                     // Avoid when using Texture classes
+            finalSelectionDrawPosX = clientPosX - cutTrunkWidth() * 0.5f - 1;   // Avoid when using Texture classes
+            finalSelectionDrawPosY = finalDrawPosY - 1;                         // Avoid when using Texture classes
 
             finalTextureStartX = clientPosX - cutTrunkWidth() * 0.5f;
             finalTextureStartY = finalDrawPosY;

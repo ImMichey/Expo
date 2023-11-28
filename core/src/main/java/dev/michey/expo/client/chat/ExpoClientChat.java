@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import static dev.michey.expo.log.ExpoLogger.*;
+import static dev.michey.expo.log.ExpoLogger.logch;
 
 public class ExpoClientChat {
 
@@ -679,8 +679,12 @@ public class ExpoClientChat {
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-            float a1 = focused ? 0.75f : 0.50f;
-            float a2 = focused ? 0.50f : 0.25f;
+            float a1 = 0.50f;
+            float a2 = 0.25f;
+            if(focused) {
+                a1 += 0.25f;
+                a2 += 0.25f;
+            }
             float tbh = 15 * chatUiScale;
 
             shapeRenderer.setColor(0f, 0f, 0f, a1);
@@ -714,10 +718,10 @@ public class ExpoClientChat {
             }
 
             // Draw console history
-            if(messageHistory.size() > 0) {
+            if(!messageHistory.isEmpty()) {
                 batch.begin();
 
-                int yOffset = 0;
+                float yOffset = 0;
                 int linesDisplayed = 0;
 
                 for(int i = 0; i < displayEntries; i++) {
@@ -732,7 +736,7 @@ public class ExpoClientChat {
                     historyGlyph.setText(chatUseFont, "[" + entry.sender + "] ");
                     float timerWidth = historyGlyph.width;
                     float timerHeight = historyGlyph.height;
-                    float borderShadowAdjustment = 0;
+                    //float borderShadowAdjustment = 0;
 
                     if(entry.lines == 1) {
                         // Single liner, easy handling.
@@ -740,11 +744,11 @@ public class ExpoClientChat {
                         linesDisplayed += 1;
 
                         // Draw console message timer
-                        chatUseFont.draw(batch, colorPrefix + "[" + entry.sender + "] ", textStartX, textStartY + 8 * chatUiScale + yOffset);
+                        chatUseFont.draw(batch, colorPrefix + "[" + entry.sender + "] ", textStartX, (int) (textStartY + 8 * chatUiScale + yOffset));
 
                         // Draw console message body
-                        chatUseFont.draw(batch, entry.message, textStartX + timerWidth, textStartY + 8 * chatUiScale + yOffset);
-                        yOffset += 4 * chatUiScale - borderShadowAdjustment;
+                        chatUseFont.draw(batch, entry.message, (int) (textStartX + timerWidth), (int) (textStartY + 8 * chatUiScale + yOffset));
+                        yOffset += 4 * chatUiScale;
                     } else {
                         // Multi line, could possibly be cut up on top/bottom.
                         int topCap = historyLinesTotal - 1 - displayFromLineIndex;
@@ -759,12 +763,12 @@ public class ExpoClientChat {
                             linesDisplayed += entry.lines;
 
                             // Draw console message timer
-                            chatUseFont.draw(batch, colorPrefix + "[" + entry.sender + "] ", textStartX, textStartY + 8 * chatUiScale + yOffset);
+                            chatUseFont.draw(batch, colorPrefix + "[" + entry.sender + "] ", textStartX, (int) (textStartY + 8 * chatUiScale + yOffset));
 
                             // Draw console message body
-                            chatUseFont.draw(batch, entry.message, textStartX + timerWidth, textStartY + 8 * chatUiScale + yOffset, CHAT_HISTORY_TARGET_WIDTH - timerWidth, Align.left, true);
+                            chatUseFont.draw(batch, entry.message, (int) (textStartX + timerWidth), (int) (textStartY + 8 * chatUiScale + yOffset), (int) (CHAT_HISTORY_TARGET_WIDTH - timerWidth), Align.left, true);
                             i += entry.lines - 1;
-                            yOffset += 4 * chatUiScale - borderShadowAdjustment;
+                            yOffset += (4 * chatUiScale);
                         } else {
                             if (entry.endIndex > topCap && entry.startIndex < bottomCap) {
                                 // Bottom line(s) and top line(s) are cut off.
@@ -775,10 +779,10 @@ public class ExpoClientChat {
 
                                 for (int x = 0; x < toShow; x++) {
                                     yOffset += timerHeight;
-                                    chatUseFont.draw(batch, entry.strLines[x + h1], textStartX + timerWidth, textStartY + 8 * chatUiScale + yOffset);
-                                    yOffset += 4 * chatUiScale;
+                                    chatUseFont.draw(batch, entry.strLines[x + h1], (int) (textStartX + timerWidth), (int) (textStartY + 8 * chatUiScale + yOffset));
+                                    yOffset += (4 * chatUiScale);
                                 }
-                                yOffset -= borderShadowAdjustment;
+                                //yOffset -= (int) borderShadowAdjustment;
 
                                 linesDisplayed += toShow;
                                 i += toShow;
@@ -791,10 +795,10 @@ public class ExpoClientChat {
                                     yOffset += timerHeight;
                                     if (x == toShow - 1) {
                                         // Draw console message timer
-                                        chatUseFont.draw(batch, colorPrefix + "[" + entry.sender + "] ", textStartX, textStartY + 8 * chatUiScale + yOffset);
+                                        chatUseFont.draw(batch, colorPrefix + "[" + entry.sender + "] ", textStartX, (int) (textStartY + 8 * chatUiScale + yOffset));
                                     }
-                                    chatUseFont.draw(batch, entry.strLines[hidden + x], textStartX + timerWidth, textStartY + 8 * chatUiScale + yOffset);
-                                    yOffset += 4 * chatUiScale - borderShadowAdjustment;
+                                    chatUseFont.draw(batch, entry.strLines[hidden + x], (int) (textStartX + timerWidth), (int) (textStartY + 8 * chatUiScale + yOffset));
+                                    yOffset += (4 * chatUiScale);
                                 }
 
                                 linesDisplayed += toShow - 1;
@@ -806,10 +810,10 @@ public class ExpoClientChat {
 
                                 for (int x = 0; x < toShow; x++) {
                                     yOffset += timerHeight;
-                                    chatUseFont.draw(batch, entry.strLines[x], textStartX + timerWidth, textStartY + 8 * chatUiScale + yOffset);
-                                    yOffset += 4 * chatUiScale;
+                                    chatUseFont.draw(batch, entry.strLines[x], (int) (textStartX + timerWidth), (int) (textStartY + 8 * chatUiScale + yOffset));
+                                    yOffset += (4 * chatUiScale);
                                 }
-                                yOffset -= borderShadowAdjustment;
+                                //yOffset -= borderShadowAdjustment;
 
                                 linesDisplayed += toShow;
                                 i += toShow;

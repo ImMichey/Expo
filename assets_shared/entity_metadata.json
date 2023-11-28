@@ -42,7 +42,8 @@
         "ai.attackRange": 16.0
     },
     "PLAYER": {
-        "maxHp": 100
+        "maxHp": 100,
+        "healthBar.offsetY": 8.0
     },
     "CHICKEN": {
         "name": "Chicken",
@@ -90,7 +91,8 @@
         "ai.strollSpeed": 32.0,
         "ai.fleeMin": 6.0,
         "ai.fleeMax": 8.0,
-        "ai.fleeSpeed": 48.0
+        "ai.fleeSpeed": 48.0,
+        "healthBar.offsetY": 16.0
     },
     "OAK_TREE": {
         "maxHp.var1": 120.0,
