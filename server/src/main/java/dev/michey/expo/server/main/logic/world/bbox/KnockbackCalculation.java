@@ -28,7 +28,7 @@ public class KnockbackCalculation {
             elapsed = knockbackDuration;
         }
 
-        float interpolated = Interpolation.pow2InInverse.apply(elapsed / knockbackDuration);
+        float interpolated = Interpolation.pow3Out.apply(elapsed / knockbackDuration);
 
         float kx = interpolated * knockbackStrength * knockbackDirection.x;
         float ky = interpolated * knockbackStrength * knockbackDirection.y;

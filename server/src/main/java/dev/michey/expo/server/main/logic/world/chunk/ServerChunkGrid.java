@@ -510,7 +510,7 @@ public class ServerChunkGrid {
 
     /** Called when the server shuts down and all chunks in memory have to be saved. */
     public void saveAllChunks() {
-        log("Saving all chunks for dimension " + dimension.getDimensionName() + " :: " + activeChunkMap.size() + " " + inactiveChunkMap.size());
+        log("Saving all chunks for dimension " + dimension.getDimensionName() + " - Active/Inactive: " + activeChunkMap.size() + "/" + inactiveChunkMap.size());
         for(var v : activeChunkMap.values()) {
             v.key.onInactive();
             v.key.onSave(true);
