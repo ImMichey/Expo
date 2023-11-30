@@ -248,7 +248,7 @@ public class PlayerMinimap {
 
         String worldTimeAsString = ExpoTime.worldTimeString(worldTime);
         ui.glyphLayout.setText(r.m5x7_shadow_use, worldTimeAsString);
-        r.m5x7_shadow_use.draw(r.hudBatch, worldTimeAsString, startX + 5 * ui.uiScale + (28 * ui.uiScale - ui.glyphLayout.width) * 0.5f, startY + ui.glyphLayout.height + 105 * ui.uiScale);
+        r.m5x7_shadow_use.draw(r.hudBatch, worldTimeAsString, (int) (startX + 5 * ui.uiScale + (28 * ui.uiScale - ui.glyphLayout.width) * 0.5f), (int) (startY + ui.glyphLayout.height + 105 * ui.uiScale));
 
         // Arrow
         float arrowX;

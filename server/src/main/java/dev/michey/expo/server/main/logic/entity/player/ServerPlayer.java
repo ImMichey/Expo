@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -545,10 +546,18 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         }
     }
 
+    private void playPlaceSound(String sound, float x, float y) {
+        if(sound != null) {
+            ServerPackets.p24PositionalSound(sound, x, y, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
+        }
+    }
+
     public void placeAt(int chunkX, int chunkY, int tileArray, float mouseWorldX, float mouseWorldY) {
         ServerInventoryItem item = getCurrentItem();
         ItemMapping m = ItemMapper.get().getMapping(item.itemId);
         if(m.logic.placeData == null) return; // to combat de-sync server<->client, double check current item
+
+        ExpoLogger.log("-> " + tileArray + " " + mouseWorldX + " " + mouseWorldY);
 
         var chunk = getChunkGrid().getChunkSafe(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
@@ -576,6 +585,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             { // Update inventory
                 useItemAmount(item);
             }
+
+            playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
         } else if(p.type == PlaceType.FLOOR_1) {
             // Update tile timestamp
             chunk.lastTileUpdate = System.currentTimeMillis();
@@ -595,6 +606,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             { // Update inventory
                 useItemAmount(item);
             }
+
+            playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
         } else if(p.type == PlaceType.FLOOR_2) {
             // Update tile timestamp
             chunk.lastTileUpdate = System.currentTimeMillis();
@@ -614,6 +627,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             { // Update inventory
                 useItemAmount(item);
             }
+
+            playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
         } else if(p.type == PlaceType.ENTITY) {
             if(p.alignment == PlaceAlignment.TILE) {
                 boolean proceed = true;
@@ -633,6 +648,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     }
                 }
 
+                ExpoLogger.log("Proceed, " + tile.tileX + " " + tile.tileY);
+
                 if(proceed) {
                     // Proceed.
                     ServerEntity createdTileEntity = ServerEntityType.typeToEntity(p.entityType);
@@ -644,6 +661,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     createdTileEntity.attachToTile(chunk, x, y);
 
                     useItemAmount(item);
+                    playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
                 }
             } else {
                 // Proceed.
@@ -653,6 +671,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 ServerWorld.get().registerServerEntity(entityDimension, placedEntity);
 
                 useItemAmount(item);
+                playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
             }
         }
 

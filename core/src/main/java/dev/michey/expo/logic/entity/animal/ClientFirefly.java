@@ -37,7 +37,8 @@ public class ClientFirefly extends ClientEntity {
     @Override
     public void onCreation() {
         TextureRegion f = animationHandler.getActiveFrame();
-        updateTextureBounds(f.getRegionWidth(), f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);
+        updateTextureBounds(f.getRegionWidth(),
+                f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);
 
         fireflyLight = new ExpoLight(80.0f, 40, 1f, 0.3f);
         fireflyLight.color(1.0f, 0.882f, 0.0f, 1.0f);
@@ -92,7 +93,7 @@ public class ClientFirefly extends ClientEntity {
             } else {
                 rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, removalFade * 4);
             }
-            rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(f, finalDrawPosX, finalDrawPosY, f.getRegionWidth(), f.getRegionHeight());
             rc.arraySpriteBatch.setColor(Color.WHITE);
 
             rc.useRegularArrayShader();

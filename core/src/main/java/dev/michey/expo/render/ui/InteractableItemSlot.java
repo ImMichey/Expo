@@ -41,7 +41,7 @@ public class InteractableItemSlot extends InteractableUIElement {
             float mw = parent.slotSelectionMarker.getRegionWidth() * parent.uiScale;
             float mh = parent.slotSelectionMarker.getRegionHeight() * parent.uiScale;
 
-            r.hudBatch.draw(parent.slotSelectionMarker, x + (w - mw) * 0.5f, y + h - mh - parent.uiScale, mw, mh);
+            r.hudBatch.draw(parent.slotSelectionMarker, x + (w - mw) * 0.5f, y + h - mh + parent.uiScale, mw, mh);
         }
 
         if(slot.item != null && !slot.item.isEmpty()) {
@@ -152,10 +152,17 @@ public class InteractableItemSlot extends InteractableUIElement {
                 parent.drawTooltipColored(mapping.displayName, mapping.color, lines);
             } else if(mapping.logic.isFood()) {
                 int seconds = (int) mapping.logic.foodData.hungerCooldownRestore;
+                int restore = (int) mapping.logic.foodData.hungerRestore;
 
                 parent.drawTooltipColored(mapping.displayName, mapping.color,
-                        parent.COLOR_DESCRIPTOR_HEX + "Regenerates [#" + parent.COLOR_GREEN_HEX + "]" + ((int) mapping.logic.foodData.hungerRestore) + "% hunger",
-                        parent.COLOR_DESCRIPTOR_HEX + "Sates hunger for [#" + parent.COLOR_GREEN_HEX + "]" + seconds + " second" + (seconds == 1 ? "" : "s"));
+                        new TextureRegion[] {
+                                parent.iconHungerRestore,
+                                parent.iconHungerCooldownRestore
+                        },
+                        new String[] {
+                                parent.COLOR_DESCRIPTOR_HEX + "Fills [#" + parent.COLOR_GREEN_HEX + "]" + restore + "% hunger" + parent.COLOR_DESCRIPTOR_HEX,
+                                parent.COLOR_DESCRIPTOR_HEX + "Sates [#" + parent.COLOR_GREEN_HEX + "]" + seconds + " second" + (seconds == 1 ? "" : "s")
+                        });
             } else {
                 parent.drawTooltipColored(mapping.displayName, mapping.color);
             }

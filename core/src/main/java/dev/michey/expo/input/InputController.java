@@ -18,6 +18,8 @@ import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class InputController {
 
+    private float lastWooshTimestamp;
+
     /** Click operations */
     public void onLeftClickBegin(int x, int y, boolean consoleOpen, boolean chatOpen, boolean inventoryOpen) {
         if(consoleOpen) {
@@ -100,7 +102,13 @@ public class InputController {
         }
 
         if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
-            RenderContext.get().expoCamera.addZoomAnimation(y * 0.1f);
+            boolean playSound = RenderContext.get().expoCamera.addZoomAnimation(y * 0.1f);
+            RenderContext.get().zoomNotify = true;
+
+            if(playSound && (RenderContext.get().deltaTotal - lastWooshTimestamp) >= 0.2f) {
+                AudioEngine.get().playSoundGroup("woosh", 0.125f);
+                lastWooshTimestamp = RenderContext.get().deltaTotal;
+            }
         } else {
             if(PlayerInventory.LOCAL_INVENTORY != null) {
                 PlayerInventory.LOCAL_INVENTORY.scrollSelectedSlot((int) y);

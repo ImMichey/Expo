@@ -42,6 +42,7 @@ public enum ServerEntityType {
     CATTAIL(29, "Cattail", true),
     CHICKEN(30, "Chicken", true),
     SIGN(31, "Sign", true),
+    CAMPFIRE(32, "Campfire", true),
     ;
 
     public final int ENTITY_ID;
@@ -88,6 +89,7 @@ public enum ServerEntityType {
             case 29 -> new ServerCattail();
             case 30 -> new ServerChicken();
             case 31 -> new ServerSign();
+            case 32 -> new ServerCampfire();
             default -> null;
         };
     }
@@ -126,6 +128,7 @@ public enum ServerEntityType {
             case "CATTAIL", "CAT_TAIL" -> new ServerCattail();
             case "CHICKEN" -> new ServerChicken();
             case "SIGN" -> new ServerSign();
+            case "CAMPFIRE" -> new ServerCampfire();
             default -> null;
         };
     }

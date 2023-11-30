@@ -1,6 +1,7 @@
 package dev.michey.expo.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -24,6 +26,7 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.InputUtils;
@@ -61,9 +64,9 @@ public class RenderContext {
     public float mouseWorldGridY;       // Mouse world tile y position in game world.
     public int mouseChunkX;             // Mouse world chunk x position in CHUNK UNITS.
     public int mouseChunkY;             // Mouse world chunk y position in CHUNK UNITS.
-    public int mouseRelativeTileX;      // Mouse tile x position relative to the start of the chunk. [0 - 7]
-    public int mouseRelativeTileY;      // Mouse tile y position relative to the start of the chunk. [0 - 7]
-    public int mouseTileArray;          // Mouse tile array position. [0 - 63]
+    public int mouseRelativeTileX;      // Mouse tile x position relative to the start of the chunk. [0 - 15]
+    public int mouseRelativeTileY;      // Mouse tile y position relative to the start of the chunk. [0 - 15]
+    public int mouseTileArray;          // Mouse tile array position. [0 - 255]
     public int mouseDirection;          // Mouse direction in game window. [0 = Left, 1 = Right]
     public boolean mouseMoved;          // If the mouse moved between frames.
     public int cameraX;
@@ -168,6 +171,7 @@ public class RenderContext {
 
     /** Game camera */
     public ExpoCamera expoCamera;
+    public boolean zoomNotify;
 
     /** Blur */
     public float blurStrength = 0.0f;
@@ -372,7 +376,8 @@ public class RenderContext {
         cameraX = (int) expoCamera.camera.position.x;
         cameraY = (int) expoCamera.camera.position.y;
 
-        mouseMoved = (oldMouseX != mouseX) || (oldMouseY != mouseY) || (oldCameraX != cameraX) || (oldCameraY != cameraY);
+        mouseMoved = (oldMouseX != mouseX) || (oldMouseY != mouseY) || (oldCameraX != cameraX) || (oldCameraY != cameraY) || (zoomNotify);
+        zoomNotify = false;
 
         if(mouseMoved) {
             mouseWorldX = InputUtils.getMouseWorldX();
@@ -410,6 +415,13 @@ public class RenderContext {
         mouseDirection = mouseX < (Gdx.graphics.getWidth() * 0.5f) ? 0 : 1;
 
         if(ItemMapper.get() == null) return;
+
+        ClientUtils.log("Size: " + ItemMapper.get().getDynamicAnimationList().size(), Input.Keys.X);
+        if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+            for(ItemRender ir : ItemMapper.get().getDynamicAnimationList()) {
+                ExpoLogger.log(ir.texture + " - " + ir.useTextureRegion + " - " + ir.animationDelta);
+            }
+        }
 
         for(ItemRender ir : ItemMapper.get().getDynamicAnimationList()) {
             TextureRegion old = ir.useTextureRegion;

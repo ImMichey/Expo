@@ -8,9 +8,10 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientZombie extends ClientEntity implements ReflectableEntity {
+public class ClientZombie extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     private final ExpoAnimationHandler animationHandler;
     private final TextureRegion blink;
@@ -123,6 +124,11 @@ public class ClientZombie extends ClientEntity implements ReflectableEntity {
     @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.ZOMBIE;
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.25f, 0.25f, 0, 0);
     }
 
 }

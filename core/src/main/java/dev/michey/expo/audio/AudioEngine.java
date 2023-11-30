@@ -202,6 +202,22 @@ public class AudioEngine {
         return data;
     }
 
+    /** Plays a managed sound of a certain group if no sound of that group is already playing. */
+    public TrackedSoundData playSoundGroupUnique(String groupName) {
+        return playSoundGroupUnique(groupName, 1.0f);
+    }
+
+    /** Plays a managed sound of a certain group if no sound of that group is already playing. */
+    public TrackedSoundData playSoundGroupUnique(String groupName, float volume) {
+        for(TrackedSoundData tsd : soundData.values()) {
+            if(tsd.qualifiedName.startsWith(groupName)) {
+                return null;
+            }
+        }
+
+        return playSoundGroup(groupName, volume);
+    }
+
     /** Plays a manged sound of a specific name without panning and default volume. **/
     public TrackedSoundData playSoundSpecific(String soundName) {
         return playSoundSpecific(soundName, 1.0f, false);

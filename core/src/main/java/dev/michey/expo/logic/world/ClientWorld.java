@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
+import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -73,6 +74,8 @@ public class ClientWorld {
     public final Color COLOR_AMBIENT_SUNRISE = new Color(241f / 255f, 241f / 255f, 197f / 255f, 1.0f);
     public final Color COLOR_AMBIENT_SUNSET = new Color(222f / 255f, 177f / 255f, 128f / 255f, 1.0f);
     public final Color COLOR_RAIN = new Color(104f / 255f, 199f / 255f, 219f / 255f, 1.0f);
+    private boolean playedSunriseSound;
+    private boolean playedSunsetSound;
 
     /** Weather */
     public int worldWeather;
@@ -187,8 +190,25 @@ public class ClientWorld {
     }
 
     private void calculateWorldTime(float delta) {
+        float oldWorldTime = worldTime;
         worldTime += delta;
         if(worldTime >= ExpoTime.WORLD_CYCLE_DURATION) worldTime %= ExpoTime.WORLD_CYCLE_DURATION;
+
+        if(worldTime >= ExpoTime.SUNRISE && oldWorldTime < ExpoTime.SUNRISE && !playedSunriseSound) {
+            playedSunriseSound = true;
+            AudioEngine.get().playSoundGroup("rooster", 0.5f);
+            PlayerUI.get().addNotification(ExpoAssets.get().textureRegion("icon_sun"), 5.0f, null, "The sun is rising.");
+        }
+        if(worldTime >= ExpoTime.SUNSET || worldTime < ExpoTime.SUNRISE) {
+            playedSunriseSound = false;
+        }
+        if(worldTime >= ExpoTime.SUNSET && oldWorldTime < ExpoTime.SUNSET && !playedSunsetSound) {
+            playedSunsetSound = true;
+            PlayerUI.get().addNotification(ExpoAssets.get().textureRegion("icon_moon"), 5.0f, "notification", "The sun is setting.");
+        }
+        if(worldTime < ExpoTime.SUNSET) {
+            playedSunsetSound = false;
+        }
 
         // Calculate shadow x and y
         if(worldTime < ExpoTime.SUNRISE || worldTime > ExpoTime.NIGHT) {
@@ -208,7 +228,7 @@ public class ClientWorld {
             worldSunShadowAlpha = 1.0f;
             setAmbient(1, 1, 1);
             float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
-            AudioEngine.get().ambientVolume("ambience_day", 1.0f * fn);
+            AudioEngine.get().ambientVolume("ambience_day", fn);
             AudioEngine.get().ambientVolume("ambience_night", 0.0f);
         } else if(worldTime >= ExpoTime.SUNRISE && worldTime < ExpoTime.DAY) {
             // 6:00 - 8:00
@@ -308,20 +328,9 @@ public class ClientWorld {
                 worldSunShadowAlpha = 1.0f;
             }
 
-            /*
-            if(normalized < 0.125f) {
-                // One hour
-                worldSunShadowAlpha = normalized * 8;
-            } else if(normalized < 0.875f) {
-                worldSunShadowAlpha = 1.0f;
-            } else {
-                worldSunShadowAlpha = 1f - (normalized - 0.875f) * 8;
-            }
-            */
-
             float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
             AudioEngine.get().ambientVolume("ambience_day", 0.0f);
-            AudioEngine.get().ambientVolume("ambience_night", 1.0f * fn);
+            AudioEngine.get().ambientVolume("ambience_night", fn);
         }
     }
 
@@ -471,7 +480,10 @@ public class ClientWorld {
                 r.vignetteShader.setUniformf("u_damageIntensity", blinkDelta != 0 ? Interpolation.smooth2.apply(blinkDelta) : blinkDelta);
             }
 
-            var ote = clientEntityManager.getEntitiesByTypeSorted(ClientEntityType.HEALTH_BAR, ClientEntityType.DAMAGE_INDICATOR, ClientEntityType.SIGN);
+            var ote = clientEntityManager.getEntitiesByTypeSorted(ClientEntityType.HEALTH_BAR,
+                    ClientEntityType.DAMAGE_INDICATOR,
+                    ClientEntityType.SIGN,
+                    ClientEntityType.SELECTOR);
 
             if(displayBlur) {
                 blurPass(r.mainFbo);

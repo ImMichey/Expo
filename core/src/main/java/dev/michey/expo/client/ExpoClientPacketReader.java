@@ -173,8 +173,7 @@ public class ExpoClientPacketReader {
             ClientPlayer player = ClientPlayer.getLocalPlayer();
 
             if(player != null) {
-                player.playerHealth = p.health;
-                player.playerHunger = p.hunger;
+                player.applyHealthHunger(p.health, p.hunger);
             }
         } else if(o instanceof P24_PositionalSound p) {
             AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false);

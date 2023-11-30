@@ -27,10 +27,9 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
 
-        mushroomLight = new ExpoLight(64.0f, 32, 0.75f, 0.75f);
-        //mushroomLight.color(0.0f, 0.75f, 1.0f, 1.0f);
-        mushroomLight.color(1.0f, 0.6f, 0.0f, 1.0f);
-        mushroomLight.setPulsating(1.0f, 128.0f, 144.0f);
+        mushroomLight = new ExpoLight(80f, 40, 1.0f, 0.3f);
+        mushroomLight.color(0f, 1f, 1f, 1f);
+        mushroomLight.setPulsating(1.0f, 112.0f, 128.0f);
     }
 
     @Override

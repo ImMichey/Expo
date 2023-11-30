@@ -33,7 +33,11 @@ public class CommandWorld extends AbstractConsoleCommand {
             int seed;
 
             if(args.length > 2) {
-                seed = parseI(args, 2);
+                try {
+                    seed = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    seed = args[2].hashCode();
+                }
             } else {
                 seed = ExpoShared.RANDOM.nextInt();
             }

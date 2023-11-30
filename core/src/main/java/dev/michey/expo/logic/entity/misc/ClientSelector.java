@@ -1,28 +1,38 @@
 package dev.michey.expo.logic.entity.misc;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.SelectorType;
-import dev.michey.expo.server.main.logic.inventory.item.*;
+import dev.michey.expo.render.visbility.TopVisibilityEntity;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
 
-public class ClientSelector extends ClientEntity {
+public class ClientSelector extends ClientEntity implements TopVisibilityEntity {
 
-    private TextureRegion square;
+    private TextureRegion selector;
+    private float selectorScale;
+    private float selectorDelta;
+    private float selectorSign = 1.0f;
+    private float selectorCooldownDelta;
+    private float lastTileWorldX, lastTileWorldY;
+    private float fluidTransitionDelta;
+    private float fluidTransitionOriginX, fluidTransitionOriginY;
+    private boolean fluidTransition;
+    private boolean wasHidden;
 
     /*
     private float factor = -1.0f;
@@ -49,7 +59,7 @@ public class ClientSelector extends ClientEntity {
 
     @Override
     public void onCreation() {
-        square = tr("square16x16");
+        selector = tr("selector");
     }
 
     @Override
@@ -63,7 +73,10 @@ public class ClientSelector extends ClientEntity {
 
     public void tick0() {
         eligible = false;
-        if(!currentlyVisible) return;
+        if(!currentlyVisible) {
+            wasHidden = true;
+            return;
+        }
 
         selectionChunkX = ExpoShared.posToChunk(externalPosX);
         selectionChunkY = ExpoShared.posToChunk(externalPosY);
@@ -90,13 +103,14 @@ public class ClientSelector extends ClientEntity {
         boolean layer0Farmland = t0 == TileLayerType.SOIL_FARMLAND;
         boolean layer0Hole = t0 == TileLayerType.SOIL_HOLE;
         boolean layer1Grass = t1 == TileLayerType.FOREST;
+        boolean layer1Plains = t1 == TileLayerType.GRASS;
         boolean layer1Sand = t1 == TileLayerType.SAND;
         boolean layer1Empty = t1 == TileLayerType.EMPTY;
         boolean layer2Empty = t2 == TileLayerType.EMPTY;
         boolean layer1Wall = t1.TILE_IS_WALL;
 
         if(currentSelectorType == SelectorType.DIG_SHOVEL) {
-            if(layer1Grass || layer1Sand) {
+            if(layer1Grass || layer1Sand || layer1Plains) {
                 eligible = true;
             } else if(layer1Empty && layer0Soil) {
                 eligible = true;
@@ -169,24 +183,7 @@ public class ClientSelector extends ClientEntity {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        if(currentlyVisible) {
-            depth = externalPosY;
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
 
-            if(eligible) {
-                rc.arraySpriteBatch.setColor(0.25f, 1.0f, 0.25f, 0.5f);
-            } else {
-                rc.arraySpriteBatch.setColor(1.0f, 0.25f, 0.25f, 0.5f);
-            }
-            if(currentEntityPlacementTexture == null) {
-                rc.arraySpriteBatch.draw(square, externalPosX, externalPosY);
-            } else {
-                rc.arraySpriteBatch.draw(tr(currentEntityPlacementTexture), externalPosX, externalPosY);
-            }
-
-            rc.arraySpriteBatch.setColor(Color.WHITE);
-        }
     }
 
     @Override
@@ -197,6 +194,94 @@ public class ClientSelector extends ClientEntity {
     @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.SELECTOR;
+    }
+
+    @Override
+    public void renderTop(RenderContext rc, float delta) {
+        if(currentlyVisible) {
+            depth = externalPosY;
+
+            boolean changedTile = (lastTileWorldX != externalPosX) || (lastTileWorldY != externalPosY);
+            float TOTAL_COOLDOWN = 0.5f;
+
+            if(changedTile) {
+                fluidTransitionDelta = 0.0f;
+                fluidTransition = true;
+                if(wasHidden) {
+                    fluidTransitionOriginX = externalPosX;
+                    fluidTransitionOriginY = externalPosY;
+                    wasHidden = false;
+                } else {
+                    fluidTransitionOriginX = lastTileWorldX;
+                    fluidTransitionOriginY = lastTileWorldY;
+                }
+                selectorCooldownDelta = TOTAL_COOLDOWN;
+                selectorScale = 1.0f;
+            }
+
+            float useDrawX = externalPosX;
+            float useDrawY = externalPosY;
+
+            if(fluidTransition) {
+                float TRANSITION_SPEED = 12.0f;
+                fluidTransitionDelta += delta * TRANSITION_SPEED;
+
+                if(fluidTransitionDelta >= 1.0f) {
+                    fluidTransitionDelta = 1.0f;
+                    fluidTransition = false;
+                }
+
+                float interpolated = Interpolation.smooth2.apply(fluidTransitionDelta);
+
+                useDrawX = fluidTransitionOriginX + (externalPosX - fluidTransitionOriginX) * interpolated;
+                useDrawY = fluidTransitionOriginY + (externalPosY - fluidTransitionOriginY) * interpolated;
+            }
+
+            if(eligible) {
+                rc.chunkRenderer.setColor(0.0f, 1.0f, 0.0f, 0.75f);
+            } else {
+                rc.chunkRenderer.setColor(1.0f, 0.2f, 0.2f, 0.75f);
+            }
+            if(currentEntityPlacementTexture == null) {
+                if(!fluidTransition) {
+                    if(selectorCooldownDelta > 0) {
+                        selectorCooldownDelta -= delta;
+                    } else {
+                        float SELECTOR_SPEED = 8.0f;
+                        selectorDelta += delta * selectorSign * SELECTOR_SPEED;
+
+                        if(selectorDelta >= 1.0f) {
+                            selectorDelta = 1.0f;
+                            selectorSign = -1.0f;
+                        } else if(selectorDelta < 0.0f) {
+                            selectorDelta = 0.0f;
+                            selectorSign = 1.0f;
+                            selectorCooldownDelta = TOTAL_COOLDOWN;
+                        }
+                    }
+
+                    float SELECTOR_SCALE_THRESHOLD = 0.125f;
+                    selectorScale = 1.0f - Interpolation.pow4.apply(selectorDelta) * SELECTOR_SCALE_THRESHOLD;
+                }
+
+                float sz = TILE_SIZE * selectorScale;
+
+                rc.arraySpriteBatch.end();
+                rc.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+                float px = useDrawX + (TILE_SIZE - sz) * 0.5f;
+                float py = useDrawY + (TILE_SIZE - sz) * 0.5f;
+                rc.chunkRenderer.rect(px, py, sz, sz);
+                rc.chunkRenderer.setColor(Color.WHITE);
+                rc.chunkRenderer.end();
+                rc.arraySpriteBatch.begin();
+            } else {
+                rc.arraySpriteBatch.draw(tr(currentEntityPlacementTexture), useDrawX, useDrawY);
+            }
+
+            lastTileWorldX = externalPosX;
+            lastTileWorldY = externalPosY;
+        }
     }
 
 }

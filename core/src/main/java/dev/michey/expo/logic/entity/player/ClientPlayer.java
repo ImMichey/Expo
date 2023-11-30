@@ -27,6 +27,7 @@ import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
+import dev.michey.expo.render.ui.notification.UINotificationPiece;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
@@ -163,6 +164,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     public float playerHealth = 100f;
     public float playerHunger = 100f;
+    private boolean notifiedHunger;
 
     /** Player reach */
     public float playerReachCenterX, playerReachCenterY;
@@ -223,6 +225,18 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
 
             finishedWorldEnterAnimation = ExpoServerBase.get() != null && ExpoServerBase.get().getWorldSaveHandler().getWorldName().startsWith("dev-world-");
+
+            if(!finishedWorldEnterAnimation) {
+                AudioEngine.get().playSoundGroup("woosh", 0.05f);
+            }
+
+            if(Expo.get().isMultiplayer()) {
+                PlayerUI.get().chat.addServerMessage("You joined a multiplayer server.");
+            } else {
+                if(DEV_MODE) {
+                    PlayerUI.get().chat.addServerMessage("You joined a singleplayer world in Dev Mode.");
+                }
+            }
         }
     }
 
@@ -341,8 +355,21 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     selector.currentlyVisible = true;
 
                     // Revisit later.
-                    selector.externalPosX = RenderContext.get().mouseWorldX + ofx;
-                    selector.externalPosY = RenderContext.get().mouseWorldY + ofy;
+                    float mx = RenderContext.get().mouseWorldX;
+                    float my = RenderContext.get().mouseWorldY;
+                    float desiredX = mx + ofx;
+                    float desiredY = my + ofy;
+                    float d = Vector2.dst(playerReachCenterX, playerReachCenterY, mx, my);
+
+                    if(d > range) {
+                        Vector2 temp = new Vector2(mx, my)
+                                .sub(playerReachCenterX, playerReachCenterY).nor().scl(range);
+                        desiredX = temp.x + playerReachCenterX + ofx;
+                        desiredY = temp.y + playerReachCenterY + ofy;
+                    }
+
+                    selector.externalPosX = desiredX;
+                    selector.externalPosY = desiredY;
                 } else {
                     selector.currentlyVisible = false;
                 }
@@ -457,7 +484,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             if(IngameInput.get().rightJustPressed()) {
                 if(selector.canDoAction()) {
                     ClientPackets.p34PlayerPlace(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray,
-                            RenderContext.get().mouseWorldX, RenderContext.get().mouseWorldY);
+                            (int) RenderContext.get().mouseWorldX, (int) RenderContext.get().mouseWorldY);
                 } else {
                     if(ClientEntityManager.get().selectedEntity != null) {
                         ClientPackets.p39PlayerInteractEntity();
@@ -1243,6 +1270,20 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         return array;
+    }
+
+    public void applyHealthHunger(float health, float hunger) {
+        playerHealth = health;
+        playerHunger = hunger;
+
+        if(playerHunger <= 50f && !notifiedHunger) {
+            notifiedHunger = true;
+            PlayerUI.get().addNotification(tr("icon_hungry"), 5.0f, "stomach", new UINotificationPiece[] {
+                    new UINotificationPiece("You are hungry!", Color.YELLOW)
+            });
+        } else if(playerHunger > 50) {
+            notifiedHunger = false;
+        }
     }
 
     public int direction() {

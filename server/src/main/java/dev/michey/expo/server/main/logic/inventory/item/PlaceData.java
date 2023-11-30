@@ -14,6 +14,7 @@ public class PlaceData {
     public float placeAlignmentOffsetX, placeAlignmentOffsetY;
     public float previewOffsetX, previewOffsetY;
     public TileLayerType floorRequirement;
+    public String sound;
 
     public PlaceData(JSONObject o) {
         alignment = PlaceAlignment.valueOf(o.getString("alignment"));
@@ -27,6 +28,7 @@ public class PlaceData {
         if(o.has("previewOffsetX")) previewOffsetX = o.getFloat("previewOffsetX");
         if(o.has("previewOffsetY")) previewOffsetY = o.getFloat("previewOffsetY");
         if(o.has("floorRequirement")) floorRequirement = TileLayerType.valueOf(o.getString("floorRequirement"));
+        if(o.has("sound")) sound = o.getString("sound");
     }
 
 }

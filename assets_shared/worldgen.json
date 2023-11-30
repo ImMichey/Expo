@@ -487,6 +487,13 @@
                     }
                 },
                 {
+                    "biome": "DENSE_FOREST",
+                    "type": "MUSHROOM_GLOWING",
+                    "static": true,
+                    "chance": 0.00025,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0]
+                },
+                {
                     "biome": "FOREST",
                     "type": "MUSHROOM_RED",
                     "static": true,

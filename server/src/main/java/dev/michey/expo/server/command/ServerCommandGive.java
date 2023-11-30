@@ -3,14 +3,10 @@ package dev.michey.expo.server.command;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.main.arch.AbstractServerCommand;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
-import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.util.ExpoShared;
 
@@ -66,6 +62,7 @@ public class ServerCommandGive extends AbstractServerCommand {
             ServerInventoryItem item = new ServerInventoryItem(mapping.id, amount);
             var addResult = player.playerInventory.addItem(item);
             ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(addResult.changeResult, PacketReceiver.player(player));
+            player.heldItemPacket(PacketReceiver.whoCanSee(player));
 
             sendToSender("You received " + amount + "x " + mapping.displayName, player);
         } else {
@@ -88,6 +85,7 @@ public class ServerCommandGive extends AbstractServerCommand {
             ServerInventoryItem item = new ServerInventoryItem(mapping.id, amount);
             var addResult = player.playerInventory.addItem(item);
             ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(addResult.changeResult, PacketReceiver.player(player));
+            player.heldItemPacket(PacketReceiver.whoCanSee(player));
 
             sendToSender("You received " + amount + "x " + mapping.displayName, player);
         }

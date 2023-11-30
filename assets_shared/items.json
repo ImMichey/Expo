@@ -478,7 +478,8 @@
                     "previewTexture": "oak_tree_sapling",
                     "floorRequirement": "FOREST",
                     "placeAlignmentOffsetX": 8,
-                    "previewOffsetX": 2
+                    "previewOffsetX": 2,
+                    "sound": "plant"
                 }
             }
         },
@@ -573,13 +574,13 @@
                     "offsetY": 3,
                     "rotations": [0, -90],
                     "light": {
-                        "color": [0.0, 0.5, 1.0, 1.0],
+                        "color": [0.0, 1.0, 1.0, 1.0],
                         "distanceMin": 112,
                         "distanceMax": 128,
-                        "emissionQuadratic": 0.9,
-                        "emissionConstant": 0.7,
+                        "emissionQuadratic": 0.3,
+                        "emissionConstant": 1.0,
                         "pulsating": true,
-                        "rayCount": 32
+                        "rayCount": 40
                     }
                 }
             },
@@ -590,7 +591,8 @@
                     "type": "ENTITY",
                     "entityType": "MUSHROOM_GLOWING",
                     "previewTexture": "entity_mushroom_glowing",
-                    "placeAlignmentOffsetX": 4
+                    "previewOffsetX": -4,
+                    "sound": "plant"
                 }
             }
         },
@@ -692,7 +694,11 @@
                 }
             },
             "logic": {
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "foodData": {
+                    "hungerRestore": 15.0,
+                    "hungerCooldownRestore": 60.0
+                }
             }
         },
         {
@@ -1070,17 +1076,34 @@
             "displayName": "Firefly",
             "displayNameColor": "#ffffff",
             "render": {
-                "ui": {
-                    "texture": "item_firefly"
-                },
-                "held": {
-                    "texture": "item_firefly",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.75,
-                    "offsetY": 8.5,
-                    "rotations": [45, -45]
-                }
+                "ui": [
+                    {
+                        "texture": "entity_firefly_fly",
+                        "frames": 4,
+                        "animationSpeed": 0.125,
+                        "offsetX": 0,
+                        "offsetY": 1
+                    }
+                ],
+                "held": [
+                    {
+                        "texture": "entity_firefly_fly",
+                        "frames": 4,
+                        "animationSpeed": 0.125,
+                        "offsetX": 1.5,
+                        "offsetY": -0.5,
+                        "scaleX": 0.75,
+                        "scaleY": 0.75,
+                        "rotations": [-90, 180],
+                        "light": {
+                            "color": [1.0, 0.882, 0.0, 1.0],
+                            "distance": 80,
+                            "emissionQuadratic": 0.3,
+                            "emissionConstant": 1.0,
+                            "rayCount": 40
+                        }
+                    }
+                ]
             },
             "logic": {
                 "toolType": "ITEM"
@@ -1174,7 +1197,7 @@
         {
             "identifier": "item_flint_dagger",
             "id": 46,
-            "displayName": "Flint Dagger",
+            "displayName": "Flint Knife",
             "displayNameColor": "#ffffff",
             "render": {
                 "ui": {
@@ -1185,7 +1208,7 @@
                     "scaleX": 1,
                     "scaleY": 1,
                     "offsetX": -2.0,
-                    "offsetY": 6.5,
+                    "offsetY": 6.0,
                     "rotations": [45, -45]
                 }
             },
@@ -1196,6 +1219,46 @@
                 "attackSpeed": 0.25,
                 "attackDamage": 9.0,
                 "attackKnockbackStrength": 10.0
+            }
+        },
+        {
+            "identifier": "item_campfire",
+            "id": 47,
+            "displayName": "Campfire",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": [
+                    {
+                        "texture": "item_campfire"
+                    },
+                    {
+                        "texture": "flame",
+                        "frames": 11,
+                        "animationSpeed": 0.08,
+                        "offsetX": 3,
+                        "offsetY": 8
+                    }
+                ],
+                "held": {
+                    "texture": "item_campfire",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 0,
+                    "offsetY": 3,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "CAMPFIRE",
+                    "previewTexture": "entity_campfire",
+                    "placeAlignmentOffsetX": 8.0,
+                    "previewOffsetX": -4
+                }
             }
         }
     ]

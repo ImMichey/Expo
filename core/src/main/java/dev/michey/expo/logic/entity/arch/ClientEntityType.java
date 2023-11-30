@@ -47,6 +47,7 @@ public enum ClientEntityType {
     CATTAIL(29, "Cattail", ServerEntityType.CATTAIL),
     CHICKEN(30, "Chicken", ServerEntityType.CHICKEN),
     SIGN(31, "Sign", ServerEntityType.SIGN),
+    CAMPFIRE(32, "Campfire", ServerEntityType.CAMPFIRE),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -116,6 +117,7 @@ public enum ClientEntityType {
             case 29 -> new ClientCattail();
             case 30 -> new ClientChicken();
             case 31 -> new ClientSign();
+            case 32 -> new ClientCampfire();
             default -> null;
         };
     }

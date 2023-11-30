@@ -26,6 +26,7 @@ import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.server.ServerLauncher;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
@@ -433,5 +434,9 @@ public class Expo implements ApplicationListener {
 	public AbstractScreen getActiveScreen() {
 		return activeScreen;
 	}
+
+    public boolean isMultiplayer() {
+		return ExpoServerBase.get() == null;
+    }
 
 }

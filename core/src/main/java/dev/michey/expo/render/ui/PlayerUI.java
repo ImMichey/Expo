@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -21,6 +22,8 @@ import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.container.UIContainer;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
+import dev.michey.expo.render.ui.notification.UINotification;
+import dev.michey.expo.render.ui.notification.UINotificationPiece;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
@@ -54,6 +57,10 @@ public class PlayerUI {
     public float cornerWH;
     private float borderWH;
     public GlyphLayout glyphLayout;
+
+    /** Notifications */
+    private final LinkedList<UINotification> notificationList;
+    private final Object notificationLock = new Object();
 
     /** Hotbar */
     private float hotbarW, hotbarH;
@@ -116,6 +123,10 @@ public class PlayerUI {
 
     public final TextureRegion slotSelectionMarker;
 
+    public final TextureRegion iconAttackDamage;
+    public final TextureRegion iconHungerRestore;
+    public final TextureRegion iconHungerCooldownRestore;
+
     public UIContainer currentContainer = null;
 
     /** Singleton instance */
@@ -146,6 +157,8 @@ public class PlayerUI {
 
         glyphLayout = new GlyphLayout();
 
+        notificationList = new LinkedList<>();
+
         // tooltip begin
         TextureRegion tooltip = tr("ui_tooltip");
 
@@ -159,6 +172,11 @@ public class PlayerUI {
         tooltipFillerLight = new TextureRegion(tooltip, 20, 2+16, 1, 1);
         tooltipFillerCrafting = new TextureRegion(tooltip, 22, 2+16, 1, 1);
         // tooltip end
+
+        TextureRegion icons = tr("icons");
+        iconAttackDamage = new TextureRegion(icons, 0, 0, 9, 9);
+        iconHungerRestore = new TextureRegion(icons, 10, 0, 9, 9);
+        iconHungerCooldownRestore = new TextureRegion(icons, 20, 0, 9, 9);
 
         chat = new ExpoClientChat(this);
 
@@ -197,19 +215,24 @@ public class PlayerUI {
     }
 
     public void drawTooltip(int x, int y, String text) {
-        drawTooltipColored(x, y, text, Color.WHITE);
+        drawTooltipColored(x, y, text, Color.WHITE, null);
     }
 
     public void drawTooltip(String text) {
         drawTooltipColored(text, Color.WHITE);
     }
 
-    public void drawTooltipColored(String text, Color color, String... extraLines) {
+    public void drawTooltipColored(String text, Color color, TextureRegion[] icons, String[] lines) {
         RenderContext rc = RenderContext.get();
-        drawTooltipColored((int) rc.mouseX, (int) rc.mouseY, text, color, extraLines);
+        drawTooltipColored((int) rc.mouseX, (int) rc.mouseY, text, color, icons, lines);
     }
 
-    public void drawTooltipColored(int x, int y, String text, Color color, String... extraLines) {
+    public void drawTooltipColored(String text, Color color, String... extraLines) {
+        RenderContext rc = RenderContext.get();
+        drawTooltipColored((int) rc.mouseX, (int) rc.mouseY, text, color, null, extraLines);
+    }
+
+    public void drawTooltipColored(int x, int y, String text, Color color, TextureRegion[] icons, String... extraLines) {
         RenderContext rc = RenderContext.get();
         x += (int) (4 * uiScale); // offset
         y += (int) (4 * uiScale); // offset
@@ -217,9 +240,18 @@ public class PlayerUI {
         glyphLayout.setText(rc.m5x7_use, text);
         float tw = glyphLayout.width;
 
-        for(String str : extraLines) {
+        for(int i = 0; i < extraLines.length; i++) {
+            String str = extraLines[i];
             glyphLayout.setText(rc.m5x7_use, str);
-            if(glyphLayout.width > tw) tw = glyphLayout.width;
+
+            float pl = glyphLayout.width;
+
+            if(icons != null) {
+                int spacing = 2;
+                pl += icons[i].getRegionWidth() * uiScale + spacing * 3 * uiScale;
+            }
+
+            if(pl > tw) tw = pl;
         }
 
         float th = glyphLayout.height;
@@ -253,7 +285,20 @@ public class PlayerUI {
 
             for(int i = 0; i < extraLines.length; i++) {
                 String c = extraLines[i];
-                rc.m5x7_use.draw(rc.hudBatch, c, x + cornerSize + uiScale, y + cornerSize + th - uiScale - titleHeight - 9 * uiScale - i * (4 * uiScale + titleHeight));
+
+                int txtX = (int) (x + cornerSize + uiScale);
+                int txtY = (int) (y + cornerSize + th - uiScale - titleHeight - 9 * uiScale - i * (4 * uiScale + titleHeight));
+                int bonusX = 0;
+
+                if(icons != null && icons[i] != null) {
+                    bonusX = (int) (6 * uiScale + icons[i].getRegionWidth() * uiScale);
+                }
+
+                rc.m5x7_use.draw(rc.hudBatch, c, txtX + bonusX, txtY);
+
+                if(icons != null && icons[i] != null) {
+                    rc.hudBatch.draw(icons[i], txtX + 2 * uiScale, txtY - titleHeight - uiScale, icons[i].getRegionWidth() * uiScale, icons[i].getRegionHeight() * uiScale);
+                }
             }
         }
     }
@@ -439,18 +484,30 @@ public class PlayerUI {
                 line.lifetime += rc.delta;
                 if(line.lifetime >= MAX_LINE_LIFETIME) continue;
 
-                float alpha = Interpolation.circleOut.apply(line.lifetime / MAX_LINE_LIFETIME);
+                float dt = Interpolation.circleOut.apply(line.lifetime / MAX_LINE_LIFETIME);
 
                 ItemMapping mapping = ItemMapper.get().getMapping(line.itemId);
                 String displayText = line.itemAmount + "x " + mapping.displayName;
                 glyphLayout.setText(useFont, displayText);
 
                 float fullWidth = mapping.uiRender[0].useWidth * uiScale + 4 * uiScale + glyphLayout.width;
-                rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
-                useFont.setColor(mapping.color.r, mapping.color.g, mapping.color.b, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
 
                 float startX = startHudPos.x - fullWidth * 0.5f;
-                float startY = startHudPos.y + alpha * 48 + yOffset;
+                float startY = startHudPos.y + dt * 48 + yOffset;
+
+                float rmAlpha = line.lifetime / MAX_LINE_LIFETIME;
+
+                // Draw background
+                /*
+                int spc = 2;
+                float uh = mapping.uiRender[0].useHeight * uiScale;
+                rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, 0.25f - rmAlpha / 4);
+                rc.hudBatch.draw(rc.square, startX - spc * uiScale, startY - spc * uiScale, fullWidth + spc * 2 * uiScale, Math.max(uh, glyphLayout.height) + spc * 2 * uiScale);
+                rc.hudBatch.setColor(Color.WHITE);
+                */
+
+                rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - rmAlpha);
+                useFont.setColor(mapping.color.r, mapping.color.g, mapping.color.b, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
 
                 for(ItemRender ir : mapping.uiRender) {
                     rc.hudBatch.draw(ir.useTextureRegion,
@@ -479,6 +536,87 @@ public class PlayerUI {
 
         if(hoveredSlot != null && PlayerInventory.LOCAL_INVENTORY.cursorItem == null) {
             hoveredSlot.onTooltip();
+        }
+
+        synchronized (notificationLock) {
+            if(!notificationList.isEmpty()) {
+                float offsetY = 0;
+
+                for(UINotification not : notificationList) {
+                    if(!not.playedSound && not.sound != null) {
+                        not.playedSound = true;
+                        AudioEngine.get().playSoundGroup(not.sound);
+                    }
+
+                    not.delta += rc.delta;
+                    if(not.delta > not.lifetime) not.delta = not.lifetime;
+
+                    float iconWidth = not.icon.getRegionWidth() * uiScale;
+                    float iconHeight = not.icon.getRegionHeight() * uiScale;
+
+                    float fullFontWidth = 0;
+                    float fullFontHeight = 0;
+
+                    for(var piece : not.pieces) {
+                        rc.globalGlyph.setText(rc.m5x7_border_use, piece.text);
+                        fullFontWidth += rc.globalGlyph.width;
+
+                        if(rc.globalGlyph.height > fullFontHeight) {
+                            fullFontHeight = rc.globalGlyph.height;
+                        }
+                    }
+
+                    //rc.globalGlyph.setText(rc.m5x7_border_use, not.text);
+                    int iconSpacing = 4;
+                    float totalWidth = iconWidth + iconSpacing * uiScale + fullFontWidth;
+                    float totalHeight = iconHeight;
+                    if(fullFontHeight > totalHeight) totalHeight = fullFontHeight;
+
+                    float cx = (Gdx.graphics.getWidth() - totalWidth) * 0.5f;
+                    float cy = (Gdx.graphics.getHeight() - totalHeight) - 16 * uiScale;
+
+                    float X_SHIFT_THRESHOLD = 0.2f;
+                    float xAmount = 64f * uiScale;
+                    if(not.delta <= X_SHIFT_THRESHOLD) {
+                        float interpolated = Interpolation.exp10Out.apply(not.delta / X_SHIFT_THRESHOLD);
+                        cx -= xAmount;
+                        cx += xAmount * interpolated;
+                    }
+
+                    float ALPHA_THRESHOLD = 0.5f;
+                    float alpha = 1.0f;
+                    if(not.delta <= ALPHA_THRESHOLD) {
+                        alpha = Interpolation.fade.apply(not.delta / ALPHA_THRESHOLD);
+                    } else if(not.delta >= (not.lifetime - ALPHA_THRESHOLD)) {
+                        alpha = Interpolation.fade.apply((not.lifetime - not.delta) / ALPHA_THRESHOLD);
+                    }
+
+                    rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, 0.25f * alpha);
+                    int spacing = 4;
+                    rc.hudBatch.draw(rc.square, cx - spacing * uiScale, cy - spacing * uiScale - offsetY, totalWidth + spacing * uiScale * 2, totalHeight + spacing * uiScale * 2);
+
+                    rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
+
+                    rc.hudBatch.draw(not.icon, cx, cy - offsetY, iconWidth, iconHeight);
+
+                    float offsetText = 0;
+                    for(var piece : not.pieces) {
+                        rc.globalGlyph.setText(rc.m5x7_border_use, piece.text);
+                        piece.color.a = alpha;
+                        rc.m5x7_border_use.setColor(piece.color);
+                        rc.m5x7_border_use.draw(rc.hudBatch, piece.text,
+                                cx + iconWidth + iconSpacing * uiScale + offsetText,
+                                cy + rc.globalGlyph.height + (totalHeight - rc.globalGlyph.height) * 0.5f - offsetY);
+                        offsetText += rc.globalGlyph.width;
+                    }
+
+                    offsetY += totalHeight + spacing * 2 * uiScale + 2 * uiScale;
+                }
+
+                rc.hudBatch.setColor(Color.WHITE);
+                rc.m5x7_border_use.setColor(Color.WHITE);
+                notificationList.removeIf(x -> x.delta >= x.lifetime);
+            }
         }
 
         if(tablistOpen) {
@@ -556,6 +694,28 @@ public class PlayerUI {
                 rc.hudBatch.setColor(Color.WHITE);
                 rc.hudBatch.end();
             }
+        }
+    }
+
+    public void addNotification(TextureRegion icon, float lifetime, String sound, String text) {
+        synchronized (notificationLock) {
+            UINotification notification = new UINotification();
+            notification.icon = icon;
+            notification.lifetime = lifetime;
+            notification.sound = sound;
+            notification.addPiece(text, Color.WHITE);
+            notificationList.add(notification);
+        }
+    }
+
+    public void addNotification(TextureRegion icon, float lifetime, String sound, UINotificationPiece[] pieces) {
+        synchronized (notificationLock) {
+            UINotification notification = new UINotification();
+            notification.icon = icon;
+            notification.lifetime = lifetime;
+            notification.sound = sound;
+            notification.addPieces(pieces);
+            notificationList.add(notification);
         }
     }
 
@@ -905,11 +1065,29 @@ public class PlayerUI {
     }
 
     public void onPlayerJoin(String username) {
-        chat.addServerMessage(username + " joined the server.");
+        if(ClientPlayer.getLocalPlayer() == null) return;
+        boolean notPlayer = !ClientPlayer.getLocalPlayer().username.equals(username);
+
+        if((Expo.get().isMultiplayer() || DEV_MODE) && notPlayer) {
+            chat.addServerMessage(username + " joined the server.");
+            addNotification(playerTabHead, 5.0f, "notification", new UINotificationPiece[] {
+                    new UINotificationPiece(username, Color.YELLOW),
+                    new UINotificationPiece(" joined the server.")
+            });
+        }
     }
 
     public void onPlayerQuit(String username) {
-        chat.addServerMessage(username + " left the server.");
+        if(ClientPlayer.getLocalPlayer() == null) return;
+        boolean notPlayer = !ClientPlayer.getLocalPlayer().username.equals(username);
+
+        if((Expo.get().isMultiplayer() || DEV_MODE) && notPlayer) {
+            chat.addServerMessage(username + " left the server.");
+            addNotification(playerTabHead, 5.0f, "notification", new UINotificationPiece[] {
+                    new UINotificationPiece(username, Color.YELLOW),
+                    new UINotificationPiece(" left the server.")
+            });
+        }
     }
 
 }

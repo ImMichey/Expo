@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
@@ -14,6 +15,7 @@ import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.InputUtils;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
 public class ExpoCamera {
 
@@ -88,6 +90,7 @@ public class ExpoCamera {
             float newZoom = Interpolation.pow5Out.apply(startZoom, goalZoom, zoomDelta);
             newZoom = (float) Math.round(newZoom * 100) / 100;
             RenderContext.get().expoCamera.camera.zoom = newZoom;
+            RenderContext.get().zoomNotify = true;
         }
 
         cameraLerpTowards(p.finalTextureCenterX, p.clientPosY + p.textureOffsetY + 13);
@@ -127,6 +130,7 @@ public class ExpoCamera {
         }
 
         camera.zoom = ClientStatic.CAMERA_ZOOM_LEVELS[currentZoomLevelIndex];
+        AudioEngine.get().playSoundGroup("woosh", 0.125f);
     }
 
     private void cameraLerpTowards(float x, float y) {
@@ -196,17 +200,37 @@ public class ExpoCamera {
         RenderContext.get().lightEngine.updateCamera();
     }
 
-    public void addZoomAnimation(float amount) {
+    public boolean addZoomAnimation(float amount) {
+        float lowerFloor = 0.1f;
+        boolean change = true;
+
         if(doZoomAnimation) {
             startZoom = camera.zoom;
             goalZoom = goalZoom + amount;
+
+            if(!DEV_MODE && goalZoom < lowerFloor) {
+                goalZoom = lowerFloor;
+
+                if(startZoom == goalZoom) {
+                    change = false;
+                }
+            }
         } else {
             startZoom = camera.zoom;
             goalZoom = startZoom + amount;
             doZoomAnimation = true;
+
+            if(!DEV_MODE && goalZoom < lowerFloor) {
+                goalZoom = lowerFloor;
+
+                if(startZoom == goalZoom) {
+                    change = false;
+                }
+            }
         }
 
         zoomDelta = 0f;
+        return change;
     }
 
 }

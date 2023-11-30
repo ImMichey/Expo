@@ -230,6 +230,23 @@ public class ParticleSheet {
                     .spawn();
         }
 
+        public static void spawnCampfireHitParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(3, 7)
+                    .scale(0.6f, 0.8f)
+                    .lifetime(0.4f, 0.55f)
+                    .color(ParticleColorMap.of(6))
+                    .position(entity.finalTextureStartX + 11.5f, entity.finalTextureStartY + 9.0f)
+                    .velocity(-24, 24, -24, 24)
+                    .fadeout(0.15f)
+                    .textureRange(12, 14)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .depth(entity.depth - 0.0001f)
+                    .spawn();
+        }
+
         public static void spawnWoodHitParticles(ClientEntity entity) {
             if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)

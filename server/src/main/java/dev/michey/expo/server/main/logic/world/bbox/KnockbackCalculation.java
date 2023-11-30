@@ -42,4 +42,8 @@ public class KnockbackCalculation {
         return elapsed >= knockbackDuration;
     }
 
+    public boolean halfwayFinished() {
+        return elapsed >= knockbackDuration * 0.5f;
+    }
+
 }

@@ -11,7 +11,8 @@
             "recipe_oak_wood_wall",
             "recipe_rock_wall",
             "recipe_dirt_wall",
-            "recipe_sign"
+            "recipe_sign",
+            "recipe_campfire_log"
         ],
         "tools": [
             "recipe_flint_pickaxe",
@@ -355,6 +356,19 @@
                 {
                     "id": 21,
                     "amount": 3
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_campfire_log",
+            "output": {
+                "id": 47,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 17,
+                    "amount": 5
                 }
             ]
         }

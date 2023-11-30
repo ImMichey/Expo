@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.ai.AIConstants;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.world.bbox.KnockbackCalculation;
 import dev.michey.expo.server.util.EntityMetadata;
 
 public class BrainModuleFlee extends BrainModule {
@@ -65,14 +66,27 @@ public class BrainModuleFlee extends BrainModule {
             return;
         }
 
-        // Flee vector
-        dirVector.set(entity.posX, entity.posY).sub(attacker.posX, attacker.posY).nor();
-        getBrain().setLastMovementDirection(dirVector);
-        float sp = entity.movementSpeedMultiplicator();
-        entity.attemptMove(
-                dirVector.x * delta * fleeSpeed * sp,
-                dirVector.y * delta * fleeSpeed * sp
-        );
+        boolean doFlee = true;
+
+        if(entity.knockbackCalculations != null) {
+            for(KnockbackCalculation kc : entity.knockbackCalculations) {
+                if(!kc.halfwayFinished()) {
+                    doFlee = false;
+                    break;
+                }
+            }
+        }
+
+        if(doFlee) {
+            // Flee vector
+            dirVector.set(entity.posX, entity.posY).sub(attacker.posX, attacker.posY).nor();
+            getBrain().setLastMovementDirection(dirVector);
+            float sp = entity.movementSpeedMultiplicator();
+            entity.attemptMove(
+                    dirVector.x * delta * fleeSpeed * sp,
+                    dirVector.y * delta * fleeSpeed * sp
+            );
+        }
     }
 
 }

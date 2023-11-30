@@ -74,11 +74,32 @@ punch_1.wav
 punch_2.wav
 punch_3.wav
 
+#plant;true;0.8-1.2;SFX;1.0
+plant_1.wav
+
+#stomach;true;0.9-1.1;SFX;2.0
+stomach_1.wav
+
+#notification;true;0.9-1.1;SFX;0.5
+notification_1.wav
+
+#rooster;true;1.0-1.0;SFX;1.0
+rooster_1.wav
+
+#woosh;true;1.0-1.0;SFX;1.0
+woosh_1.wav
+
 #harvest;true;0.9-1.1;SFX;1.0
 harvest_1.wav
 harvest_2.wav
 harvest_4.wav
 harvest_5.wav
+
+#harvest_hard;true;0.9-1.1;SFX;1.0
+harvest_hard_2.wav
+harvest_hard_3.wav
+harvest_hard_4.wav
+harvest_hard_5.wav
 
 #grass_hit;true;0.9-1.1;SFX;1.0
 grass_hit_1.wav

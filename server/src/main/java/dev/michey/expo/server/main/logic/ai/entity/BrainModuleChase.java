@@ -72,13 +72,15 @@ public class BrainModuleChase extends BrainModule {
                 ((BrainModuleAttack) attackModule).setMetadata(chase);
                 getBrain().setActiveModule(attackModule);
             } else if(dst > attackDistance) {
-                dirVector.set(chase.posX, chase.posY).sub(entity.posX, entity.posY).nor();
-                getBrain().setLastMovementDirection(dirVector);
-                float sp = entity.movementSpeedMultiplicator();
-                entity.attemptMove(
-                        dirVector.x * delta * chaseSpeed * sp,
-                        dirVector.y * delta * chaseSpeed * sp
-                );
+                if(entity.knockbackCalculations == null || entity.knockbackCalculations.isEmpty()) {
+                    dirVector.set(chase.posX, chase.posY).sub(entity.posX, entity.posY).nor();
+                    getBrain().setLastMovementDirection(dirVector);
+                    float sp = entity.movementSpeedMultiplicator();
+                    entity.attemptMove(
+                            dirVector.x * delta * chaseSpeed * sp,
+                            dirVector.y * delta * chaseSpeed * sp
+                    );
+                }
             } else {
                 getBrain().resetMovementPacket();
             }
