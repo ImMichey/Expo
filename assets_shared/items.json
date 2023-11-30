@@ -1217,7 +1217,7 @@
                 "durability": 142,
                 "toolType": "WEAPON",
                 "attackSpeed": 0.25,
-                "attackDamage": 9.0,
+                "attackDamage": 1.0,
                 "attackKnockbackStrength": 10.0
             }
         },

@@ -45,7 +45,7 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity, Ambie
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
-        spawnHealthBar();
+        spawnHealthBar(damage);
         spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 

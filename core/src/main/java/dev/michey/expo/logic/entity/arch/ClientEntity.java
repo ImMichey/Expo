@@ -66,12 +66,12 @@ public abstract class ClientEntity {
     public boolean flipped;
     public boolean visibleToRenderEngine;
     public boolean disableTextureCentering;
-    public float textureOffsetX;    // The required offset within the texture to the draw start position
-    public float textureOffsetY;    // The required offset within the texture to the draw start position
-    public float textureWidth;      // Actual width of the texture you want to draw
-    public float textureHeight;     // Actual height of the texture you want to draw
-    public float positionOffsetY;   // Position offset to sync server->client positions
-    public float positionOffsetX;   // Position offset to sync server->client positions
+    public float textureOffsetX;                                // The required offset within the texture to the draw start position
+    public float textureOffsetY;                                // The required offset within the texture to the draw start position
+    public float textureWidth;                                  // Actual width of the texture you want to draw
+    public float textureHeight;                                 // Actual height of the texture you want to draw
+    public float positionOffsetY;                               // Position offset to sync server->client positions
+    public float positionOffsetX;                               // Position offset to sync server->client positions
     public float finalDrawPosX, finalDrawPosY;                  // The world position where to draw the texture at
     public float finalTextureCenterX, finalTextureCenterY;      // The world position where the texture is at center visually
     public float finalTextureStartX, finalTextureStartY;        // The world position where the texture is starting visually
@@ -586,7 +586,7 @@ public abstract class ClientEntity {
         }
     }
 
-    public void spawnHealthBar() {
+    public void spawnHealthBar(float damage) {
         var hb = ClientEntityManager.get().getEntitiesByType(ClientEntityType.HEALTH_BAR);
         ClientHealthBar use = null;
 
@@ -604,8 +604,14 @@ public abstract class ClientEntity {
             use.parentEntity = this;
             use.clientPosX = use.parentEntity.clientPosX;
             use.clientPosY = use.parentEntity.clientPosY;
+            use.removalDelay = 0.125f;
             ClientEntityManager.get().addClientSideEntity(use);
+        } else {
+            use.removalDelay = 0f;
         }
+
+        use.damage = damage;
+        use.removalDelta = 1.0f;
     }
 
     public void playEntityAnimation(int animationId) {

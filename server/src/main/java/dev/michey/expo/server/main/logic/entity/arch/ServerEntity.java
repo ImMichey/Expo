@@ -305,6 +305,9 @@ public abstract class ServerEntity {
         if(t == null) {
             ExpoLogger.log("NULL " + tileX + " " + tileY + " ( " + posX + "," + posY + ")");
         }
+        if(t.dynamicTileParts == null) {
+            ExpoLogger.log("DYNAMIC PARTS NULL " + t.tileX + "," + t.tileY + ", " + posX + "," + posY);
+        }
         boolean hole = t.dynamicTileParts[0].emulatingType == TileLayerType.SOIL_HOLE;
         if(hole) return 0.75f;
 

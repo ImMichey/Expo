@@ -30,7 +30,7 @@ public class UIContainerInventory extends UIContainer {
     public UICraftPreviousCategory craftPreviousCategoryButton;
     public UICraftNextCategory craftNextCategoryButton;
     public UICraftGroupCategory[] craftGroupCategoryButtons;
-    private UICraftGroupCategory selectedCraftGroupCategory;
+    public UICraftGroupCategory selectedCraftGroupCategory;
     public UICraftRecipeSlot[] craftRecipeSlots;
 
     /** Textures */
@@ -162,7 +162,7 @@ public class UIContainerInventory extends UIContainer {
             int cpy = (int) (invY + invTextOffsetY);
 
             r.hudBatch.setColor(0f, 0f, 0f, 0.25f);
-            r.hudBatch.draw(r.square, cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
+            r.drawSquareRoundedDouble(cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
 
             r.hudBatch.setColor(Color.WHITE);
             r.m5x7_shadow_use.draw(r.hudBatch, "Inventory", cpx, cpy);
@@ -176,7 +176,7 @@ public class UIContainerInventory extends UIContainer {
             int cpy = (int) (invY + 199 * ui.uiScale + ui.glyphLayout.height);
 
             r.hudBatch.setColor(0f, 0f, 0f, 0.25f);
-            r.hudBatch.draw(r.square, cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
+            r.drawSquareRoundedDouble(cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
 
             r.hudBatch.setColor(Color.WHITE);
             r.m5x7_shadow_use.draw(r.hudBatch, "Crafting", cpx, cpy);

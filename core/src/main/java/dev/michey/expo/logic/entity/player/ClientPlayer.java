@@ -27,6 +27,7 @@ import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
+import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.render.ui.notification.UINotificationPiece;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
@@ -265,7 +266,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
 
-        if(!player) spawnHealthBar();
+        if(!player) spawnHealthBar(damage);
     }
 
     @Override
@@ -468,6 +469,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 Expo.get().loadItemMapperTextures();
                 if(ClientPlayer.getLocalPlayer() != null && ClientPlayer.getLocalPlayer().holdingItemId != -1) {
                     ClientPlayer.getLocalPlayer().updateHoldingItemSprite(holdingItemId);
+                }
+
+                // This is a fix for UI ItemRender animations.
+                if(UIContainerInventory.PLAYER_INVENTORY_CONTAINER != null) {
+                    UIContainerInventory.PLAYER_INVENTORY_CONTAINER.setCraftGroupCategory(UIContainerInventory.PLAYER_INVENTORY_CONTAINER.selectedCraftGroupCategory);
                 }
             }
 

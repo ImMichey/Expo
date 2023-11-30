@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -100,6 +99,7 @@ public class RenderContext {
     public ShaderProgram aoShader;
     public ShaderProgram blinkShader;
     public ShaderProgram whiteShader;
+    public ShaderProgram buildPreviewShader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -187,6 +187,7 @@ public class RenderContext {
     public TextureRegion hbEdge;
     public TextureRegion hbFilled;
     public TextureRegion hbUnfilled;
+    public TextureRegion hbAnimation;
 
     /** Screenshots */
     public boolean queueScreenshot;
@@ -328,6 +329,7 @@ public class RenderContext {
         hbEdge = new TextureRegion(healthBarBase, 0, 0, 1, 3);
         hbFilled = new TextureRegion(healthBarBase, 1, 0, 1, 3);
         hbUnfilled = new TextureRegion(healthBarBase, 2, 0, 1, 3);
+        hbAnimation = new TextureRegion(healthBarBase, 3, 0, 1, 3);
 
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");
@@ -342,6 +344,7 @@ public class RenderContext {
         aoShader = compileShader("gl3/ao");
         blinkShader = compileShader("gl3/blink");
         whiteShader = compileShader("gl3/white");
+        buildPreviewShader = compileShader("gl3/build_preview");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         lightEngine = new ExpoLightEngine();
@@ -416,13 +419,6 @@ public class RenderContext {
 
         if(ItemMapper.get() == null) return;
 
-        ClientUtils.log("Size: " + ItemMapper.get().getDynamicAnimationList().size(), Input.Keys.X);
-        if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-            for(ItemRender ir : ItemMapper.get().getDynamicAnimationList()) {
-                ExpoLogger.log(ir.texture + " - " + ir.useTextureRegion + " - " + ir.animationDelta);
-            }
-        }
-
         for(ItemRender ir : ItemMapper.get().getDynamicAnimationList()) {
             TextureRegion old = ir.useTextureRegion;
 
@@ -474,6 +470,7 @@ public class RenderContext {
 
         for(ItemRender ir : itemRenders) {
             TextureRegion tr = ir.useTextureRegion;
+            ClientUtils.log("-> " + tr + " " + ir.texture + " " + ir.animationDelta, Input.Keys.G);
             float centeredTextureX = (tileW - itemRenders[0].useWidth) * 0.5f * ui.uiScale;
             float centeredTextureY = (tileH - itemRenders[0].useHeight) * 0.5f * ui.uiScale;
 
@@ -649,6 +646,23 @@ public class RenderContext {
 
     public TextureRegion getNumberOutline(int number) {
         return numbersOutline[number];
+    }
+
+    public void drawSquareRounded(float x, float y, float w, float h) {
+        hudBatch.draw(square, x, y + 1, w, h - 2);
+
+        hudBatch.draw(square, x + 1, y + h - 1, w - 2, 1);
+        hudBatch.draw(square, x + 1, y, w - 2, 1);
+    }
+
+    public void drawSquareRoundedDouble(float x, float y, float w, float h) {
+        hudBatch.draw(square, x, y + 2, w, h - 4);
+
+        hudBatch.draw(square, x + 2, y, w - 4, 1);
+        hudBatch.draw(square, x + 1, y + 1, w - 2, 1);
+
+        hudBatch.draw(square, x + 1, y + h - 2, w - 2, 1);
+        hudBatch.draw(square, x + 2, y + h - 1, w - 4, 1);
     }
 
     private ShaderProgram compileShader(String key) {

@@ -1343,14 +1343,14 @@ entity_firefly_s_fly_1
   index: -1
 entity_firefly_s_fly_2
   rotate: false
-  xy: 579, 1477
+  xy: 1292, 1880
   size: 3, 3
   orig: 3, 3
   offset: 0, 0
   index: -1
 entity_firefly_s_fly_4
   rotate: false
-  xy: 579, 1477
+  xy: 1292, 1880
   size: 3, 3
   orig: 3, 3
   offset: 0, 0
@@ -3387,9 +3387,9 @@ ui_discord
   index: -1
 ui_entity_healthbar
   rotate: false
-  xy: 1292, 1880
-  size: 3, 3
-  orig: 3, 3
+  xy: 579, 1477
+  size: 4, 3
+  orig: 4, 3
   offset: 0, 0
   index: -1
 ui_indicator_axe

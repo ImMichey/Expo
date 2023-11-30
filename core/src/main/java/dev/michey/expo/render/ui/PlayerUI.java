@@ -456,7 +456,9 @@ public class PlayerUI {
                         float MAX_ALPHA = 0.4f;
 
                         rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, alpha * MAX_ALPHA);
-                        rc.hudBatch.draw(whiteSquare, (int) (cmx - padding * uiScale), (int) (cmy - padding * uiScale - glyphLayout.height), glyphLayout.width + padding * 2 * uiScale, glyphLayout.height + padding * 2 * uiScale);
+                        rc.drawSquareRounded((int) (cmx - padding * uiScale),
+                                (int) (cmy - padding * uiScale - glyphLayout.height),
+                                (int) (glyphLayout.width + padding * 2 * uiScale), (int) (glyphLayout.height + padding * 2 * uiScale));
                         rc.hudBatch.setColor(Color.WHITE);
 
                         useChatDisplayFont.setColor(1.0f, 1.0f, 1.0f, alpha);
@@ -593,7 +595,7 @@ public class PlayerUI {
 
                     rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, 0.25f * alpha);
                     int spacing = 4;
-                    rc.hudBatch.draw(rc.square, cx - spacing * uiScale, cy - spacing * uiScale - offsetY, totalWidth + spacing * uiScale * 2, totalHeight + spacing * uiScale * 2);
+                    rc.drawSquareRoundedDouble(cx - spacing * uiScale, cy - spacing * uiScale - offsetY, totalWidth + spacing * uiScale * 2, totalHeight + spacing * uiScale * 2);
 
                     rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 

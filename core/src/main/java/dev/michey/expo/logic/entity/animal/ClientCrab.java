@@ -39,7 +39,7 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
         ParticleSheet.Common.spawnBloodParticles(this, 0, -1.5f);
 
         spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
-        spawnHealthBar();
+        spawnHealthBar(damage);
     }
 
     @Override

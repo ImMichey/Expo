@@ -48,7 +48,7 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
-        spawnHealthBar();
+        spawnHealthBar(damage);
         spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 

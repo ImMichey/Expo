@@ -49,7 +49,7 @@ public class ClientZombie extends ClientEntity implements ReflectableEntity, Amb
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
-        spawnHealthBar();
+        spawnHealthBar(damage);
         spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 

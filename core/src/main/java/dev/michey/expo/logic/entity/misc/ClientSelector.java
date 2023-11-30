@@ -237,11 +237,6 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                 useDrawY = fluidTransitionOriginY + (externalPosY - fluidTransitionOriginY) * interpolated;
             }
 
-            if(eligible) {
-                rc.chunkRenderer.setColor(0.0f, 1.0f, 0.0f, 0.75f);
-            } else {
-                rc.chunkRenderer.setColor(1.0f, 0.2f, 0.2f, 0.75f);
-            }
             if(currentEntityPlacementTexture == null) {
                 if(!fluidTransition) {
                     if(selectorCooldownDelta > 0) {
@@ -269,6 +264,12 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                 rc.arraySpriteBatch.end();
                 rc.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
 
+                if(eligible) {
+                    rc.chunkRenderer.setColor(0.0f, 1.0f, 0.0f, 0.75f);
+                } else {
+                    rc.chunkRenderer.setColor(1.0f, 0.2f, 0.2f, 0.75f);
+                }
+
                 float px = useDrawX + (TILE_SIZE - sz) * 0.5f;
                 float py = useDrawY + (TILE_SIZE - sz) * 0.5f;
                 rc.chunkRenderer.rect(px, py, sz, sz);
@@ -276,7 +277,18 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                 rc.chunkRenderer.end();
                 rc.arraySpriteBatch.begin();
             } else {
+                if(eligible) {
+                    rc.arraySpriteBatch.setColor(0.1f, 1.0f, 0.1f, 0.75f);
+                } else {
+                    rc.arraySpriteBatch.setColor(1.0f, 0.2f, 0.2f, 0.75f);
+                }
+
+                rc.arraySpriteBatch.setShader(rc.buildPreviewShader);
+
                 rc.arraySpriteBatch.draw(tr(currentEntityPlacementTexture), useDrawX, useDrawY);
+
+                rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+                rc.arraySpriteBatch.setColor(Color.WHITE);
             }
 
             lastTileWorldX = externalPosX;
