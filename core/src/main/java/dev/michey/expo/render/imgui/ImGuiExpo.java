@@ -16,7 +16,6 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.ExpoLightEngine;
-import dev.michey.expo.render.ui.InteractableItemSlot;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.container.UIContainerInventory;

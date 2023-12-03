@@ -119,6 +119,9 @@ public class ExpoCamera {
     }
 
     public void resetZoom() {
+        if(camera.zoom != ClientStatic.DEFAULT_CAMERA_ZOOM) {
+            AudioEngine.get().playSoundGroup("woosh", 0.125f);
+        }
         camera.zoom = ClientStatic.DEFAULT_CAMERA_ZOOM;
         currentZoomLevelIndex = baseZoomLevelIndex;
     }

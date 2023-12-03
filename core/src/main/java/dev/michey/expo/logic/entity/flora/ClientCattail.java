@@ -123,7 +123,7 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         variant = (int) payload[0];
     }
 

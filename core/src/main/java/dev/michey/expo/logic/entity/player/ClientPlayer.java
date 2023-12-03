@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.audio.TrackedSoundData;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -45,6 +46,7 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.PacketUtils;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -141,6 +143,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public Sprite[] holdingItemSprites = null;
     public List<ExpoLight> itemLightList = null;
     public int lightHoldingItemId = -1;
+
+    public HashMap<Integer, TrackedSoundData> itemSoundMap = null;
 
     public int holdingArmorHeadId = -1;
     public ItemRender[] holdingHeadRender;
@@ -613,6 +617,14 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     break;
                 }
             }
+        }
+
+        if(holdingItemId == -1 && itemSoundMap != null) {
+            for(var x : itemSoundMap.values()) {
+                AudioEngine.get().killSound(x.id);
+            }
+
+            itemSoundMap.clear();
         }
 
         if((holdingItemId == -1 || (holdingItemId != lightHoldingItemId)) && itemLightList != null) {
@@ -1195,6 +1207,12 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                             light.update(holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + rfy, rc.delta);
                         }
                     }
+
+                    if(itemSoundMap != null) {
+                        for(TrackedSoundData tsd : itemSoundMap.values()) {
+                            tsd.worldPosition.set(holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + rfy);
+                        }
+                    }
                 }
             }
         }
@@ -1209,7 +1227,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public void applyTeleportUpdate(float xPos, float yPos, TeleportReason reason) {
         super.applyTeleportUpdate(xPos, yPos, reason);
         if(player) {
-            RenderContext.get().expoCamera.resetLerp();
             updateTexturePositionData();
             RenderContext.get().expoCamera.centerToPlayer(this);
 
@@ -1220,6 +1237,25 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     }
 
     public void updateHoldingItemSprite(int itemId) {
+        if(itemSoundMap != null) {
+            List<Integer> remove = null;
+
+            for(int iid : itemSoundMap.keySet()) {
+                if(iid != itemId) {
+                    AudioEngine.get().killSound(itemSoundMap.get(iid).id);
+
+                    if(remove == null) remove = new LinkedList<>();
+                    remove.add(iid);
+                }
+            }
+
+            if(remove != null) {
+                for(int iid : remove) {
+                    itemSoundMap.remove(iid);
+                }
+            }
+        }
+
         ItemMapping mapping = ItemMapper.get().getMapping(itemId);
         holdingItemSprites = new Sprite[mapping.heldRender.length];
 
@@ -1231,6 +1267,27 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             s.setScale(ir.scaleX, ir.scaleY);
             s.setOrigin(s.getWidth() * 0.5f, s.getHeight() * 0.5f);
             holdingItemSprites[i] = s;
+
+            if(ir.soundEmitter != null) {
+                if(ir.soundEmitter.persistent) {
+                    if(itemSoundMap == null) itemSoundMap = new HashMap<>();
+                    boolean play = true;
+
+                    for(int iid : itemSoundMap.keySet()) {
+                        if(itemSoundMap.get(iid).qualifiedName.startsWith(ir.soundEmitter.soundGroup)) {
+                            play = false;
+                            break;
+                        }
+                    }
+
+                    if(play) {
+                        itemSoundMap.put(itemId, AudioEngine.get().playSoundGroupManaged(ir.soundEmitter.soundGroup,
+                                new Vector2(clientPosX, clientPosY), ir.soundEmitter.volumeRange, true, ir.soundEmitter.volumeMultiplier));
+                    }
+                } else {
+                    AudioEngine.get().playSoundGroupManaged(ir.soundEmitter.soundGroup, new Vector2(clientPosX, clientPosY), ir.soundEmitter.volumeRange, false, ir.soundEmitter.volumeMultiplier);
+                }
+            }
         }
     }
 
@@ -1239,7 +1296,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             lightHoldingItemId = holdingItemId;
             itemLightList = new LinkedList<>();
 
-            ExpoLight expoLight = new ExpoLight(ir.renderLight.distanceMin, ir.renderLight.rayCount, ir.renderLight.emissionConstant, ir.renderLight.emissionQuadratic);
+            ExpoLight expoLight = new ExpoLight(ir.renderLight.distanceMin, ir.renderLight.rayCount, ir.renderLight.emissionConstant, ir.renderLight.emissionQuadratic, false);
             expoLight.color(ir.renderLight.color);
 
             if(ir.renderLight.pulsating) {

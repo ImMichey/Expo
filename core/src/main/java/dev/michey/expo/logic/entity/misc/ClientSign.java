@@ -97,7 +97,7 @@ public class ClientSign extends ClientEntity implements SelectableEntity, Reflec
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         text = (String) payload[0];
     }
 
@@ -142,7 +142,7 @@ public class ClientSign extends ClientEntity implements SelectableEntity, Reflec
 
             float sp = 3f;
             rc.arraySpriteBatch.setColor(0, 0, 0, fadeAlpha * 0.25f);
-            rc.arraySpriteBatch.draw(square, clientPosX - rc.globalGlyph.width * 0.5f - sp, clientPosY + 26 - sp, rc.globalGlyph.width + sp * 2, rc.globalGlyph.height + sp * 2);
+            rc.drawSquareRoundedAb(clientPosX - rc.globalGlyph.width * 0.5f - sp, clientPosY + 26 - sp, rc.globalGlyph.width + sp * 2, rc.globalGlyph.height + sp * 2);
             rc.arraySpriteBatch.setColor(Color.WHITE);
 
             use.setColor(1.0f, 1.0f, 1.0f, fadeAlpha);

@@ -224,7 +224,7 @@ public class ExpoClientPacketReader {
             ClientEntity entity = entityFromId(p.entityId);
 
             if(entity != null) {
-                entity.readEntityDataUpdate(p.payload);
+                entity.applyEntityUpdatePayload(p.payload);
             }
         } else if(o instanceof P32_ChunkDataSingle p) {
             var grid = ClientChunkGrid.get(); if(grid == null) return;

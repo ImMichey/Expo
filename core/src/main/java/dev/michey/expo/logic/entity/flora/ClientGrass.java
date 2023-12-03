@@ -149,7 +149,7 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         variant = (int) payload[0];
     }
 

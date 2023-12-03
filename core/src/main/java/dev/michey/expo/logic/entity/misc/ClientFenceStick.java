@@ -138,13 +138,13 @@ public class ClientFenceStick extends ClientEntity implements SelectableEntity, 
     }
 
     @Override
-    public void readEntityDataUpdate(Object[] payload) {
+    public void applyEntityUpdatePayload(Object[] payload) {
         fenceOrientation = (int) payload[0];
         updateFenceTexture();
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         fenceOrientation = (int) payload[0];
         updateFenceTexture();
     }

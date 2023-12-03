@@ -37,6 +37,22 @@ stone_hit_5.wav
 #stone_break;true;0.9-1.1;SFX;1.0
 stone_break_1.wav
 
+#log_cut;true;0.9-1.1;SFX;1.0
+log_cut_1.wav
+log_cut_2.wav
+log_cut_3.wav
+log_cut_4.wav
+log_cut_5.wav
+log_cut_6.wav
+log_cut_7.wav
+log_cut_8.wav
+
+#log_split;true;0.9-1.1;SFX;1.0
+log_split_1.wav
+
+#log_drop;true;0.9-1.1;SFX;1.0
+log_drop_1.wav
+
 #dig_sand;true;0.9-1.1;SFX;1.0
 dig_sand_1.wav
 dig_sand_2.wav
@@ -139,8 +155,20 @@ wet_death_1.wav
 #inv_open;true;0.9-1.1;SFX;1.0
 inv_open_1.wav
 
-#click;true;1.0-1.1;SFX;0.6
+#click;true;0.9-1.1;SFX;0.6
 click_1.wav
+
+#campfire;true;0.8-1.2;SFX;1.0
+campfire_1.wav
+
+#craft;true;0.9-1.1;SFX;1.0
+craft_1.wav
+
+#campfire_extinguish;true;0.8-1.2;SFX;1.0
+campfire_extinguish_1.wav
+
+#torch;true;1.0-1.0;SFX;1.0
+torch_1.wav
 
 #player_death;true;0.9-1.1;SFX;1.0
 player_death_1.wav
@@ -161,3 +189,6 @@ bloody_squish_1.wav
 
 #crab_snip;true;0.9-1.1;SFX;1.0
 crab_snip_1.wav
+
+#switch;true;0.9-1.1;SFX;1.0
+switch_1.wav

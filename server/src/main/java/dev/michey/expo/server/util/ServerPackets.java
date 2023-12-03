@@ -329,6 +329,14 @@ public class ServerPackets {
         udp(p, receiver);
     }
 
+    /** Sends the P30_EntityDataUpdate packet via UDP protocol. */
+    public static void p30EntityDataUpdate(ServerEntity entity) {
+        P30_EntityDataUpdate p = new P30_EntityDataUpdate();
+        p.entityId = entity.entityId;
+        p.payload = entity.getPacketPayload();
+        udp(p, PacketReceiver.whoCanSee(entity));
+    }
+
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
     public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, PacketReceiver receiver) {
         P32_ChunkDataSingle p = new P32_ChunkDataSingle();

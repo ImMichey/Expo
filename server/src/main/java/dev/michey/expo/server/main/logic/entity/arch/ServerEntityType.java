@@ -4,6 +4,7 @@ import dev.michey.expo.server.main.logic.entity.animal.*;
 import dev.michey.expo.server.main.logic.entity.container.ServerCrate;
 import dev.michey.expo.server.main.logic.entity.crop.ServerCropWheat;
 import dev.michey.expo.server.main.logic.entity.flora.*;
+import dev.michey.expo.server.main.logic.entity.hostile.ServerSlimeGreen;
 import dev.michey.expo.server.main.logic.entity.hostile.ServerZombie;
 import dev.michey.expo.server.main.logic.entity.misc.*;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -43,6 +44,7 @@ public enum ServerEntityType {
     CHICKEN(30, "Chicken", true),
     SIGN(31, "Sign", true),
     CAMPFIRE(32, "Campfire", true),
+    SLIME_GREEN(33, "SlimeGreen", false),
     ;
 
     public final int ENTITY_ID;
@@ -90,6 +92,7 @@ public enum ServerEntityType {
             case 30 -> new ServerChicken();
             case 31 -> new ServerSign();
             case 32 -> new ServerCampfire();
+            case 33 -> new ServerSlimeGreen();
             default -> null;
         };
     }
@@ -129,6 +132,7 @@ public enum ServerEntityType {
             case "CHICKEN" -> new ServerChicken();
             case "SIGN" -> new ServerSign();
             case "CAMPFIRE" -> new ServerCampfire();
+            case "SLIMEGREEN", "SLIME_GREEN", "GREENSLIME", "GREEN_SLIME" -> new ServerSlimeGreen();
             default -> null;
         };
     }

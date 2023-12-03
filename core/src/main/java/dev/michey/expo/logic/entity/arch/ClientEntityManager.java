@@ -491,7 +491,7 @@ public class ClientEntityManager {
         e.clientPosX = p.serverPosX;
         e.clientPosY = p.serverPosY;
         e.serverHealth = p.entityHealth;
-        e.applyPacketPayload(p.payload);
+        e.applyCreationPayload(p.payload);
         return e;
     }
 

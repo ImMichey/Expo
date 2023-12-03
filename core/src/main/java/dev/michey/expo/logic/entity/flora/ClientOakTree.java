@@ -281,12 +281,16 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
-        playEntitySound("wood_cut");
-        squishAnimator2D.reset();
+        if(newHealth <= 0) {
+            playEntitySound("log_split");
+        } else {
+            playEntitySound("log_cut");
+        }
 
+        squishAnimator2D.reset();
         ParticleSheet.Common.spawnTreeHitParticles(this, clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f);
 
-        if(GameSettings.get().enableParticles) {
+        if(GameSettings.get().enableParticles && !cut) {
             Color c = new Color((1.0f - colorMix), 1.0f, (1.0f - colorMix), 1.0f);
 
             new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
@@ -548,7 +552,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         cut = (boolean) payload[1];
         variant = (int) payload[0];
 
@@ -564,7 +568,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     }
 
     @Override
-    public void readEntityDataUpdate(Object[] payload) {
+    public void applyEntityUpdatePayload(Object[] payload) {
         boolean isNowCut = (boolean) payload[0];
 
         if(isNowCut && !cut) {

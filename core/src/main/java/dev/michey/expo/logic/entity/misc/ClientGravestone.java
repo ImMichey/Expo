@@ -86,7 +86,7 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         owner = (String) payload[0];
     }
 

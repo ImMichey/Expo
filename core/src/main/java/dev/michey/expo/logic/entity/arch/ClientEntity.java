@@ -150,7 +150,7 @@ public abstract class ClientEntity {
         clientTileY = ExpoShared.posToTile(clientPosY);
     }
 
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
 
     }
 
@@ -480,7 +480,7 @@ public abstract class ClientEntity {
         return chunkGrid().getChunk(cx, cy).dynamicTiles[baseTileArray];
     }
 
-    public void readEntityDataUpdate(Object[] payload) {
+    public void applyEntityUpdatePayload(Object[] payload) {
 
     }
 

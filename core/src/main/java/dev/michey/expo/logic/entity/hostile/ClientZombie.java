@@ -30,7 +30,7 @@ public class ClientZombie extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void playFootstepSound() {
-        playEntitySound(getFootstepSound());
+        playEntitySound(getFootstepSound(), 0.5f);
     }
 
     @Override

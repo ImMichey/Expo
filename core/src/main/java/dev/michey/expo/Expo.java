@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.TileMergerV2;
-import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.console.ConsoleMessage;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.debug.DebugGL;
@@ -26,6 +25,7 @@ import dev.michey.expo.render.imgui.ImGuiExpo;
 import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.server.ServerLauncher;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
@@ -256,7 +256,7 @@ public class Expo implements ApplicationListener {
 		RenderContext r = RenderContext.get();
 
 		r.update();
-		AudioEngine.get().tick();
+		AudioEngine.get().tick(r.delta);
 		ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1.0f);
 		//ScreenUtils.clear(Color.BLACK);
 

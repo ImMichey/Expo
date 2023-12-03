@@ -39,7 +39,7 @@ public class InputController {
         } else {
             // Clicked on a slot
             ui.hoveredSlot.onLeftClick();
-            AudioEngine.get().playSoundGroup("click");
+            AudioEngine.get().playSoundGroup(ui.hoveredSlot.getLeftClickSoundName());
         }
     }
 

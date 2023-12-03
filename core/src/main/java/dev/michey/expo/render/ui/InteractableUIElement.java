@@ -2,8 +2,6 @@ package dev.michey.expo.render.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import dev.michey.expo.logic.inventory.ClientInventoryItem;
-import dev.michey.expo.logic.inventory.ClientInventorySlot;
 import dev.michey.expo.render.RenderContext;
 
 public class InteractableUIElement {
@@ -110,4 +108,8 @@ public class InteractableUIElement {
         return drawNotSelected;
     }
 
+    public String getLeftClickSoundName() {
+        return "click";
+    }
+    
 }

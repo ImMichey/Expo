@@ -5,13 +5,16 @@ import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
 public class ServerCampfire extends ServerEntity implements PhysicsEntity {
 
+    public float oldBurnDuration;
     public float burnDuration;
     private EntityPhysicsBox physicsBody;
 
@@ -36,9 +39,25 @@ public class ServerCampfire extends ServerEntity implements PhysicsEntity {
     }
 
     @Override
+    public void onInteraction(ServerPlayer player) {
+        burnDuration = 5.0f;
+    }
+
+    @Override
+    public void tick(float delta) {
+        burnDuration -= delta;
+
+        if((oldBurnDuration > 0 && burnDuration <= 0) || (oldBurnDuration < 0 && burnDuration > 0)) {
+            ServerPackets.p30EntityDataUpdate(this);
+        }
+
+        oldBurnDuration = burnDuration;
+    }
+
+    @Override
     public void onDie() {
         spawnItemsAround(0, 1.875f, 10, 14,
-                new SpawnItem("item_oak_log", 1, 3));
+                new SpawnItem("item_oak_log", 1, 2));
     }
 
     @Override

@@ -994,6 +994,12 @@
                         "particleEmitter": {
                             "emitterName": "torch",
                             "emitterDelay": 0.05
+                        },
+                        "soundEmitter": {
+                            "soundGroup": "campfire",
+                            "persistent": true,
+                            "volumeRange": 166,
+                            "volumeMultiplier": 0.4
                         }
                     }
                 ]

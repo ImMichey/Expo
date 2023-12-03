@@ -3,13 +3,16 @@ package dev.michey.expo.render.light;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.box2dport.PointLight;
+import dev.michey.expo.util.ExpoTime;
 
 public class ExpoLight {
 
     /** Direct access light. */
     public PointLight box2dLight;
+    private boolean staticLight;
 
     public boolean pulsating = false;
     public float pulsatingAlpha = 0f;
@@ -24,16 +27,20 @@ public class ExpoLight {
     public float flickerDelta;
     public float flickerValue;
 
-    public ExpoLight(float distance, int rays, float constant, float quadratic) {
+    public ExpoLight(float distance, int rays, float constant, float quadratic, boolean staticLight) {
         box2dLight = new PointLight(RenderContext.get().lightEngine.rayHandler, rays);
         box2dLight.setXray(true);
         box2dLight.setFalloff(constant, 0.0f, quadratic);
         box2dLight.setDistance(distance);
         pulsatingMinDistance = distance;
+        this.staticLight = staticLight;
     }
 
     public void update(float x, float y, float delta) {
-        box2dLight.setPosition(x, y);
+        if(!isVisibleThroughDaytime()) return;
+        if(!staticLight || (box2dLight.getX() != x) || (box2dLight.getY() != y)) {
+            box2dLight.setPosition(x, y);
+        }
 
         if(pulsating) {
             if(pulsatingDirection) {
@@ -86,6 +93,13 @@ public class ExpoLight {
         flickering = true;
         flickerStrength = strength;
         flickerCooldown = cooldown;
+    }
+
+    private boolean isVisibleThroughDaytime() {
+        float wt = ExpoClientContainer.get().getClientWorld().worldTime;
+
+        // Do a dimension check in the future here.
+        return wt < ExpoTime.DAY || wt >= ExpoTime.SUNSET;
     }
 
     public void color(Color color) {

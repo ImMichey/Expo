@@ -27,6 +27,7 @@ public class ItemRender {
     public boolean updatedAnimation;
     public ItemRenderLight renderLight;
     public ItemRenderParticleEmitter particleEmitter;
+    public ItemRenderSoundEmitter soundEmitter;
     public boolean hideShadow;
 
     public ItemRender(JSONObject object) {
@@ -106,6 +107,12 @@ public class ItemRender {
             particleEmitter = new ItemRenderParticleEmitter(object.getJSONObject("particleEmitter"));
         } else {
             particleEmitter = null;
+        }
+
+        if(object.has("soundEmitter")) {
+            soundEmitter = new ItemRenderSoundEmitter(object.getJSONObject("soundEmitter"));
+        } else {
+            soundEmitter = null;
         }
     }
 

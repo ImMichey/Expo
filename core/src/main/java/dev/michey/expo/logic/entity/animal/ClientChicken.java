@@ -89,7 +89,7 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         variant = (int) payload[0];
     }
 

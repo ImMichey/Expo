@@ -825,6 +825,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         if(itemNowBroken) {
             playerInventory.slots[selectedInventorySlot].item.setEmpty();
             heldItemPacket(PacketReceiver.whoCanSee(this));
+            ServerPackets.p24PositionalSound("log_split", posX, posY + 10, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
         }
 
         ServerPackets.p19ContainerUpdate(ExpoShared.CONTAINER_ID_PLAYER, new int[] {selectedInventorySlot}, new ServerInventoryItem[] {item}, PacketReceiver.player(this));

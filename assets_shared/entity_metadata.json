@@ -41,6 +41,25 @@
         "ai.attackAt": 0.25,
         "ai.attackRange": 16.0
     },
+    "SLIME_GREEN": {
+        "name": "Green Slime",
+        "maxHp": 100,
+        "ai.idleMin": 4.0,
+        "ai.idleMax": 8.0,
+        "ai.idleSeekDistance": 96.0,
+        "ai.strollMin": 3.0,
+        "ai.strollMax": 6.0,
+        "ai.strollSpeed": 24.0,
+        "ai.strollSeekDistance": 112.0,
+        "ai.chaseDistance": 64.0,
+        "ai.chaseSpeed": 32.0,
+        "ai.attackDistance": 16.0,
+        "ai.attackCooldown": 1.5,
+        "ai.attackDuration": 0.5,
+        "ai.attackDamage": 20.0,
+        "ai.attackAt": 0.25,
+        "ai.attackRange": 16.0
+    },
     "PLAYER": {
         "maxHp": 100,
         "healthBar.offsetY": 8.0

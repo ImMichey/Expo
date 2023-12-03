@@ -93,7 +93,7 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         variant = (int) payload[0];
     }
 

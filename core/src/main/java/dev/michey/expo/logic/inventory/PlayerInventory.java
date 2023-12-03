@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.inventory;
 
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.util.ClientPackets;
@@ -29,6 +30,7 @@ public class PlayerInventory extends ClientInventory {
         ui.hotbarSlots[selectedSlot].selected = true;
 
         ClientPackets.p20PlayerInventorySwitch(selectedSlot);
+        AudioEngine.get().playSoundGroup("switch");
     }
 
     public ClientInventoryItem currentItem() {

@@ -38,6 +38,7 @@ public class AudioEngine {
         clearList = new LinkedList<>();
         ambienceTrackMap = new HashMap<>();
         loadMaps();
+        instance = this;
     }
 
     private void loadMaps() {
@@ -122,9 +123,9 @@ public class AudioEngine {
     }
 
     /** The SoundEngine tick method. **/
-    public void tick() {
+    public void tick(float delta) {
         long now = System.currentTimeMillis();
-        dynamicDelta += RenderContext.get().delta;
+        dynamicDelta += delta;
         boolean dynamicTick = false;
 
         if(dynamicDelta >= 0.1f) {
@@ -184,6 +185,17 @@ public class AudioEngine {
     private void dynamicCalculate(TrackedSoundData data) {
         float volume = volumeOf(data.type) * data.baseVolume * data.specificVolumeMultiplier * masterVolume;
         volume *= getDynamicSoundVolume(data.worldPosition, data.audibleRange);
+
+        if(data.fadeDuration > 0) {
+            data.fadeDelta += RenderContext.get().delta;
+
+            if(data.fadeDelta > data.fadeDuration) {
+                data.fadeDelta = data.fadeDuration;
+            } else if(data.fadeDelta < data.fadeDuration) {
+                volume *= data.fadeDelta / data.fadeDuration;
+            }
+        }
+
         float pan = getDynamicSoundPan(data.worldPosition, data.audibleRange);
         data.sound.setPan(data.id, pan, volume);
         data.postCalcVolume = volume;
@@ -305,7 +317,7 @@ public class AudioEngine {
         return soundData;
     }
 
-    private float dstPlayer(Vector2 v) {
+    public float dstPlayer(Vector2 v) {
         ClientPlayer p = ClientPlayer.getLocalPlayer();
         if(p == null) return 0f;
 
@@ -313,14 +325,14 @@ public class AudioEngine {
         return Vector2.dst(v.x, v.y, c.x, c.y);
     }
 
-    private float getDynamicSoundVolume(Vector2 v, float maxAudibleRange) {
+    public float getDynamicSoundVolume(Vector2 v, float maxAudibleRange) {
         float d = dstPlayer(v);
         if(d > maxAudibleRange) return 0;
 
         return 1f - ((d * d) / (maxAudibleRange * maxAudibleRange));
     }
 
-    private float getDynamicSoundPan(Vector2 v, float maxAudibleRange) {
+    public float getDynamicSoundPan(Vector2 v, float maxAudibleRange) {
         ClientPlayer p = ClientPlayer.getLocalPlayer();
         if(p == null) return 0f;
 

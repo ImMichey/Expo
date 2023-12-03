@@ -10,8 +10,6 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.util.ParticleBuilder;
-import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientBlueberryBush extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
@@ -106,12 +104,12 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         hasBerries = (boolean) payload[0];
     }
 
     @Override
-    public void readEntityDataUpdate(Object[] payload) {
+    public void applyEntityUpdatePayload(Object[] payload) {
         hasBerries = (boolean) payload[0];
 
         if(!hasBerries) {

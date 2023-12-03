@@ -30,6 +30,9 @@ public class TrackedSoundData {
     public boolean ambient;
     // Music flag
     public boolean music;
+    // Fade flag
+    public float fadeDuration;
+    public float fadeDelta;
 
     // Position specific
     public boolean dynamic = false;

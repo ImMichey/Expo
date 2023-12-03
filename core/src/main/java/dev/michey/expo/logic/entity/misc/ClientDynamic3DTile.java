@@ -208,12 +208,12 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         parsePayload(payload);
     }
 
     @Override
-    public void readEntityDataUpdate(Object[] payload) {
+    public void applyEntityUpdatePayload(Object[] payload) {
         parsePayload(payload);
     }
 

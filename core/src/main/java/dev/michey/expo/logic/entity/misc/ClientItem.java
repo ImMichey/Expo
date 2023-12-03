@@ -166,7 +166,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     }
 
     @Override
-    public void readEntityDataUpdate(Object[] payload) {
+    public void applyEntityUpdatePayload(Object[] payload) {
         int newAmount = (int) payload[0];
         boolean ghostItem = (boolean) payload[1];
         if(ghostItem) spawnGhostEntity(itemAmount - newAmount);
@@ -195,7 +195,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     }
 
     @Override
-    public void applyPacketPayload(Object[] payload) {
+    public void applyCreationPayload(Object[] payload) {
         itemId = (int) payload[0];
         itemAmount = (int) payload[1];
     }

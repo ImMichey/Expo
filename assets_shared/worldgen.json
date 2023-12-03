@@ -34,7 +34,9 @@
                             ],
                             "threshold": 0.777,
                             "replaceType": "LAYER_1",
-                            "replaceWith": "EMPTY"
+                            "replaceWith": "EMPTY",
+                            "thresholdSecond": 0.85,
+                            "thresholdReplace": "SOIL_HOLE"
                         }
                     },
                     {
@@ -178,36 +180,6 @@
                 ]
             },
             "tilePopulators": [
-                {
-                    "biome": "LAKE",
-                    "chance": 0.015,
-                    "type": "CATTAIL",
-                    "spawnOffsets": [-12.0, 12.0, -12.0, 12.0],
-                    "static": true,
-                    "spreadData": {
-                        "spread": [1, 2],
-                        "spreadChance": 1.0,
-                        "spreadType": ["CATTAIL"],
-                        "spreadDis": [16.0, 20.0],
-                        "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
-                    }
-                },
-                {
-                    "biome": "RIVER",
-                    "chance": 0.005,
-                    "type": "CATTAIL",
-                    "spawnOffsets": [-12.0, 12.0, -12.0, 12.0],
-                    "static": true,
-                    "spreadData": {
-                        "spread": [1, 2],
-                        "spreadChance": 1.0,
-                        "spreadType": ["CATTAIL"],
-                        "spreadDis": [16.0, 20.0],
-                        "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
-                    }
-                },
                 {
                     "biome": "DENSE_FOREST",
                     "type": "OAK_TREE",

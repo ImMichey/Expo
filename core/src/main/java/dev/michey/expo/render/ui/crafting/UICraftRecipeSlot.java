@@ -24,6 +24,8 @@ public class UICraftRecipeSlot extends InteractableUIElement {
     private CraftingRecipe holdingRecipe;
     private ItemRender[] drawItemPreview;
 
+    private boolean hasAllIngredients = false;
+
     public UICraftRecipeSlot(UIContainerInventory parentContainer) {
         super(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CRAFT_RECIPE_BASE,
                 ExpoAssets.get().textureRegion("ui_crafting_emptyslot_sel"), ExpoAssets.get().textureRegion("ui_crafting_emptyslot"));
@@ -37,8 +39,19 @@ public class UICraftRecipeSlot extends InteractableUIElement {
     }
 
     @Override
+    public String getLeftClickSoundName() {
+        if(holdingRecipe != null && hasAllIngredients) {
+            return "craft";
+        }
+
+        return "click";
+    }
+
+    @Override
     public void onLeftClick() {
-        if(holdingRecipe != null) ClientPackets.p35PlayerCraft(holdingRecipe.recipeIdentifier, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+        if(holdingRecipe != null && hasAllIngredients) {
+            ClientPackets.p35PlayerCraft(holdingRecipe.recipeIdentifier, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+        }
     }
 
     @Override
@@ -96,12 +109,17 @@ public class UICraftRecipeSlot extends InteractableUIElement {
         float _cy = y + 7 * ui.uiScale;
         float _coy = 0;
 
+        hasAllIngredients = true;
+
         for(int i = 0; i < recipe.inputIds.length; i++) {
             rc.hudBatch.draw(ui.tooltipFillerCrafting, _cx, _cy + _coy, maxIngredientRowWidth, 24 * ui.uiScale);
 
             int id = recipe.inputIds[i];
             int am = recipe.inputAmounts[i];
             boolean hasIngredient = ClientPlayer.getLocalPlayer().playerInventory.hasItem(id, am);
+            if(!hasIngredient) {
+                hasAllIngredients = false;
+            }
 
             ItemMapping m = ItemMapper.get().getMapping(id);
             rc.drawItemTextures(m.uiRender, _cx, _cy + _coy, 24, 24);
