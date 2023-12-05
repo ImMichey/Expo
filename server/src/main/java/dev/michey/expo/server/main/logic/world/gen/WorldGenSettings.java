@@ -1,12 +1,13 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
-import dev.michey.expo.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class WorldGenSettings {
 

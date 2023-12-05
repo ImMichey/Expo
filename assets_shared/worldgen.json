@@ -34,9 +34,10 @@
                             ],
                             "threshold": 0.777,
                             "replaceType": "LAYER_1",
+                            "replaceTypeSecond": "LAYER_0",
                             "replaceWith": "EMPTY",
                             "thresholdSecond": 0.85,
-                            "thresholdReplace": "SOIL_HOLE"
+                            "thresholdReplace": "SOIL_HOLE",
                         }
                     },
                     {
@@ -125,6 +126,25 @@
                             "replaceType": "BIOME",
                             "replaceWith": "RIVER",
                             "priority": 1000
+                        }
+                    },
+                    {
+                        "name": "rivers_deep",
+                        "octaves": 6,
+                        "type": 5,
+                        "frequency": 0.0012,
+                        "noiseOffset": 9,
+                        "logic": {
+                            "check": [
+                                "*",
+                                "!OCEAN",
+                                "!OCEAN_DEEP"
+                            ],
+                            "thresholdA": 0.512,
+                            "thresholdB": 0.519,
+                            "replaceType": "BIOME",
+                            "replaceWith": "OCEAN_DEEP",
+                            "priority": 1001
                         }
                     }
                 ],
@@ -225,6 +245,23 @@
                         "spreadDis": [24.0, 32.0],
                         "spreadType": ["BUSH"],
                         "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0],
+                        "spreadUseNextTarget": false
+                    }
+                },
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "CAMPFIRE",
+                    "static": false,
+                    "chance": 0.00005,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "priority": 10000,
+                    "spreadData": {
+                        "spread": [2, 4],
+                        "spreadChance": 1.0,
+                        "spreadDis": [24.0, 32.0],
+                        "spreadType": ["WOODFOLK"],
+                        "spreadStatic": false,
                         "spreadOffsets": [0.0, 0.0],
                         "spreadUseNextTarget": false
                     }

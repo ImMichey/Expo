@@ -4,7 +4,7 @@ import dev.michey.expo.logic.entity.animal.*;
 import dev.michey.expo.logic.entity.container.ClientCrate;
 import dev.michey.expo.logic.entity.crop.ClientCropWheat;
 import dev.michey.expo.logic.entity.flora.*;
-import dev.michey.expo.logic.entity.hostile.ClientSlimeGreen;
+import dev.michey.expo.logic.entity.hostile.ClientWoodfolk;
 import dev.michey.expo.logic.entity.hostile.ClientZombie;
 import dev.michey.expo.logic.entity.misc.*;
 import dev.michey.expo.logic.entity.particle.ClientParticleFood;
@@ -49,7 +49,7 @@ public enum ClientEntityType {
     CHICKEN(30, "Chicken", ServerEntityType.CHICKEN),
     SIGN(31, "Sign", ServerEntityType.SIGN),
     CAMPFIRE(32, "Campfire", ServerEntityType.CAMPFIRE),
-    SLIME_GREEN(33, "SlimeGreen", ServerEntityType.SLIME_GREEN),
+    WOODFOLK(33, "Woodfolk", ServerEntityType.WOODFOLK),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -120,7 +120,7 @@ public enum ClientEntityType {
             case 30 -> new ClientChicken();
             case 31 -> new ClientSign();
             case 32 -> new ClientCampfire();
-            case 33 -> new ClientSlimeGreen();
+            case 33 -> new ClientWoodfolk();
             default -> null;
         };
     }

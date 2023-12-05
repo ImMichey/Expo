@@ -63,6 +63,7 @@ public class ItemSheet {
         add("item_wood_club", 43, 16, 16);
         add("item_flint_dagger", 45, 11, 11);
         add("item_campfire", 46, 15, 17);
+        add("item_hedge_wall", 47, 12, 13);
     }
 
     public TextureRegion get(String name) {

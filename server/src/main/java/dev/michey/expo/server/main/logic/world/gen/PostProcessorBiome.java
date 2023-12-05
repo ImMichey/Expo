@@ -2,10 +2,10 @@ package dev.michey.expo.server.main.logic.world.gen;
 
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 public class PostProcessorBiome implements PostProcessorLogic {
 
@@ -23,7 +23,8 @@ public class PostProcessorBiome implements PostProcessorLogic {
         // KryoNet
     }
 
-    public PostProcessorBiome(String noiseName, float thresholdA, float thresholdB, String[] replacementKeys, String replaceWith, float thresholdSecond, String thresholdReplace) {
+    public PostProcessorBiome(String noiseName, float thresholdA, float thresholdB, String[] replacementKeys, String replaceWith,
+                              float thresholdSecond, String thresholdReplace, String replaceTypeSecond) {
         this.noiseName = noiseName;
         this.thresholdA = thresholdA;
         this.thresholdB = thresholdB;
@@ -68,7 +69,7 @@ public class PostProcessorBiome implements PostProcessorLogic {
     }
 
     @Override
-    public TileLayerType getLayerType(TileLayerType existingLayerType, float noiseValue) {
+    public Pair<TileLayerType, Integer> getLayerType(TileLayerType existingLayerType, float noiseValue) {
         return null;
     }
 

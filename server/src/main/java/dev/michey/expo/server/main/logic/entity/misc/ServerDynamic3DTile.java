@@ -97,6 +97,7 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
             };
             case DIRT -> new SpawnItem[] { new SpawnItem("item_dirt", 2, 3) };
             case OAKPLANKWALL -> new SpawnItem[] { new SpawnItem("item_oak_plank", 1, 2) };
+            case HEDGE -> new SpawnItem[] { new SpawnItem("item_grassfiber", 1, 2) };
             default -> null;
         };
     }

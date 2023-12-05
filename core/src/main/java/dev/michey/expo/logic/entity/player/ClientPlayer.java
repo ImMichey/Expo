@@ -30,6 +30,7 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.SelectorType;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.render.ui.notification.UINotificationPiece;
+import dev.michey.expo.render.visbility.TopVisibilityEntity;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
@@ -53,7 +54,7 @@ import java.util.List;
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
 
-public class ClientPlayer extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
+public class ClientPlayer extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity, TopVisibilityEntity {
 
     /** Last known player username. */
     public String username;
@@ -1023,6 +1024,14 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     rc.arraySpriteBatch.drawGradientCustomColor(tex_shadow_arm_right, tex_shadow_arm_right.getRegionWidth(), tex_shadow_arm_right.getRegionHeight(), shadowRightArm, topColor, bottomColor);
                 }
             }
+        }
+    }
+
+    @Override
+    public void renderTop(RenderContext rc, float delta) {
+        if(Expo.get().isMultiplayer() || DEV_MODE) {
+            rc.globalGlyph.setText(rc.m5x7_border_all[0], username);
+            rc.m5x7_border_all[0].draw(rc.arraySpriteBatch, username, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY + 32 + rc.globalGlyph.height);
         }
     }
 

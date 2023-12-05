@@ -39,6 +39,7 @@ public class TileSheet {
         multiEntry("tile_sand_waterlogged", 22);
         multiEntry("tile_soil_deep_waterlogged", 22);
         multiEntry("tile_soil_waterlogged", 22);
+        multiEntry("tile_hedge", 22);
 
         // Variations
         variationEntry("tile_soil", 0, 2);

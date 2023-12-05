@@ -19,7 +19,7 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
     @Override
     public void onCreation() {
         animationHandler = new ExpoAnimationHandler(this);
-        animationHandler.addAnimation("idle", new ExpoAnimation("entity_crab_variation_" + variant + "_idle", 4, 0.175f));
+        animationHandler.addAnimation("idle", new ExpoAnimation("entity_crab_variation_" + variant + "_idle", 4, 0.125f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_crab_variation_" + variant + "_walk", 12, 0.05f));
         animationHandler.addAnimation("attack", new ExpoAnimation("entity_crab_variation_" + variant + "_pinch", 8, 0.08f));
         animationHandler.addFootstepOn(new String[] {"walk"}, 4, 10);

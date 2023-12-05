@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -422,19 +423,29 @@ public class ServerChunk {
                     int x = btx + i % ROW_TILES;
                     int y = bty + i / ROW_TILES;
 
-                    TileLayerType returnedType = ppl.getLayerType(
+                    Pair<TileLayerType, Integer> returnedType = ppl.getLayerType(
                             tile.dynamicTileParts[ppl.processLayer].emulatingType,
                             dimension.getChunkHandler().normalized(dimension.getChunkHandler().getNoisePostProcessorMap().get(ppl.noiseName), x, y)
                     );
 
                     if(returnedType != null) {
-                        tile.updateLayer(ppl.processLayer, returnedType);
+                        tile.updateLayer(returnedType.value, returnedType.key);
 
-                        if(postProcessedLists[ppl.processLayer] == null) {
-                            postProcessedLists[ppl.processLayer] = new LinkedList();
+                        if(returnedType.value == 0) {
+                            tile.updateLayer1(TileLayerType.EMPTY);
+
+                            if(postProcessedLists[1] == null) {
+                                postProcessedLists[1] = new LinkedList();
+                            }
+
+                            postProcessedLists[1].add(tile);
                         }
 
-                        postProcessedLists[ppl.processLayer].add(tile);
+                        if(postProcessedLists[returnedType.value] == null) {
+                            postProcessedLists[returnedType.value] = new LinkedList();
+                        }
+
+                        postProcessedLists[returnedType.value].add(tile);
                     }
                 }
             }
@@ -447,7 +458,9 @@ public class ServerChunk {
             for(ServerTile st : list) {
                 for(ServerTile neighbours : st.getNeighbouringTiles()) {
                     if(neighbours == null) continue;
-                    if(neighbours.updateLayerAdjacent(i, false)) ServerPackets.p32ChunkDataSingle(neighbours, i);
+                    if(neighbours.updateLayerAdjacent(i, false)) {
+                        ServerPackets.p32ChunkDataSingle(neighbours, i);
+                    }
                 }
             }
         }

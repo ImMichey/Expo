@@ -199,18 +199,20 @@ public class ExpoAssets {
         return assetManager.get("textures/" + name, Texture.class);
     }
 
-    public Array<TextureRegion> textureArray(String name, int frames, boolean pingPong) {
-        int total = pingPong ? (frames * 2 - 2) : frames;
-        Array<TextureRegion> array = new Array<>(total);
+    public Array<TextureRegion> textureArray(String name, int frames) {
+        //int total = pingPong ? (frames * 2 - 2) : frames;
+        Array<TextureRegion> array = new Array<>(frames);
 
         for(int i = 0; i < frames; i++) {
-            array.add(textureRegionFresh(name + "_" + (i + 1)));
+          array.add(textureRegionFresh(name + "_" + (i + 1)));
         }
+        /*
         if(pingPong) {
             for(int i = 0; i < (frames - 2); i++) {
                 array.add(textureRegionFresh(name + "_" + (frames - 1 - i)));
             }
         }
+        */
 
         return array;
     }

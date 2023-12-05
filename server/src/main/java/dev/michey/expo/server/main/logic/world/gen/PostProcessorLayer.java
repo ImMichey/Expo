@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.world.gen;
 
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
 
@@ -10,6 +11,7 @@ public class PostProcessorLayer implements PostProcessorLogic {
     public String noiseName;
     public TileLayerType[] checkTypes;
     public int processLayer;
+    public int processLayerSecond;
     public TileLayerType replacementType;
     public float thresholdA;
     public float thresholdB;
@@ -22,7 +24,8 @@ public class PostProcessorLayer implements PostProcessorLogic {
         // KryoNet
     }
 
-    public PostProcessorLayer(String noiseName, float thresholdA, float thresholdB, String[] replacementKeys, String replaceType, String replaceWith, float thresholdSecond, String thresholdReplace) {
+    public PostProcessorLayer(String noiseName, float thresholdA, float thresholdB, String[] replacementKeys,
+                              String replaceType, String replaceWith, float thresholdSecond, String thresholdReplace, String replaceTypeSecond) {
         this.noiseName = noiseName;
         this.thresholdA = thresholdA;
         this.thresholdB = thresholdB;
@@ -42,6 +45,7 @@ public class PostProcessorLayer implements PostProcessorLogic {
         this.checkTypes = tlt;
         this.replacementType = TileLayerType.valueOf(replaceWith);
         this.processLayer = Integer.parseInt(String.valueOf(replaceType.charAt(replaceType.length() - 1)));
+        this.processLayerSecond = Integer.parseInt(String.valueOf(replaceTypeSecond.charAt(replaceTypeSecond.length() - 1)));
 
         this.secondOptionThreshold = thresholdSecond;
         if(this.secondOptionThreshold != -1.0f) secondOptionType = TileLayerType.valueOf(thresholdReplace);
@@ -53,14 +57,16 @@ public class PostProcessorLayer implements PostProcessorLogic {
     }
 
     @Override
-    public TileLayerType getLayerType(TileLayerType existingLayerType, float noiseValue) {
+    public Pair<TileLayerType, Integer> getLayerType(TileLayerType existingLayerType, float noiseValue) {
         if(noiseValue < thresholdA) return null;
         if(noiseValue > thresholdB) return null;
 
         for(TileLayerType check : checkTypes) {
             if(check == existingLayerType) {
-                if(secondOptionType != null && noiseValue >= secondOptionThreshold) return secondOptionType;
-                return replacementType;
+                if(secondOptionType != null && noiseValue >= secondOptionThreshold) {
+                    return new Pair<>(secondOptionType, processLayerSecond);
+                }
+                return new Pair<>(replacementType, processLayer);
             }
         }
 

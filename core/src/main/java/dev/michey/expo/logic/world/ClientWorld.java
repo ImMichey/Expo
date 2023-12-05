@@ -483,7 +483,9 @@ public class ClientWorld {
             var ote = clientEntityManager.getEntitiesByTypeSorted(ClientEntityType.HEALTH_BAR,
                     ClientEntityType.DAMAGE_INDICATOR,
                     ClientEntityType.SIGN,
-                    ClientEntityType.SELECTOR);
+                    ClientEntityType.SELECTOR,
+                    ClientEntityType.PLAYER
+                    );
 
             if(displayBlur) {
                 blurPass(r.mainFbo);

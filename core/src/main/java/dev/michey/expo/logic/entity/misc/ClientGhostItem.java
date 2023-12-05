@@ -7,16 +7,21 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 
 public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEntity {
 
     public ItemRender[] ir;
+    public int itemId;
     public int amount;
 
     public float floatingPos;
     public float floatingPosAnimation;
     private float useAlpha = 1.0f;
+
+    public float scaleX = 1.0f;
+    public float scaleY = 1.0f;
 
     @Override
     public void onCreation() {
@@ -44,35 +49,34 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
         rc.useArrayBatch();
         rc.useRegularArrayShader();
 
-        float SCALE_X = 0.75f;
-        float SCALE_Y = 0.75f;
-
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
 
         for(ItemRender ir : ir) {
             rc.arraySpriteBatch.draw(ir.useTextureRegion,
-                    finalDrawPosX + ir.offsetX * SCALE_X,
-                    finalDrawPosY + ir.offsetY * SCALE_Y + floatingPos + floatingPosAnimation,
-                    ir.useTextureRegion.getRegionWidth() * SCALE_X,
-                    ir.useTextureRegion.getRegionHeight() * SCALE_Y);
+                    finalDrawPosX + ir.offsetX * scaleX,
+                    finalDrawPosY + ir.offsetY * scaleY + floatingPos + floatingPosAnimation,
+                    ir.useTextureRegion.getRegionWidth() * scaleX,
+                    ir.useTextureRegion.getRegionHeight() * scaleY);
         }
 
-        String numberAsString = String.valueOf(amount);
+        if(amount > 1 || !ItemMapper.get().getMapping(itemId).logic.isSpecialType()) {
+            String numberAsString = String.valueOf(amount);
 
-        float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
-        float vx = finalTextureStartX;
-        float vy = finalTextureStartY;
-        float fontScale = 0.5f;
+            float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
+            float vx = finalTextureStartX;
+            float vy = finalTextureStartY;
+            float fontScale = 0.5f;
 
-        float ex = (slotW - ir[0].useWidth) * 0.5f * SCALE_X + ir[0].useWidth * SCALE_X + vx - (numberAsString.length() * 6 * fontScale) - 1 * SCALE_X;
-        float y = vy + floatingPosAnimation + floatingPos - 7 * fontScale;
+            float ex = (slotW - ir[0].useWidth) * 0.5f * scaleX + ir[0].useWidth * scaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * scaleX;
+            float y = vy + floatingPosAnimation + floatingPos - 7 * fontScale;
 
-        int add = 0;
+            int add = 0;
 
-        for(char c : numberAsString.toCharArray()) {
-            TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
-            rc.arraySpriteBatch.draw(indiNumber, ex + add, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
-            add += (int) (6 * fontScale);
+            for(char c : numberAsString.toCharArray()) {
+                TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
+                rc.arraySpriteBatch.draw(indiNumber, ex + add, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
+                add += (int) (6 * fontScale);
+            }
         }
 
         rc.arraySpriteBatch.setColor(Color.WHITE);

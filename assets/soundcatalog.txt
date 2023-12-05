@@ -152,6 +152,10 @@ wood_break_1.wav
 #wet_death;true;0.9-1.1;SFX;1.0
 wet_death_1.wav
 
+#drop;true;0.9-1.1;SFX;1.0
+drop_1.wav
+drop_2.wav
+
 #inv_open;true;0.9-1.1;SFX;1.0
 inv_open_1.wav
 

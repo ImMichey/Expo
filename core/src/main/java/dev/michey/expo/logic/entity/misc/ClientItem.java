@@ -2,6 +2,7 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -34,13 +35,17 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     private float stackX = 1.0f;
     private float stackY = 1.0f;
 
+    private float bounceDelta;
+    private float bounce;
+
     @Override
     public void onCreation() {
         ir = ItemMapper.get().getMapping(itemId).uiRender;
-        currentScaleX = 0.75f;
-        currentScaleY = 0.75f;
+        currentScaleX = 0.875f;
+        currentScaleY = 0.875f;
 
         updateTextureBounds(ir[0].useWidth * currentScaleX, ir[0].useHeight * currentScaleY, 0, 0);
+        playEntitySound("pop", 0.5f);
     }
 
     @Override
@@ -49,7 +54,6 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             spawnGhostEntity(itemAmount);
         }
     }
-
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
@@ -60,6 +64,26 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             useAlpha = lifetime / 0.125f;
         } else {
             useAlpha = 1.0f;
+        }
+
+        float PHASE_1_SPEED = 5.0f;
+        float PHASE_2_SPEED = 1.5f;
+        float HEIGHT = 16.0f;
+
+        if(bounceDelta < 1.0f) {
+            bounceDelta += delta * PHASE_1_SPEED;
+            if(bounceDelta > 1.0f) {
+                bounceDelta = 1.0f;
+            }
+            bounce = Interpolation.smooth.apply(bounceDelta) * HEIGHT;
+        } else if(bounceDelta < (2.0f)) {
+            bounceDelta += delta * PHASE_2_SPEED;
+            if(bounceDelta > 2.0f) {
+                bounceDelta = 2.0f;
+            }
+            bounce = HEIGHT - Interpolation.bounceOut.apply(bounceDelta - 1.0f) * HEIGHT;
+        } else {
+            bounce = 0;
         }
 
         if(stackAnimation) {
@@ -111,28 +135,30 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
                 TextureRegion tr = ir.useTextureRegion;
 
                 rc.arraySpriteBatch.draw(tr,
-                        finalDrawPosX + ir.offsetX * currentScaleX,
-                        finalDrawPosY + floatingPos + ir.offsetY * currentScaleY,
+                        finalDrawPosX + (ir.offsetX) * currentScaleX - (tr.getRegionWidth() * (stackX - 1.0f) * 0.5f * currentScaleX),
+                        finalDrawPosY + floatingPos + ir.offsetY * currentScaleY + bounce,
                         tr.getRegionWidth() * stackX * currentScaleX,
                         tr.getRegionHeight() * stackY * currentScaleY);
             }
 
-            String numberAsString = String.valueOf(itemAmount);
+            if(itemAmount > 1 || !ItemMapper.get().getMapping(itemId).logic.isSpecialType()) {
+                String numberAsString = String.valueOf(itemAmount);
 
-            float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
-            float vx = finalTextureStartX;
-            float vy = finalTextureStartY;
-            float fontScale = 0.5f;
+                float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
+                float vx = finalTextureStartX;
+                float vy = finalTextureStartY;
+                float fontScale = 0.5f;
 
-            float ex = (slotW - ir[0].useWidth) * 0.5f * currentScaleX + ir[0].useWidth * currentScaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * currentScaleX;
-            float y = vy + floatingPos - 7 * fontScale;
+                float ex = (slotW - ir[0].useWidth) * 0.5f * currentScaleX + ir[0].useWidth * currentScaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * currentScaleX;
+                float y = vy + floatingPos - 7 * fontScale + bounce;
 
-            int add = 0;
+                int add = 0;
 
-            for(char c : numberAsString.toCharArray()) {
-                TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
-                rc.arraySpriteBatch.draw(indiNumber, ex + add - dsp * 0.5f, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
-                add += (int) (6 * fontScale);
+                for(char c : numberAsString.toCharArray()) {
+                    TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
+                    rc.arraySpriteBatch.draw(indiNumber, ex + add - dsp * 0.5f, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
+                    add += (int) (6 * fontScale);
+                }
             }
 
             rc.arraySpriteBatch.setColor(Color.WHITE);
@@ -148,7 +174,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
 
             rc.arraySpriteBatch.draw(tr,
                     finalDrawPosX + dsp * 0.5f + ir.offsetX * currentScaleX,
-                    finalDrawPosY + floatingPos - ir.offsetY * currentScaleY,
+                    finalDrawPosY + floatingPos - ir.offsetY * currentScaleY + bounce,
                     tr.getRegionWidth() * stackX * currentScaleX,
                     tr.getRegionHeight() * stackY * currentScaleY * -1);
         }
@@ -158,9 +184,12 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
         ClientGhostItem ghostItem = new ClientGhostItem();
         ghostItem.ir = ir;
         ghostItem.amount = amount;
+        ghostItem.itemId = itemId;
         ghostItem.clientPosX = clientPosX;
         ghostItem.clientPosY = clientPosY;
-        ghostItem.floatingPos = floatingPos;
+        ghostItem.floatingPos = floatingPos + bounce;
+        ghostItem.scaleX = currentScaleX;
+        ghostItem.scaleY = currentScaleY;
         ghostItem.stealTextureData(this);
         entityManager().addClientSideEntity(ghostItem);
     }

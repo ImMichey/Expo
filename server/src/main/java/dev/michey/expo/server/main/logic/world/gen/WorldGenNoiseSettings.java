@@ -47,8 +47,9 @@ public class WorldGenNoiseSettings {
             String _replaceWith = logicObject.getString("replaceWith");
             float _secondOptionThreshold = logicObject.has("thresholdSecond") ? logicObject.getFloat("thresholdSecond") : -1.0f;
             String _secondOptionReplace = logicObject.has("thresholdReplace") ? logicObject.getString("thresholdReplace") : null;
-            float _thresholdA = 0;
-            float _thresholdB = 0;
+            String _typeSecond = logicObject.has("replaceTypeSecond") ? logicObject.getString("replaceTypeSecond").toUpperCase() : _type;
+            float _thresholdA;
+            float _thresholdB;
 
             if(logicObject.has("thresholdA") && logicObject.has("thresholdB")) {
                 _thresholdA = logicObject.getFloat("thresholdA");
@@ -63,9 +64,9 @@ public class WorldGenNoiseSettings {
             PostProcessorLogic logic;
 
             if(_type.equals("BIOME")) {
-                logic = new PostProcessorBiome(o.getString("name"), _thresholdA, _thresholdB, _logicKeys, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
+                logic = new PostProcessorBiome(o.getString("name"), _thresholdA, _thresholdB, _logicKeys, _replaceWith, _secondOptionThreshold, _secondOptionReplace, null);
             } else {
-                logic = new PostProcessorLayer(o.getString("name"), _thresholdA, _thresholdB, _logicKeys, _type, _replaceWith, _secondOptionThreshold, _secondOptionReplace);
+                logic = new PostProcessorLayer(o.getString("name"), _thresholdA, _thresholdB, _logicKeys, _type, _replaceWith, _secondOptionThreshold, _secondOptionReplace, _typeSecond);
             }
 
             postProcessList.add(new NoisePostProcessor(priority, new NoiseWrapper(o.getString("name"),

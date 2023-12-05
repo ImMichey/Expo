@@ -11,20 +11,24 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientSlimeGreen extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
+public class ClientWoodfolk extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     private final ExpoAnimationHandler animationHandler;
 
-    public ClientSlimeGreen() {
+    public ClientWoodfolk() {
         animationHandler = new ExpoAnimationHandler(this);
-        animationHandler.addAnimation("idle", new ExpoAnimation("entity_slime_green_walk", 4, 0.5f));
-        animationHandler.addAnimation("walk", new ExpoAnimation("entity_slime_green_walk", 4, 0.15f));
-        animationHandler.addFootstepOn(new String[] {"walk"}, 1);
+        animationHandler.addAnimation("idle", new ExpoAnimation("woodfolk_idle_bob", 2, 0.5f, 1.0f));
+        animationHandler.addAnimation("idle", new ExpoAnimation("woodfolk_idle_bob_blink", 2, 0.5f, 0.25f));
+        animationHandler.addAnimation("idle", new ExpoAnimation("woodfolk_idle_spin", 4, 0.5f, 0.75f));
+        animationHandler.addAnimation("idle", new ExpoAnimation("woodfolk_idle_spin_blink", 4, 0.5f, 0.175f));
+
+        animationHandler.addAnimation("walk", new ExpoAnimation("woodfolk_walk", 5, 0.075f));
+        animationHandler.addFootstepOn(new String[] {"walk"}, 4);
     }
 
     @Override
     public void playFootstepSound() {
-        playEntitySound(getFootstepSound());
+        playEntitySound(getFootstepSound(), 0.4f);
     }
 
     @Override
@@ -35,14 +39,14 @@ public class ClientSlimeGreen extends ClientEntity implements ReflectableEntity,
     @Override
     public void onDeletion() {
         if(removalReason == EntityRemovalReason.DEATH) {
-            playEntitySound("bloody_squish");
+            playEntitySound("log_split");
         }
     }
 
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
-        ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
+        ParticleSheet.Common.spawnBloodParticlesWoodfolk(this);
         spawnHealthBar(damage);
         spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
@@ -100,7 +104,7 @@ public class ClientSlimeGreen extends ClientEntity implements ReflectableEntity,
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.SLIME_GREEN;
+        return ClientEntityType.WOODFOLK;
     }
 
     @Override

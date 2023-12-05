@@ -38,8 +38,8 @@ public class InputController {
             ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, ExpoShared.CONTAINER_ID_VOID, ExpoShared.PLAYER_INVENTORY_SLOT_VOID);
         } else {
             // Clicked on a slot
-            ui.hoveredSlot.onLeftClick();
             AudioEngine.get().playSoundGroup(ui.hoveredSlot.getLeftClickSoundName());
+            ui.hoveredSlot.onLeftClick();
         }
     }
 

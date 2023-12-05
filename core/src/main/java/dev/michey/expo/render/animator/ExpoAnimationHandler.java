@@ -1,16 +1,17 @@
 package dev.michey.expo.render.animator;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import dev.michey.expo.log.ExpoLogger;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
-import dev.michey.expo.util.ExpoShared;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ExpoAnimationHandler {
 
     private final ClientEntity parent;
-    private final HashMap<String, ExpoAnimation> animationMap;
+    private final HashMap<String, List<ExpoAnimation>> animationMap;
     private ExpoAnimation activeAnimation;
     private String activeName;
     private int lastFootstepIndex;
@@ -24,7 +25,8 @@ public class ExpoAnimationHandler {
     }
 
     public void addAnimation(String name, ExpoAnimation animation) {
-        animationMap.put(name, animation);
+        if(!animationMap.containsKey(name)) animationMap.put(name, new LinkedList<>());
+        animationMap.get(name).add(animation);
         animation.setHandler(this);
 
         if(animationMap.size() == 1) {
@@ -34,7 +36,9 @@ public class ExpoAnimationHandler {
     }
 
     public void addAnimationSound(String name, String soundGroupName, int frame, float volumeMultiplier) {
-        animationMap.get(name).addAnimationSound(soundGroupName, frame, volumeMultiplier);
+        for(ExpoAnimation an : animationMap.get(name)) {
+            an.addAnimationSound(soundGroupName, frame, volumeMultiplier);
+        }
     }
 
     public void addAnimationSound(String name, String soundGroupName, int frame) {
@@ -83,6 +87,8 @@ public class ExpoAnimationHandler {
 
         if(getActiveAnimationName().equals("attack")) {
             switchToAnimation("idle");
+        } else {
+            switchToAnimation(getActiveAnimationName());
         }
     }
 
@@ -96,17 +102,45 @@ public class ExpoAnimationHandler {
     }
 
     public void flipAllAnimations(boolean x, boolean y) {
-        for(ExpoAnimation animation : animationMap.values()) animation.flip(x, y);
+        for(List<ExpoAnimation> animation : animationMap.values()) {
+            for(ExpoAnimation a : animation) a.flip(x, y);
+        }
     }
 
     public void switchToAnimation(String name) {
-        activeAnimation = animationMap.get(name);
+        var list = animationMap.get(name);
+
+        if(list.size() == 1) {
+            activeAnimation = list.get(0);
+        } else {
+            ExpoAnimation use = null;
+            float totalWeight = 0;
+
+            for(ExpoAnimation an : list) {
+                totalWeight += an.getWeight();
+            }
+
+            float calculatedWeight = MathUtils.random(0f, totalWeight);
+            float countWeight = 0f;
+
+            for(ExpoAnimation an : list) {
+                countWeight += an.getWeight();
+
+                if(countWeight >= calculatedWeight) {
+                    use = an;
+                    break;
+                }
+            }
+
+            activeAnimation = use;
+        }
+
         activeName = name;
     }
 
     public void reset() {
-        for(ExpoAnimation animation : animationMap.values()) {
-            animation.reset();
+        for(List<ExpoAnimation> animation : animationMap.values()) {
+            for(ExpoAnimation a : animation) a.reset();
         }
     }
 

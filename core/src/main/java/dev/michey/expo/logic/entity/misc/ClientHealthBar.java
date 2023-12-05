@@ -113,6 +113,7 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
 
         rc.arraySpriteBatch.draw(r.hbFilled, startX + 1, startY, lengthFilled, 3);
         rc.arraySpriteBatch.draw(r.hbUnfilled, startX + 1 + lengthFilled, startY, remaining, 3);
+
         if(animationThickness > 0) {
             rc.arraySpriteBatch.draw(r.hbAnimation, startX + 1 + lengthFilled, startY, animationThickness, 3);
         }

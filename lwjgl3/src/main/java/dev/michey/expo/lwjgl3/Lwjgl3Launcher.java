@@ -4,7 +4,6 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import dev.michey.expo.Expo;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.util.GameSettings;
 
 /** Launches the desktop (LWJGL3) application. */
@@ -32,6 +31,7 @@ public class Lwjgl3Launcher {
 		configuration.useVsync(settings.vsync);
 		configuration.setForegroundFPS(settings.fpsCap);
 		configuration.setAutoIconify(true);
+		configuration.setAudioConfig(2048, 512, 9);
 
 		int mode = settings.windowMode; // 0 = Windowed, 1 = Borderless, 2 = Fullscreen
 

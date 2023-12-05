@@ -176,6 +176,7 @@ public class Expo implements ApplicationListener {
 			ExpoAssets.get().slice("tile_sand_waterlogged", false, 0, 480);
 			ExpoAssets.get().slice("tile_soil_deep_waterlogged", false, 0, 512);
 			ExpoAssets.get().slice("tile_soil_waterlogged", false, 0, 544);
+			ExpoAssets.get().slice("tile_hedge", false, 0, 576);
 		}
 
 		boolean patch = false;

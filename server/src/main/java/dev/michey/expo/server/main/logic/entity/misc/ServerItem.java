@@ -1,28 +1,18 @@
 package dev.michey.expo.server.main.logic.entity.misc;
 
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
-import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
-import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
-import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public class ServerItem extends ServerEntity implements PhysicsEntity {
 
@@ -31,7 +21,7 @@ public class ServerItem extends ServerEntity implements PhysicsEntity {
     public float dstY;
     public float originX, originY;
     public float dstDelta;
-    public float pickupImmunity = 0.5f;
+    public float pickupImmunity = 0.75f;
     public float lifetime;
 
     public boolean blockedForMerge = false;

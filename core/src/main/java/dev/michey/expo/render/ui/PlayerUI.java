@@ -427,7 +427,7 @@ public class PlayerUI {
                 Vector2 hudPos = ClientUtils.entityPosToHudPos(player.clientPosX, player.clientPosY + 32);
                 int usx = (int) (hudPos.x - glyphLayout.width * 0.5f);
                 int usy = (int) (hudPos.y + glyphLayout.height);
-                useFont.draw(rc.hudBatch, player.username, usx, usy);
+                // useFont.draw(rc.hudBatch, player.username, usx, usy);
 
                 var pair = ExpoClientChat.get().playerHistoryMap.get(player.username);
 

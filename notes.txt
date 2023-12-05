@@ -4,6 +4,13 @@
 * Some shift-click crafting visual glitches
 * Sometimes entities are not being deleted instantly (only happens in multiplayer?)
 * Head armor glitches (not implemented properly yet)
+* java.lang.InterruptedException
+  	at java.base/java.util.concurrent.FutureTask.awaitDone(FutureTask.java:418)
+  	at java.base/java.util.concurrent.FutureTask.get(FutureTask.java:190)
+  	at java.base/java.util.concurrent.AbstractExecutorService.invokeAll(AbstractExecutorService.java:252)
+  	at dev.michey.expo.server.main.logic.world.ServerWorld.tickWorld(ServerWorld.java:61)
+  	at dev.michey.expo.server.main.logic.ExpoServerContainer.loop(ExpoServerContainer.java:41)
+  	at dev.michey.expo.localserver.ExpoServerLocal$1.run(ExpoServerLocal.java:54)
 
 [Stuff To Fix, Implement...]
 * Drop Items with Q
@@ -13,10 +20,10 @@
 * New Oak Plank Wall textures
 
 [Long Term Fixes]
-* New physics engine [Performance issues at large scale]
-* New audio engine [Audio cutoff issues?]
 * Investigate:
 
 [Ideas]
 * Hinini
 * FrogLib
+
+* Revamped Coal Ore Texture

@@ -7,15 +7,14 @@ import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 
-public class ServerSlimeGreen extends ServerEntity implements DamageableEntity, PhysicsEntity {
+public class ServerWoodfolk extends ServerEntity implements DamageableEntity, PhysicsEntity {
 
     public EntityBrain brain;
     public EntityPhysicsBox physicsBody;
 
-    public ServerSlimeGreen() {
+    public ServerWoodfolk() {
         health = getMetadata().getMaxHealth();
         invincibility = 0.0f;
-        persistentEntity = false;
     }
 
     @Override
@@ -32,7 +31,7 @@ public class ServerSlimeGreen extends ServerEntity implements DamageableEntity, 
     @Override
     public void onDie() {
         if(MathUtils.random() <= 0.5f) {
-            spawnItemsAround(1, 2, 0, 0, "item_maggot", 8f);
+            spawnItemsAround(1, 2, 0, 0, "item_oak_log", 8f);
         }
     }
 
@@ -55,12 +54,12 @@ public class ServerSlimeGreen extends ServerEntity implements DamageableEntity, 
 
     @Override
     public ServerEntityType getEntityType() {
-        return ServerEntityType.SLIME_GREEN;
+        return ServerEntityType.WOODFOLK;
     }
 
     @Override
     public EntityHitbox getEntityHitbox() {
-        return EntityHitboxMapper.get().getFor(ServerEntityType.SLIME_GREEN);
+        return EntityHitboxMapper.get().getFor(ServerEntityType.WOODFOLK);
     }
 
     @Override

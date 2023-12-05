@@ -23,6 +23,7 @@ public enum TileLayerType {
     SAND_WATERLOGGED(16,        new int[] {310, 331},   rgba8888(88, 158, 220), new String[] {"SAND_WATERLOGGED"},                      false),
     SOIL_DEEP_WATERLOGGED(17,   new int[] {332, 353},   rgba8888(73, 135, 211), new String[] {"SOIL_DEEP_WATERLOGGED", "SOIL_WATERLOGGED"},false),
     SOIL_WATERLOGGED(18,        new int[] {354, 375},   rgba8888(88, 158, 220), new String[] {"SOIL_WATERLOGGED"},false),
+    HEDGE(19,                   new int[] {376, 397},   rgba8888(50, 199, 37), new String[] {"HEDGE"},true),
     ;
 
     public final int SERIALIZATION_ID;
@@ -38,6 +39,7 @@ public enum TileLayerType {
         ELEVATION_TEXTURE_MAP.put(ROCK, "tile_rock_elevation");
         ELEVATION_TEXTURE_MAP.put(DIRT, "tile_dirt_elevation");
         ELEVATION_TEXTURE_MAP.put(OAKPLANKWALL, "tile_oakplankwall_elevation");
+        ELEVATION_TEXTURE_MAP.put(HEDGE, "tile_hedge_elevation");
     }
 
     TileLayerType(int SERIALIZATION_ID, int[] TILE_ID_DATA, int TILE_COLOR, String[] TILE_CONNECTION_DATA, boolean TILE_IS_WALL) {
@@ -72,6 +74,7 @@ public enum TileLayerType {
             case 16 -> SAND_WATERLOGGED;
             case 17 -> SOIL_DEEP_WATERLOGGED;
             case 18 -> SOIL_WATERLOGGED;
+            case 19 -> HEDGE;
             default -> EMPTY;
         };
     }

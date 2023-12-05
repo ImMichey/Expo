@@ -1266,6 +1266,28 @@
                     "previewOffsetX": -4
                 }
             }
+        },
+        {
+            "identifier": "item_hedge_wall",
+            "id": 48,
+            "displayName": "Hedge Wall",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_hedge_wall"
+                },
+                "held": {
+                    "texture": "item_hedge_wall"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "FLOOR_2",
+                    "floorType": "HEDGE"
+                }
+            }
         }
     ]
 }

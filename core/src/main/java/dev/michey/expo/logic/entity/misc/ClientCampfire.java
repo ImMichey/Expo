@@ -92,7 +92,11 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
 
     @Override
     public void onDeletion() {
-        if(campfireLight != null) campfireLight.delete();
+        if(campfireLight != null) {
+            campfireLight.delete();
+            AudioEngine.get().killSound(campfireSound.id);
+            campfireSound = null;
+        }
 
         if(removalReason == EntityRemovalReason.DEATH) {
 

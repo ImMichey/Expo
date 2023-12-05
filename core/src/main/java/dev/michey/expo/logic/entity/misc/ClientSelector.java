@@ -2,7 +2,6 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -259,23 +258,27 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                     selectorScale = 1.0f - Interpolation.pow4.apply(selectorDelta) * SELECTOR_SCALE_THRESHOLD;
                 }
 
-                float sz = TILE_SIZE * selectorScale;
+                float sz = (TILE_SIZE + 4) * selectorScale;
 
-                rc.arraySpriteBatch.end();
-                rc.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                //rc.arraySpriteBatch.end();
+                //rc.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
 
                 if(eligible) {
-                    rc.chunkRenderer.setColor(0.0f, 1.0f, 0.0f, 0.75f);
+                    //rc.chunkRenderer.setColor(0.0f, 1.0f, 0.0f, 0.75f);
                 } else {
-                    rc.chunkRenderer.setColor(1.0f, 0.2f, 0.2f, 0.75f);
+                    //rc.chunkRenderer.setColor(1.0f, 0.2f, 0.2f, 0.75f);
                 }
 
                 float px = useDrawX + (TILE_SIZE - sz) * 0.5f;
                 float py = useDrawY + (TILE_SIZE - sz) * 0.5f;
+
+                /*
                 rc.chunkRenderer.rect(px, py, sz, sz);
                 rc.chunkRenderer.setColor(Color.WHITE);
                 rc.chunkRenderer.end();
-                rc.arraySpriteBatch.begin();
+                */
+
+                rc.arraySpriteBatch.draw(selector, px, py, sz, sz);
             } else {
                 if(eligible) {
                     rc.arraySpriteBatch.setColor(0.1f, 1.0f, 0.1f, 0.75f);

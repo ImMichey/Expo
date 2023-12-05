@@ -4,11 +4,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.util.AnimationSound;
-import dev.michey.expo.util.Pair;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 public class ExpoAnimation {
 
@@ -19,17 +16,18 @@ public class ExpoAnimation {
     private float animationDelta;
     private float animationDeltaSinceStart;
     private boolean animationFinished;
-    private boolean pingPong;
     private HashMap<AnimationSound, Boolean> playSoundMap;
+    private final float weight;
 
     public ExpoAnimation(String textureName, int frames, float frameDuration) {
-        this(textureName, frames, frameDuration, false);
+        this(textureName, frames, frameDuration, 1.0f);
     }
 
-    public ExpoAnimation(String textureName, int frames, float frameDuration, boolean pingPong) {
-        textureArray = ExpoAssets.get().textureArray(textureName, frames, pingPong);
+    public ExpoAnimation(String textureName, int frames, float frameDuration, float weight) {
+        textureArray = ExpoAssets.get().textureArray(textureName, frames);
         this.frameDuration = frameDuration;
         this.totalAnimationDuration = this.frameDuration * frames;
+        this.weight = weight;
     }
 
     public void addAnimationSound(String soundGroupName, int frame, float volumeMultiplier) {
@@ -62,7 +60,7 @@ public class ExpoAnimation {
             }
         }
 
-        if(animationDeltaSinceStart >= (totalAnimationDuration * (pingPong ? 2 : 1))) {
+        if(animationDeltaSinceStart >= totalAnimationDuration) {
             animationFinished = true;
             animationDeltaSinceStart -= totalAnimationDuration;
         }
@@ -78,10 +76,6 @@ public class ExpoAnimation {
         animationDelta = delta;
     }
 
-    public void setPingPong() {
-        pingPong = true;
-    }
-
     public void flip(boolean x, boolean y) {
         for(TextureRegion t : textureArray) t.flip(x, y);
     }
@@ -95,6 +89,8 @@ public class ExpoAnimation {
     }
 
     public int getFrameIndex() {
+        return (int) (animationDelta / frameDuration) % textureArray.size;
+        /*
         if(pingPong) {
             int frameNumber = (int) (animationDelta / frameDuration);
             frameNumber %= this.textureArray.size * 2 - 2;
@@ -105,8 +101,13 @@ public class ExpoAnimation {
 
             return frameNumber;
         } else {
-            return (int) (animationDelta / frameDuration) % textureArray.size;
+
         }
+        */
+    }
+
+    public float getWeight() {
+        return weight;
     }
 
     public boolean isAnimationFinished() {
