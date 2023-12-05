@@ -1173,7 +1173,7 @@ public class ClientWorld {
                 // TODO: Possible optimization, check for visibleForRender && chunk.visible before drawing
                 if(!entity.drawReflection) continue;
                 if(!(entity instanceof ReflectableEntity reflectableEntity)) continue;
-                rc.arraySpriteBatch.setColor(0.666f, 0.875f, 1.0f, 1.0f);
+                rc.arraySpriteBatch.setColor(0.666f, 0.875f, 1.0f, 0.75f);
                 reflectableEntity.renderReflection(rc, rc.delta);
             }
 
