@@ -272,6 +272,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
 
         if(!player) spawnHealthBar(damage);
+        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override

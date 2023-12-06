@@ -13,6 +13,10 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     public int damageNumber;
     public Vector2 moveDir;
+    public Color color;
+
+    public static final Color PLAYER_COLOR = new Color(237f / 255f, 90f / 255f, 90f / 255f, 1.0f);
+    public static final Color DEFAULT_COLOR = new Color(1.0f, 220f / 255f, 0.0f, 1.0f);
 
     private float lifetime = 1.0f;
     private float startX;
@@ -77,17 +81,13 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     @Override
     public void renderTop(RenderContext rc, float delta) {
-        float _r = 1.0f;
-        float _g = 220f / 255f;
-        float _b = 0.0f;
-
         BitmapFont use = rc.m5x7_border_all[0];
 
         use.getData().setScale(scale);
         String s = String.valueOf(damageNumber);
         rc.globalGlyph.setText(use, s);
 
-        use.setColor(_r, _g, _b, alpha);
+        use.setColor(color.r, color.g, color.b, alpha);
         use.draw(rc.arraySpriteBatch, s, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY);
         use.setColor(Color.WHITE);
 

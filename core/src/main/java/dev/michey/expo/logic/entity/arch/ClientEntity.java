@@ -12,6 +12,7 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.misc.ClientDamageIndicator;
 import dev.michey.expo.logic.entity.misc.ClientHealthBar;
 import dev.michey.expo.logic.entity.misc.ClientPuddle;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
@@ -369,6 +370,11 @@ public abstract class ClientEntity {
         damageIndicator.moveDir = dir == null ? new Vector2(0, 0) : dir;
         damageIndicator.clientPosX = posX + damageIndicator.moveDir.x * 8f;
         damageIndicator.clientPosY = posY + damageIndicator.moveDir.y * 8f;
+        if(getEntityType() == ClientEntityType.PLAYER) {
+            damageIndicator.color = ((ClientPlayer) this).player ? ClientDamageIndicator.PLAYER_COLOR : ClientDamageIndicator.DEFAULT_COLOR;
+        } else {
+            damageIndicator.color = ClientDamageIndicator.DEFAULT_COLOR;
+        }
         ClientEntityManager.get().addClientSideEntity(damageIndicator);
     }
 

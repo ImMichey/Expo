@@ -111,11 +111,11 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
         float lengthFilled = (healthPercentage * length);
         float remaining = length - lengthFilled;
 
-        rc.arraySpriteBatch.draw(r.hbFilled, startX + 1, startY, lengthFilled, 3);
-        rc.arraySpriteBatch.draw(r.hbUnfilled, startX + 1 + lengthFilled, startY, remaining, 3);
+        rc.arraySpriteBatch.draw(r.hbFilled, startX + 1, startY, lengthFilled, 4);
+        rc.arraySpriteBatch.draw(r.hbUnfilled, startX + 1 + lengthFilled, startY, remaining, 4);
 
         if(animationThickness > 0) {
-            rc.arraySpriteBatch.draw(r.hbAnimation, startX + 1 + lengthFilled, startY, animationThickness, 3);
+            rc.arraySpriteBatch.draw(r.hbAnimation, startX + 1 + lengthFilled, startY, animationThickness, 4);
         }
 
         rc.arraySpriteBatch.setColor(Color.WHITE);

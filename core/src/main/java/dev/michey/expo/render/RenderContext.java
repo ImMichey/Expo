@@ -326,10 +326,10 @@ public class RenderContext {
         buttonPartsSelected[6] = new TextureRegion(baseButtonSel, 8, 0, 1, 1);
 
         TextureRegion healthBarBase = ExpoAssets.get().textureRegion("ui_entity_healthbar");
-        hbEdge = new TextureRegion(healthBarBase, 0, 0, 1, 3);
-        hbFilled = new TextureRegion(healthBarBase, 1, 0, 1, 3);
-        hbUnfilled = new TextureRegion(healthBarBase, 2, 0, 1, 3);
-        hbAnimation = new TextureRegion(healthBarBase, 3, 0, 1, 3);
+        hbEdge = new TextureRegion(healthBarBase, 0, 0, 1, 4);
+        hbFilled = new TextureRegion(healthBarBase, 1, 0, 1, 4);
+        hbUnfilled = new TextureRegion(healthBarBase, 2, 0, 1, 4);
+        hbAnimation = new TextureRegion(healthBarBase, 3, 0, 1, 4);
 
         DEFAULT_GLES3_SHADER = compileShader("gl3/base/default_gl3");
         DEFAULT_GLES3_ARRAY_SHADER = compileShader("gl3/base/default_array");

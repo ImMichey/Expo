@@ -14,10 +14,11 @@
 
 [Stuff To Fix, Implement...]
 * Drop Items with Q
-
 * Adjust running animation speed with entity velocity
 * Fix selection system
 * New Oak Plank Wall textures
+* New Oak Plank Floor textures
+* New Crate textures
 
 [Long Term Fixes]
 * Investigate:

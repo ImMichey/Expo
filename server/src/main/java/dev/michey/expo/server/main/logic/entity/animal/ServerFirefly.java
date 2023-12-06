@@ -28,6 +28,7 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
 
     public ServerFirefly() {
         health = 20.0f;
+        persistentEntity = false;
     }
 
     @Override
