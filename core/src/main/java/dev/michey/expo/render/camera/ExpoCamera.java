@@ -127,12 +127,16 @@ public class ExpoCamera {
     }
 
     public void cycleZoom() {
+        float currentZoomLevel = ClientStatic.CAMERA_ZOOM_LEVELS[currentZoomLevelIndex];
+
         currentZoomLevelIndex--;
         if(currentZoomLevelIndex < 0) {
             currentZoomLevelIndex = ClientStatic.CAMERA_ZOOM_LEVELS.length - 1;
         }
 
-        camera.zoom = ClientStatic.CAMERA_ZOOM_LEVELS[currentZoomLevelIndex];
+        float desiredZoomLevel = ClientStatic.CAMERA_ZOOM_LEVELS[currentZoomLevelIndex];
+
+        addZoomAnimation(desiredZoomLevel - currentZoomLevel);
         AudioEngine.get().playSoundGroup("woosh", 0.125f);
     }
 
@@ -204,6 +208,7 @@ public class ExpoCamera {
     }
 
     public boolean addZoomAnimation(float amount) {
+        RenderContext.get().zoomNotify = true;
         float lowerFloor = 0.1f;
         boolean change = true;
 

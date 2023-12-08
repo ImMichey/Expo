@@ -122,8 +122,8 @@
                                 "!OCEAN",
                                 "!OCEAN_DEEP"
                             ],
-                            "thresholdA": 0.5085,
-                            "thresholdB": 0.5216,
+                            "thresholdA": 0.5055,
+                            "thresholdB": 0.5245,
                             "replaceType": "BIOME",
                             "replaceWith": "RIVER",
                             "priority": 1000
@@ -140,8 +140,8 @@
                                 "*",
                                 "!OCEAN_DEEP"
                             ],
-                            "thresholdA": 0.512,
-                            "thresholdB": 0.519,
+                            "thresholdA": 0.510,
+                            "thresholdB": 0.5213,
                             "replaceType": "BIOME",
                             "replaceWith": "RIVER_DEEP",
                             "priority": 1001

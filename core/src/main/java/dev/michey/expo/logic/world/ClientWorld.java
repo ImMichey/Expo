@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.world;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
@@ -398,11 +397,25 @@ public class ClientWorld {
         }
 
         {
+            r.waterEntityFbo.begin();
+                transparentScreen();
+                renderEntityReflections();
+                //ClientUtils.takeScreenshot("waterEntityFbo", Input.Keys.G);
+            r.waterEntityFbo.end();
+
             // Draw water tiles, reflections and shadows to waterTilesFbo.
             r.waterTilesFbo.begin();
                 transparentScreen();
+                //ClientUtils.takeScreenshot("wt-0", Input.Keys.G);
+
                 renderWaterTiles();
+                //ClientUtils.takeScreenshot("wt-1", Input.Keys.G);
+                r.batch.setColor(0.666f, 0.875f, 1.0f, 0.5f);
+                drawFboTexture(r.waterEntityFbo, null);
+                r.batch.setColor(Color.WHITE);
+                //ClientUtils.takeScreenshot("wt-2", Input.Keys.G);
                 drawShadowFbo(r, r.simplePassthroughShader, r.waterTilesFbo.getColorBufferTexture());
+                //ClientUtils.takeScreenshot("wt-3", Input.Keys.G);
             r.waterTilesFbo.end();
         }
 
@@ -605,10 +618,12 @@ public class ClientWorld {
                                 }
                             }
 
+                            /*
                             for(int i = 0; i < cp.vl.length; i += 2) {
                                 r.chunkRenderer.setColor(1f - i * 0.1f, 1f - i * 0.1f, 0f, 1.0f);
                                 r.chunkRenderer.circle(cp.vl[i], cp.vl[i + 1], 0.4f, 16);
                             }
+                            */
                         }
 
                         if(Expo.get().getImGuiExpo().renderDrawPos.get()) {
@@ -1140,11 +1155,35 @@ public class ClientWorld {
         r.batch.setColor(Color.WHITE);
     }
 
+    private void renderEntityReflections() {
+        if(ClientPlayer.getLocalPlayer() == null) return;
+        RenderContext rc = RenderContext.get();
+
+        // Draw reflections
+        rc.arraySpriteBatch.begin();
+        rc.arraySpriteBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        for(ClientEntity entity : clientEntityManager.getDepthEntityList()) {
+            // TODO: Possible optimization, check for visibleForRender && chunk.visible before drawing
+            if(!entity.drawReflection) continue;
+            if(!(entity instanceof ReflectableEntity reflectableEntity)) continue;
+            reflectableEntity.renderReflection(rc, rc.delta);
+        }
+
+        for(ClientEntity puddles : clientEntityManager.getEntitiesByType(ClientEntityType.PUDDLE)) {
+            ((ClientPuddle) puddles).renderReflection(rc, rc.delta);
+        }
+
+        rc.arraySpriteBatch.setColor(Color.WHITE);
+        rc.arraySpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        rc.arraySpriteBatch.end();
+        rc.batch.begin();
+    }
+
     private void renderWaterTiles() {
         if(ClientPlayer.getLocalPlayer() == null) return;
         RenderContext rc = RenderContext.get();
 
-        rc.batch.begin();
         rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
         rc.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -1175,34 +1214,7 @@ public class ClientWorld {
             }
         }
 
-        {
-            // Draw reflections
-            rc.batch.end();
-            rc.arraySpriteBatch.begin();
-
-            ClientUtils.takeScreenshot("00", Input.Keys.G);
-
-            for(ClientEntity entity : clientEntityManager.getDepthEntityList()) {
-                // TODO: Possible optimization, check for visibleForRender && chunk.visible before drawing
-                if(!entity.drawReflection) continue;
-                if(!(entity instanceof ReflectableEntity reflectableEntity)) continue;
-                rc.arraySpriteBatch.setColor(0.666f, 0.875f, 1.0f, 0.7f);
-                reflectableEntity.renderReflection(rc, rc.delta);
-            }
-
-            for(ClientEntity puddles : clientEntityManager.getEntitiesByType(ClientEntityType.PUDDLE)) {
-                ((ClientPuddle) puddles).renderReflection(rc, rc.delta);
-            }
-
-            rc.arraySpriteBatch.setColor(Color.WHITE);
-
-            rc.arraySpriteBatch.end();
-            ClientUtils.takeScreenshot("01", Input.Keys.G);
-            rc.batch.begin();
-        }
-
         rc.batch.end();
-
         drawWaterRemake();
     }
 

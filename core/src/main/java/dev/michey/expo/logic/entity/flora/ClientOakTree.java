@@ -443,14 +443,12 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         rc.arraySpriteBatch.draw(trunk, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY + 2, trunk.getRegionWidth() + squishAnimator2D.squishX, (trunk.getRegionHeight() + squishAnimator2D.squishY) * -1);
 
         if(!cut) {
-            Color currentColor = rc.arraySpriteBatch.getColor();
-
             float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
-            rc.arraySpriteBatch.setColor((1.0f - colorMix) * currentColor.r, 1.0f * currentColor.g, (1.0f - colorMix) * currentColor.b, playerBehindInterpolated * 0.5f);
+            rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), 0.9f);
             rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f, finalTextureStartY - leavesOffsetY() - leavesDisplacement - squishAnimator2D.squishY * 0.5f + 2,
                     leaves.getWidth() + squishAnimator2D.squishX, (leaves.getHeight() + squishAnimator2D.squishY) * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
 
-            rc.arraySpriteBatch.setColor(currentColor);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 

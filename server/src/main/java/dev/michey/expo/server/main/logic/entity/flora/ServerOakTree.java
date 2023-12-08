@@ -190,7 +190,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public void generateAge(BiomeType biome, GenerationRandom rnd) {
         int r = rnd == null ? MathUtils.random(100) : rnd.random(100);
 
-        if(r <= 60) {
+        if(r <= 75) {
             age = 0;
         } else if(r <= 99) {
             age = 1;

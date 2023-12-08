@@ -103,7 +103,6 @@ public class InputController {
 
         if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
             boolean playSound = RenderContext.get().expoCamera.addZoomAnimation(y * 0.1f);
-            RenderContext.get().zoomNotify = true;
 
             if(playSound && (RenderContext.get().deltaTotal - lastWooshTimestamp) >= 0.2f) {
                 AudioEngine.get().playSoundGroup("woosh", 0.125f);

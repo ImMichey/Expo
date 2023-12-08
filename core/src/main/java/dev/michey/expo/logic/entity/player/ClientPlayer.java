@@ -180,8 +180,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     /** Player reach */
     public float playerReachCenterX, playerReachCenterY;
 
-    public float[] vl = new float[16];
-
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
@@ -1357,9 +1355,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
                     float _x = finalDrawPosX + _px + backArm.getRegionWidth() * 0.5f;
                     float _y = finalDrawPosY + motionOffset + backArmOffsetY + backArm.getRegionHeight() - 1;
-
-                    vl[2] = _x;
-                    vl[3] = _y;
 
                     _x += (v.y * armHeight);
                     _y -= (v.x * armHeight);

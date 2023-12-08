@@ -75,15 +75,15 @@ public class RenderContext {
     /** Water data */
     public Texture waterNoiseTexture;
     public Texture displacementTexture;
-    public float waterSpeed = 0.8f;
+    public float waterSpeed = 1.1f;//0.8f;
     public float brightness = 0.5f;
     public float contrast = 0.5f;
-    public float[] waterColor = new float[] {0.0f, 166f / 255f, 1.0f};
+    public float[] waterColor = new float[] {0.0f, 163f / 255f, 1.0f};
     public float waterDelta;
     public float waterAlpha = 0.6f;
-    public float waterSkewX = 1.5f;
-    public float waterSkewY = 2.25f;
-    public float waterReflectionSpeed = 8.0f;
+    public float waterSkewX = 1.75f;//1.5f;
+    public float waterSkewY = 1.75f;//2.25f;
+    public float waterReflectionSpeed = 11.0f;//8.0f;
 
     /** Shaders */
     public ShaderProgram DEFAULT_GLES3_SHADER;          // Should be used by all regular batches.
@@ -140,6 +140,7 @@ public class RenderContext {
     public FrameBuffer shadowFbo;
     public FrameBuffer waterReflectionFbo;
     public FrameBuffer waterTilesFbo;
+    public FrameBuffer waterEntityFbo;
     public FrameBuffer entityFbo;
     public FrameBuffer blurTargetAFbo;
     public FrameBuffer blurTargetBFbo;
@@ -492,6 +493,7 @@ public class RenderContext {
         shadowFbo = createFBO(w, h);
         waterReflectionFbo = createFBO(w, h);
         waterTilesFbo = createFBO(w, h);
+        waterEntityFbo = createFBO(w, h);
         entityFbo = createFBO(w, h);
         blurTargetAFbo = createFBO(w, h);
         blurTargetBFbo = createFBO(w, h);
@@ -593,6 +595,7 @@ public class RenderContext {
         shadowFbo.dispose();
         waterReflectionFbo.dispose();
         waterTilesFbo.dispose();
+        waterEntityFbo.dispose();
         entityFbo.dispose();
         blurTargetAFbo.dispose();
         blurTargetBFbo.dispose();
