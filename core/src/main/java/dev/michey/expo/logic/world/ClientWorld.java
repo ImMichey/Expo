@@ -1,10 +1,12 @@
 package dev.michey.expo.logic.world;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -593,12 +595,21 @@ public class ClientWorld {
                         float tpx = all.finalTextureStartX;
                         float tpy = all.finalTextureStartY;
 
-                        /*
+
                         if(all instanceof ClientPlayer cp && Expo.get().getImGuiExpo().renderPunchData.get()) {
                             r.chunkRenderer.setColor(Color.RED);
-                            r.chunkRenderer.circle(cp.test_0, cp.test_1, 0.25f, 8)
+
+                            if(cp.holdingItemSprites != null) {
+                                for(Sprite sp : cp.holdingItemSprites) {
+                                    r.chunkRenderer.circle(sp.getX(), sp.getY(), 0.25f, 8);
+                                }
+                            }
+
+                            for(int i = 0; i < cp.vl.length; i += 2) {
+                                r.chunkRenderer.setColor(1f - i * 0.1f, 1f - i * 0.1f, 0f, 1.0f);
+                                r.chunkRenderer.circle(cp.vl[i], cp.vl[i + 1], 0.4f, 16);
+                            }
                         }
-                        */
 
                         if(Expo.get().getImGuiExpo().renderDrawPos.get()) {
                             r.chunkRenderer.setColor(Color.GREEN);
@@ -1169,6 +1180,8 @@ public class ClientWorld {
             rc.batch.end();
             rc.arraySpriteBatch.begin();
 
+            ClientUtils.takeScreenshot("00", Input.Keys.G);
+
             for(ClientEntity entity : clientEntityManager.getDepthEntityList()) {
                 // TODO: Possible optimization, check for visibleForRender && chunk.visible before drawing
                 if(!entity.drawReflection) continue;
@@ -1184,6 +1197,7 @@ public class ClientWorld {
             rc.arraySpriteBatch.setColor(Color.WHITE);
 
             rc.arraySpriteBatch.end();
+            ClientUtils.takeScreenshot("01", Input.Keys.G);
             rc.batch.begin();
         }
 
@@ -1239,9 +1253,6 @@ public class ClientWorld {
             }
 
             rc.polygonTileBatch.end();
-
-            //drawWaterRemake();
-            //drawWater();
         }
     }
 

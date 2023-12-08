@@ -269,7 +269,7 @@ public class ExpoClientPacketReader {
                 ClientPlayer player = (ClientPlayer) entity;
 
                 if(p.animationId == PLAYER_ANIMATION_ID_PICKUP) {
-                    player.playPickupAnimation();
+                    //player.playPickupAnimation();
                 } else if(p.animationId == PLAYER_ANIMATION_ID_PLACE) {
                     player.playPunchAnimation();
                 }

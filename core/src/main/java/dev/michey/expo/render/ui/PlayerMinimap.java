@@ -111,7 +111,7 @@ public class PlayerMinimap {
 
                         TileLayerType use;
 
-                        if(tile.biome == BiomeType.OCEAN_DEEP) {
+                        if(tile.biome == BiomeType.OCEAN_DEEP || tile.biome == BiomeType.LAKE_DEEP || tile.biome == BiomeType.RIVER_DEEP) {
                             use = TileLayerType.WATER_DEEP;
                         } else {
                             ServerEntity sd3d = tile.hasTileBasedEntity(ServerEntityType.DYNAMIC_3D_TILE);

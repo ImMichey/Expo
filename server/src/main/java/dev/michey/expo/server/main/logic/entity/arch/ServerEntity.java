@@ -245,7 +245,7 @@ public abstract class ServerEntity {
 
     public boolean isInDeepWater() {
         BiomeType b = getTileBiome();
-        return b == BiomeType.OCEAN_DEEP;
+        return b == BiomeType.OCEAN_DEEP || b == BiomeType.LAKE_DEEP || b == BiomeType.RIVER_DEEP;
     }
 
     public void attemptMove(float x, float y) {

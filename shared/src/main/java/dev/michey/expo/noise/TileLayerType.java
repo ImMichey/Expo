@@ -104,13 +104,6 @@ public enum TileLayerType {
         };
     }
 
-    public static boolean isWaterBiome(BiomeType type) {
-        return switch (type) {
-            case OCEAN, OCEAN_DEEP, PUDDLE, LAKE, RIVER -> true;
-            default -> false;
-        };
-    }
-
     public static boolean isConnected(TileLayerType t0, TileLayerType t1) {
         if(t0 == null) return true;
         String[] check = t0.TILE_CONNECTION_DATA;
@@ -136,7 +129,7 @@ public enum TileLayerType {
             case FOREST, DENSE_FOREST, WHEAT_FIELDS -> FOREST;
             case BEACH -> SAND;
             case DESERT -> DESERT;
-            case OCEAN_DEEP -> SOIL_DEEP_WATERLOGGED;
+            case OCEAN_DEEP, RIVER_DEEP, LAKE_DEEP -> SOIL_DEEP_WATERLOGGED;
             case PUDDLE, LAKE, RIVER, OCEAN -> SOIL_WATERLOGGED;
             default -> EMPTY;
         };
@@ -146,7 +139,7 @@ public enum TileLayerType {
         return switch (type) {
             case ROCK -> ROCK;
             case DIRT -> DIRT;
-            case RIVER, PUDDLE, OCEAN_DEEP, OCEAN, LAKE -> WATER_OVERLAY;
+            case RIVER, PUDDLE, OCEAN_DEEP, OCEAN, LAKE, LAKE_DEEP, RIVER_DEEP -> WATER_OVERLAY;
             //case OCEAN -> WATER_SANDY;
             //case LAKE, RIVER, PUDDLE -> WATER;
             //case OCEAN_DEEP -> WATER_DEEP;

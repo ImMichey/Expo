@@ -105,8 +105,9 @@
                             "threshold": 0.78,
                             "replaceType": "BIOME",
                             "replaceWith": "LAKE",
-                            "thresholdSecond": 0.835,
-                            "thresholdReplace": "OCEAN_DEEP"
+                            "thresholdSecond": 0.8075,
+                            "thresholdReplace": "LAKE_DEEP",
+                            "priority": 1002
                         }
                     },
                     {
@@ -137,13 +138,12 @@
                         "logic": {
                             "check": [
                                 "*",
-                                "!OCEAN",
                                 "!OCEAN_DEEP"
                             ],
                             "thresholdA": 0.512,
                             "thresholdB": 0.519,
                             "replaceType": "BIOME",
-                            "replaceWith": "OCEAN_DEEP",
+                            "replaceWith": "RIVER_DEEP",
                             "priority": 1001
                         }
                     }
@@ -168,13 +168,13 @@
                 "biomes": [
                     {
                         "type": "OCEAN_DEEP",
-                        "elevation": [0.0, 0.465],
+                        "elevation": [0.0, 0.471],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
                     {
                         "type": "OCEAN",
-                        "elevation": [0.465, 0.488],
+                        "elevation": [0.471, 0.488],
                         "temperature": [0.0, 1.0],
                         "moisture": [0.0, 1.0]
                     },
@@ -350,10 +350,26 @@
                     "borderRequirement": "WATER"
                 },
                 {
+                    "biome": "LAKE_DEEP",
+                    "type": "LILYPAD",
+                    "static": true,
+                    "chance": 0.0375,
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "borderRequirement": "WATER"
+                },
+                {
                     "biome": "RIVER",
                     "type": "LILYPAD",
                     "static": true,
                     "chance": 0.025,
+                    "spawnOffsets": [-2, 2, -2, 2],
+                    "borderRequirement": "WATER"
+                },
+                {
+                    "biome": "RIVER_DEEP",
+                    "type": "LILYPAD",
+                    "static": true,
+                    "chance": 0.0125,
                     "spawnOffsets": [-2, 2, -2, 2],
                     "borderRequirement": "WATER"
                 },

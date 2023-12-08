@@ -73,11 +73,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public int[] clientViewport = new int[] {Integer.MAX_VALUE, 0, 0, 0};
 
     /** Player textures */
-    private TextureRegion draw_tex_base = null;
-    private TextureRegion draw_tex_arm_right = null;
-    private TextureRegion draw_tex_arm_left = null;
-    private TextureRegion draw_tex_shadow_base = null;
-
     private final float PLAYER_BLINK_COOLDOWN = 3.0f;
     private final float PLAYER_BREATHE_COOLDOWN = 1.0f;
     private float playerBreatheDelta = MathUtils.random(PLAYER_BREATHE_COOLDOWN);
@@ -87,37 +82,47 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     private int playerWalkIndex;
     private int lastPlayerWalkIndex;
 
-    private final float PICKUP_FRAME_DURATION = 0.1f;
-    private float pickupAnimationDelta;
-    private boolean pickupAnimation;
-
     public int playerDirection = 1; // 0 = Left, 1 = Right
     private int oldPlayerDirection = 1; // for packets
 
-    /** Player textures v2 */
-    private TextureRegion tex_base;
-    private TextureRegion tex_breathe;
-    private TextureRegion tex_arm_left;
-    private TextureRegion tex_arm_right;
-    private TextureRegion tex_punch_arm;
-    private TextureRegion[] textures_walk;
-    private TextureRegion[] textures_pickup_arm;
+    /** Player textures v3 */
+    private TextureRegion[] idle_body;
+    private TextureRegion[] idle_eyes;
+    private TextureRegion[] idle_frontArm;
+    private TextureRegion[] idle_backArm;
+    private TextureRegion[] idle_frontLeg;
+    private TextureRegion[] idle_backLeg;
 
-    private TextureRegion tex_blink;
+    private TextureRegion[] walk_body;
+    private TextureRegion[] walk_eyes;
+    private TextureRegion[] walk_frontArm;
+    private TextureRegion[] walk_backArm;
+    private TextureRegion[] walk_frontLeg;
+    private TextureRegion[] walk_backLeg;
 
-    private TextureRegion tex_shadow_base;
-    private TextureRegion tex_shadow_breathe;
-    private TextureRegion tex_shadow_arm_left;
-    private TextureRegion tex_shadow_arm_right;
-    private TextureRegion tex_shadow_punch_arm;
-    private TextureRegion[] textures_shadow_walk;
+    private TextureRegion[] idle_armor_legs_frontLeg;
+    private TextureRegion[] idle_armor_legs_backLeg;
+    private TextureRegion[] walk_armor_legs_frontLeg;
+    private TextureRegion[] walk_armor_legs_backLeg;
 
-    private final float[] offset_arm_walk_right =   new float[] {7, 6, 7, 7, 8, 7, 6, 7, 7, 8};
-    private final float[] offset_arm_base =         new float[] {6, 7};
+    private TextureRegion[] idle_armor_chest_body;
+    private TextureRegion[] idle_armor_chest_frontArm;
+    private TextureRegion[] idle_armor_chest_backArm;
+    private TextureRegion[] walk_armor_chest_body;
+    private TextureRegion[] walk_armor_chest_frontArm;
+    private TextureRegion[] walk_armor_chest_backArm;
+    private TextureRegion backArm_armor_chest;
 
-    private float offsetXL;
-    private float offsetXR;
-    public float offsetY;
+    private TextureRegion blink;
+    private TextureRegion backArm;
+    private TextureRegion hair;
+
+    private TextureRegion use_body, use_eyes, use_frontArm, use_backArm, use_frontLeg, use_backLeg,
+            use_armor_legs_frontLeg, use_armor_legs_backLeg,
+            use_armor_chest_body, use_armor_chest_backArm, use_armor_chest_frontArm,
+            use_backArm_Detached;
+    private float motionOffset;
+    private final float backArmOffsetY = 7;
 
     /** Player punch */
     public float punchStartAngle;
@@ -175,6 +180,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     /** Player reach */
     public float playerReachCenterX, playerReachCenterY;
 
+    public float[] vl = new float[16];
+
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
@@ -190,36 +197,38 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             RenderContext.get().expoCamera.centerToPlayer(this);
         }
 
-        TextureRegion baseSheet = trn("player_sheet");
+        { // Player textures v3
+            idle_body = tra("player_idle_body", 2);
+            idle_eyes = tra("player_idle_eyes", 2);
+            idle_backArm = tra("player_idle_backarm", 2);
+            idle_frontArm = tra("player_idle_frontarm", 2);
+            idle_backLeg = tra("player_idle_backleg", 2);
+            idle_frontLeg = tra("player_idle_frontleg", 2);
 
-        { // Base textures
-            tex_base = new TextureRegion(baseSheet, 0, 6, 10, 26);
-            tex_breathe = new TextureRegion(baseSheet, 24, 7, 10, 25);
+            walk_body = tra("player_walk_body", 8);
+            walk_eyes = tra("player_walk_eyes", 8);
+            walk_backArm = tra("player_walk_backarm", 8);
+            walk_frontArm = tra("player_walk_frontarm", 8);
+            walk_backLeg = tra("player_walk_backleg", 8);
+            walk_frontLeg = tra("player_walk_frontleg", 8);
 
-            tex_arm_left = new TextureRegion(baseSheet, 48, 22, 2, 10);
-            tex_arm_right = new TextureRegion(baseSheet, 72, 23, 1, 9);
+            blink = trn("player_blink");
+            backArm = trn("player_arm_back");
+            hair = trn("player_hair_var1");
 
-            tex_punch_arm = new TextureRegion(baseSheet, 120, 22, 2, 10);
+            idle_armor_legs_frontLeg = tra("armor_legs_var1_idle_frontleg", 2);
+            idle_armor_legs_backLeg = tra("armor_legs_var1_idle_backleg", 2);
+            walk_armor_legs_frontLeg = tra("armor_legs_var1_walk_frontleg", 8);
+            walk_armor_legs_backLeg = tra("armor_legs_var1_walk_backleg", 8);
 
-            textures_walk = trArrayFromSheet(baseSheet, 0, 69, 10, 27, 10, 24);
+            idle_armor_chest_body = tra("armor_chest_var1_idle_body", 2);
+            idle_armor_chest_frontArm = tra("armor_chest_var1_idle_frontarm", 2);
+            idle_armor_chest_backArm = tra("armor_chest_var1_idle_backarm", 2);
+            walk_armor_chest_body = tra("armor_chest_var1_walk_body", 8);
+            walk_armor_chest_frontArm = tra("armor_chest_var1_walk_frontarm", 8);
+            walk_armor_chest_backArm = tra("armor_chest_var1_walk_backarm", 8);
 
-            tex_blink = trn("player_blink");
-
-            textures_pickup_arm = trArrayFromSheet(baseSheet, 0, 148, 4, 12, 4, 24);
-        }
-
-        { // Shadow textures
-            tex_shadow_base = new TextureRegion(baseSheet, 0, 38, 10, 26);
-            tex_shadow_breathe = new TextureRegion(baseSheet, 24, 39, 10, 25);
-
-            tex_shadow_arm_left = new TextureRegion(baseSheet, 48, 54, 2, 10);
-            tex_shadow_arm_right = new TextureRegion(baseSheet, 72, 55, 1, 9);
-
-            tex_shadow_punch_arm = new TextureRegion(baseSheet, 120, 54, 2, 10);
-
-            textures_shadow_walk = shadowSheet(baseSheet, 0, 101, 10, 24, 10, 27, new int[] {
-                    26, 25, 26, 26, 27, 26, 25, 26, 26, 27
-            });
+            backArm_armor_chest = trn("armor_chest_var1_backarm");
         }
 
         if(player) {
@@ -552,7 +561,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         // Player footstep sounds
-        if((playerWalkIndex == 2 || playerWalkIndex == 7) && (playerWalkIndex != lastPlayerWalkIndex)) {
+        if((playerWalkIndex == 1 || playerWalkIndex == 5) && (playerWalkIndex != lastPlayerWalkIndex)) {
             onFootstep();
         }
 
@@ -570,39 +579,63 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        if(draw_tex_base == null) return;
+        if(use_body == null) return;
         boolean drawLooseArm = holdingItemId != -1;
 
-        // drawHeldItemReflection(rc, false);
+        drawHeldItemReflection(rc, false);
 
         if(punchAnimation || drawLooseArm) {
             float x = finalDrawPosX + (direction() == 1 ? 8 : 0);
-            float originX = tex_punch_arm.getRegionWidth() * 0.5f;
-            float originY = tex_punch_arm.getRegionHeight() - 1;
-            float width = tex_punch_arm.getRegionWidth();
-            float height = tex_punch_arm.getRegionHeight();
+            float originX = backArm.getRegionWidth() * 0.5f;
+            float originY = backArm.getRegionHeight() - 1;
+            float width = backArm.getRegionWidth();
+            float height = backArm.getRegionHeight();
             float scaleX = 1.0f;
             float scaleY = 1.0f;
             float rotation = getFinalArmRotation();
 
-            rc.arraySpriteBatch.draw(tex_punch_arm, x, finalDrawPosY - offsetY - 19, originX, originY, width, height, scaleX, scaleY * -1, -rotation);
+            rc.arraySpriteBatch.draw(backArm, x, finalDrawPosY - motionOffset - backArmOffsetY - 20, originX, originY, width, height, scaleX, -scaleY, -rotation);
+            rc.arraySpriteBatch.draw(use_backArm_Detached, x, finalDrawPosY - motionOffset - backArmOffsetY - 20, originX, originY, width, height, scaleX, -scaleY, -rotation);
         } else {
-            rc.arraySpriteBatch.draw(draw_tex_arm_right, finalDrawPosX + offsetXR, finalDrawPosY - offsetY, draw_tex_arm_right.getRegionWidth(), draw_tex_arm_right.getRegionHeight() * -1);
+            rc.arraySpriteBatch.draw(use_backArm, finalDrawPosX, finalDrawPosY, use_backArm.getRegionWidth(), use_backArm.getRegionHeight() * -1);
+            rc.arraySpriteBatch.draw(use_armor_chest_backArm, finalDrawPosX, finalDrawPosY, use_armor_chest_backArm.getRegionWidth(), use_armor_chest_backArm.getRegionHeight() * -1);
         }
 
-        rc.arraySpriteBatch.draw(draw_tex_base, finalDrawPosX, finalDrawPosY, draw_tex_base.getRegionWidth(), draw_tex_base.getRegionHeight() * -1);
+        float w = use_body.getRegionWidth();
+        float h = use_body.getRegionHeight() * -1;
+        rc.arraySpriteBatch.draw(use_body, finalDrawPosX, finalDrawPosY, w, h);
+        rc.arraySpriteBatch.draw(use_eyes, finalDrawPosX, finalDrawPosY, w, h);
+
+        rc.arraySpriteBatch.draw(use_backLeg, finalDrawPosX, finalDrawPosY, w, h);
+        rc.arraySpriteBatch.draw(use_frontLeg, finalDrawPosX, finalDrawPosY, w, h);
+        rc.arraySpriteBatch.draw(use_armor_legs_backLeg, finalDrawPosX, finalDrawPosY, w, h);
+        rc.arraySpriteBatch.draw(use_armor_legs_frontLeg, finalDrawPosX, finalDrawPosY, w, h);
+
+        rc.arraySpriteBatch.draw(use_armor_chest_body, finalDrawPosX, finalDrawPosY, w, h);
+        rc.arraySpriteBatch.draw(use_frontArm, finalDrawPosX, finalDrawPosY, w, h);
+        rc.arraySpriteBatch.draw(use_armor_chest_frontArm, finalDrawPosX, finalDrawPosY, w, h);
 
         if(playerBlinkDelta < 0) {
-            rc.arraySpriteBatch.draw(tex_blink, finalDrawPosX + 5 - (direction() == 0 ? 4 : 0), finalDrawPosY - offsetY - 14, tex_blink.getRegionWidth(), tex_blink.getRegionHeight());
+            float dur = 0.25f;
+            float norm = Math.abs(playerBlinkDelta) / dur * 2; // -> [2->0]
+            float value; // [0->1->0]
+
+            if(norm > 1) {
+                // First half.
+                value = Interpolation.smooth.apply(Math.abs(norm - 2));
+            } else {
+                // Second half.
+                value = Interpolation.smooth.apply(norm);
+            }
+
+            rc.arraySpriteBatch.draw(blink, finalDrawPosX + (direction() == 1 ? 4 : 2), finalDrawPosY - 21 - motionOffset, blink.getRegionWidth(), blink.getRegionHeight() * value);
         }
 
-        if(pickupAnimation) {
-            rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL - (flipped ? 2 : 0), finalDrawPosY - offsetY + 2, draw_tex_arm_left.getRegionWidth(), draw_tex_arm_left.getRegionHeight() * -1);
-        } else {
-            rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL, finalDrawPosY - offsetY, draw_tex_arm_left.getRegionWidth(), draw_tex_arm_left.getRegionHeight() * -1);
+        { // Draw player hair
+            rc.arraySpriteBatch.draw(hair, finalDrawPosX + (direction() == 1 ? 1 : 0), finalDrawPosY - motionOffset - 20, hair.getRegionWidth(), hair.getRegionHeight() * -1);
         }
 
-        // drawHeldItemReflection(rc, true);
+        drawHeldItemReflection(rc, true);
     }
 
     @Override
@@ -650,16 +683,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             if(playerBreatheDelta >= PLAYER_BREATHE_COOLDOWN) playerBreatheDelta = -PLAYER_BREATHE_DURATION;
         }
 
-        { // Update pickup
-            if(pickupAnimation) {
-                pickupAnimationDelta += delta;
-
-                if(pickupAnimationDelta >= (PICKUP_FRAME_DURATION * textures_pickup_arm.length)) {
-                    pickupAnimation = false;
-                }
-            }
-        }
-
         { // Flip if necessary
             boolean flipX;
 
@@ -672,37 +695,23 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             if(flipX) {
                 flipped = !flipped;
 
-                tex_blink.flip(true, false);
-
-                tex_base.flip(true, false);
-                tex_breathe.flip(true, false);
-                tex_arm_left.flip(true, false);
-                tex_arm_right.flip(true, false);
-                tex_punch_arm.flip(true, false);
-
                 if(holdingHeadRender != null) for(ItemRender ir : holdingHeadRender) ir.flip();
                 if(holdingChestRender != null) for(ItemRender ir : holdingChestRender) ir.flip();
                 if(holdingGlovesRender != null) for(ItemRender ir : holdingGlovesRender) ir.flip();
                 if(holdingLegsRender != null) for(ItemRender ir : holdingLegsRender) ir.flip();
                 if(holdingFeetRender != null) for(ItemRender ir : holdingFeetRender) ir.flip();
 
-                for(TextureRegion tex : textures_walk) {
-                    tex.flip(true, false);
-                }
+                flip(
+                        walk_body, walk_eyes, walk_backArm, walk_frontArm, walk_backLeg, walk_frontLeg,
+                        idle_body, idle_eyes, idle_backArm, idle_frontArm, idle_backLeg, idle_frontLeg,
+                        idle_armor_legs_backLeg, idle_armor_legs_frontLeg, walk_armor_legs_backLeg, walk_armor_legs_frontLeg,
+                        idle_armor_chest_body, idle_armor_chest_frontArm, idle_armor_chest_backArm,
+                        walk_armor_chest_body, walk_armor_chest_frontArm, walk_armor_chest_backArm
+                );
 
-                tex_shadow_base.flip(true, false);
-                tex_shadow_breathe.flip(true, false);
-                tex_shadow_arm_right.flip(true, false);
-                tex_shadow_arm_left.flip(true, false);
-                tex_shadow_punch_arm.flip(true, false);
-
-                for(TextureRegion tex : textures_shadow_walk) {
-                    tex.flip(true, false);
-                }
-
-                for(TextureRegion p : textures_pickup_arm) {
-                    p.flip(true, false);
-                }
+                backArm.flip(true, false);
+                blink.flip(true, false);
+                hair.flip(true, false);
             }
         }
 
@@ -711,54 +720,68 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         if(moving) {
             playerWalkDelta += delta * (isSprinting() ? 1.25f : 1.0f);
-            float PLAYER_WALK_PER_FRAME_DURATION = 0.10f;
+            float PLAYER_WALK_PER_FRAME_DURATION = 0.1f;
 
             if(playerWalkDelta >= PLAYER_WALK_PER_FRAME_DURATION) {
                 playerWalkDelta -= PLAYER_WALK_PER_FRAME_DURATION;
                 playerWalkIndex++;
 
-                if(playerWalkIndex == textures_walk.length) {
+                if(playerWalkIndex == walk_body.length) {
                     playerWalkIndex = 0;
                 }
             }
 
-            draw_tex_base = textures_walk[playerWalkIndex];
-            draw_tex_shadow_base = textures_shadow_walk[playerWalkIndex];
+            use_body = walk_body[playerWalkIndex];
+            use_eyes = walk_eyes[playerWalkIndex];
+            use_frontArm = walk_frontArm[playerWalkIndex];
+            use_backLeg = walk_backLeg[playerWalkIndex];
+            use_frontLeg = walk_frontLeg[playerWalkIndex];
+
+            use_armor_legs_frontLeg = walk_armor_legs_frontLeg[playerWalkIndex];
+            use_armor_legs_backLeg = walk_armor_legs_backLeg[playerWalkIndex];
+
+            use_armor_chest_body = walk_armor_chest_body[playerWalkIndex];
+            use_armor_chest_frontArm = walk_armor_chest_frontArm[playerWalkIndex];
+            use_armor_chest_backArm = walk_armor_chest_backArm[playerWalkIndex];
+
+            use_backArm = punchAnimation ? backArm : walk_backArm[playerWalkIndex];
+
+            if(playerWalkIndex == 1 || playerWalkIndex == 5) {
+                motionOffset = -1;
+            } else if(playerWalkIndex == 3 || playerWalkIndex == 7) {
+                motionOffset = 1;
+            } else {
+                motionOffset = 0;
+            }
         } else {
-            draw_tex_base = playerBreatheDelta < 0 ? tex_breathe : tex_base;
-            draw_tex_shadow_base = playerBreatheDelta < 0 ? tex_shadow_breathe : tex_shadow_base;
+            int playerIdleIndex = playerBreatheDelta < 0 ? 1 : 0;
+            use_body = idle_body[playerIdleIndex];
+            use_eyes = idle_eyes[playerIdleIndex];
+            use_frontArm = idle_frontArm[playerIdleIndex];
+            use_backLeg = idle_backLeg[playerIdleIndex];
+            use_frontLeg = idle_frontLeg[playerIdleIndex];
+
+            use_armor_legs_frontLeg = idle_armor_legs_frontLeg[playerIdleIndex];
+            use_armor_legs_backLeg = idle_armor_legs_backLeg[playerIdleIndex];
+
+            use_armor_chest_body = idle_armor_chest_body[playerIdleIndex];
+            use_armor_chest_frontArm = idle_armor_chest_frontArm[playerIdleIndex];
+            use_armor_chest_backArm = idle_armor_chest_backArm[playerIdleIndex];
+
+            use_backArm = punchAnimation ? backArm : idle_backArm[playerIdleIndex];
 
             playerWalkDelta = 0;
             playerWalkIndex = 0;
+
+            motionOffset = playerIdleIndex == 1 ? -1 : 0;
         }
 
-        updateTextureBounds(draw_tex_base);
+        use_backArm_Detached = backArm_armor_chest;
+
+        updateTextureBounds(use_body.getRegionWidth(), use_body.getRegionHeight(), 0.5f, 0);
 
         playerReachCenterX = finalTextureCenterX;
         playerReachCenterY = clientPosY + 7;
-
-        if(pickupAnimation) {
-            int index = (int) ((pickupAnimationDelta / PICKUP_FRAME_DURATION) % textures_pickup_arm.length);
-            draw_tex_arm_left = textures_pickup_arm[index];
-        } else {
-            draw_tex_arm_left = tex_arm_left;
-        }
-
-        draw_tex_arm_right = punchAnimation ? tex_punch_arm : tex_arm_right;
-
-        if(moving) {
-            offsetY = offset_arm_walk_right[playerWalkIndex];
-        } else {
-            offsetY = offset_arm_base[playerBreatheDelta < 0 ? 0 : 1];
-        }
-
-        if(!flipped) {
-            offsetXL = 1;
-            offsetXR = 9;
-        } else {
-            offsetXL = 7;
-            offsetXR = 0;
-        }
 
         chooseArrayBatch(rc, interpolatedBlink);
         rc.useArrayBatch();
@@ -768,36 +791,42 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         // Draw punch
         if(punchAnimation || drawLooseArm) {
-            int px = punchAnimation ? (punchDirection == 1 ? 8 : 0) : (playerDirection == 1 ? 8 : 0);
+            int px = punchAnimation ? (punchDirection == 1 ? 8 : 1) : (playerDirection == 1 ? 8 : 1);
             float x = finalDrawPosX + px;
-            float y = finalDrawPosY + offsetY;
-            float originX = tex_punch_arm.getRegionWidth() * 0.5f;
-            float originY = tex_punch_arm.getRegionHeight() - 1;
-            float width = tex_punch_arm.getRegionWidth();
-            float height = tex_punch_arm.getRegionHeight();
+            float y = finalDrawPosY + motionOffset + backArmOffsetY;
+            float originX = backArm.getRegionWidth() * 0.5f;
+            float originY = backArm.getRegionHeight() - 1;
+            float width = backArm.getRegionWidth();
+            float height = backArm.getRegionHeight();
             float scaleX = 1.0f;
             float scaleY = 1.0f;
             float rotation = getFinalArmRotation();
 
-            rc.arraySpriteBatch.draw(tex_punch_arm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+            rc.arraySpriteBatch.draw(backArm, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
+            rc.arraySpriteBatch.draw(use_backArm_Detached, x, y, originX, originY, width, height, scaleX, scaleY, rotation);
         } else {
-            rc.arraySpriteBatch.draw(draw_tex_arm_right, finalDrawPosX + offsetXR, finalDrawPosY + offsetY);
+            rc.arraySpriteBatch.draw(use_backArm, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(use_armor_chest_backArm, finalDrawPosX, finalDrawPosY);
         }
 
         if(!Gdx.input.isKeyPressed(Input.Keys.U) || !DEV_MODE) {
-            rc.arraySpriteBatch.draw(draw_tex_base, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(use_body, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(use_eyes, finalDrawPosX, finalDrawPosY);
 
-            if(pickupAnimation) {
-                rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL - (flipped ? 2 : 0), finalDrawPosY + offsetY - 2);
-            } else {
-                rc.arraySpriteBatch.draw(draw_tex_arm_left, finalDrawPosX + offsetXL, finalDrawPosY + offsetY);
-            }
+                rc.arraySpriteBatch.draw(use_backLeg, finalDrawPosX, finalDrawPosY);
+                rc.arraySpriteBatch.draw(use_frontLeg, finalDrawPosX, finalDrawPosY);
+                rc.arraySpriteBatch.draw(use_armor_legs_backLeg, finalDrawPosX, finalDrawPosY);
+                rc.arraySpriteBatch.draw(use_armor_legs_frontLeg, finalDrawPosX, finalDrawPosY);
+
+            rc.arraySpriteBatch.draw(use_armor_chest_body, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(use_frontArm, finalDrawPosX, finalDrawPosY);
+            rc.arraySpriteBatch.draw(use_armor_chest_frontArm, finalDrawPosX, finalDrawPosY);
 
             if(holdingArmorHeadId != -1) {
                 int dir = punchAnimation ? punchDirection : playerDirection;
 
                 for(ItemRender ir : holdingHeadRender) {
-                    rc.arraySpriteBatch.draw(ir.useTextureRegion, finalDrawPosX + (dir == 1 ? 0 : -1) + ir.offsetX, finalDrawPosY + 13 + offsetY + ir.offsetY);
+                    rc.arraySpriteBatch.draw(ir.useTextureRegion, finalDrawPosX + (dir == 1 ? 0 : -1) + ir.offsetX, finalDrawPosY + 13 + ir.offsetY);
                 }
             }
 
@@ -806,8 +835,24 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         { // Draw player blink
             if(playerBlinkDelta < 0) {
-                rc.arraySpriteBatch.draw(tex_blink, finalDrawPosX + 5 - (direction() == 0 ? 4 : 0), finalDrawPosY + offsetY + 13);
+                float dur = 0.25f;
+                float norm = Math.abs(playerBlinkDelta) / dur * 2; // -> [2->0]
+                float value; // [0->1->0]
+
+                if(norm > 1) {
+                    // First half.
+                    value = Interpolation.smooth.apply(Math.abs(norm - 2));
+                } else {
+                    // Second half.
+                    value = Interpolation.smooth.apply(norm);
+                }
+
+                rc.arraySpriteBatch.draw(blink, finalDrawPosX + (direction() == 1 ? 4 : 2), finalDrawPosY + 20 + motionOffset, blink.getRegionWidth(), blink.getRegionHeight() * value);
             }
+        }
+
+        { // Draw player hair
+            rc.arraySpriteBatch.draw(hair, finalDrawPosX + (direction() == 1 ? 1 : 0), finalDrawPosY + motionOffset + 20);
         }
 
         rc.useRegularArrayShader();
@@ -825,11 +870,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     @Override
     public void calculateReflection() {
         drawReflection = true;
-    }
-
-    public void playPickupAnimation() {
-        pickupAnimation = true;
-        pickupAnimationDelta = 0f;
     }
 
     public void playPunchAnimation() {
@@ -853,17 +893,16 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        if(draw_tex_shadow_base != null) {
+        if(use_body != null) {
             rc.useRegularArrayShader();
             rc.useArrayBatch();
 
             { // Base body shadow
                 Affine2 shadowBase = ShadowUtils.createSimpleShadowAffine(finalDrawPosX, finalDrawPosY);
-                rc.arraySpriteBatch.drawGradient(draw_tex_shadow_base, draw_tex_shadow_base.getRegionWidth(), draw_tex_shadow_base.getRegionHeight(), shadowBase);          // check
+                rc.arraySpriteBatch.drawGradient(use_body, use_body.getRegionWidth(), use_body.getRegionHeight(), shadowBase);          // check
             }
 
-            float n = 1f / draw_tex_shadow_base.getRegionHeight();
-
+            float n = 1f / use_body.getRegionHeight();
 
             { // Armor shadow
                 if(holdingArmorHeadId != -1) {
@@ -875,7 +914,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
 
                         int dir = punchAnimation ? punchDirection : playerDirection;
-                        Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, dir == 1 ? 0 : -1, 13 + offsetY);
+                        Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, dir == 1 ? 0 : -1, 13);
                         rc.arraySpriteBatch.drawGradientCustomColor(ir.useTextureRegion,
                                 ir.useTextureRegion.getRegionWidth(), ir.useTextureRegion.getRegionHeight(), shadowBase, topColor, bottomColor);
                     }
@@ -891,11 +930,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     for(int i = 0; i < holdingItemSprites.length; i++) {
                         Sprite holdingItemSprite = holdingItemSprites[i];
                         ItemRender ir = map.heldRender[i];
-
                         if(ir.hideShadow) continue;
 
-                        float xshift = dirCheck == 0 ? 1 : 9;
-                        float armHeight = 9;
+                        float armHeight = 10;
                         float ox = ir.offsetX * ir.scaleX;
                         float oy = ir.offsetY * ir.scaleY;
                         float inverse = dirCheck == 0 ? -1 : 1;
@@ -913,17 +950,33 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         float shadowFixX = w * 0.5f * (1f - ir.scaleX);
                         float shadowFixY = h * 0.5f * (1f - ir.scaleY);
 
+                        float _px = direction() == 1 ? 8 : 1;
+
+                        float _x = _px + backArm.getRegionWidth() * 0.5f;
+                        float _y = motionOffset + backArmOffsetY + backArm.getRegionHeight() - 1;
+
+                        _x += (v.y * armHeight);
+                        _y -= (v.x * armHeight);
+
+                        _x -= rfx;
+                        _y -= rfy;
+
+                        _x += (v.y * ox) + (v.x * oy * inverse);
+                        _y += -(v.x * ox) + (v.y * oy * inverse);
+
+                        _x += shadowFixX;
+                        _y += shadowFixY;
+
                         Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(
                                 finalDrawPosX,
                                 finalDrawPosY,
-                                shadowFixX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
-                                shadowFixY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse),
+                                _x, _y,
                                 holdingItemSprite.getOriginX() - shadowFixX,
                                 holdingItemSprite.getOriginY() - shadowFixY,
                                 holdingItemSprite.getRotation()
                         );
 
-                        float t = 0f + n * 9;
+                        float t = 0f + n * 10;
                         float b; //1f - n * offsetY; // calc
                         float norm;
                         int dir = direction();
@@ -938,12 +991,12 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         if(norm < 0.5f) {
                             // Upper half.
                             norm *= 2;
-                            b = 0 + norm * n * 9;
-                            t = 0 + norm * n * 9;
+                            b = 0 + norm * n * 10;
+                            t = 0 + norm * n * 10;
                         } else {
                             norm -= 0.5f;
                             norm *= 2;
-                            b = (1f - n * offsetY) - n * 9 * (1f - norm);
+                            b = (1f - n * (motionOffset + backArmOffsetY)) - n * 10 * (1f - norm);
                         }
 
                         float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
@@ -960,31 +1013,21 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 }
             }
 
-            { // Left arm
-                float t = 0f + n * 9;
-                float b;
+            Affine2 shadowLeftArm = ShadowUtils.createSimpleShadowAffine(finalDrawPosX, finalDrawPosY);
 
-                float _usex = offsetXL;
-                float _usey = offsetY;
+            { // body parts
+                rc.arraySpriteBatch.drawGradient(use_frontArm, use_frontArm.getRegionWidth(), use_frontArm.getRegionHeight(), shadowLeftArm);
+                rc.arraySpriteBatch.drawGradient(use_backLeg, use_backLeg.getRegionWidth(), use_backLeg.getRegionHeight(), shadowLeftArm);
+                rc.arraySpriteBatch.drawGradient(use_frontLeg, use_frontLeg.getRegionWidth(), use_frontLeg.getRegionHeight(), shadowLeftArm);
 
-                if(pickupAnimation) {
-                    _usex -= (flipped ? 2 : 0);
-                    _usey -= 2;
-                    b = 1f - n * (offsetY - 2);
-                } else {
-                    b = 1f - n * offsetY;
-                }
-
-                float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
-                float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
-
-                Affine2 shadowLeftArm = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, _usex, _usey);
-                rc.arraySpriteBatch.drawGradientCustomColor(draw_tex_arm_left, draw_tex_arm_left.getRegionWidth(), draw_tex_arm_left.getRegionHeight(), shadowLeftArm, topColor, bottomColor);
+                Affine2 hairAffine = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, (direction() == 1 ? 1 : 0), motionOffset + 20);
+                float hairBottomColor = new Color(0f, 0f, 0f, 1f - n * (motionOffset + 20)).toFloatBits();
+                rc.arraySpriteBatch.drawGradientCustomColor(hair, hair.getRegionWidth(), hair.getRegionHeight(), hairAffine, 0f, hairBottomColor);
             }
 
             { // Right arm
                 if(punchAnimation || (holdingItemId != -1)) {
-                    float t = 0f + n * 9;
+                    float t = 0f + n * 10;
                     float b; //1f - n * offsetY; // calc
                     float norm;
                     int dir = direction();
@@ -999,30 +1042,24 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     if(norm < 0.5f) {
                         // Upper half.
                         norm *= 2;
-                        b = 0 + norm * n * 9;
+                        b = 0 + norm * n * 10;
                     } else {
                         norm -= 0.5f;
                         norm *= 2;
-                        b = (1f - n * offsetY) - n * 9 * (1f - norm);
+                        b = (1f - n * (backArmOffsetY + motionOffset)) - n * 10 * (1f - norm);
                     }
 
                     float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
                     float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
 
-                    float originX = tex_punch_arm.getRegionWidth() * 0.5f;
-                    float originY = tex_punch_arm.getRegionHeight() - 1;
+                    float originX = backArm.getRegionWidth() * 0.5f;
+                    float originY = backArm.getRegionHeight() - 1;
 
-                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(finalDrawPosX, finalDrawPosY, direction() == 1 ? 8 : 0, offsetY, originX, originY, getFinalArmRotation());
-                    rc.arraySpriteBatch.drawGradientCustomColor(tex_shadow_punch_arm, tex_shadow_punch_arm.getRegionWidth(), tex_shadow_punch_arm.getRegionHeight(), shadowRightArm, topColor, bottomColor);
+                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(finalDrawPosX, finalDrawPosY,
+                            direction() == 1 ? 8 : 1, backArmOffsetY + motionOffset, originX, originY, getFinalArmRotation());
+                    rc.arraySpriteBatch.drawGradientCustomColor(backArm, backArm.getRegionWidth(), backArm.getRegionHeight(), shadowRightArm, topColor, bottomColor);
                 } else {
-                    float t = 0f + n * 10;
-                    float b = 1f - n * offsetY;
-
-                    float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
-                    float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
-
-                    Affine2 shadowRightArm = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, offsetXR, offsetY);
-                    rc.arraySpriteBatch.drawGradientCustomColor(tex_shadow_arm_right, tex_shadow_arm_right.getRegionWidth(), tex_shadow_arm_right.getRegionHeight(), shadowRightArm, topColor, bottomColor);
+                    rc.arraySpriteBatch.drawGradient(use_backArm, use_backArm.getRegionWidth(), use_backArm.getRegionHeight(), shadowLeftArm);
                 }
             }
         }
@@ -1117,6 +1154,128 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     }
     */
 
+    private void drawHeldItemReflection(RenderContext rc, boolean postArm) {
+        if(holdingItemId != -1 && holdingItemSprites != null) {
+            ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
+
+            for(int i = 0; i < holdingItemSprites.length; i++) {
+                Sprite holdingItemSprite = holdingItemSprites[i];
+                ItemRender ir = map.heldRender[i];
+
+                if((postArm && ir.renderPriority) || (!postArm && !ir.renderPriority)) {
+                    if(punchAnimation) {
+                        if(!ir.rotationLock) {
+                            if(punchDirection == 0) { // left
+                                holdingItemSprite.setRotation(currentPunchAngle + 90f - ir.rotations[0]);
+                            } else { // right
+                                holdingItemSprite.setRotation(currentPunchAngle + ir.rotations[1]);
+                            }
+                        }
+
+                        if(ir.requiresFlip) {
+                            if(punchDirection == 0) {
+                                if(!holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
+                            } else {
+                                if(holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
+                            }
+                        }
+                    } else {
+                        float desiredAngle = 0;
+                        if(holdingItemId != -1) desiredAngle += getFinalArmRotation();
+
+                        desiredAngle += (playerDirection == 0 ? (90f - ir.rotations[0]) : (ir.rotations[1]));
+
+                        if(holdingItemSprite.getRotation() != desiredAngle && !ir.rotationLock) {
+                            holdingItemSprite.setRotation(desiredAngle);
+                        }
+
+                        if(ir.requiresFlip) {
+                            if(playerDirection == 0) {
+                                if(!holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
+                            } else {
+                                if(holdingItemSprite.isFlipX()) {
+                                    holdingItemSprite.flip(true, false);
+                                }
+                            }
+                        }
+                    }
+
+                    //ExpoLogger.log("-> " + holdingItemSprite.getRotation());
+                    holdingItemSprite.setRotation(holdingItemSprite.getRotation() * -1);
+
+                    // position
+                    int dirCheck = direction();
+                    Vector2 v;
+
+                    if(punchAnimation || (holdingItemId != -1)) {
+                        v = GenerationUtils.circular(getFinalArmRotation(), 1);
+                    } else {
+                        v = NULL_ROTATION_VECTOR;
+                    }
+
+                    float armHeight = 10f;
+                    float ox = ir.offsetX * ir.scaleX;
+                    float oy = ir.offsetY * ir.scaleY;
+                    float inverse = dirCheck == 0 ? -1 : 1;
+
+                    // rotation fix
+                    float w = ir.useTextureRegion.getRegionWidth();
+                    float h = ir.useTextureRegion.getRegionHeight();
+                    float rfx = w * 0.5f;
+                    float rfy = h * 0.5f;
+
+                    if(ir.rotationLock) {
+                        rfy = 0;
+                    }
+
+                    float _px = direction() == 1 ? 8 : 1;
+
+                    float _x = finalDrawPosX + _px + backArm.getRegionWidth() * 0.5f;
+                    float _y = finalDrawPosY - motionOffset - backArmOffsetY - backArm.getRegionHeight() + 1;
+
+                    _x += (v.y * armHeight) - rfx;
+                    _y += (v.x * armHeight) - rfy;
+
+                    _x += ((v.y * ox) + (v.x * oy * inverse));
+                    _y -= (-(v.x * ox) + (v.y * oy * inverse));
+
+                    holdingItemSprite.setPosition(_x, _y);
+                    holdingItemSprite.setScale(1, -1);
+                    holdingItemSprite.draw(rc.arraySpriteBatch);
+                    holdingItemSprite.setScale(1, 1);
+
+                    if(ir.particleEmitter != null) {
+                        if(ir.particleEmitter.spawnParticlesThisTick) {
+                            String st = ir.particleEmitter.emitterName;
+
+                            if(st.equals("torch")) {
+                                ParticleSheet.Common.spawnTorchParticles(depth, holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + h * 0.5f);
+                            }
+                        }
+                    }
+
+                    if(itemLightList != null) {
+                        for(ExpoLight light : itemLightList) {
+                            light.update(holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + rfy, rc.delta);
+                        }
+                    }
+
+                    if(itemSoundMap != null) {
+                        for(TrackedSoundData tsd : itemSoundMap.values()) {
+                            tsd.worldPosition.set(holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + rfy);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void drawHeldItem(RenderContext rc, boolean postArm) {
         if(holdingItemId != -1 && holdingItemSprites != null) {
             ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
@@ -1179,8 +1338,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         v = NULL_ROTATION_VECTOR;
                     }
 
-                    float xshift = dirCheck == 0 ? 1 : 9;
-                    float armHeight = 9;
+                    float armHeight = 10f;
                     float ox = ir.offsetX * ir.scaleX;
                     float oy = ir.offsetY * ir.scaleY;
                     float inverse = dirCheck == 0 ? -1 : 1;
@@ -1195,11 +1353,24 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         rfy = 0;
                     }
 
-                    holdingItemSprite.setPosition(
-                            finalDrawPosX + xshift - (rfx) + (v.y * armHeight) + (v.y * ox) + (v.x * oy * inverse),
-                            finalDrawPosY + armHeight - (rfy) - (v.x * armHeight) + offsetY - (v.x * ox) + (v.y * oy * inverse)
-                    );
+                    float _px = direction() == 1 ? 8 : 1;
 
+                    float _x = finalDrawPosX + _px + backArm.getRegionWidth() * 0.5f;
+                    float _y = finalDrawPosY + motionOffset + backArmOffsetY + backArm.getRegionHeight() - 1;
+
+                    vl[2] = _x;
+                    vl[3] = _y;
+
+                    _x += (v.y * armHeight);
+                    _y -= (v.x * armHeight);
+
+                    _x -= rfx;
+                    _y -= rfy;
+
+                    _x += (v.y * ox) + (v.x * oy * inverse);
+                    _y += -(v.x * ox) + (v.y * oy * inverse);
+
+                    holdingItemSprite.setPosition(_x, _y);
                     holdingItemSprite.draw(rc.arraySpriteBatch);
 
                     if(ir.particleEmitter != null) {
@@ -1230,7 +1401,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.25f, 0.25f, 0, 0);
+        drawAO50(rc, 0.4f, 0.4f, 0, 0);
     }
 
     @Override
@@ -1326,7 +1497,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     }
 
     public float toMouthY() {
-        return finalDrawPosY + 10.5f + offsetY;
+        return finalDrawPosY + 10.5f;
     }
 
     private float getFinalArmRotation() {

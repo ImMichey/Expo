@@ -61,8 +61,8 @@
                     "texture": "item_flint_pickaxe",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -2,
-                    "offsetY": 9,
+                    "offsetX": -2.5,
+                    "offsetY": 8.5,
                     "rotations": [45, -45]
                 }
             },
@@ -88,8 +88,8 @@
                     "texture": "item_flint_axe",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 8.5,
+                    "offsetX": -1,
+                    "offsetY": 7.5,
                     "rotations": [45.0, -45.0]
                 }
             },
@@ -609,8 +609,8 @@
                     "texture": "item_flint_scythe",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -1.5,
-                    "offsetY": 8.75,
+                    "offsetX": -2,
+                    "offsetY": 8,
                     "rotations": [45, -45]
                 }
             },
@@ -969,7 +969,7 @@
                 "held": [
                     {
                         "texture": "item_torch",
-                        "offsetX": -2.5,
+                        "offsetX": -3.5,
                         "offsetY": 7,
                         "rotations": [45, -45]
                     },
@@ -977,7 +977,7 @@
                         "texture": "flame",
                         "frames": 11,
                         "animationSpeed": 0.08,
-                        "offsetX": -1.5,
+                        "offsetX": -2.5,
                         "offsetY": 8.5,
                         "rotationLock": true,
                         "hideShadow": true,

@@ -446,7 +446,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             Color currentColor = rc.arraySpriteBatch.getColor();
 
             float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
-            rc.arraySpriteBatch.setColor((1.0f - colorMix) * currentColor.r, 1.0f * currentColor.g, (1.0f - colorMix) * currentColor.b, playerBehindInterpolated * currentColor.a);
+            rc.arraySpriteBatch.setColor((1.0f - colorMix) * currentColor.r, 1.0f * currentColor.g, (1.0f - colorMix) * currentColor.b, playerBehindInterpolated * 0.5f);
             rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f, finalTextureStartY - leavesOffsetY() - leavesDisplacement - squishAnimator2D.squishY * 0.5f + 2,
                     leaves.getWidth() + squishAnimator2D.squishX, (leaves.getHeight() + squishAnimator2D.squishY) * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
 

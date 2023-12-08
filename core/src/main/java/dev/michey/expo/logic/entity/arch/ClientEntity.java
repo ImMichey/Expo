@@ -235,8 +235,24 @@ public abstract class ClientEntity {
         return ExpoAssets.get().textureRegion(name);
     }
 
+    public TextureRegion[] tra(String name, int frames) {
+        TextureRegion[] array = new TextureRegion[frames];
+
+        for(int i = 0; i < frames; i++) {
+            array[i] = trn(name + "_" + (i + 1));
+        }
+
+        return array;
+    }
+
     public TextureRegion trn(String name) {
         return ExpoAssets.get().textureRegionFresh(name);
+    }
+
+    public void flip(TextureRegion[]... textureRegions) {
+        for(TextureRegion[] regions : textureRegions) {
+            for(TextureRegion t : regions) t.flip(true, false);
+        }
     }
 
     public TextureRegion[] trArrayFromSheet(TextureRegion base, int x, int y, int width, int height, int frames, int cellWidth) {
