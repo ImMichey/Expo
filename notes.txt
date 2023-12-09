@@ -29,6 +29,3 @@
 * FrogLib
 
 * Revamped Coal Ore Texture
-
-
-* DRAW HELD ITEM IS OFFSET BECAUSE ARM IS 4 PIXELS THICK but the arm is not centered at the end (at hand) -> make arm 3px thick and center

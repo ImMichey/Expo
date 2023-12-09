@@ -1,7 +1,6 @@
 package dev.michey.expo.render;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
@@ -25,7 +24,6 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.util.GenerationUtils;
-import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.InputUtils;
@@ -471,7 +469,6 @@ public class RenderContext {
 
         for(ItemRender ir : itemRenders) {
             TextureRegion tr = ir.useTextureRegion;
-            ClientUtils.log("-> " + tr + " " + ir.texture + " " + ir.animationDelta, Input.Keys.G);
             float centeredTextureX = (tileW - itemRenders[0].useWidth) * 0.5f * ui.uiScale;
             float centeredTextureY = (tileH - itemRenders[0].useHeight) * 0.5f * ui.uiScale;
 

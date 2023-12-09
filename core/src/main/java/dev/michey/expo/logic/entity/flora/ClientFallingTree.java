@@ -69,7 +69,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
     @Override
     public void onDeletion() {
-        CameraShake.invoke(5.0f, 0.6f);
+        CameraShake.invoke(5.0f, 0.6f, new Vector2(clientPosX, clientPosY));
 
         int reach = 90;
         int dir = fallingRightDirection ? 1 : -1;

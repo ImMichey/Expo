@@ -400,22 +400,16 @@ public class ClientWorld {
             r.waterEntityFbo.begin();
                 transparentScreen();
                 renderEntityReflections();
-                //ClientUtils.takeScreenshot("waterEntityFbo", Input.Keys.G);
             r.waterEntityFbo.end();
 
             // Draw water tiles, reflections and shadows to waterTilesFbo.
             r.waterTilesFbo.begin();
                 transparentScreen();
-                //ClientUtils.takeScreenshot("wt-0", Input.Keys.G);
-
                 renderWaterTiles();
-                //ClientUtils.takeScreenshot("wt-1", Input.Keys.G);
                 r.batch.setColor(0.666f, 0.875f, 1.0f, 0.5f);
                 drawFboTexture(r.waterEntityFbo, null);
                 r.batch.setColor(Color.WHITE);
-                //ClientUtils.takeScreenshot("wt-2", Input.Keys.G);
                 drawShadowFbo(r, r.simplePassthroughShader, r.waterTilesFbo.getColorBufferTexture());
-                //ClientUtils.takeScreenshot("wt-3", Input.Keys.G);
             r.waterTilesFbo.end();
         }
 
