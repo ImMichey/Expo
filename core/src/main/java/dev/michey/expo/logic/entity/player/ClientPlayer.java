@@ -1123,7 +1123,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         }
                     }
 
-                    //ExpoLogger.log("-> " + holdingItemSprite.getRotation());
                     holdingItemSprite.setRotation(holdingItemSprite.getRotation() * -1);
 
                     // position
@@ -1148,7 +1147,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     float rfy = h * 0.5f;
 
                     if(ir.rotationLock) {
-                        rfy = 0;
+                        rfy *= 2;
                     }
 
                     float _px = direction() == 1 ? 8 : 1;
@@ -1166,28 +1165,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     holdingItemSprite.setScale(1, -1);
                     holdingItemSprite.draw(rc.arraySpriteBatch);
                     holdingItemSprite.setScale(1, 1);
-
-                    if(ir.particleEmitter != null) {
-                        if(ir.particleEmitter.spawnParticlesThisTick) {
-                            String st = ir.particleEmitter.emitterName;
-
-                            if(st.equals("torch")) {
-                                ParticleSheet.Common.spawnTorchParticles(depth, holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + h * 0.5f);
-                            }
-                        }
-                    }
-
-                    if(itemLightList != null) {
-                        for(ExpoLight light : itemLightList) {
-                            light.update(holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + rfy, rc.delta);
-                        }
-                    }
-
-                    if(itemSoundMap != null) {
-                        for(TrackedSoundData tsd : itemSoundMap.values()) {
-                            tsd.worldPosition.set(holdingItemSprite.getX() + rfx, holdingItemSprite.getY() + rfy);
-                        }
-                    }
                 }
             }
         }

@@ -62,6 +62,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
         // wake up parent
         ClientOakTree tree = (ClientOakTree) entityManager().getEntityById(wakeupId);
+
         if(tree != null) {
             tree.wakeup();
         }
