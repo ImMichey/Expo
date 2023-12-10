@@ -18,6 +18,7 @@ public class ClientWorm extends ClientEntity implements ReflectableEntity, Ambie
         animationHandler = new ExpoAnimationHandler(this) {
             @Override
             public void onAnimationFinish() {
+                super.onAnimationFinish();
                 if(isInWater()) spawnPuddle(false, flipped ? 2.5f : -2.5f, 0);
             }
         };

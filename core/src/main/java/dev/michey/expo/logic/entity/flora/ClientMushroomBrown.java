@@ -1,20 +1,14 @@
 package dev.michey.expo.logic.entity.flora;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
-import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientMushroomBrown extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
@@ -89,7 +83,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.25f, 0.25f, 0, 0);
+        drawAO100(rc, 0.25f, 0.25f, 0, 0);
     }
 
     @Override

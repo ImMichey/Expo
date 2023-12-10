@@ -13,19 +13,20 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.TileMergerV2;
+import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.console.ConsoleMessage;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.debug.DebugGL;
-import dev.michey.expo.devhud.DevHUD;
 import dev.michey.expo.input.GameInput;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.imgui.ImGuiExpo;
+import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.render.ui.notification.UINotificationPiece;
 import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.server.ServerLauncher;
-import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
@@ -259,7 +260,6 @@ public class Expo implements ApplicationListener {
 		r.update();
 		AudioEngine.get().tick(r.delta);
 		ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1.0f);
-		//ScreenUtils.clear(Color.BLACK);
 
 		if(r.drawImGui && DEV_MODE) {
 			imGuiGlfw.newFrame();
@@ -271,7 +271,7 @@ public class Expo implements ApplicationListener {
 		}
 
 		GameConsole.get().draw();
-		DevHUD.get().draw();
+		// DevHUD.get().draw();
 
 		if(r.drawImGui && DEV_MODE) {
 			imGuiExpo.draw();
@@ -285,7 +285,15 @@ public class Expo implements ApplicationListener {
 
 		if(r.queueScreenshot) {
 			r.queueScreenshot = false;
-			ClientUtils.takeScreenshot("screenshot-" + System.currentTimeMillis());
+			String fn = "screenshot-" + System.currentTimeMillis();
+			ClientUtils.takeScreenshot(fn);
+
+			if(PlayerUI.get() != null) {
+				PlayerUI.get().addNotification(PlayerUI.get().playerTabHead, 5.0f, "crab_snip", new UINotificationPiece[] {
+						new UINotificationPiece("Took screenshot as ", Color.WHITE),
+						new UINotificationPiece(fn + ".png", Color.CYAN)
+				});
+			}
 		}
 	}
 

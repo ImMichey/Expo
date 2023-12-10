@@ -60,8 +60,8 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
         updateTexturePositionData();
         lifetime += delta;
 
-        if(lifetime <= 0.125f) {
-            useAlpha = lifetime / 0.125f;
+        if(lifetime <= 0.05f) {
+            useAlpha = lifetime / 0.05f;
         } else {
             useAlpha = 1.0f;
         }

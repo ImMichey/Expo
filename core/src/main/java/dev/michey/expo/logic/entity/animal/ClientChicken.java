@@ -21,6 +21,7 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
         animationHandler = new ExpoAnimationHandler(this) {
             @Override
             public void onAnimationFinish() {
+                super.onAnimationFinish();
                 if(isInWater() && animationHandler.getActiveAnimationName().equals("idle")) spawnPuddle(false, 0, 1);
             }
         };

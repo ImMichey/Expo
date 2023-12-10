@@ -37,7 +37,7 @@
                             "replaceTypeSecond": "LAYER_0",
                             "replaceWith": "EMPTY",
                             "thresholdSecond": 0.85,
-                            "thresholdReplace": "SOIL_HOLE",
+                            "thresholdReplace": "SOIL_HOLE"
                         }
                     },
                     {

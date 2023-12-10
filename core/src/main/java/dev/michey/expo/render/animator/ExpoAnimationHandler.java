@@ -86,7 +86,7 @@ public class ExpoAnimationHandler {
         lastFootstepIndex = 0;
 
         if(getActiveAnimationName().equals("attack")) {
-            switchToAnimation("idle");
+            switchToAnimation(cachedMoving ? "walk" : "idle");
         } else {
             switchToAnimation(getActiveAnimationName());
         }

@@ -99,7 +99,7 @@ public class PlayerUI {
 
     private final TextureRegion hotbarBase;
 
-    private final TextureRegion playerTabHead;
+    public final TextureRegion playerTabHead;
 
     private final TextureRegion tabTopLeft;
     private final TextureRegion tabTopRight;
