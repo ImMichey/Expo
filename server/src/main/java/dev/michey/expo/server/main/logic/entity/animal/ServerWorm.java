@@ -51,7 +51,7 @@ public class ServerWorm extends ServerEntity implements DamageableEntity, Physic
 
         tickKnockback(delta);
         brain.tickBrain(delta);
-        applyKnockback();
+        applyKnockback(brain);
     }
 
     @Override

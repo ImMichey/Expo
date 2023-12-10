@@ -174,7 +174,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
 
             rc.arraySpriteBatch.draw(tr,
                     finalDrawPosX + dsp * 0.5f + ir.offsetX * currentScaleX,
-                    finalDrawPosY + floatingPos - ir.offsetY * currentScaleY + bounce,
+                    finalDrawPosY - floatingPos - 3 - ir.offsetY * currentScaleY - bounce,
                     tr.getRegionWidth() * stackX * currentScaleX,
                     tr.getRegionHeight() * stackY * currentScaleY * -1);
         }

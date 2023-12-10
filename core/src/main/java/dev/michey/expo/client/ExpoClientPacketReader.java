@@ -185,6 +185,13 @@ public class ExpoClientPacketReader {
             if(entity != null) {
                 entity.serverHealth = p.newHealth;
                 entity.onDamage(p.damage, p.newHealth, p.damageSourceEntityId);
+
+                /*
+                ClientPlayer player = ClientPlayer.getLocalPlayer();
+                if(player != null && entity.entityId == player.entityId) {
+                    CameraShake.invoke(2.0f, 0.25f);
+                }
+                */
             }
         } else if(o instanceof P28_PlayerFoodParticle p) {
             ClientEntity entity = entityFromId(p.entityId);

@@ -21,7 +21,7 @@ public class GameSettings {
     // Window variables
     public int preferredWidth = 1280;
     public int preferredHeight = 720;
-    public int windowMode = 0;
+    public int windowMode = 2;
     public boolean vsync = false;
     public int fpsCap = 500;
 

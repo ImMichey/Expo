@@ -45,7 +45,7 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
     public void tick(float delta) {
         tickKnockback(delta);
         brain.tickBrain(delta);
-        applyKnockback();
+        applyKnockback(brain);
     }
 
     @Override

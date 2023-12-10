@@ -237,7 +237,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
         }
 
-        applyKnockback();
+        applyKnockback(velToPos(xDir), velToPos(yDir));
 
         if(punching) {
             punchDelta += delta;

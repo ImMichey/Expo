@@ -7,6 +7,7 @@ import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
+import dev.michey.expo.server.main.logic.ai.entity.EntityBrain;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
@@ -253,6 +254,10 @@ public abstract class ServerEntity {
     }
 
     public void attemptMove(float x, float y, CollisionFilter filter) {
+        attemptMove(x, y, filter, velToPos(x), velToPos(y));
+    }
+
+    public void attemptMove(float x, float y, CollisionFilter filter, int dirX, int dirY) {
         float dst = Math.abs(x) + Math.abs(y);
 
         if(this instanceof PhysicsEntity pe) {
@@ -272,7 +277,7 @@ public abstract class ServerEntity {
             if(getChunkGrid().isActiveChunk(chunkX, chunkY)) {
                 posX = tx;
                 posY = ty;
-                ServerPackets.p13EntityMove(entityId, velToPos(x), velToPos(y), posX, posY, dst, PacketReceiver.whoCanSee(this));
+                ServerPackets.p13EntityMove(entityId, dirX, dirY, posX, posY, dst, PacketReceiver.whoCanSee(this));
             } else {
                 epb.teleport(opx, opy);
             }
@@ -287,7 +292,7 @@ public abstract class ServerEntity {
             if(getChunkGrid().isActiveChunk(chunkX, chunkY)) {
                 posX = tx;
                 posY = ty;
-                ServerPackets.p13EntityMove(entityId, velToPos(x), velToPos(y), posX, posY, dst, PacketReceiver.whoCanSee(this));
+                ServerPackets.p13EntityMove(entityId, dirX, dirY, posX, posY, dst, PacketReceiver.whoCanSee(this));
             }
         }
     }
@@ -339,10 +344,14 @@ public abstract class ServerEntity {
 
         if(applied) {
             health -= damage;
+            boolean damagePacket = true;
 
             if(health <= 0) {
+                damagePacket = getEntityType() == ServerEntityType.PLAYER;
                 killEntityWithAdvancedPacket(damage, health, damageSource.entityId);
-            } else {
+            }
+
+            if(damagePacket) {
                 ServerPackets.p26EntityDamage(entityId, damage, health, damageSource.entityId, PacketReceiver.whoCanSee(this));
             }
         }
@@ -378,7 +387,7 @@ public abstract class ServerEntity {
         }
     }
 
-    public void applyKnockback() {
+    public void applyKnockback(int dirX, int dirY) {
         if(knockbackCalculations == null) return;
         float moveByX = 0, moveByY = 0;
 
@@ -388,7 +397,21 @@ public abstract class ServerEntity {
         }
 
         if(moveByX != 0 || moveByY != 0) {
-            attemptMove(moveByX, moveByY);
+            attemptMove(moveByX, moveByY, PhysicsBoxFilters.generalFilter, dirX, dirY);
+        }
+    }
+
+    public void applyKnockback(EntityBrain brain) {
+        if(knockbackCalculations == null) return;
+        float moveByX = 0, moveByY = 0;
+
+        for(KnockbackCalculation kc : knockbackCalculations) {
+            moveByX += kc.applyKnockbackX;
+            moveByY += kc.applyKnockbackY;
+        }
+
+        if(moveByX != 0 || moveByY != 0) {
+            attemptMove(moveByX, moveByY, PhysicsBoxFilters.generalFilter, velToPos(brain.getLastMovementDirection().x), velToPos(brain.getLastMovementDirection().y));
         }
     }
 

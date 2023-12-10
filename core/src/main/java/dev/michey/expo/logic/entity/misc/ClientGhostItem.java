@@ -6,11 +6,12 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 
-public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEntity {
+public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEntity, ReflectableEntity {
 
     public ItemRender[] ir;
     public int itemId;
@@ -38,7 +39,7 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
         useAlpha -= delta * 2;
         floatingPosAnimation += delta * 30;
 
-        if(useAlpha <= 0) {
+        if (useAlpha <= 0) {
             entityManager().removeEntity(this);
         }
     }
@@ -51,7 +52,7 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
 
-        for(ItemRender ir : ir) {
+        for (ItemRender ir : ir) {
             rc.arraySpriteBatch.draw(ir.useTextureRegion,
                     finalDrawPosX + ir.offsetX * scaleX,
                     finalDrawPosY + ir.offsetY * scaleY + floatingPos + floatingPosAnimation,
@@ -100,13 +101,28 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
         float relative = (ir[0].useWidth * 0.75f + ir[0].useHeight * 0.75f) / 1.5f / tw * _norm;
 
         float packed = new Color(0.0f, 0.0f, 0.f, useAlpha).toFloatBits();
-        if(rc.aoBatch.getPackedColor() != packed) rc.aoBatch.setPackedColor(packed);
+        if (rc.aoBatch.getPackedColor() != packed) rc.aoBatch.setPackedColor(packed);
         rc.aoBatch.draw(rc.aoTexture, clientPosX - tw * 0.5f * relative, clientPosY - 4 - th * 0.5f * relative, tw * relative, th * relative);
     }
 
     @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.GHOST_ITEM;
+    }
+
+    @Override
+    public void renderReflection(RenderContext rc, float delta) {
+        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
+
+        for(ItemRender ir : ir) {
+            rc.arraySpriteBatch.draw(ir.useTextureRegion,
+                    finalDrawPosX + ir.offsetX * scaleX,
+                    finalDrawPosY - 3 - ir.offsetY * scaleY - floatingPos - floatingPosAnimation,
+                    ir.useTextureRegion.getRegionWidth() * scaleX,
+                    ir.useTextureRegion.getRegionHeight() * scaleY * -1);
+        }
+
+        rc.arraySpriteBatch.setColor(Color.WHITE);
     }
 
 }

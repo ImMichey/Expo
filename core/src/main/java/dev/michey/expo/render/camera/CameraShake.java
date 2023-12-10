@@ -12,14 +12,13 @@ public class CameraShake {
     private static float currentTime = 1;
     private static float power = 0;
     private static float currentPower = 0;
-    private static Random random;
     private static Vector2 position = null;
 
-    private static Vector2 OLD_POS = new Vector2();
-    private static Vector2 CURRENT_POS = new Vector2();
+    private static final Random random = new Random();
+    private static final Vector2 OLD_POS = new Vector2();
+    private static final Vector2 CURRENT_POS = new Vector2();
 
     public static void invoke(float rumblePower, float rumbleLength) {
-        random = new Random();
         power = rumblePower;
         time = rumbleLength;
         currentTime = 0;
@@ -27,7 +26,6 @@ public class CameraShake {
     }
 
     public static void invoke(float rumblePower, float rumbleLength, Vector2 origin) {
-        random = new Random();
         power = rumblePower;
         time = rumbleLength;
         currentTime = 0;

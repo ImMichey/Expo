@@ -51,7 +51,7 @@ public class ServerMaggot extends ServerEntity implements DamageableEntity, Phys
 
         tickKnockback(delta);
         brain.tickBrain(delta);
-        applyKnockback();
+        applyKnockback(brain);
     }
 
     @Override

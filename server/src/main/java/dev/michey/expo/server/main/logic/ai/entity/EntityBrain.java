@@ -78,6 +78,10 @@ public class EntityBrain {
         return modules.get(id);
     }
 
+    public Vector2 getLastMovementDirection() {
+        return lastMovementDir;
+    }
+
     public String getActiveModule() {
         if(activeModule.getType() == AIConstants.IDLE) return "IDLE";
         if(activeModule.getType() == AIConstants.CHASE) return "CHASE";

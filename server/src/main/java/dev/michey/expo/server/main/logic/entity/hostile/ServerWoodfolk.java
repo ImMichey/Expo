@@ -44,7 +44,7 @@ public class ServerWoodfolk extends ServerEntity implements DamageableEntity, Ph
     public void tick(float delta) {
         tickKnockback(delta);
         brain.tickBrain(delta);
-        applyKnockback();
+        applyKnockback(brain);
     }
 
     @Override

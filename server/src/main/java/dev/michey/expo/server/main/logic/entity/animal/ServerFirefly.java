@@ -90,7 +90,7 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
 
         tickKnockback(delta);
         brain.tickBrain(delta);
-        applyKnockback();
+        applyKnockback(brain);
     }
 
     @Override
