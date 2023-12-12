@@ -6,12 +6,14 @@ public class ClientStatic {
 
     /** Player properties */
     public static String PLAYER_USERNAME = System.getProperty("user.name");
+    public static int STEAM_ACCOUNT_ID = -1;
+    public static long STEAM_STEAM_ID = -1;
 
     /** Client constants */
     public static final String SCREEN_MENU = "Menu";
     public static final String SCREEN_GAME = "Game";
     public static float DEFAULT_CAMERA_ZOOM = 0.5f; // Modified by GameSettings
-    public static final float CAMERA_ANIMATION_MIN_ZOOM = 0.125f;
+    public static final float CAMERA_ANIMATION_MIN_ZOOM = 0.1f;
     public static boolean DEV_MODE = true; // Enables ImGui, Console, etc.
 
     public static final String GAME_VERSION = "0.0.0 (Unstable)";

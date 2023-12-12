@@ -24,6 +24,8 @@ foliage/entity_grass/entity_grass_6_shadow.png
 foliage/entity_grass/entity_grass_7_shadow.png
 foliage/entity_grass/entity_grass_8_shadow.png
 foliage/entity_cattail/cattail_variation_new_1.png
+foliage/entity_aloevera/entity_aloevera.png
+foliage/entity_aloevera/entity_aloevera_sm.png
 foliage/entity_cattail/cattail_variation_1.png
 foliage/entity_cattail/cattail_variation_2.png
 foliage/entity_cattail/cattail_variation_3.png

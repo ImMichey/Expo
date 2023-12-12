@@ -50,6 +50,7 @@ public enum ClientEntityType {
     SIGN(31, "Sign", ServerEntityType.SIGN),
     CAMPFIRE(32, "Campfire", ServerEntityType.CAMPFIRE),
     WOODFOLK(33, "Woodfolk", ServerEntityType.WOODFOLK),
+    ALOE_VERA(34, "AloeVera", ServerEntityType.ALOE_VERA),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -121,6 +122,7 @@ public enum ClientEntityType {
             case 31 -> new ClientSign();
             case 32 -> new ClientCampfire();
             case 33 -> new ClientWoodfolk();
+            case 34 -> new ClientAloeVera();
             default -> null;
         };
     }

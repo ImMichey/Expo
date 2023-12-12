@@ -58,6 +58,11 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     public void tick(float delta) {
         syncPositionWithServer();
         updateTexturePositionData();
+
+        if(isMoving()) {
+            calculateReflection();
+        }
+
         lifetime += delta;
 
         if(lifetime <= 0.05f) {

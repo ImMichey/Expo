@@ -17,6 +17,8 @@ import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
 
+import static com.badlogic.gdx.math.Interpolation.exp10In;
+
 public class ClientFallingTree extends ClientEntity implements ReflectableEntity {
 
     private TextureRegion treeTrunk;
@@ -168,7 +170,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         float MAX_ROTATION = 100.0f;
 
         float negation = fallingRightDirection ? -1 : 1;
-        float interpolated = Interpolation.exp10In.apply(animationDelta / PHASE_TOTAL_DURATION);
+        float interpolated = exp10In.apply(animationDelta / PHASE_TOTAL_DURATION);
         rotation = (MAX_ROTATION) * negation * interpolated;
 
         float isaX = inheritedSquishAnimator.squishX;

@@ -11,6 +11,10 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.codedisaster.steamworks.SteamAPI;
+import com.codedisaster.steamworks.SteamException;
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamUser;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.TileMergerV2;
 import dev.michey.expo.audio.AudioEngine;
@@ -31,6 +35,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
+import dev.michey.expo.steam.ExpoSteam;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
@@ -149,6 +154,29 @@ public class Expo implements ApplicationListener {
 		GameConsole.get().addSystemMessage("In order to see an overview of existing commands, type '/help'.");
 		GameConsole.get().addSystemMessage("F1 = Console   F6 = Hide HUD   F10 = Screenshot   F11 = Toggle Fullscreen");
 		INSTANCE = this;
+
+		GameConsole.get().addSystemMessage("Initializing Steam...");
+
+		try {
+			SteamAPI.loadLibraries();
+
+			if(!SteamAPI.init()) {
+				// Steamworks initialization error, e.g. Steam client not running
+				GameConsole.get().addSystemErrorMessage("Failed to initialize Steamworks.");
+			} else {
+				GameConsole.get().addSystemSuccessMessage("Loaded Steam API successfully.");
+				SteamUser user = new SteamUser(ExpoSteam.callback);
+
+				ClientStatic.STEAM_ACCOUNT_ID = user.getSteamID().getAccountID();
+				ClientStatic.STEAM_STEAM_ID = SteamID.getNativeHandle(user.getSteamID());
+
+				GameConsole.get().addSystemSuccessMessage("Steam IDs: " + ClientStatic.STEAM_ACCOUNT_ID + "/" + ClientStatic.STEAM_STEAM_ID);
+			}
+		} catch (SteamException e) {
+			// Error extracting or loading native libraries
+			GameConsole.get().addSystemErrorMessage("Failed to load Steam native libraries.");
+			e.printStackTrace();
+		}
 
 		autoExec();
 		sliceAndPatch();
@@ -329,6 +357,7 @@ public class Expo implements ApplicationListener {
 		}
 
 		GameConsole.get().dispose();
+		SteamAPI.shutdown();
 	}
 
 	public void switchToExistingScreen(String screenName) {

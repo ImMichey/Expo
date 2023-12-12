@@ -1288,6 +1288,28 @@
                     "floorType": "HEDGE"
                 }
             }
+        },
+        {
+            "identifier": "item_aloe_vera",
+            "id": 49,
+            "displayName": "Aloe Vera Leaf",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_aloe_vera"
+                },
+                "held": {
+                    "texture": "item_aloe_vera",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 0,
+                    "offsetY": 2,
+                    "rotations": [0, -90]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM"
+            }
         }
     ]
 }

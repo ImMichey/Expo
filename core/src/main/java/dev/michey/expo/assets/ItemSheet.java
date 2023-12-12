@@ -18,7 +18,7 @@ public class ItemSheet {
         // Add textures to map
         add("item_blueberry", 0, 12, 10);
         add("item_grassfiber", 1, 15, 14);
-        add("item_stick", 2, 14, 14);
+        add("item_stick", 2, 14, 13);
         add("item_flint_pickaxe", 3, 16, 16);
         add("item_flint_shovel", 4, 15, 15);
         add("item_flint_axe", 5, 17, 13);
@@ -29,7 +29,7 @@ public class ItemSheet {
         add("item_floor_grass", 10, 13, 9);
         add("item_dirt", 11, 11, 11);
         add("item_op_shovel", 12, 15, 15);
-        add("item_flint", 13, 8, 7);
+        add("item_flint", 13, 8, 8);
         add("item_worm", 14, 8, 12);
         add("item_cord", 15, 11, 12);
         add("item_rock", 16, 8, 7);
@@ -49,7 +49,7 @@ public class ItemSheet {
         add("item_birch_log", 30, 15, 15);
         add("item_oak_plank_wall", 31, 12, 13);
         add("item_crate", 32, 14, 16);
-        add("item_carrot", 33, 14, 11);
+        add("item_carrot", 33, 14, 14);
         add("item_coal", 34, 10, 10);
         add("item_dirt_floor", 35, 13, 8);
         add("item_sand_floor", 36, 13, 8);
@@ -64,6 +64,7 @@ public class ItemSheet {
         add("item_flint_dagger", 45, 11, 11);
         add("item_campfire", 46, 15, 17);
         add("item_hedge_wall", 47, 12, 13);
+        add("item_aloe_vera", 48, 10, 10);
     }
 
     public TextureRegion get(String name) {

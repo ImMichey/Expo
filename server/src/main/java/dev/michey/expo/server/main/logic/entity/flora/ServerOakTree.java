@@ -192,7 +192,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
         if(r <= 75) {
             age = 0;
-        } else if(r <= 99) {
+        } else if(r <= 95) {
             age = 1;
         } else {
             age = 2;
