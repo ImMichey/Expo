@@ -29,6 +29,9 @@ public class ExpoServerConfiguration {
     private String worldName = "default-world";
     private int unloadChunksAfter = 5000;
     private int saveChunksAfter = 180000;
+    private String password = "";
+    private boolean authPlayers = true;
+    private String steamWebApiKey = "";
 
     /** Singleton */
     private static ExpoServerConfiguration INSTANCE;
@@ -121,6 +124,9 @@ public class ExpoServerConfiguration {
                     case "worldName" -> worldName = fileAsJson.getString("worldName");
                     case "unloadChunksAfter" -> unloadChunksAfter = fileAsJson.getInt("unloadChunksAfter");
                     case "saveChunksAfter" -> saveChunksAfter = fileAsJson.getInt("saveChunksAfter");
+                    case "password" -> password = fileAsJson.getString("password");
+                    case "authPlayers" -> authPlayers = fileAsJson.getBoolean("authPlayers");
+                    case "steamWebApiKey" -> steamWebApiKey = fileAsJson.getString("steamWebApiKey");
                 }
             }
 
@@ -158,6 +164,9 @@ public class ExpoServerConfiguration {
                 .put("worldName", worldName)
                 .put("unloadChunksAfter", unloadChunksAfter)
                 .put("saveChunksAfter", saveChunksAfter)
+                .put("password", password)
+                .put("authPlayers", authPlayers)
+                .put("steamWebApiKey", steamWebApiKey)
                 ;
     }
 
@@ -203,6 +212,18 @@ public class ExpoServerConfiguration {
 
     public int getSaveChunksAfter() {
         return saveChunksAfter;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public boolean isAuthPlayersEnabled() {
+        return authPlayers;
+    }
+
+    public String getSteamWebApiKey() {
+        return steamWebApiKey;
     }
 
     public static ExpoServerConfiguration get() {

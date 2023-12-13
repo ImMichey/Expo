@@ -6,7 +6,6 @@ import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.screen.GameScreen;
 import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
 
 public class CommandWorld extends AbstractConsoleCommand {
@@ -48,7 +47,7 @@ public class CommandWorld extends AbstractConsoleCommand {
 
             if(localServer.startServer()) {
                 Expo.get().switchToNewScreen(new GameScreen(localServer));
-                ClientPackets.p0Auth(ClientStatic.PLAYER_USERNAME);
+                ClientPackets.p0ConnectReq(null);
             }
         } else {
             error("You are already ingame. Use /quit.");

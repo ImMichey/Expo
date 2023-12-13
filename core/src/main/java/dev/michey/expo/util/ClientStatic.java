@@ -1,13 +1,19 @@
 package dev.michey.expo.util;
 
 import com.badlogic.gdx.graphics.Color;
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamUser;
 
 public class ClientStatic {
 
     /** Player properties */
     public static String PLAYER_USERNAME = System.getProperty("user.name");
+    public static SteamUser STEAM_USER = null;
+    public static SteamFriends STEAM_FRIENDS = null;
     public static int STEAM_ACCOUNT_ID = -1;
     public static long STEAM_STEAM_ID = -1;
+    public static boolean STEAM_INITIALIZED = false;
+    public static Thread STEAM_CALLBACK_THREAD = null;
 
     /** Client constants */
     public static final String SCREEN_MENU = "Menu";

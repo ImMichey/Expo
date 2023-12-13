@@ -24,16 +24,25 @@ import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 public class ServerPackets {
 
     /** Sends the P1_Auth_Rsp packet via TCP protocol. */
-    public static void p1AuthResponse(boolean authorized, String message, int serverTps, int worldSeed, WorldGenSettings genSettings, PacketReceiver receiver) {
+    public static void p1AuthResponse(boolean authSuccesful, String authMessage, int serverTps, int worldSeed, WorldGenSettings genSettings, PacketReceiver receiver) {
         P1_Auth_Rsp p = new P1_Auth_Rsp();
-        p.authorized = authorized;
-        p.message = message;
+        p.authSuccessful = authSuccesful;
+        p.authMessage = authMessage;
         p.serverTps = serverTps;
         p.worldSeed = worldSeed;
         if(genSettings != null) {
             p.noiseSettings = genSettings.getNoiseSettings();
             p.biomeDefinitionList = genSettings.getBiomeDefinitionList();
         }
+        tcp(p, receiver);
+    }
+
+    /** Sends the P44_Connect_Rsp packet via TCP protocol. */
+    public static void p44ConnectResponse(boolean credentialsSuccessful, boolean requiresSteamTicket, String message, PacketReceiver receiver) {
+        P44_Connect_Rsp p = new P44_Connect_Rsp();
+        p.credentialsSuccessful = credentialsSuccessful;
+        p.requiresSteamTicket = requiresSteamTicket;
+        p.message = message;
         tcp(p, receiver);
     }
 

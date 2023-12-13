@@ -11,6 +11,7 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.packet.ExpoServerListener;
 import dev.michey.expo.server.main.packet.ExpoServerRegistry;
 import dev.michey.expo.server.packet.Packet;
+import dev.michey.expo.server.steam.ExpoServerSteam;
 import dev.michey.expo.util.ExpoShared;
 
 import java.io.IOException;
@@ -34,6 +35,9 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
     /** Threads */
     private Thread consoleCommandThread;
 
+    /** Steam auth */
+    private ExpoServerSteam expoServerSteam;
+
     public ExpoServerDedicated(ExpoServerConfiguration config) {
         super(false, config.getWorldName(), ExpoShared.RANDOM.nextInt());
         this.config = config;
@@ -43,6 +47,9 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
                 log("Failed to load ServerWhitelist, aborting application.");
                 System.exit(0);
             }
+        }
+        if(config.isAuthPlayersEnabled()) {
+            expoServerSteam = new ExpoServerSteam(config.getSteamWebApiKey());
         }
         connectionHandler = new PlayerConnectionHandler();
         log("Initialized dedicated ExpoServer with port " + config.getServerPort() + " and tick rate " + config.getServerTps());
@@ -104,6 +111,10 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
         getWorldSaveHandler().updateAndSave(ServerWorld.get());
         getWorldSaveHandler().getPlayerSaveHandler().saveAll();
         Gdx.app.exit();
+    }
+
+    public ExpoServerSteam getSteamHandler() {
+        return expoServerSteam;
     }
 
     @Override

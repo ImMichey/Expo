@@ -27,6 +27,7 @@ public class ExpoServerRegistry {
                 int[][].class,
                 boolean[].class,
                 float[].class,
+                byte[].class,
                 String[].class,
                 Object[].class,
                 HashMap.class,
@@ -62,7 +63,7 @@ public class ExpoServerRegistry {
                 BiomeDefinition.class,
 
                 // Packets
-                P0_Auth_Req.class,
+                P0_Connect_Req.class,
                 P1_Auth_Rsp.class,
                 P2_EntityCreate.class,
                 P3_PlayerJoin.class,
@@ -105,7 +106,9 @@ public class ExpoServerRegistry {
                 P40_InventoryView.class,
                 P41_InventoryViewQuit.class,
                 P42_EntityAnimation.class,
-                P43_EntityDeleteAdvanced.class
+                P43_EntityDeleteAdvanced.class,
+                P44_Connect_Rsp.class,
+                P45_Auth_Req.class
         );
     }
 

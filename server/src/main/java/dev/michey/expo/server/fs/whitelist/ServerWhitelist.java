@@ -125,6 +125,10 @@ public class ServerWhitelist {
         return whitelistedPlayers.contains(username);
     }
 
+    public boolean isPlayerWhitelisted(long steamId) {
+        return whitelistedPlayers.contains(String.valueOf(steamId));
+    }
+
     private String constructWhitelistString() {
         StringBuilder builder = new StringBuilder();
 

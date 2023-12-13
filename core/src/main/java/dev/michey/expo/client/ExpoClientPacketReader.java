@@ -26,6 +26,7 @@ import dev.michey.expo.util.*;
 import java.util.Arrays;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ClientStatic.STEAM_INITIALIZED;
 import static dev.michey.expo.util.ExpoShared.*;
 
 public class ExpoClientPacketReader {
@@ -46,18 +47,32 @@ public class ExpoClientPacketReader {
     }
 
     private void handlePacket(Packet o, boolean local) {
-        if(o instanceof P1_Auth_Rsp p) {
-            if(!p.authorized) {
-                GameConsole.get().addSystemErrorMessage("Failed to join server: " + p.message);
+        if(o instanceof P44_Connect_Rsp p) {
+            if(p.credentialsSuccessful) {
+                GameConsole.get().addSystemSuccessMessage("Passed initial server connection check: " + p.message);
+
+                if(p.requiresSteamTicket && STEAM_INITIALIZED) {
+                    ClientStatic.STEAM_USER.getAuthTicketForWebApi();
+                } else {
+                    ClientPackets.p45AuthReq(ClientStatic.PLAYER_USERNAME, null);
+                }
+            } else {
+                GameConsole.get().addSystemErrorMessage("Failed initial server connection check: " + p.message);
                 Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
-            } else {
-                GameConsole.get().addSystemSuccessMessage("Successfully joined server: " + p.message + " (" + p.serverTps + " TPS)");
+            }
+        } else if(o instanceof P1_Auth_Rsp p) {
+            if(p.authSuccessful) {
+                GameConsole.get().addSystemSuccessMessage("Successfully joined server: " + p.authMessage + " (" + p.serverTps + " TPS)");
                 if(!local) {
                     ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
                     ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDefinitionList, p.worldSeed);
                 }
                 ExpoClientContainer.get().setServerTickRate(p.serverTps);
+            } else {
+                GameConsole.get().addSystemErrorMessage("Failed to auth with server: " + p.authMessage);
+                Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
+                Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             }
         } else if(o instanceof P3_PlayerJoin p) {
             ExpoClientContainer.get().notifyPlayerJoin(p.username);

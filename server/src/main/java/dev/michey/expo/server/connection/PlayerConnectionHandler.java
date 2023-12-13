@@ -63,9 +63,9 @@ public class PlayerConnectionHandler {
         }
     }
 
-    public PlayerConnection addPlayerConnection(Connection connection) {
+    public PlayerConnection addPlayerConnection(Connection connection, String username, long steamId) {
         synchronized(connectionLock) {
-            PlayerConnection pc = new PlayerConnection(connection);
+            PlayerConnection pc = new PlayerConnection(connection, username, steamId);
             connectionList.put(connection, pc);
             pc.startPingerTask(pingUpdateScheduler);
             return pc;

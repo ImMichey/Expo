@@ -19,6 +19,7 @@ public class ExpoShared {
     public static final int DEFAULT_WRITE_BUFFER_SIZE = 1_048_576 * 4; // 4 MB
     public static final int DEFAULT_OBJECT_BUFFER_SIZE = 1_048_576 * 4; // 4 MB
     public static final int SERVER_PROTOCOL_VERSION = 1;
+    public static final int STEAM_APP_ID = 1598080;
 
     /** Dimension constants */
     public static final String DIMENSION_OVERWORLD = "overworld";

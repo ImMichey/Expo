@@ -28,6 +28,11 @@ public class ServerLauncher {
 			System.exit(0);
 		}
 
+		if(fileConfig.isAuthPlayersEnabled() && fileConfig.getSteamWebApiKey().isEmpty()) {
+			log("Error: Your server has steam authentication enabled, however your Steam Web API key is empty/invalid.");
+			System.exit(0);
+		}
+
 		new WorldGen();
 
 		// Create the server instance
@@ -57,6 +62,10 @@ public class ServerLauncher {
 				};
 
 				ExpoLogger.log("[KryoNet-" + levelStr + "] " + message);
+
+				if(ex != null) {
+					ExpoLogger.log("[KryoNet-" + levelStr + "-EX] " + ex.getMessage());
+				}
 			}
 		});
 	}

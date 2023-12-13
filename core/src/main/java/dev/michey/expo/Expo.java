@@ -11,10 +11,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.codedisaster.steamworks.SteamAPI;
-import com.codedisaster.steamworks.SteamException;
-import com.codedisaster.steamworks.SteamID;
-import com.codedisaster.steamworks.SteamUser;
+import com.codedisaster.steamworks.*;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.TileMergerV2;
 import dev.michey.expo.audio.AudioEngine;
@@ -36,7 +33,8 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.steam.ExpoSteam;
-import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.steam.ExpoSteamCallbackThread;
+import dev.michey.expo.steam.SteamLibraryLoaderGdx;
 import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
@@ -53,7 +51,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
-import static dev.michey.expo.util.ClientStatic.DEV_MODE;
+import static dev.michey.expo.util.ClientStatic.*;
 
 public class Expo implements ApplicationListener {
 
@@ -79,14 +77,14 @@ public class Expo implements ApplicationListener {
 		if(gameSettings.enableDebugMode) DEV_MODE = true;
 
 		if(gameSettings.zoomLevel == 0) {
-			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.5f;
-			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 4;
+			DEFAULT_CAMERA_ZOOM = 0.5f;
+			DEFAULT_CAMERA_ZOOM_INDEX = 4;
 		} else if(gameSettings.zoomLevel == 1) {
-			ClientStatic.DEFAULT_CAMERA_ZOOM = 1f / 3f;
-			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 3;
+			DEFAULT_CAMERA_ZOOM = 1f / 3f;
+			DEFAULT_CAMERA_ZOOM_INDEX = 3;
 		} else if(gameSettings.zoomLevel == 2) {
-			ClientStatic.DEFAULT_CAMERA_ZOOM = 0.25f;
-			ClientStatic.DEFAULT_CAMERA_ZOOM_INDEX = 2;
+			DEFAULT_CAMERA_ZOOM = 0.25f;
+			DEFAULT_CAMERA_ZOOM_INDEX = 2;
 		}
 
 		// Enable logging to file + console for debugging
@@ -158,19 +156,26 @@ public class Expo implements ApplicationListener {
 		GameConsole.get().addSystemMessage("Initializing Steam...");
 
 		try {
-			SteamAPI.loadLibraries();
+			SteamAPI.loadLibraries(new SteamLibraryLoaderGdx());
 
 			if(!SteamAPI.init()) {
 				// Steamworks initialization error, e.g. Steam client not running
 				GameConsole.get().addSystemErrorMessage("Failed to initialize Steamworks.");
 			} else {
+				STEAM_INITIALIZED = true;
 				GameConsole.get().addSystemSuccessMessage("Loaded Steam API successfully.");
-				SteamUser user = new SteamUser(ExpoSteam.callback);
 
-				ClientStatic.STEAM_ACCOUNT_ID = user.getSteamID().getAccountID();
-				ClientStatic.STEAM_STEAM_ID = SteamID.getNativeHandle(user.getSteamID());
+				STEAM_CALLBACK_THREAD = new ExpoSteamCallbackThread();
+				STEAM_CALLBACK_THREAD.start();
 
-				GameConsole.get().addSystemSuccessMessage("Steam IDs: " + ClientStatic.STEAM_ACCOUNT_ID + "/" + ClientStatic.STEAM_STEAM_ID);
+				STEAM_USER = new SteamUser(ExpoSteam.callback);
+				STEAM_FRIENDS = new SteamFriends(ExpoSteam.friendsCallback);
+				STEAM_ACCOUNT_ID = STEAM_USER.getSteamID().getAccountID();
+				STEAM_STEAM_ID = SteamID.getNativeHandle(STEAM_USER.getSteamID());
+				PLAYER_USERNAME = STEAM_FRIENDS.getFriendPersonaName(STEAM_USER.getSteamID());
+
+				GameConsole.get().addSystemSuccessMessage("Steam IDs: " + STEAM_ACCOUNT_ID + "/" + STEAM_STEAM_ID);
+				GameConsole.get().addSystemSuccessMessage("Using name: " + PLAYER_USERNAME);
 			}
 		} catch (SteamException e) {
 			// Error extracting or loading native libraries
@@ -357,7 +362,11 @@ public class Expo implements ApplicationListener {
 		}
 
 		GameConsole.get().dispose();
-		SteamAPI.shutdown();
+
+		if(STEAM_INITIALIZED) {
+			SteamAPI.shutdown();
+			STEAM_CALLBACK_THREAD.stop();
+		}
 	}
 
 	public void switchToExistingScreen(String screenName) {
@@ -458,7 +467,7 @@ public class Expo implements ApplicationListener {
 	}
 
 	public boolean isPlaying() {
-		return activeScreen.getScreenName().equals(ClientStatic.SCREEN_GAME);
+		return activeScreen.getScreenName().equals(SCREEN_GAME);
 	}
 
 	public ImGuiExpo getImGuiExpo() {

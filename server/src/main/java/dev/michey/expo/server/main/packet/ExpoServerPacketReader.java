@@ -8,6 +8,7 @@ import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
 import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.arch.ExpoServerDedicated;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipe;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -22,6 +23,8 @@ import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -31,9 +34,11 @@ public class ExpoServerPacketReader {
 
     /** Handle an incoming packet by the player directly (local server environment). */
     public void handlePacket(Packet packet) {
-        if(packet instanceof P0_Auth_Req req) {
+        if(packet instanceof P0_Connect_Req) {
+            ServerPackets.p44ConnectResponse(true, false, "Local server", PacketReceiver.local());
+        } else if(packet instanceof P45_Auth_Req req) {
             // It's fine to load the player save on the main thread for now
-            PlayerSaveFile psf = ExpoServerBase.get().getWorldSaveHandler().getPlayerSaveHandler().loadAndGetPlayerFile("LOCAL_PLAYER");
+            PlayerSaveFile psf = ExpoServerBase.get().getWorldSaveHandler().getPlayerSaveHandler().loadAndGetPlayerFile("LOCAL_PLAYER", -1);
 
             // Create player entity
             ServerPlayer sp = ServerWorld.get().createPlayerEntity(null, req.username);
@@ -41,12 +46,11 @@ public class ExpoServerPacketReader {
 
             WorldGenSettings s = sp.getDimension().getChunkHandler().getGenSettings();
 
-            ServerPackets.p1AuthResponse(true, "Local server", ExpoShared.DEFAULT_LOCAL_TICK_RATE, sp.getDimension().getChunkHandler().getTerrainNoiseHeight().getSeed(), s, PacketReceiver.local());
+            ServerPackets.p1AuthResponse(true, "OK", ExpoShared.DEFAULT_LOCAL_TICK_RATE, sp.getDimension().getChunkHandler().getTerrainNoiseHeight().getSeed(), s, PacketReceiver.local());
             ServerPackets.p3PlayerJoin(req.username, PacketReceiver.local());
             ServerPackets.p9PlayerCreate(sp, true, PacketReceiver.local());
             ServerPackets.p14WorldUpdate(sp.getDimension().dimensionTime, sp.getDimension().dimensionWeather.WEATHER_ID, sp.getDimension().dimensionWeatherStrength, PacketReceiver.local());
             ServerPackets.p19ContainerUpdate(sp, PacketReceiver.local());
-            //sp.switchToSlot(0);
         } else if(packet instanceof P5_PlayerVelocity vel) {
             ServerPlayer sp = ServerPlayer.getLocalPlayer();
             if(sp == null) return;
@@ -111,6 +115,20 @@ public class ExpoServerPacketReader {
         }
     }
 
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+
+        return new String(hexChars);
+    }
+
     /** Handle an incoming packet by an external player source (dedicated server environment). */
     public void handlePacket(Connection connection, Object packetObject) {
         if(!(packetObject instanceof Packet o)) {
@@ -118,52 +136,132 @@ public class ExpoServerPacketReader {
             return;
         }
 
-        if(o instanceof P0_Auth_Req p) {
-            log("User " + p.username + " attempting authorization");
-
+        if(o instanceof P0_Connect_Req p) {
+            ExpoLogger.log("New connection request [" + connection.toString() + "/" + p.protocolVersion + "/" + p.password + "]");
             boolean authorized = true;
-            String authorizationMessage = "OK";
+            String message = "OK";
 
-            if(ServerWhitelist.get() != null) {
-                if(!ServerWhitelist.get().isPlayerWhitelisted(p.username)) {
+            String requiredPassword = ExpoServerConfiguration.get().getPassword();
+
+            // ##################################################### Password auth
+            if(!requiredPassword.isEmpty()) {
+                if(!requiredPassword.equals(p.password)) {
                     authorized = false;
-                    authorizationMessage = "Not whitelisted on this server";
+                    message = "Invalid password";
                 }
             }
+            // ##################################################### Password auth
 
+            // ##################################################### Protocol auth
             if(authorized) {
                 if(p.protocolVersion != ExpoShared.SERVER_PROTOCOL_VERSION) {
                     authorized = false;
-                    authorizationMessage = "Wrong protocol version (" + p.protocolVersion + " -> " + ExpoShared.SERVER_PROTOCOL_VERSION + ")";
+                    message = "Wrong protocol version (Client/Server: " + p.protocolVersion + "/" + ExpoShared.SERVER_PROTOCOL_VERSION + ")";
                 }
             }
+            // ##################################################### Protocol auth
 
-            if(authorized) {
-                for(PlayerConnection con : PlayerConnectionHandler.get().connections()) {
-                    if(con.player.username.equals(p.username)) {
+            boolean requiresSteamTicket = ExpoServerConfiguration.get().isAuthPlayersEnabled();
+            if(requiresSteamTicket) {
+                message += ", steam auth ticket required";
+            }
+            ServerPackets.p44ConnectResponse(authorized, requiresSteamTicket, message, PacketReceiver.connection(connection));
+        } else if(o instanceof P45_Auth_Req p) {
+            String steamTicketString = null;
+            boolean authorized = true;
+            String authorizationMessage = "OK";
+            long steamId = -1;
+            boolean steamCheck = ExpoServerConfiguration.get().isAuthPlayersEnabled();
+
+            if(p.steamTicket != null) {
+                steamTicketString = bytesToHex(p.steamTicket);
+            }
+
+            ExpoLogger.log("New Auth request [" + connection.toString() + "/" + p.username + "/" + steamTicketString + "]");
+
+            // ##################################################### Steam auth
+            if(ExpoServerConfiguration.get().isAuthPlayersEnabled()) {
+                JSONObject response = ((ExpoServerDedicated) ExpoServerDedicated.get()).getSteamHandler().authenticateUserTicket(steamTicketString);
+
+                if(response != null) {
+                    try {
+                        JSONObject data = response.getJSONObject("response").getJSONObject("params");
+
+                        if(data.getString("result").equals("OK")) {
+                            steamId = Long.parseLong(data.getString("steamid"));
+                        } else {
+                            authorized = false;
+                            authorizationMessage = "Steam auth failed (" + data.getString("result") + ")";
+                        }
+                    } catch (JSONException e) {
                         authorized = false;
-                        authorizationMessage = "Username already online";
-                        break;
+                        authorizationMessage = "Steam auth failed (json invalid)";
+                    }
+                } else {
+                    authorized = false;
+                    authorizationMessage = "Steam auth failed (json == null)";
+                }
+            }
+            // ##################################################### Steam auth
+
+            // ##################################################### Whitelist check
+            if(authorized && ServerWhitelist.get() != null) {
+                if(steamCheck) {
+                    if(!ServerWhitelist.get().isPlayerWhitelisted(steamId)) {
+                        authorized = false;
+                        authorizationMessage = "Steam ID not whitelisted on this server";
+                    }
+                } else {
+                    if(!ServerWhitelist.get().isPlayerWhitelisted(p.username)) {
+                        authorized = false;
+                        authorizationMessage = "Username not whitelisted on this server";
                     }
                 }
             }
+            // ##################################################### Whitelist check
+
+            // ##################################################### Duplicate player check
+            if(authorized) {
+                for(PlayerConnection con : PlayerConnectionHandler.get().connections()) {
+                    if(steamCheck) {
+                        if(con.steamId == steamId) {
+                            authorized = false;
+                            authorizationMessage = "Steam user already online";
+                            break;
+                        }
+                    } else {
+                        if(con.player.username.equals(p.username)) {
+                            authorized = false;
+                            authorizationMessage = "Username already online";
+                            break;
+                        }
+                    }
+                }
+            }
+            // ##################################################### Duplicate player check
 
             WorldGenSettings s = ServerWorld.get().getMainDimension().getChunkHandler().getGenSettings();
 
             if(authorized) {
-                ServerPackets.p1AuthResponse(true, authorizationMessage, ExpoServerConfiguration.get().getServerTps(), ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(), s, PacketReceiver.connection(connection));
+                ServerPackets.p1AuthResponse(true, authorizationMessage, ExpoServerConfiguration.get().getServerTps(),
+                        ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(),
+                        s,
+                        PacketReceiver.connection(connection));
             } else {
+                ExpoLogger.log("Authentication for " + connection + " failed: " + authorizationMessage);
                 ServerPackets.p1AuthResponse(false, authorizationMessage, 0, 0, null, PacketReceiver.connection(connection));
             }
 
-
             if(authorized) {
+                ExpoLogger.log("Authentication for " + connection + " successful: " + authorizationMessage);
+                long finalSteamId = steamId;
+
                 CompletableFuture.runAsync(() -> {
-                    PlayerSaveFile psf = ExpoServerBase.get().getWorldSaveHandler().getPlayerSaveHandler().loadAndGetPlayerFile(p.username);
+                    PlayerSaveFile psf = ExpoServerBase.get().getWorldSaveHandler().getPlayerSaveHandler().loadAndGetPlayerFile(p.username, finalSteamId);
 
                     // Create player connection class
                     PlayerConnectionHandler handler = PlayerConnectionHandler.get();
-                    PlayerConnection pc = handler.addPlayerConnection(connection);
+                    PlayerConnection pc = handler.addPlayerConnection(connection, p.username, finalSteamId);
 
                     // Create player entity
                     ServerPlayer sp = ServerWorld.get().createPlayerEntity(pc, p.username);

@@ -1,13 +1,16 @@
 {
     "maxPlayers": 10,
-    "enableWhitelist": false,
-    "saveChunksAfter": 180000,
-    "worldName": "default-world",
+    "authPlayers": true,
     "serverName": "default-server",
     "writeBufferSize": 1048576,
     "objectBufferSize": 1048576,
     "serverPort": 25010,
     "consoleInput": true,
-    "unloadChunksAfter": 5000,
-    "serverTps": 60
+    "steamWebApiKey": "",
+    "serverTps": 60,
+    "password": "",
+    "enableWhitelist": false,
+    "saveChunksAfter": 180000,
+    "worldName": "default-world",
+    "unloadChunksAfter": 5000
 }

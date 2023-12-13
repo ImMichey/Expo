@@ -10,9 +10,8 @@ dependencies {
 	api "com.github.tommyettinger:libgdx-utils:$utilsVersion"
 	api "space.earlygrey:shapedrawer:$shapeDrawerVersion"
 	api "com.github.implicit-invocation:jbump:v1.0.2"
-	//api "com.github.KleeSup:KleeSwept:$kleesweptVersion"
 	api "com.code-disaster.steamworks4j:steamworks4j:$s4jVersion"
-	api "com.code-disaster.steamworks4j:steamworks4j-server:$s4jVersion"
+	//api "com.github.KleeSup:KleeSwept:$kleesweptVersion"
 	api project(':shared')
 	api project(':server')
 

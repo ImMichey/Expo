@@ -6,11 +6,19 @@ import dev.michey.expo.server.packet.*;
 
 public class ClientPackets {
 
-    /** Sends the P0_Auth_Req packet via TCP protocol. */
-    public static void p0Auth(String username) {
-        P0_Auth_Req p = new P0_Auth_Req();
-        p.username = username;
+    /** Sends the P0_Connect_Req packet via TCP protocol. */
+    public static void p0ConnectReq(String password) {
+        P0_Connect_Req p = new P0_Connect_Req();
         p.protocolVersion = ExpoShared.SERVER_PROTOCOL_VERSION;
+        p.password = password;
+        tcp(p);
+    }
+
+    /** Sends the P45_Auth_Req packet via TCP protocol. */
+    public static void p45AuthReq(String username, byte[] steamTicket) {
+        P45_Auth_Req p = new P45_Auth_Req();
+        p.username = username;
+        p.steamTicket = steamTicket;
         tcp(p);
     }
 

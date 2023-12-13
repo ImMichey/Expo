@@ -8,7 +8,6 @@ import dev.michey.expo.screen.GameScreen;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
 
 public class CommandConnect extends AbstractConsoleCommand {
@@ -25,7 +24,7 @@ public class CommandConnect extends AbstractConsoleCommand {
 
     @Override
     public String getCommandSyntax() {
-        return "/connect <ip[:port]>";
+        return "/connect <ip[:port]> [password]";
     }
 
     @Override
@@ -34,6 +33,7 @@ public class CommandConnect extends AbstractConsoleCommand {
             String ip = parseString(args, 1);
             message("Parsing server address [CYAN]" + ip);
             int port = ExpoShared.DEFAULT_EXPO_SERVER_PORT;
+            String password = null;
 
             if(ip.contains(":")) {
                 String[] splitIp = ip.split(":");
@@ -53,8 +53,14 @@ public class CommandConnect extends AbstractConsoleCommand {
                 }
             }
 
+            if(args.length > 2) {
+                password = parseString(args, 2);
+            }
+
             // Connect to server.
             message("Attempting to connect to remote server [CYAN]" + ip + ":" + port + "[WHITE]...");
+
+            // TODO: Move this block to GDX runnable upon connecting?
             if(ItemMapper.get() == null) {
                 new ItemMapper(true, false);
                 Expo.get().loadItemMapperTextures();
@@ -63,6 +69,7 @@ public class CommandConnect extends AbstractConsoleCommand {
 
             String finalIp = ip;
             int finalPort = port;
+            String finalPassword = password;
             lock();
 
             new Thread(() -> {
@@ -74,7 +81,7 @@ public class CommandConnect extends AbstractConsoleCommand {
                         Expo.get().switchToNewScreen(new GameScreen(client));
                         success("Successfully connected to remote server [CYAN]" + finalIp + ":" + finalPort);
 
-                        ClientPackets.p0Auth(ClientStatic.PLAYER_USERNAME);
+                        ClientPackets.p0ConnectReq(finalPassword);
                     });
                 } else {
                     error("Failed to connect to remote server [CYAN]" + finalIp + ":" + finalPort);

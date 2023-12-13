@@ -15,13 +15,23 @@ public class PlayerConnection {
     /** Game world reference */
     public ServerPlayer player;
 
-    public PlayerConnection(Connection kryoConnection) {
+    /** Username, Steam data */
+    public String username;
+    public long steamId;
+
+    public PlayerConnection(Connection kryoConnection, String username, long steamId) {
         this.kryoConnection = kryoConnection;
+        this.username = username;
+        this.steamId = steamId;
     }
 
     public void connectTo(ServerPlayer player) {
         this.player = player;
         player.playerConnection = this;
+    }
+
+    public boolean isSteamConnection() {
+        return steamId != -1;
     }
 
     public void startPingerTask(Timer timer) {
