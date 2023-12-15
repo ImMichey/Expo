@@ -1005,7 +1005,13 @@
                 ]
             },
             "logic": {
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "TORCH",
+                    "previewTexture": "entity_torch"
+                }
             }
         },
         {
@@ -1116,16 +1122,16 @@
             }
         },
         {
-            "identifier": "item_crab_claw",
+            "identifier": "item_crab_meat_raw",
             "id": 42,
-            "displayName": "Crab Claw",
+            "displayName": "Raw Crab Meat",
             "displayNameColor": "#ffffff",
             "render": {
                 "ui": {
-                    "texture": "item_crab_claw"
+                    "texture": "item_crab_meat_raw"
                 },
                 "held": {
-                    "texture": "item_crab_claw",
+                    "texture": "item_crab_meat_raw",
                     "scaleX": 0.75,
                     "scaleY": 0.75,
                     "offsetX": -2.5,
@@ -1300,6 +1306,28 @@
                 },
                 "held": {
                     "texture": "item_aloe_vera",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 0,
+                    "offsetY": 2,
+                    "rotations": [0, -90]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_bandage",
+            "id": 50,
+            "displayName": "Bandage",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_bandage"
+                },
+                "held": {
+                    "texture": "item_bandage",
                     "scaleX": 1,
                     "scaleY": 1,
                     "offsetX": 0,

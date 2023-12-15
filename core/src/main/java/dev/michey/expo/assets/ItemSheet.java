@@ -58,13 +58,14 @@ public class ItemSheet {
         add("item_dirt_wall", 39, 12, 13);
         add("item_insect_net", 40, 14, 16);
         add("item_firefly", 41, 9, 6);
-        add("item_crab_claw", 42, 10, 10);
+        add("item_crab_meat_raw", 42, 12, 9);
         add("item_sign", 44, 16, 17);
         add("item_wood_club", 43, 16, 16);
         add("item_flint_dagger", 45, 11, 11);
         add("item_campfire", 46, 15, 17);
         add("item_hedge_wall", 47, 12, 13);
         add("item_aloe_vera", 48, 10, 10);
+        add("item_bandage", 49, 8, 14);
     }
 
     public TextureRegion get(String name) {

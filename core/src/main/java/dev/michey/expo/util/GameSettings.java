@@ -19,9 +19,9 @@ public class GameSettings {
     public int maxTickRate = 60;
 
     // Window variables
-    public int preferredWidth = 1280;
-    public int preferredHeight = 720;
-    public int windowMode = 2;
+    public int preferredWidth = 1600;
+    public int preferredHeight = 900;
+    public int windowMode = 0;
     public boolean vsync = false;
     public int fpsCap = 500;
 

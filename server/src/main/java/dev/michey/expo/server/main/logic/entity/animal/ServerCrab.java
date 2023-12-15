@@ -58,7 +58,7 @@ public class ServerCrab extends ServerEntity implements DamageableEntity, Physic
 
     @Override
     public void onDie() {
-        spawnItemsAround(1, 1, 0, 0f, "item_crab_claw", 8);
+        spawnItemsAround(1, 1, 0, 0f, "item_crab_meat_raw", 8);
     }
 
     @Override

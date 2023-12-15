@@ -1609,7 +1609,7 @@ entity_fence_stick_sm_16
   index: -1
 entity_fence_stick_sm_2
   rotate: false
-  xy: 595, 1676
+  xy: 876, 1820
   size: 2, 18
   orig: 2, 18
   offset: 0, 0
@@ -1630,14 +1630,14 @@ entity_fence_stick_sm_4
   index: -1
 entity_fence_stick_sm_5
   rotate: false
-  xy: 876, 1828
+  xy: 436, 1560
   size: 2, 10
   orig: 2, 10
   offset: 0, 0
   index: -1
 entity_fence_stick_sm_6
   rotate: false
-  xy: 602, 1679
+  xy: 883, 1822
   size: 2, 16
   orig: 2, 16
   offset: 0, 0
@@ -2116,6 +2116,13 @@ entity_test_bush
   xy: 328, 1376
   size: 22, 23
   orig: 22, 23
+  offset: 0, 0
+  index: -1
+entity_torch
+  rotate: false
+  xy: 428, 1561
+  size: 3, 9
+  orig: 3, 9
   offset: 0, 0
   index: -1
 entity_wall_ao
@@ -3254,7 +3261,7 @@ player_arm_l
   index: -1
 player_arm_r
   rotate: false
-  xy: 883, 1828
+  xy: 443, 1560
   size: 2, 10
   orig: 2, 10
   offset: 0, 0

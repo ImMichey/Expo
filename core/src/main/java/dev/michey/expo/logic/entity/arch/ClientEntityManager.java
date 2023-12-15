@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.logic.entity.flora.ClientOakTree;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
@@ -578,7 +579,15 @@ public class ClientEntityManager {
         float sy = entity.finalTextureStartY;
 
         float distanceMouseEntity = Vector2.dst(r.mouseWorldX, r.mouseWorldY, shortestDistanceX, shortestDistanceY);
-        boolean directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + entity.textureWidth) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + entity.textureHeight);
+        boolean directMouseContact;
+
+        if(entity.getEntityType() == ClientEntityType.OAK_TREE) {
+            ClientOakTree cot = (ClientOakTree) entity;
+            sx = entity.clientPosX - cot.trunkWidth() * 0.5f;
+            directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + cot.trunkWidth()) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + cot.trunkHeight());
+        } else {
+            directMouseContact = r.mouseWorldX >= sx && r.mouseWorldX <= (sx + entity.textureWidth) && r.mouseWorldY >= sy && r.mouseWorldY < (sy + entity.textureHeight);
+        }
 
         return new Object[] {directMouseContact, distanceMouseEntity};
     }

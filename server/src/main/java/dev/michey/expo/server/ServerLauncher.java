@@ -9,6 +9,7 @@ import dev.michey.expo.server.main.arch.ExpoServerDedicated;
 import dev.michey.expo.server.main.logic.crafting.CraftingRecipeMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.gen.WorldGen;
+import dev.michey.expo.server.util.ExpoHardware;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -19,6 +20,8 @@ public class ServerLauncher {
 		// Enable logging to file + console for debugging
 		ExpoLogger.enableDualLogging("serverlogs");
 		overrideKryoLogger();
+
+		ExpoHardware.dump();
 
 		// Create a server configuration
 		ExpoServerConfiguration fileConfig = new ExpoServerConfiguration();
@@ -31,6 +34,17 @@ public class ServerLauncher {
 		if(fileConfig.isAuthPlayersEnabled() && fileConfig.getSteamWebApiKey().isEmpty()) {
 			log("Error: Your server has steam authentication enabled, however your Steam Web API key is empty/invalid.");
 			System.exit(0);
+		}
+
+		if(!fileConfig.isAuthPlayersEnabled()) {
+			log("");
+			log("===================================== WARNING =====================================");
+			log("");
+			log(" Your server does not authenticate player connections, it is recommended to enable");
+			log(" the whitelist or to set a password that is required to join the server.");
+			log("");
+			log("===================================== WARNING =====================================");
+			log("");
 		}
 
 		new WorldGen();

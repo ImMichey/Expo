@@ -490,16 +490,23 @@ public abstract class ClientEntity {
     }
 
     public boolean isInWater() {
-        return TileLayerType.isWater(getCurrentTileLayer()[2].emulatingType);
+        return TileLayerType.isWater(getCurrentTileLayers()[2].emulatingType);
     }
 
-    public ClientDynamicTilePart[] getCurrentTileLayer() {
+    public ClientDynamicTilePart[] getCurrentTileLayers() {
         int cx = posToChunk(clientPosX);
         int cy = posToChunk(clientPosY);
         int tileX = ExpoShared.posToTile(clientPosX) - ExpoShared.posToTile(ExpoShared.chunkToPos(cx));
         int tileY = ExpoShared.posToTile(clientPosY) - ExpoShared.posToTile(ExpoShared.chunkToPos(cy));
         int baseTileArray = tileY * ROW_TILES + tileX;
         return chunkGrid().getChunk(cx, cy).dynamicTiles[baseTileArray];
+    }
+
+    public TileLayerType getCurrentTileLayer() {
+        var layers = getCurrentTileLayers();
+        if(layers[2].emulatingType != TileLayerType.EMPTY) return layers[2].emulatingType;
+        if(layers[1].emulatingType != TileLayerType.EMPTY) return layers[1].emulatingType;
+        return layers[0].emulatingType;
     }
 
     public void applyEntityUpdatePayload(Object[] payload) {

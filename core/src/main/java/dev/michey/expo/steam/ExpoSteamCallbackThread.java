@@ -7,17 +7,28 @@ public class ExpoSteamCallbackThread extends Thread {
     private static final int UPDATES_PER_SECOND = 60;
     private static final long SLEEP_PER_CALLBACK = 1000L / UPDATES_PER_SECOND;
 
+    private boolean killCallbackThread = false;
+
     @Override
     public void run() {
-        while(!isInterrupted()) {
+        while(true) {
             SteamAPI.runCallbacks();
 
-            try {
-                Thread.sleep(SLEEP_PER_CALLBACK);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            if(killCallbackThread) {
+                SteamAPI.shutdown();
+                break;
+            } else {
+                try {
+                    Thread.sleep(SLEEP_PER_CALLBACK);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
+    }
+
+    public void stopTask() {
+        killCallbackThread = true;
     }
 
 }

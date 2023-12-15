@@ -1,18 +1,16 @@
 package dev.michey.expo.util;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.ClientParticle;
-import dev.michey.expo.server.util.GenerationUtils;
+import dev.michey.expo.noise.TileLayerType;
 
 import java.util.List;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ParticleBuilder {
 
@@ -25,8 +23,11 @@ public class ParticleBuilder {
     private Color[] colors;
     private float velocityMinX, velocityMaxX;
     private float velocityMinY, velocityMaxY;
+    private float velocityDirectional;
+    private Interpolation velocityCurve;
     private float fadeout;
     private float fadein;
+    private float fadeoutPercentage;
     private int textureMin, textureMax;
     private float startPosX, startPosY;
     private float offsetX, offsetY;
@@ -64,6 +65,18 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder fadeoutLifetime(float percentage) {
+        this.fadeoutPercentage = percentage;
+        return this;
+    }
+
+    public ParticleBuilder color(TileLayerType tileLayerType) {
+        if(tileLayerType == TileLayerType.FOREST) {
+            color(ParticleColorMap.of(1));
+        }
+        return this;
+    }
+
     public ParticleBuilder color(Color... colors) {
         this.colors = colors;
         return this;
@@ -80,6 +93,16 @@ public class ParticleBuilder {
         this.velocityMaxX = velocityMaxX;
         this.velocityMinY = velocityMinY;
         this.velocityMaxY = velocityMaxY;
+        return this;
+    }
+
+    public ParticleBuilder velocityCurve(Interpolation interpolation) {
+        this.velocityCurve = interpolation;
+        return this;
+    }
+
+    public ParticleBuilder velocityDirectional(float max) {
+        this.velocityDirectional = max;
         return this;
     }
 
@@ -177,14 +200,27 @@ public class ParticleBuilder {
                 p.setParticleColor(colors[MathUtils.random(0, colors.length - 1)]);
             }
 
-            float velocityX = MathUtils.random(velocityMinX, velocityMaxX);
-            float velocityY = MathUtils.random(velocityMinY, velocityMaxY);
+            float velocityX;
+            float velocityY;
+
+            if(velocityDirectional > 0) {
+                float angle = MathUtils.random(360f);
+                float x = MathUtils.cosDeg(angle);
+                float y = MathUtils.sinDeg(angle);
+                Vector2 vec = new Vector2(x, y).nor().scl(velocityDirectional);
+                velocityX = vec.x;
+                velocityY = vec.y;
+            } else {
+                velocityX = MathUtils.random(velocityMinX, velocityMaxX);
+                velocityY = MathUtils.random(velocityMinY, velocityMaxY);
+            }
+
             p.pvx = velocityX;
             p.pvy = velocityY;
             p.spvx = velocityX;
             p.spvy = velocityY;
 
-            p.setParticleFadeout(fadeout);
+            p.setParticleFadeout(fadeoutPercentage > 0 ? (lifetime * fadeoutPercentage) : fadeout);
             p.setParticleFadein(fadein);
 
             p.setParticleTextureRange(textureMin, textureMax);
@@ -202,6 +238,9 @@ public class ParticleBuilder {
             if(followEntity != null) {
                 p.setFollowEntity(followEntity);
                 p.setFollowOffset(followOffsetX, followOffsetY);
+            }
+            if(velocityCurve != null) {
+                p.setVelocityCurve(velocityCurve);
             }
 
             ClientEntityManager.get().addClientSideEntity(p);

@@ -40,7 +40,7 @@ public class ClientFirefly extends ClientEntity {
         updateTextureBounds(f.getRegionWidth(),
                 f.getRegionHeight(), 0, 0, -f.getRegionWidth() * 0.5f, flightHeight);
 
-        fireflyLight = new ExpoLight(80.0f, 40, 1f, 0.3f, false);
+        fireflyLight = new ExpoLight(80.0f, 16, 1f, 0.3f, false);
         fireflyLight.color(1.0f, 0.882f, 0.0f, 1.0f);
     }
 

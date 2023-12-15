@@ -325,6 +325,14 @@ public class AudioEngine {
         return Vector2.dst(v.x, v.y, c.x, c.y);
     }
 
+    public float dstPlayer(float x, float y) {
+        ClientPlayer p = ClientPlayer.getLocalPlayer();
+        if(p == null) return 0f;
+
+        Vector2 c = new Vector2(p.finalTextureCenterX, p.finalTextureRootY);
+        return Vector2.dst(x, y, c.x, c.y);
+    }
+
     public float getDynamicSoundVolume(Vector2 v, float maxAudibleRange) {
         float d = dstPlayer(v);
         if(d > maxAudibleRange) return 0;

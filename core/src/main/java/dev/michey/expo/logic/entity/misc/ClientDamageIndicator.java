@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -45,8 +46,9 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
             entityManager().removeEntity(this);
         } else {
             float _i = Interpolation.exp5Out.apply(1f - lifetime);
-            clientPosX = startX;
-            clientPosY = startY + _i * 40;
+            float _s = MathUtils.sin(lifetime * MathUtils.PI2) * 3f;
+            clientPosX = startX + _s;
+            clientPosY = startY + _i * 48;
 
             if(lifetime >= 0.75f) {
                 alpha = 1.0f;

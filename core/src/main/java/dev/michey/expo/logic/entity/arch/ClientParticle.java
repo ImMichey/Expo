@@ -3,7 +3,6 @@ package dev.michey.expo.logic.entity.arch;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
-import dev.michey.expo.log.ExpoLogger;
 
 public abstract class ClientParticle extends ClientEntity {
 
@@ -33,6 +32,7 @@ public abstract class ClientParticle extends ClientEntity {
     public float spvx; // Particle velocity values
     public float spvy; // Particle velocity values
     public float coveredDistanceX, coveredDistanceY;
+    public Interpolation velocityCurve;
 
     public ClientParticle() {
         visibleToRenderEngine = true;
@@ -73,6 +73,14 @@ public abstract class ClientParticle extends ClientEntity {
 
             pvx = spvx * interpolated;
             pvy = spvy * interpolated;
+        }
+
+        if(velocityCurve != null) {
+            float progress = (lifetime / lifetimeStatic); // 1 -> 0
+            float interpolated = velocityCurve.apply(Math.abs(progress - 1f)); // 0 -> 1
+
+            pvx = spvx * Math.abs(interpolated - 1f);
+            pvy = spvy * Math.abs(interpolated - 1f);
         }
 
         float addY = pvy * delta;
@@ -135,6 +143,10 @@ public abstract class ClientParticle extends ClientEntity {
 
     public void setParticleColor(Color c) {
         setParticleColor(c.r, c.g, c.b, c.a);
+    }
+
+    public void setVelocityCurve(Interpolation velocityCurve) {
+        this.velocityCurve = velocityCurve;
     }
 
     public void setParticleFadeout(float fadeDuration) {

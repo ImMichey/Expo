@@ -60,13 +60,6 @@ public class CommandConnect extends AbstractConsoleCommand {
             // Connect to server.
             message("Attempting to connect to remote server [CYAN]" + ip + ":" + port + "[WHITE]...");
 
-            // TODO: Move this block to GDX runnable upon connecting?
-            if(ItemMapper.get() == null) {
-                new ItemMapper(true, false);
-                Expo.get().loadItemMapperTextures();
-                new CraftingRecipeMapping(true);
-            }
-
             String finalIp = ip;
             int finalPort = port;
             String finalPassword = password;
@@ -78,6 +71,12 @@ public class CommandConnect extends AbstractConsoleCommand {
 
                 if(exception == null) {
                     Gdx.app.postRunnable(() -> {
+                        if(ItemMapper.get() == null) {
+                            new ItemMapper(true, false);
+                            Expo.get().loadItemMapperTextures();
+                            new CraftingRecipeMapping(true);
+                        }
+
                         Expo.get().switchToNewScreen(new GameScreen(client));
                         success("Successfully connected to remote server [CYAN]" + finalIp + ":" + finalPort);
 

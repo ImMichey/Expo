@@ -1,6 +1,7 @@
 package dev.michey.expo.render.animator;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.util.AnimationSound;
@@ -40,6 +41,10 @@ public class ExpoAnimation {
 
     public void setHandler(ExpoAnimationHandler handler) {
         this.handler = handler;
+    }
+
+    public void randomOffset() {
+        animationDelta = MathUtils.random(totalAnimationDuration);
     }
 
     public void tick(float delta) {

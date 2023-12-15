@@ -46,6 +46,7 @@ public enum ServerEntityType {
     CAMPFIRE(32, "Campfire", true),
     WOODFOLK(33, "Woodfolk", false),
     ALOE_VERA(34, "AloeVera", false),
+    TORCH(35, "Torch", false),
     ;
 
     public final int ENTITY_ID;
@@ -95,6 +96,7 @@ public enum ServerEntityType {
             case 32 -> new ServerCampfire();
             case 33 -> new ServerWoodfolk();
             case 34 -> new ServerAloeVera();
+            case 35 -> new ServerTorch();
             default -> null;
         };
     }
@@ -136,6 +138,7 @@ public enum ServerEntityType {
             case "CAMPFIRE" -> new ServerCampfire();
             case "WOODFOLK", "WOOD_FOLK" -> new ServerWoodfolk();
             case "ALOE", "ALOE_VERA", "ALOEVERA", "VERA" -> new ServerAloeVera();
+            case "TORCH" -> new ServerTorch();
             default -> null;
         };
     }

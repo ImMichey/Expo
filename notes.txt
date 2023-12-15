@@ -1,3 +1,17 @@
+[Add]
+* Bandage item
+* Player buff effect system
+* Fix selection system
+* New Oak Plank Wall textures [maybe 32px high]
+* New Stick Fence textures
+* New PickupLine replacement
+* Item Eat/Use feedback
+* Fix 'retrieving world data' text when connecting to multiplayer
+* Fix client side minimap with rivers
+* Fix multiplayer punching delay? feels unnatural
+* Fix torch sound range/volume
+* Give torches ambient shadows
+
 [Known Bugs]
 * Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer
 * AO bug, similar to above, not sure if related or separate bug
@@ -11,15 +25,6 @@
   	at dev.michey.expo.server.main.logic.world.ServerWorld.tickWorld(ServerWorld.java:61)
   	at dev.michey.expo.server.main.logic.ExpoServerContainer.loop(ExpoServerContainer.java:41)
   	at dev.michey.expo.localserver.ExpoServerLocal$1.run(ExpoServerLocal.java:54)
-
-[Stuff To Fix, Implement...]
-* Drop Items with Q
-* Adjust running animation speed with entity velocity
-* Fix selection system
-* New Oak Plank Wall textures
-* New Oak Plank Floor textures
-* New Crate textures
-* Screen shake on hit?
 
 [Long Term Fixes]
 * Investigate:

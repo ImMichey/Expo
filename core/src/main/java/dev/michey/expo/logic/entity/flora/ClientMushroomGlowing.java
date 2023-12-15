@@ -9,10 +9,11 @@ import dev.michey.expo.logic.entity.particle.ClientParticleHit;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleColorMap;
 
-public class ClientMushroomGlowing extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientMushroomGlowing extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private TextureRegion texture;
     private TextureRegion selectionTexture;
@@ -27,7 +28,7 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
 
-        mushroomLight = new ExpoLight(80f, 40, 1.0f, 0.3f, true);
+        mushroomLight = new ExpoLight(80f, 16, 1.0f, 0.3f, true);
         mushroomLight.color(0f, 1f, 1f, 1f);
         mushroomLight.setPulsating(1.0f, 112.0f, 128.0f);
     }
@@ -114,6 +115,11 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
     @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.MUSHROOM_GLOWING;
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.2f, 0.2f, 0, 0);
     }
 
 }

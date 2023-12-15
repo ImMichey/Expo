@@ -3,6 +3,7 @@ package dev.michey.expo.util;
 import com.badlogic.gdx.graphics.Color;
 import com.codedisaster.steamworks.SteamFriends;
 import com.codedisaster.steamworks.SteamUser;
+import dev.michey.expo.steam.ExpoSteamCallbackThread;
 
 public class ClientStatic {
 
@@ -13,14 +14,14 @@ public class ClientStatic {
     public static int STEAM_ACCOUNT_ID = -1;
     public static long STEAM_STEAM_ID = -1;
     public static boolean STEAM_INITIALIZED = false;
-    public static Thread STEAM_CALLBACK_THREAD = null;
+    public static ExpoSteamCallbackThread STEAM_CALLBACK_THREAD = null;
 
     /** Client constants */
     public static final String SCREEN_MENU = "Menu";
     public static final String SCREEN_GAME = "Game";
     public static float DEFAULT_CAMERA_ZOOM = 0.5f; // Modified by GameSettings
     public static final float CAMERA_ANIMATION_MIN_ZOOM = 0.1f;
-    public static boolean DEV_MODE = true; // Enables ImGui, Console, etc.
+    public static boolean DEV_MODE = false; // Enables ImGui, Console, etc.
 
     public static final String GAME_VERSION = "0.0.0 (Unstable)";
 

@@ -1,6 +1,6 @@
 {
     "maxPlayers": 10,
-    "authPlayers": true,
+    "authPlayers": false,
     "serverName": "default-server",
     "writeBufferSize": 1048576,
     "objectBufferSize": 1048576,

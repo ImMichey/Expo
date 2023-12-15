@@ -2,8 +2,6 @@ package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -50,10 +48,9 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
         ParticleSheet.Common.spawnBoulderHitParticles(this, variant == 2);
 
         if(selected && newHealth <= 0) {
+            ParticleSheet.Common.spawnDustHitParticles(this);
             CameraShake.invoke(1.0f, 0.33f);
         }
-
-        //spawnDamageIndicator((int) damage, clientPosX + MathUtils.random(-2f, 2f), clientPosY + textureHeight + 28, new Vector2(0, 1));
     }
 
     @Override

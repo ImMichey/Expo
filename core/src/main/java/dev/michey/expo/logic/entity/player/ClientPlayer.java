@@ -13,6 +13,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.audio.TrackedSoundData;
+import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -21,6 +22,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.reflections.ReflectableEntity;
@@ -42,7 +44,10 @@ import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.TeleportReason;
-import dev.michey.expo.util.*;
+import dev.michey.expo.util.ClientPackets;
+import dev.michey.expo.util.ExpoShared;
+import dev.michey.expo.util.GameSettings;
+import dev.michey.expo.util.PacketUtils;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -877,6 +882,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         String group = getFootstepSound();
+        if(!TileLayerType.isWater(getCurrentTileLayer()) && isSprinting()) {
+            ParticleSheet.Common.spawnPlayerFootstepParticles(this);
+        }
 
         if(player) {
             // Don't need dynamic volume + panning
@@ -1294,12 +1302,15 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void applyTeleportUpdate(float xPos, float yPos, TeleportReason reason) {
+        float x = clientPosX;
+        float y = clientPosY;
         super.applyTeleportUpdate(xPos, yPos, reason);
         if(player) {
             updateTexturePositionData();
             RenderContext.get().expoCamera.centerToPlayer(this);
 
             if(reason == TeleportReason.RESPAWN) {
+                ExpoClientChat.get().addServerMessage("You died at [YELLOW]" + x + " [CYAN]" + y);
                 PlayerUI.get().setFade(1.5f);
             }
         }

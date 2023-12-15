@@ -13,7 +13,6 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 import dev.michey.expo.util.ParticleEmitter;
@@ -58,7 +57,8 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
                         .textureRange(15, 15)
                         .decreaseSpeed()
                         .offset(5, 4)
-                        .depth(depth + 0.0001f), 0, 0.04f, 0.06f);
+                        .depth(depth + 0.001f), 0, 0.04f, 0.06f);
+        campfireSmokeEmitter.setLinkedEntity(this);
     }
 
     private void constructLight() {
@@ -67,18 +67,13 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
                 campfireLight.delete();
                 campfireLight = null;
 
-                AudioEngine.get().killSound(campfireSound.id);
-                campfireSound = null;
-
                 AudioEngine.get().playSoundGroupManaged("campfire_extinguish", new Vector2(clientPosX, clientPosY + 15), PLAYER_AUDIO_RANGE * 0.45f, false, 0.6f);
             }
         } else {
             if(campfireLight == null) {
-                campfireLight = new ExpoLight(166, 48, 0.375f, 0.675f, true);
+                campfireLight = new ExpoLight(166, 16, 0.375f, 0.675f, true);
                 campfireLight.color(0.992f, 0.541f, 0.184f, 1f);
                 campfireLight.setFlickering(6.0f, 0.15f);
-
-                campfireSound = AudioEngine.get().playSoundGroupManaged("campfire", new Vector2(clientPosX, clientPosY + 15), PLAYER_AUDIO_RANGE * 0.45f, true, 0.825f);
             }
         }
     }
@@ -88,18 +83,34 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
         playEntitySound("wood_hit");
 
         ParticleSheet.Common.spawnCampfireHitParticles(this);
+
+        if(newHealth <= 0) {
+            ParticleSheet.Common.spawnDustHitParticles(this);
+        }
     }
 
     @Override
     public void onDeletion() {
         if(campfireLight != null) {
             campfireLight.delete();
-            AudioEngine.get().killSound(campfireSound.id);
-            campfireSound = null;
+
+            if(campfireSound != null) {
+                AudioEngine.get().killSound(campfireSound.id);
+            }
         }
+    }
 
-        if(removalReason == EntityRemovalReason.DEATH) {
-
+    private void createSoundAndHandle(boolean shouldExist, float maxAudibleRange) {
+        if(campfireSound != null) {
+            if(campfireSound.postCalcVolume <= 0.0f || !shouldExist) {
+                AudioEngine.get().killSound(campfireSound.id);
+                campfireSound = null;
+            }
+        } else if(shouldExist) {
+            if(AudioEngine.get().dstPlayer(clientPosX, clientPosY + 15) < maxAudibleRange) {
+                campfireSound = AudioEngine.get().playSoundGroupManaged("campfire", new
+                        Vector2(clientPosX, clientPosY + 15), maxAudibleRange, true, 0.825f);
+            }
         }
     }
 
@@ -119,6 +130,7 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
     public void tick(float delta) {
         syncPositionWithServer();
         constructLight();
+        createSoundAndHandle(burning, PLAYER_AUDIO_RANGE * 0.45f);
 
         if(burning) {
             if(campfireLight != null) campfireLight.update(clientPosX, clientPosY + 15f, delta);

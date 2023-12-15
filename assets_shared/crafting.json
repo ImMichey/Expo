@@ -23,7 +23,8 @@
             "recipe_wood_club",
             "recipe_torch",
             "recipe_insect_net",
-            "recipe_wood_mask"
+            "recipe_wood_mask",
+            "recipe_bandage"
         ],
         "food": [
             "recipe_wheat_seeds"
@@ -369,6 +370,23 @@
                 {
                     "id": 17,
                     "amount": 5
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_bandage",
+            "output": {
+                "id": 50,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 49,
+                    "amount": 2
+                },
+                {
+                    "id": 15,
+                    "amount": 2
                 }
             ]
         }

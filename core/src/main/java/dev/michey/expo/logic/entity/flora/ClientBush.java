@@ -35,6 +35,9 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
         playEntitySound("grass_hit");
 
         ParticleSheet.Common.spawnGrassHitParticles(this);
+        if(newHealth <= 0) {
+            ParticleSheet.Common.spawnDustHitParticles(this);
+        }
     }
 
     @Override

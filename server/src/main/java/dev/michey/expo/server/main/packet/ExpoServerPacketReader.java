@@ -181,25 +181,31 @@ public class ExpoServerPacketReader {
 
             // ##################################################### Steam auth
             if(ExpoServerConfiguration.get().isAuthPlayersEnabled()) {
-                JSONObject response = ((ExpoServerDedicated) ExpoServerDedicated.get()).getSteamHandler().authenticateUserTicket(steamTicketString);
-
-                if(response != null) {
-                    try {
-                        JSONObject data = response.getJSONObject("response").getJSONObject("params");
-
-                        if(data.getString("result").equals("OK")) {
-                            steamId = Long.parseLong(data.getString("steamid"));
-                        } else {
-                            authorized = false;
-                            authorizationMessage = "Steam auth failed (" + data.getString("result") + ")";
-                        }
-                    } catch (JSONException e) {
-                        authorized = false;
-                        authorizationMessage = "Steam auth failed (json invalid)";
-                    }
-                } else {
+                if(steamTicketString == null) {
                     authorized = false;
-                    authorizationMessage = "Steam auth failed (json == null)";
+                    authorizationMessage = "Steam auth failed (no auth ticket provided)";
+                } else {
+                    JSONObject response = ((ExpoServerDedicated) ExpoServerDedicated.get()).getSteamHandler().authenticateUserTicket(steamTicketString);
+
+                    if(response != null) {
+                        try {
+                            ExpoLogger.log("Steam auth response: " + response);
+                            JSONObject data = response.getJSONObject("response").getJSONObject("params");
+
+                            if(data.getString("result").equals("OK")) {
+                                steamId = Long.parseLong(data.getString("steamid"));
+                            } else {
+                                authorized = false;
+                                authorizationMessage = "Steam auth failed (" + data.getString("result") + ")";
+                            }
+                        } catch (JSONException e) {
+                            authorized = false;
+                            authorizationMessage = "Steam auth failed (json invalid)";
+                        }
+                    } else {
+                        authorized = false;
+                        authorizationMessage = "Steam auth failed (json == null)";
+                    }
                 }
             }
             // ##################################################### Steam auth

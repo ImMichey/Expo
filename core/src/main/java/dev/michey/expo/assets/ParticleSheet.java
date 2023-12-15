@@ -1,10 +1,12 @@
 package dev.michey.expo.assets;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
@@ -53,6 +55,45 @@ public class ParticleSheet {
 
     public static class Common {
 
+        public static void spawnPlayerFootstepParticles(ClientPlayer entity) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(6, 9)
+                    .scale(0.4f, 0.6f)
+                    .lifetime(0.35f, 0.6f)
+                    .color(ParticleColorMap.of(15))
+                    .position(entity.finalTextureCenterX + 1 - (entity.direction() == 1 ? 0 : 7), entity.clientPosY)
+                    .velocity(-32, 32, 32, 80)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeout(0.35f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .offset(3, 0)
+                    .depth(entity.depth + 0.001f)
+                    .spawn();
+        }
+
+        public static void spawnDustHitParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
+            float calculatedOffset = Math.max(entity.textureWidth - 8, 2);
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(8, 12)
+                    .scale(0.6f, 1.0f)
+                    .lifetime(0.4f, 1.0f)
+                    .color(ParticleColorMap.of(15))
+                    .position(entity.finalTextureCenterX - calculatedOffset * 0.5f, entity.clientPosY)
+                    .velocity(-32, 32, 4, 40)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeoutLifetime(0.8f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .offset(calculatedOffset, 0)
+                    .depth(entity.depth)
+                    .spawn();
+        }
+
         public static void spawnTorchParticles(float depth, float x, float y) {
             if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
@@ -68,7 +109,7 @@ public class ParticleSheet {
                     .textureRange(15, 15)
                     .decreaseSpeed()
                     .offset(4, 6)
-                    .depth(depth + 0.0001f)
+                    .depth(depth + 0.001f)
                     .spawn();
         }
 
@@ -86,7 +127,7 @@ public class ParticleSheet {
                     .rotateWithVelocity()
                     .textureRange(15, 15)
                     .decreaseSpeed()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .followEntity(entity)
                     .followOffset(ox, oy)
                     .spawn();
@@ -106,7 +147,7 @@ public class ParticleSheet {
                     .rotateWithVelocity()
                     .textureRange(15, 15)
                     .decreaseSpeed()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .followEntity(entity)
                     .spawn();
         }
@@ -135,7 +176,7 @@ public class ParticleSheet {
                     .randomRotation()
                     .rotateWithVelocity()
                     .decreaseSpeed()
-                    .depth(cd3d.depth - 0.0001f)
+                    .depth(cd3d.depth - 0.001f)
                     .spawn();
         }
 
@@ -154,7 +195,7 @@ public class ParticleSheet {
                     .rotateWithVelocity()
                     .textureRange(3, 7)
                     .decreaseSpeed()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .spawn();
         }
 
@@ -173,7 +214,7 @@ public class ParticleSheet {
                     .rotateWithVelocity()
                     .textureRange(3, 7)
                     .decreaseSpeed()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .spawn();
         }
 
@@ -190,7 +231,7 @@ public class ParticleSheet {
                     .fadeout(0.1f)
                     .randomRotation()
                     .rotateWithVelocity()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .decreaseSpeed()
                     .spawn();
         }
@@ -209,7 +250,7 @@ public class ParticleSheet {
                     .randomRotation()
                     .rotateWithVelocity()
                     .decreaseSpeed()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .spawn();
         }
 
@@ -227,7 +268,7 @@ public class ParticleSheet {
                     .randomRotation()
                     .rotateWithVelocity()
                     .decreaseSpeed()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .spawn();
         }
 
@@ -245,7 +286,7 @@ public class ParticleSheet {
                     .randomRotation()
                     .rotateWithVelocity()
                     .decreaseSpeed()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .spawn();
         }
 
@@ -262,7 +303,7 @@ public class ParticleSheet {
                     .textureRange(12, 14)
                     .randomRotation()
                     .rotateWithVelocity()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
                     .spawn();
         }
 
@@ -279,7 +320,24 @@ public class ParticleSheet {
                     .textureRange(12, 14)
                     .randomRotation()
                     .rotateWithVelocity()
-                    .depth(entity.depth - 0.0001f)
+                    .depth(entity.depth - 0.001f)
+                    .spawn();
+        }
+
+        public static void spawnWoodHitParticles(ClientEntity entity, float x, float y) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(3, 7)
+                    .scale(0.6f, 0.8f)
+                    .lifetime(0.4f, 0.55f)
+                    .color(ParticleColorMap.of(6))
+                    .position(x, y)
+                    .velocity(-24, 24, -24, 24)
+                    .fadeout(0.15f)
+                    .textureRange(12, 14)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .depth(entity.depth - 0.001f)
                     .spawn();
         }
 

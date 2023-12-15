@@ -51,6 +51,7 @@ public enum ClientEntityType {
     CAMPFIRE(32, "Campfire", ServerEntityType.CAMPFIRE),
     WOODFOLK(33, "Woodfolk", ServerEntityType.WOODFOLK),
     ALOE_VERA(34, "AloeVera", ServerEntityType.ALOE_VERA),
+    TORCH(35, "Torch", ServerEntityType.TORCH),
 
     /** Client only */
     SELECTOR(-1, "Selector", null),
@@ -123,6 +124,7 @@ public enum ClientEntityType {
             case 32 -> new ClientCampfire();
             case 33 -> new ClientWoodfolk();
             case 34 -> new ClientAloeVera();
+            case 35 -> new ClientTorch();
             default -> null;
         };
     }

@@ -83,7 +83,7 @@ public class ClientMushroomBrown extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.25f, 0.25f, 0, 0);
+        drawAO100(rc, 0.2f, 0.2f, 0, 0);
     }
 
     @Override

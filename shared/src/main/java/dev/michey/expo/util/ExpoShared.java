@@ -84,6 +84,9 @@ public class ExpoShared {
     /** Global random */
     public static final Random RANDOM = new Random();
 
+    /** Console constants */
+    public static final String ANSI_YELLOW = "\u001B[33m";
+
     /** Returns a pair of the converted integer and a boolean whether the conversion was successful or not. */
     public static Pair<Integer, Boolean> asInt(String value) {
         int intValue = 0;

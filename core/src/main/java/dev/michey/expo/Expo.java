@@ -32,6 +32,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
+import dev.michey.expo.server.util.ExpoHardware;
 import dev.michey.expo.steam.ExpoSteam;
 import dev.michey.expo.steam.ExpoSteamCallbackThread;
 import dev.michey.expo.steam.SteamLibraryLoaderGdx;
@@ -115,6 +116,8 @@ public class Expo implements ApplicationListener {
 
 	@Override
 	public void create() {
+		ExpoHardware.dump();
+
 		if(DEV_MODE || gameSettings.enableDebugImGui) {
 			imGuiGlfw = new ImGuiImplGlfw();
 			imGuiGl3 = new ImGuiImplGl3();
@@ -150,7 +153,7 @@ public class Expo implements ApplicationListener {
 		Gdx.input.setInputProcessor(new GameInput());
 		switchToNewScreen(new MenuScreen());
 		GameConsole.get().addSystemMessage("In order to see an overview of existing commands, type '/help'.");
-		GameConsole.get().addSystemMessage("F1 = Console   F6 = Hide HUD   F10 = Screenshot   F11 = Toggle Fullscreen");
+		GameConsole.get().addSystemMessage("[CYAN]F1 = Console [WHITE]:: [CYAN]F6 = Hide HUD [WHITE]:: [CYAN]F10 = Screenshot [WHITE]:: [CYAN]F11 = Toggle Fullscreen");
 		INSTANCE = this;
 
 		GameConsole.get().addSystemMessage("Initializing Steam...");
@@ -364,8 +367,7 @@ public class Expo implements ApplicationListener {
 		GameConsole.get().dispose();
 
 		if(STEAM_INITIALIZED) {
-			SteamAPI.shutdown();
-			STEAM_CALLBACK_THREAD.stop();
+			STEAM_CALLBACK_THREAD.stopTask();
 		}
 	}
 

@@ -159,11 +159,11 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         return MATRIX[variant - 1][1];
     }
 
-    private float trunkWidth() {
+    public float trunkWidth() {
         return MATRIX[variant - 1][2];
     }
 
-    private float trunkHeight() {
+    public float trunkHeight() {
         return MATRIX[variant - 1][3];
     }
 
@@ -283,6 +283,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         if(newHealth <= 0) {
             playEntitySound("log_split");
+            ParticleSheet.Common.spawnDustHitParticles(this);
         } else {
             playEntitySound("log_cut");
         }
@@ -311,8 +312,6 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         if(!cut) {
             contactAnimator.onContact();
         }
-
-        //spawnDamageIndicator((int) damage, clientPosX + MathUtils.random(-2f, 2f), clientPosY + (cut ? cutTrunkHeight() : trunkHeight()) + 16, new Vector2(0, 1));
     }
 
     @Override

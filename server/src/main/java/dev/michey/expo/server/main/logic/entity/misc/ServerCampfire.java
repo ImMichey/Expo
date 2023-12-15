@@ -47,7 +47,7 @@ public class ServerCampfire extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onInteraction(ServerPlayer player) {
-        burnDuration = 5.0f;
+        burnDuration = 30.0f;
     }
 
     @Override
