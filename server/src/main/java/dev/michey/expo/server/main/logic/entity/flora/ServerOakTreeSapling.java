@@ -46,7 +46,7 @@ public class ServerOakTreeSapling extends ServerEntity {
 
     @Override
     public void onLoad(JSONObject saved) {
-        growthTimeRemaining = saved.getFloat("growthTimeRemaining");
+        growthTimeRemaining = saved.getFloat("gtr");
     }
 
     @Override

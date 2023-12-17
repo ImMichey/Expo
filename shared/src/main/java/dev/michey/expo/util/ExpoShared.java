@@ -68,7 +68,7 @@ public class ExpoShared {
     public static final float PLAYER_DEFAULT_ATTACK_ANGLE_SPAN = 180;                   // Attack Angle Span
     public static final float PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH = 12.0f;         // Knockback Strength
     public static final float PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION = 0.25f;         // Knockback Duration
-    public static final float PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / 60f;
+    public static float PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / 60f;
 
     public static final int CRAFTING_CATEGORY_MISC = 0;
     public static final int CRAFTING_CATEGORY_TOOLS = 1;
@@ -83,9 +83,6 @@ public class ExpoShared {
 
     /** Global random */
     public static final Random RANDOM = new Random();
-
-    /** Console constants */
-    public static final String ANSI_YELLOW = "\u001B[33m";
 
     /** Returns a pair of the converted integer and a boolean whether the conversion was successful or not. */
     public static Pair<Integer, Boolean> asInt(String value) {

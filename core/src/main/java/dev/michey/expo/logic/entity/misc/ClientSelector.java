@@ -51,6 +51,7 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
     // Calculated in tick0()
     public int toChunkX, toChunkY;
     public int toTileArray;
+    public String text;
 
     @Override
     public void onCreation() {
@@ -117,14 +118,17 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
             if(!tileEntity && !layer1Wall && !layer2Wall) {
                 if(layer1Grass || layer1Sand || layer1Plains) {
                     eligible = true;
+                    text = "[LMB] Dig";
                 } else if(layer1Empty && layer0Soil) {
                     eligible = true;
+                    text = "[LMB] Dig";
                 }
             }
         } else if(currentSelectorType == SelectorType.DIG_SCYTHE) {
             if(!tileEntity && !layer1Wall && !layer2Wall) {
                 if(layer1Empty && layer0Soil) {
                     eligible = true;
+                    text = "[LMB] Tile soil";
                 }
             }
         } else if(currentSelectorType == SelectorType.PLACE_ENTITY) {
@@ -137,13 +141,16 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                             if(placeData.floorRequirement != null) {
                                 if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement) {
                                     eligible = true;
+                                    text = "[RMB] Place object";
                                 }
                             } else {
                                 eligible = true;
+                                text = "[RMB] Place object";
                             }
                         }
                     } else if(placeData.alignment == PlaceAlignment.UNRESTRICTED) {
                         eligible = true;
+                        text = "[RMB] Place object";
                     }
                 }
             }
@@ -155,16 +162,20 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                     if(placeData.type == PlaceType.FLOOR_0) {
                         if(placeData.floorType == FloorType.DIRT && layer2Water) {
                             eligible = true;
+                            text = "[RMB] Fill up with soil";
                         } else if(layer0Farmland || layer0Hole) {
                             eligible = true;
+                            text = "[RMB] Fill up";
                         }
                     } else if(placeData.type == PlaceType.FLOOR_1) {
                         if(layer0Soil && layer1Empty && layer2Empty) {
                             eligible = true;
+                            text = "[RMB] Place floor";
                         }
                     } else if(placeData.type == PlaceType.FLOOR_2) {
                         if(layer2Empty && !layer1Wall) {
                             eligible = true;
+                            text = "[RMB] Place floor";
                         }
                     }
                 }

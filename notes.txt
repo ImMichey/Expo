@@ -5,7 +5,6 @@
 * New Stick Fence textures
 * New PickupLine replacement
 * Item Eat/Use feedback
-* Fix multiplayer punching delay? feels unnatural
 
 [Known Bugs]
 * Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer                                P11 packet gets sent !?

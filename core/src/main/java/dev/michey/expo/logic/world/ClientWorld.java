@@ -171,10 +171,10 @@ public class ClientWorld {
             float x = basePos.x + MathUtils.random(diffX);
             float y = basePos.y + diffY * 0.25f - diffY * MathUtils.random();
 
-            float vx = MathUtils.random(100f, 150f) * normStr;
+            float vx = MathUtils.random(128f, 192f) * normStr;
             float vy = -256f - (groundYBonus / diffY * 128f);
 
-            float rot = normStr * 45f;
+            float rot = normStr * 22.5f + 22.5f;
 
             raindrop.initRaindrop(x, y, y + groundYBonus, rot, vx, vy);
             raindrop.depth = y + groundYBonus;

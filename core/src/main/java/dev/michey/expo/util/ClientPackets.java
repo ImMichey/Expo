@@ -40,9 +40,10 @@ public class ClientPackets {
     }
 
     /** Sends the P16_PlayerPunch packet via UDP protocol.  */
-    public static void p16PlayerPunch(float angle) {
+    public static void p16PlayerPunch(float angle, boolean status) {
         P16_PlayerPunch p = new P16_PlayerPunch();
         p.punchAngle = angle;
+        p.punchStatus = status;
         udp(p);
     }
 

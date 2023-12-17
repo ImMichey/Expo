@@ -66,11 +66,12 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public int playerDirection = 1; // default in client
 
+    public boolean queuedPunchStatus;
     public boolean punching;
     public float startAngle;
     public float endAngle;
     public float punchDelta;
-    public float punchDeltaFinish;
+    public float punchDeltaFinish = -1;
     private boolean punchDamageApplied;
 
     public float usePunchSpan;
@@ -249,6 +250,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         }
 
         applyKnockback(velToPos(xDir), velToPos(yDir));
+
+        evaluateNextPunch();
 
         if(punching) {
             punchDelta += delta;
@@ -473,69 +476,85 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         return super.onDamage(damageSource, damage);
     }
 
-    public void parsePunchPacket(P16_PlayerPunch p) {
-        punching = true;
-        punchDamageApplied = false;
-        hitEntities.clear();
+    private void evaluateNextPunch() {
+        if(queuedPunchStatus) {
+            // We are currently in punch mode
+            punching = true;
 
-        float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
-        float attackRange = PLAYER_DEFAULT_RANGE;
-        float attackDamage = PLAYER_DEFAULT_ATTACK_DAMAGE;
-        float attackSpan = PLAYER_DEFAULT_ATTACK_ANGLE_SPAN;
-        float attackKnockbackStrength = PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH;
-        float attackKnockbackDuration = PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION;
+            if(punchDelta > punchDeltaFinish) {
+                // We finished our last punch, instantiate new punch
+                punchDamageApplied = false;
+                hitEntities.clear();
 
-        int id = getCurrentItemId();
+                float attackSpeed = PLAYER_DEFAULT_ATTACK_SPEED;
+                float attackRange = PLAYER_DEFAULT_RANGE;
+                float attackDamage = PLAYER_DEFAULT_ATTACK_DAMAGE;
+                float attackSpan = PLAYER_DEFAULT_ATTACK_ANGLE_SPAN;
+                float attackKnockbackStrength = PLAYER_DEFAULT_ATTACK_KNOCKBACK_STRENGTH;
+                float attackKnockbackDuration = PLAYER_DEFAULT_ATTACK_KNOCKBACK_DURATION;
 
-        if(id != -1) {
-            ItemMapping mapping = ItemMapper.get().getMapping(id);
-            attackSpeed = mapping.logic.attackSpeed;
-            attackRange = mapping.logic.range;
-            attackDamage = mapping.logic.attackDamage;
-            attackSpan = mapping.logic.attackAngleSpan;
-            attackKnockbackStrength = mapping.logic.attackKnockbackStrength;
-            attackKnockbackDuration = mapping.logic.attackKnockbackDuration;
-        }
+                int id = getCurrentItemId();
 
-        {
-            convertedMiddleAngle = p.punchAngle - 90f;
-            if(convertedMiddleAngle < 0) convertedMiddleAngle = 360 + convertedMiddleAngle;
+                if(id != -1) {
+                    ItemMapping mapping = ItemMapper.get().getMapping(id);
+                    attackSpeed = mapping.logic.attackSpeed;
+                    attackRange = mapping.logic.range;
+                    attackDamage = mapping.logic.attackDamage;
+                    attackSpan = mapping.logic.attackAngleSpan;
+                    attackKnockbackStrength = mapping.logic.attackKnockbackStrength;
+                    attackKnockbackDuration = mapping.logic.attackKnockbackDuration;
+                }
 
-            if(convertedMiddleAngle >= 270f && convertedMiddleAngle <= 360f) {
-                convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
-                if(convertedStartAngle > 360f) convertedStartAngle -= 360f;
-            } else if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) {
-                convertedStartAngle = convertedMiddleAngle - attackSpan / 2;
-            } else {
-                convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
+                {
+                    //convertedMiddleAngle = p.punchAngle - 90f;
+                    convertedMiddleAngle = serverArmRotation - 90f;
+                    if(convertedMiddleAngle < 0) convertedMiddleAngle = 360 + convertedMiddleAngle;
+
+                    if(convertedMiddleAngle >= 270f && convertedMiddleAngle <= 360f) {
+                        convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
+                        if(convertedStartAngle > 360f) convertedStartAngle -= 360f;
+                    } else if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) {
+                        convertedStartAngle = convertedMiddleAngle - attackSpan / 2;
+                    } else {
+                        convertedStartAngle = convertedMiddleAngle + attackSpan / 2;
+                    }
+
+                    usePunchSpan = attackSpan;
+                    usePunchDirection = 1;
+                    if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) usePunchDirection = -1;
+                    usePunchRange = attackRange;
+                    usePunchDamage = attackDamage;
+                    usePunchKnockbackStrength = attackKnockbackStrength;
+                    usePunchKnockbackDuration = attackKnockbackDuration;
+                }
+
+                punchDeltaFinish = attackSpeed;
+                startAngle = serverArmRotation - attackSpan / 2;
+                endAngle = serverArmRotation + attackSpan / 2;
+                punchDelta = 0;
+
+                float _clientStart;
+                float _clientEnd;
+
+                if(serverArmRotation > 0) {
+                    _clientStart = 0;
+                    _clientEnd = 180;
+                } else {
+                    _clientStart = -180;
+                    _clientEnd = 0;
+                }
+
+                ServerPackets.p17PlayerPunchData(entityId, _clientStart, _clientEnd, punchDeltaFinish, PacketReceiver.whoCanSee(this));
             }
-
-            usePunchSpan = attackSpan;
-            usePunchDirection = 1;
-            if(convertedMiddleAngle >= 90f && convertedMiddleAngle <= 270f) usePunchDirection = -1;
-            usePunchRange = attackRange;
-            usePunchDamage = attackDamage;
-            usePunchKnockbackStrength = attackKnockbackStrength;
-            usePunchKnockbackDuration = attackKnockbackDuration;
+        } /*else {
+            We are currently not in punch mode anymore
         }
+        */
+    }
 
-        punchDeltaFinish = attackSpeed;
-        startAngle = p.punchAngle - attackSpan / 2;
-        endAngle = p.punchAngle + attackSpan / 2;
-        punchDelta = 0;
-
-        float _clientStart;
-        float _clientEnd;
-
-        if(p.punchAngle > 0) {
-            _clientStart = 0;
-            _clientEnd = 180;
-        } else {
-            _clientStart = -180;
-            _clientEnd = 0;
-        }
-
-        ServerPackets.p17PlayerPunchData(entityId, _clientStart, _clientEnd, punchDeltaFinish, PacketReceiver.whoCanSee(this));
+    public void parsePunchPacket(P16_PlayerPunch p) {
+        serverArmRotation = p.punchAngle;
+        queuedPunchStatus = p.punchStatus;
     }
 
     private void updateChunks() {
@@ -639,6 +658,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             }
 
             ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+            ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
             { // Update inventory
                 useItemAmount(item);
@@ -662,6 +682,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             }
 
             ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+            ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
             { // Update inventory
                 useItemAmount(item);
@@ -685,6 +706,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             }
 
             ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+            ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
             { // Update inventory
                 useItemAmount(item);
@@ -721,6 +743,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     createdTileEntity.attachToTile(chunk, x, y);
 
                     ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+                    ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
+
                     useItemAmount(item);
                     playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
                 }
@@ -732,6 +756,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 ServerWorld.get().registerServerEntity(entityDimension, placedEntity);
 
                 ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+                ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
+
                 useItemAmount(item);
                 playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
             }

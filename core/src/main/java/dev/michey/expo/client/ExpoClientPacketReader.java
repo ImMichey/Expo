@@ -74,6 +74,11 @@ public class ExpoClientPacketReader {
                 if(!local) {
                     ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
                     ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDefinitionList, p.worldSeed);
+
+                    float pickTps = Math.max(p.serverTps * 0.5f, 60);
+                    PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / pickTps;
+                } else {
+                    ExpoShared.PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / (float) p.serverTps;
                 }
                 ExpoClientContainer.get().setServerTickRate(p.serverTps);
             } else {
@@ -299,7 +304,7 @@ public class ExpoClientPacketReader {
                 ClientPlayer player = (ClientPlayer) entity;
 
                 if(p.animationId == PLAYER_ANIMATION_ID_PLACE) {
-                    player.playPunchAnimation();
+                    player.playPunchAnimation(player.playerDirection, 0.3f, false);
                 }
             }
         } else if(o instanceof P40_InventoryView p) {
@@ -335,7 +340,7 @@ public class ExpoClientPacketReader {
                 ParticleSheet.Common.spawnDustConstructEntityParticles(twx, twy, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
             }
 
-            AudioEngine.get().playSoundGroupManaged("pop", new Vector2(twx + 8, twy + 8), PLAYER_AUDIO_RANGE, false);
+            AudioEngine.get().playSoundGroupManaged("place", new Vector2(twx + 8, twy + 8), PLAYER_AUDIO_RANGE, false);
         }
     }
 

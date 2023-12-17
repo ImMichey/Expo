@@ -137,6 +137,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     private boolean punchAnimation;
     private int punchDirection;
     private boolean punchSound = true;
+    private boolean dontUsePunchSound = false;
     private float lastPunchValue;
 
     public float serverPunchAngle;
@@ -146,6 +147,13 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     private float lastPunchAngleOnSend;
     private float serverPunchAngleStart;
     private float serverPunchAngleEnd;
+
+    private float punchResetStartTimestamp;
+    private float punchResetEndTimestamp;
+    private float punchResetStartAngle;
+    private float punchResetEndAngle;
+
+    private boolean lastLeftClickSend;
 
     /** Player item */
     public int holdingItemId = -1;
@@ -261,12 +269,38 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     }
 
+    public void playPunchAnimation(int direction, float duration, boolean sound) {
+        float sa = direction == 1 ? 0 : -180;
+        float ea = direction == 1 ? 180 : 0;
+        punchStartAngle = sa;
+        punchEndAngle = ea;
+        punchStart = RenderContext.get().deltaTotal;
+        punchEnd = punchStart + duration;
+        punchDirection = direction;
+
+        punchResetStartTimestamp = punchEnd;
+        punchResetEndTimestamp = punchResetStartTimestamp + 0.3f;
+        punchResetStartAngle = 0;
+        punchResetEndAngle = getFinalArmRotation();
+
+        if(!sound) {
+            dontUsePunchSound = true;
+        }
+    }
+
     public void applyServerPunchData(P17_PlayerPunchData p) {
         punchStartAngle = p.punchAngleStart;
         punchEndAngle = p.punchAngleEnd;
         punchStart = RenderContext.get().deltaTotal;
         punchEnd = punchStart + p.punchDuration;
         punchDirection = punchEndAngle > 0 ? 1 : 0;
+
+        punchResetStartTimestamp = punchEnd;
+        punchResetEndTimestamp = punchResetStartTimestamp + 0.3f;
+        punchResetStartAngle = 0;
+        punchResetEndAngle = getFinalArmRotation();
+
+        dontUsePunchSound = false;
     }
 
     public void applyServerArmData(float rotation) {
@@ -496,13 +530,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 ClientPackets.p5PlayerVelocity(xDir, yDir, sprinting);
             }
 
-            boolean canSendPunchPacket = (punchEnd - now) < 0 && (clientPunchEnd - now) < 0;
-
-            if(canSendPunchPacket && IngameInput.get().leftPressed() && getUI().currentContainer == null) {
-                clientPunchEnd = now + 0.1f;
-                ClientPackets.p16PlayerPunch(RenderContext.get().mouseRotation);
-            }
-
             // Update local player chunks
             chunkX = ExpoShared.posToChunk(clientPosX);
             chunkY = ExpoShared.posToChunk(clientPosY);
@@ -535,6 +562,28 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 ClientPackets.p22PlayerArmDirection(currentRotation);
             }
 
+            //boolean canSendPunchPacket = (punchEnd - now) < 0 && (clientPunchEnd - now) < 0;
+
+            if(timeSinceLastSend >= PLAYER_ARM_MOVEMENT_SEND_RATE) {
+                boolean containerClosed = getUI().currentContainer == null;
+                boolean holdingLeft = IngameInput.get().leftPressed();
+                boolean differs = lastLeftClickSend != holdingLeft;
+
+                if(holdingLeft) {
+                    // Is now clicking left.
+                    if(differs && containerClosed) {
+                        ClientPackets.p16PlayerPunch(currentRotation, true);
+                        lastLeftClickSend = true;
+                    }
+                } else {
+                    // Released left.
+                    if(differs) {
+                        ClientPackets.p16PlayerPunch(currentRotation, false);
+                        lastLeftClickSend = false;
+                    }
+                }
+            }
+
             if(IngameInput.get().rightJustPressed()) {
                 if(selector.canDoAction()) {
                     selector.playPulseAnimation();
@@ -547,7 +596,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 }
             }
         } else {
-            // Sync arm rotation if needed
+            // MULTIPLAYER-ONLY code
             float n = RenderContext.get().deltaTotal;
 
             if(n >= serverPunchAngleEnd) {
@@ -558,31 +607,65 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
         }
 
-        punchAnimation = (punchEnd - now) > 0;
+        boolean regularPunchAnimation = (punchEnd - now) > 0;
+        boolean resetPunch = (punchResetEndTimestamp - now) > 0 && !regularPunchAnimation && holdingItemId != -1;
+        punchAnimation = regularPunchAnimation || resetPunch;
 
         if(punchAnimation) {
-            float norm = 1f / (punchEnd - punchStart);
-            float progress = (now - punchStart) * norm;
+            if(resetPunch) {
+                float rt = player ? RenderContext.get().mouseRotation : serverPunchAngle;
+                int dir = direction();
+
+                if(dir == 1 && rt >= 0) {
+                    punchResetEndAngle = rt;
+                } else if(dir == 0 && rt <= 0) {
+                    punchResetEndAngle = rt;
+                }
+            }
+
+            float norm;
+            float progress;
+
+            if(resetPunch) {
+                norm = 1f / (punchResetEndTimestamp - punchResetStartTimestamp);
+                progress = (now - punchResetStartTimestamp) * norm;
+            } else {
+                norm = 1f / (punchEnd - punchStart);
+                progress = (now - punchStart) * norm;
+            }
+
             float interpolationValue = Interpolation.circle.apply(progress);
 
             if(punchDirection == 0) {
-                currentPunchAngle = punchStartAngle - (punchStartAngle - punchEndAngle) * interpolationValue;
+                if(resetPunch) {
+                    currentPunchAngle = punchResetStartAngle - (punchResetStartAngle - punchResetEndAngle) * interpolationValue;
+                } else {
+                    currentPunchAngle = punchStartAngle - (punchStartAngle - punchEndAngle) * interpolationValue;
+                }
             } else {
-                currentPunchAngle = punchEndAngle - (punchEndAngle - punchStartAngle) * interpolationValue;
+                if(resetPunch) {
+                    currentPunchAngle = punchResetStartAngle + (punchResetEndAngle - punchResetStartAngle) * interpolationValue;
+                } else {
+                    currentPunchAngle = punchEndAngle - (punchEndAngle - punchStartAngle) * interpolationValue;
+                }
             }
 
-            if(punchSound && interpolationValue >= 0.1f) {
+            if(!resetPunch && punchSound && interpolationValue >= 0.1f) {
                 punchSound = false;
 
                 if(player) {
-                    AudioEngine.get().playSoundGroup("punch");
+                    if(!dontUsePunchSound) {
+                        AudioEngine.get().playSoundGroup("punch");
+                    }
 
                     if(selector.canDoAction()) {
                         selector.playPulseAnimation();
                         ClientPackets.p31PlayerDig(selector.toChunkX, selector.toChunkY, selector.tileGridX, selector.tileGridY, selector.toTileArray);
                     }
                 } else {
-                    AudioEngine.get().playSoundGroupManaged("punch", new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
+                    if(!dontUsePunchSound) {
+                        AudioEngine.get().playSoundGroupManaged("punch", new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
+                    }
                 }
             } else {
                 if(lastPunchValue > interpolationValue) {
@@ -590,9 +673,14 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 }
             }
 
+            if(resetPunch) {
+                dontUsePunchSound = false;
+            }
+
             lastPunchValue = interpolationValue;
         } else {
             punchSound = true;
+            dontUsePunchSound = false;
         }
 
         // Player footstep sounds
@@ -905,10 +993,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     @Override
     public void calculateReflection() {
         drawReflection = true;
-    }
-
-    public void playPunchAnimation() {
-
     }
 
     private void onFootstep() {
