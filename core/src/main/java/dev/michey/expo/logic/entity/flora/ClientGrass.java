@@ -73,6 +73,9 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
         contactAnimator.onContact();
 
         ParticleSheet.Common.spawnGrassHitParticles(this);
+        if(newHealth <= 0) {
+            ParticleSheet.Common.spawnDustHitParticles(this);
+        }
     }
 
     @Override

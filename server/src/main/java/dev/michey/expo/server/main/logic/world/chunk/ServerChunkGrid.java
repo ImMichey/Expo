@@ -47,7 +47,6 @@ public class ServerChunkGrid {
     private final Noise terrainNoiseHeight;
     private final Noise terrainNoiseTemperature;
     private final Noise terrainNoiseMoisture;
-    private final Noise riverNoise;
     private final HashMap<String, Noise> noisePostProcessorMap;
     private final ConcurrentHashMap<String, Pair<BiomeType, float[]>> noiseCacheMap;
 
@@ -90,17 +89,12 @@ public class ServerChunkGrid {
         terrainNoiseHeight = new Noise(0);
         terrainNoiseTemperature = new Noise(0);
         terrainNoiseMoisture = new Noise(0);
-        riverNoise = new Noise(0);
 
         if(settings != null) {
             if(settings.isTerrainGenerator()) {
                 settings.terrainElevation.applyTo(terrainNoiseHeight);
                 settings.terrainTemperature.applyTo(terrainNoiseTemperature);
                 settings.terrainMoisture.applyTo(terrainNoiseMoisture);
-            }
-
-            if(settings.isRiversGenerator()) {
-                settings.river.applyTo(riverNoise);
             }
 
             if(settings.isPostProcessorGenerator()) {
@@ -200,11 +194,6 @@ public class ServerChunkGrid {
             float moisture = normalized(terrainNoiseMoisture, x, y);
 
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
-                if(toCheck != BiomeType.OCEAN_DEEP) {
-                    float river = normalized(riverNoise, x, y);
-                    if(river >= 0.975f) return new Pair<>(BiomeType.RIVER, new float[] {river, temperature, moisture});
-                }
-
                 for(NoisePostProcessor npp : dimension.getChunkHandler().getGenSettings().getNoiseSettings().postProcessList) {
                     if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
                         float _norm = normalized(noisePostProcessorMap.get(ppb.noiseName), x, y);
@@ -547,10 +536,6 @@ public class ServerChunkGrid {
 
     public Noise getTerrainNoiseTemperature() {
         return terrainNoiseTemperature;
-    }
-
-    public Noise getRiverNoise() {
-        return riverNoise;
     }
 
     public HashMap<String, Noise> getNoisePostProcessorMap() {

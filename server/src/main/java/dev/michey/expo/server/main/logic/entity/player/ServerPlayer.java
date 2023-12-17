@@ -3,7 +3,6 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -11,25 +10,34 @@ import dev.michey.expo.server.fs.world.player.PlayerSaveFile;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.arch.*;
-import dev.michey.expo.server.main.logic.inventory.ServerInventory;
-import dev.michey.expo.server.main.logic.world.bbox.*;
 import dev.michey.expo.server.main.logic.entity.misc.ServerGravestone;
 import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
+import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.*;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
+import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
+import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.packet.P16_PlayerPunch;
-import dev.michey.expo.server.util.*;
+import dev.michey.expo.server.util.PacketReceiver;
+import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.server.util.ServerUtils;
+import dev.michey.expo.server.util.TeleportReason;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.*;
@@ -160,6 +168,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     public void teleportPlayer(float x, float y, TeleportReason teleportReason) {
+        // Ensure chunk is loaded.
+        getChunkGrid().getChunkSafe(ExpoShared.posToChunk(x), ExpoShared.posToChunk(y));
+
         physicsBody.teleport(x, y);
         posX = x;
         posY = y;
@@ -429,14 +440,18 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         }
     }
 
-    public void consumeFood(float hungerRestore, float hungerCooldown) {
+    public void consumeFood(float hungerRestore, float hungerCooldown, float healthRestore) {
         nextHungerTickDown = 4.0f;
         nextHungerDamageTick = 4.0f;
-        if(hungerCooldown > this.hungerCooldown) {
-            this.hungerCooldown = hungerCooldown;
+        if(hungerCooldown > 0) {
+            if(hungerCooldown > this.hungerCooldown) {
+                this.hungerCooldown = hungerCooldown;
+            }
         }
         hunger += hungerRestore;
         if(hunger > 100.0f) hunger = 100.0f;
+        health += healthRestore;
+        if(health > getMetadata().getMaxHealth()) health = getMetadata().getMaxHealth();
     }
 
     public void damagePlayer(float damage) {
@@ -562,8 +577,6 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         ItemMapping m = ItemMapper.get().getMapping(item.itemId);
         if(m.logic.placeData == null) return; // to combat de-sync server<->client, double check current item
 
-        ExpoLogger.log("-> " + tileArray + " " + mouseWorldX + " " + mouseWorldY);
-
         var chunk = getChunkGrid().getChunkSafe(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
         PlaceData p = m.logic.placeData;
@@ -576,16 +589,56 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             chunk.lastTileUpdate = System.currentTimeMillis();
 
             { // Update tile data
-                tile.updateLayer0(p.floorType.TILE_LAYER_TYPE);
-                ServerPackets.p32ChunkDataSingle(tile, 0);
+                if(p.floorType == FloorType.DIRT && TileLayerType.isWater(tile.dynamicTileParts[2].emulatingType)) {
+                    boolean deepPriority = tile.dynamicTileParts[1].emulatingType == TileLayerType.SOIL_DEEP_WATERLOGGED;
 
-                for(ServerTile st : tile.getNeighbouringTiles()) {
-                    if(st.updateLayer0Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
-                        ServerPackets.p32ChunkDataSingle(st, 0);
-                        if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                    if(deepPriority) {
+                        tile.updateLayer1(TileLayerType.SOIL_WATERLOGGED);
+                        ServerPackets.p32ChunkDataSingle(tile, 1);
+
+                        for(ServerTile st : tile.getNeighbouringTiles()) {
+                            if(st.updateLayer1Adjacent(false)) {
+                                ServerPackets.p32ChunkDataSingle(st, 1);
+                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                            }
+                        }
+                    } else {
+                        tile.updateLayer2(TileLayerType.EMPTY);
+                        tile.updateLayer1(TileLayerType.EMPTY);
+                        tile.updateLayer0(TileLayerType.SOIL);
+                        ServerPackets.p32ChunkDataSingle(tile, 0);
+                        ServerPackets.p32ChunkDataSingle(tile, 1);
+                        ServerPackets.p32ChunkDataSingle(tile, 2);
+
+                        for(ServerTile st : tile.getNeighbouringTiles()) {
+                            if(st.updateLayer0Adjacent(false)) {
+                                ServerPackets.p32ChunkDataSingle(st, 0);
+                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                            }
+                            if(st.updateLayer1Adjacent(false)) {
+                                ServerPackets.p32ChunkDataSingle(st, 1);
+                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                            }
+                            if(st.updateLayer2Adjacent(false)) {
+                                ServerPackets.p32ChunkDataSingle(st, 2);
+                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                            }
+                        }
+                    }
+                } else {
+                    tile.updateLayer0(p.floorType.TILE_LAYER_TYPE);
+                    ServerPackets.p32ChunkDataSingle(tile, 0);
+
+                    for(ServerTile st : tile.getNeighbouringTiles()) {
+                        if(st.updateLayer0Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
+                            ServerPackets.p32ChunkDataSingle(st, 0);
+                            if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                        }
                     }
                 }
             }
+
+            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
 
             { // Update inventory
                 useItemAmount(item);
@@ -608,6 +661,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 }
             }
 
+            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+
             { // Update inventory
                 useItemAmount(item);
             }
@@ -628,6 +683,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     }
                 }
             }
+
+            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
 
             { // Update inventory
                 useItemAmount(item);
@@ -653,8 +710,6 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     }
                 }
 
-                ExpoLogger.log("Proceed, " + tile.tileX + " " + tile.tileY);
-
                 if(proceed) {
                     // Proceed.
                     ServerEntity createdTileEntity = ServerEntityType.typeToEntity(p.entityType);
@@ -665,6 +720,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
                     createdTileEntity.attachToTile(chunk, x, y);
 
+                    ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
                     useItemAmount(item);
                     playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
                 }
@@ -675,6 +731,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 placedEntity.posY = mouseWorldY + p.placeAlignmentOffsetY;
                 ServerWorld.get().registerServerEntity(entityDimension, placedEntity);
 
+                ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
                 useItemAmount(item);
                 playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
             }

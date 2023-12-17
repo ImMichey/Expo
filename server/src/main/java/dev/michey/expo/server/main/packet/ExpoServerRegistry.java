@@ -108,7 +108,8 @@ public class ExpoServerRegistry {
                 P42_EntityAnimation.class,
                 P43_EntityDeleteAdvanced.class,
                 P44_Connect_Rsp.class,
-                P45_Auth_Req.class
+                P45_Auth_Req.class,
+                P46_EntityConstruct.class
         );
     }
 

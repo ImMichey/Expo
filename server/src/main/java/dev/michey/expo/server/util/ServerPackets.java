@@ -47,11 +47,10 @@ public class ServerPackets {
     }
 
     /** Sends the P2_EntityCreate packet via TCP protocol. */
-    public static void p2EntityCreate(ServerEntityType entityType, int entityId, String dimensionName, float serverPosX, float serverPosY, int tileArray, float health, PacketReceiver receiver) {
+    public static void p2EntityCreate(ServerEntityType entityType, int entityId, float serverPosX, float serverPosY, int tileArray, float health, PacketReceiver receiver) {
         P2_EntityCreate p = new P2_EntityCreate();
         p.entityType = entityType;
         p.entityId = entityId;
-        p.dimensionName = dimensionName;
         p.serverPosX = serverPosX;
         p.serverPosY = serverPosY;
         p.tileArray = tileArray;
@@ -60,7 +59,7 @@ public class ServerPackets {
     }
 
     public static void p2EntityCreate(ServerEntity entity, PacketReceiver receiver) {
-        p2EntityCreate(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, entity.health, receiver);
+        p2EntityCreate(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, entity.health, receiver);
     }
 
     /** Sends the P3_PlayerJoin packet via TCP protocol. */
@@ -312,11 +311,10 @@ public class ServerPackets {
     }
 
     /** Sends the P29_EntityCreateAdvanced packet via TCP protocol. */
-    public static void p29EntityCreateAdvanced(ServerEntityType entityType, int entityId, String dimensionName, float serverPosX, float serverPosY, int tileArray, float health, Object[] payload, PacketReceiver receiver) {
+    public static void p29EntityCreateAdvanced(ServerEntityType entityType, int entityId, float serverPosX, float serverPosY, int tileArray, float health, Object[] payload, PacketReceiver receiver) {
         P29_EntityCreateAdvanced p = new P29_EntityCreateAdvanced();
         p.entityType = entityType;
         p.entityId = entityId;
-        p.dimensionName = dimensionName;
         p.serverPosX = serverPosX;
         p.serverPosY = serverPosY;
         p.payload = payload;
@@ -327,7 +325,7 @@ public class ServerPackets {
 
     public static void p29EntityCreateAdvanced(ServerEntity entity, PacketReceiver receiver) {
         int tileEntityId = entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1;
-        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.entityDimension, entity.posX, entity.posY, tileEntityId, entity.health, entity.getPacketPayload(), receiver);
+        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, tileEntityId, entity.health, entity.getPacketPayload(), receiver);
     }
 
     /** Sends the P30_EntityDataUpdate packet via UDP protocol. */
@@ -428,6 +426,15 @@ public class ServerPackets {
         p.newHealth = newHealth;
         p.damageSourceEntityId = damageSourceEntityId;
         tcp(p, receiver);
+    }
+
+    /** Sends the P46_EntityConstruct packet via UDP protocol. */
+    public static void p46EntityConstruct(int itemId, int tileX, int tileY, PacketReceiver receiver) {
+        P46_EntityConstruct p = new P46_EntityConstruct();
+        p.itemId = itemId;
+        p.tileX = tileX;
+        p.tileY = tileY;
+        udp(p, receiver);
     }
 
     /** Helper methods below. */

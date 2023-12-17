@@ -10,6 +10,7 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.SelectorType;
 import dev.michey.expo.render.visbility.TopVisibilityEntity;
+import dev.michey.expo.server.main.logic.inventory.item.FloorType;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
@@ -23,26 +24,11 @@ import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
 public class ClientSelector extends ClientEntity implements TopVisibilityEntity {
 
     private TextureRegion selector;
-    private float selectorScale;
-    private float selectorDelta;
-    private float selectorSign = 1.0f;
-    private float selectorCooldownDelta;
     private float lastTileWorldX, lastTileWorldY;
     private float fluidTransitionDelta;
     private float fluidTransitionOriginX, fluidTransitionOriginY;
     private boolean fluidTransition;
     private boolean wasHidden;
-
-    /*
-    private float factor = -1.0f;
-    private final float MAX_ALPHA = 0.25f;
-    private final float ALPHA_SPEED = 2.0f;
-    private float alphaDelta;
-    private float alpha = MAX_ALPHA;
-
-    private final Color COLOR_CAN_DIG = new Color(0.5f, 1.0f, 0.5f, 1.0f);
-    private final Color COLOR_CANT_DIG = new Color(1.0f, 0.0f, 0.0f, 1.0f);
-    */
 
     /** New selector values */
     public SelectorType currentSelectorType = SelectorType.DIG_SHOVEL; // default
@@ -50,11 +36,21 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
     public boolean currentlyVisible = false;
     private boolean eligible;
     public boolean blockSelection = false;
+    public boolean playPulseAnimation;
+    public float pulseAnimationDelta;
+    public float pulseValue;
 
-    public float externalPosX, externalPosY;
-    public int selectionChunkX, selectionChunkY;
-    public int selectionTileX, selectionTileY;
-    public int selectionTileArray;
+    // Externally set by ClientPlayer
+    public int tileGridX, tileGridY;    // Tile position [0, 1, 2, 3, etc.]
+    public int worldX, worldY;          // Mouse world position
+    public boolean useTileCheck;
+    public boolean useFreeCheck;
+    public float drawPosX, drawPosY;
+    public boolean reset0;
+
+    // Calculated in tick0()
+    public int toChunkX, toChunkY;
+    public int toTileArray;
 
     @Override
     public void onCreation() {
@@ -70,34 +66,40 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
         return currentlyVisible && eligible;
     }
 
+    private int getTileArray() {
+        int stx = ExpoShared.posToTile(ExpoShared.chunkToPos(toChunkX));
+        int sty = ExpoShared.posToTile(ExpoShared.chunkToPos(toChunkY));
+        int rtx = tileGridX - stx;
+        int rty = tileGridY - sty;
+        return rty * ROW_TILES + rtx;
+    }
+
     public void tick0() {
         eligible = false;
+        useTileCheck = false;
+        useFreeCheck = false;
+
         if(!currentlyVisible) {
             wasHidden = true;
             return;
         }
 
-        selectionChunkX = ExpoShared.posToChunk(externalPosX);
-        selectionChunkY = ExpoShared.posToChunk(externalPosY);
-        var chunk = chunkGrid().getChunk(selectionChunkX, selectionChunkY);
+        // Get current chunk
+        toChunkX = ExpoShared.posToChunk(worldX);
+        toChunkY = ExpoShared.posToChunk(worldY);
+
+        // Check if chunk is out of bounds
+        var chunk = chunkGrid().getChunk(toChunkX, toChunkY);
         if(chunk == null) return;
 
-        selectionTileX = ExpoShared.posToTile(externalPosX);
-        selectionTileY = ExpoShared.posToTile(externalPosY);
-
-        int stx = ExpoShared.posToTile(ExpoShared.chunkToPos(selectionChunkX));
-        int sty = ExpoShared.posToTile(ExpoShared.chunkToPos(selectionChunkY));
-
-        int rtx = selectionTileX - stx;
-        int rty = selectionTileY - sty;
-        selectionTileArray = rty * ROW_TILES + rtx;
+        toTileArray = getTileArray();
 
         ClientPlayer p = ClientPlayer.getLocalPlayer();
         ItemMapping mapping = (p.holdingItemId == -1 ? null : ItemMapper.get().getMapping(p.holdingItemId));
 
-        TileLayerType t0 = chunk.dynamicTiles[selectionTileArray][0].emulatingType;
-        TileLayerType t1 = chunk.dynamicTiles[selectionTileArray][1].emulatingType;
-        TileLayerType t2 = chunk.dynamicTiles[selectionTileArray][2].emulatingType;
+        TileLayerType t0 = chunk.dynamicTiles[toTileArray][0].emulatingType;
+        TileLayerType t1 = chunk.dynamicTiles[toTileArray][1].emulatingType;
+        TileLayerType t2 = chunk.dynamicTiles[toTileArray][2].emulatingType;
         boolean layer0Soil = t0 == TileLayerType.SOIL;
         boolean layer0Farmland = t0 == TileLayerType.SOIL_FARMLAND;
         boolean layer0Hole = t0 == TileLayerType.SOIL_HOLE;
@@ -107,16 +109,23 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
         boolean layer1Empty = t1 == TileLayerType.EMPTY;
         boolean layer2Empty = t2 == TileLayerType.EMPTY;
         boolean layer1Wall = t1.TILE_IS_WALL;
+        boolean layer2Wall = t2.TILE_IS_WALL;
+        boolean tileEntity = chunk.tileEntityGrid != null && chunk.tileEntityGrid[toTileArray] != -1;
+        boolean layer2Water = TileLayerType.isWater(t2);
 
         if(currentSelectorType == SelectorType.DIG_SHOVEL) {
-            if(layer1Grass || layer1Sand || layer1Plains) {
-                eligible = true;
-            } else if(layer1Empty && layer0Soil) {
-                eligible = true;
+            if(!tileEntity && !layer1Wall && !layer2Wall) {
+                if(layer1Grass || layer1Sand || layer1Plains) {
+                    eligible = true;
+                } else if(layer1Empty && layer0Soil) {
+                    eligible = true;
+                }
             }
         } else if(currentSelectorType == SelectorType.DIG_SCYTHE) {
-            if(layer1Empty && layer0Soil) {
-                eligible = true;
+            if(!tileEntity && !layer1Wall && !layer2Wall) {
+                if(layer1Empty && layer0Soil) {
+                    eligible = true;
+                }
             }
         } else if(currentSelectorType == SelectorType.PLACE_ENTITY) {
             if(mapping != null) {
@@ -124,12 +133,14 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
 
                 if(placeData != null) {
                     if(placeData.alignment == PlaceAlignment.TILE) {
-                        if(placeData.floorRequirement != null) {
-                            if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement) {
+                        if(!layer1Wall && !layer2Wall && !tileEntity) {
+                            if(placeData.floorRequirement != null) {
+                                if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement) {
+                                    eligible = true;
+                                }
+                            } else {
                                 eligible = true;
                             }
-                        } else {
-                            eligible = true;
                         }
                     } else if(placeData.alignment == PlaceAlignment.UNRESTRICTED) {
                         eligible = true;
@@ -140,9 +151,11 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
             if(mapping != null) {
                 PlaceData placeData = mapping.logic.placeData;
 
-                if(placeData != null) {
+                if(placeData != null && !tileEntity) {
                     if(placeData.type == PlaceType.FLOOR_0) {
-                        if(layer0Farmland || layer0Hole) {
+                        if(placeData.floorType == FloorType.DIRT && layer2Water) {
+                            eligible = true;
+                        } else if(layer0Farmland || layer0Hole) {
                             eligible = true;
                         }
                     } else if(placeData.type == PlaceType.FLOOR_1) {
@@ -161,23 +174,7 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
 
     @Override
     public void tick(float delta) {
-            /*
-            if(lastTix != tix || lastTiy != tiy) {
-                alphaDelta = 0;
-                alpha = MAX_ALPHA;
-            } else {
-                alphaDelta += delta * factor * ALPHA_SPEED;
-                alpha = Interpolation.fade.apply(1.0f - alphaDelta) * MAX_ALPHA;
 
-                if(alphaDelta < 0) {
-                    alphaDelta = 0;
-                    factor *= -1;
-                } else if(alphaDelta > 1.0f) {
-                    alphaDelta = 1.0f;
-                    factor *= -1;
-                }
-            }
-            */
     }
 
     @Override
@@ -198,28 +195,31 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
     @Override
     public void renderTop(RenderContext rc, float delta) {
         if(currentlyVisible) {
-            depth = externalPosY;
+            depth = worldY;
 
-            boolean changedTile = (lastTileWorldX != externalPosX) || (lastTileWorldY != externalPosY);
-            float TOTAL_COOLDOWN = 0.5f;
+            boolean changedTile = (lastTileWorldX != drawPosX) || (lastTileWorldY != drawPosY);
+
+            if(reset0) {
+                reset0 = false;
+                changedTile = true;
+                wasHidden = true;
+            }
 
             if(changedTile) {
                 fluidTransitionDelta = 0.0f;
                 fluidTransition = true;
                 if(wasHidden) {
-                    fluidTransitionOriginX = externalPosX;
-                    fluidTransitionOriginY = externalPosY;
+                    fluidTransitionOriginX = drawPosX;
+                    fluidTransitionOriginY = drawPosY;
                     wasHidden = false;
                 } else {
                     fluidTransitionOriginX = lastTileWorldX;
                     fluidTransitionOriginY = lastTileWorldY;
                 }
-                selectorCooldownDelta = TOTAL_COOLDOWN;
-                selectorScale = 1.0f;
             }
 
-            float useDrawX = externalPosX;
-            float useDrawY = externalPosY;
+            float useDrawX = drawPosX;
+            float useDrawY = drawPosY;
 
             if(fluidTransition) {
                 float TRANSITION_SPEED = 12.0f;
@@ -232,54 +232,45 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
 
                 float interpolated = Interpolation.smooth2.apply(fluidTransitionDelta);
 
-                useDrawX = fluidTransitionOriginX + (externalPosX - fluidTransitionOriginX) * interpolated;
-                useDrawY = fluidTransitionOriginY + (externalPosY - fluidTransitionOriginY) * interpolated;
+                useDrawX = fluidTransitionOriginX + (drawPosX - fluidTransitionOriginX) * interpolated;
+                useDrawY = fluidTransitionOriginY + (drawPosY - fluidTransitionOriginY) * interpolated;
             }
 
-            if(currentEntityPlacementTexture == null) {
-                if(!fluidTransition) {
-                    if(selectorCooldownDelta > 0) {
-                        selectorCooldownDelta -= delta;
-                    } else {
-                        float SELECTOR_SPEED = 8.0f;
-                        selectorDelta += delta * selectorSign * SELECTOR_SPEED;
+            if(playPulseAnimation) {
+                float PULSE_SPEED = 6.0f;
+                pulseAnimationDelta += delta * PULSE_SPEED;
 
-                        if(selectorDelta >= 1.0f) {
-                            selectorDelta = 1.0f;
-                            selectorSign = -1.0f;
-                        } else if(selectorDelta < 0.0f) {
-                            selectorDelta = 0.0f;
-                            selectorSign = 1.0f;
-                            selectorCooldownDelta = TOTAL_COOLDOWN;
-                        }
-                    }
-
-                    float SELECTOR_SCALE_THRESHOLD = 0.125f;
-                    selectorScale = 1.0f - Interpolation.pow4.apply(selectorDelta) * SELECTOR_SCALE_THRESHOLD;
+                if(pulseAnimationDelta >= 1.0f) {
+                    pulseAnimationDelta = 1.0f;
+                    playPulseAnimation = false;
                 }
 
-                float sz = (TILE_SIZE + 4) * selectorScale;
+                float normalized;
 
-                //rc.arraySpriteBatch.end();
-                //rc.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-                if(eligible) {
-                    //rc.chunkRenderer.setColor(0.0f, 1.0f, 0.0f, 0.75f);
+                if(pulseAnimationDelta < 0.5f) {
+                    normalized = pulseAnimationDelta * 2;
                 } else {
-                    //rc.chunkRenderer.setColor(1.0f, 0.2f, 0.2f, 0.75f);
+                    normalized = 1f - (pulseAnimationDelta - 0.5f) * 2;
                 }
 
-                float px = useDrawX + (TILE_SIZE - sz) * 0.5f;
-                float py = useDrawY + (TILE_SIZE - sz) * 0.5f;
-
-                /*
-                rc.chunkRenderer.rect(px, py, sz, sz);
-                rc.chunkRenderer.setColor(Color.WHITE);
-                rc.chunkRenderer.end();
-                */
-
-                rc.arraySpriteBatch.draw(selector, px, py, sz, sz);
+                float PULSE_SCALE = 0.25f;
+                pulseValue = Interpolation.pow3.apply(normalized) * PULSE_SCALE;
             } else {
+                pulseValue = 0.0f;
+                pulseAnimationDelta = 0.0f;
+            }
+
+            float seladj = 0;
+
+            if(currentEntityPlacementTexture != null) {
+                seladj = tr(currentEntityPlacementTexture).getRegionWidth() * 0.5f;
+            }
+
+            float sz = TILE_SIZE + 4 - ((TILE_SIZE + 4) * pulseValue);
+            float px = useDrawX - 8 + seladj + (TILE_SIZE - sz) * 0.5f;
+            float py = useDrawY + (TILE_SIZE - sz) * 0.5f;
+
+            if(currentEntityPlacementTexture != null) {
                 if(eligible) {
                     rc.arraySpriteBatch.setColor(0.1f, 1.0f, 0.1f, 0.75f);
                 } else {
@@ -288,15 +279,23 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
 
                 rc.arraySpriteBatch.setShader(rc.buildPreviewShader);
 
-                rc.arraySpriteBatch.draw(tr(currentEntityPlacementTexture), useDrawX, useDrawY);
+                TextureRegion tr = tr(currentEntityPlacementTexture);
+                rc.arraySpriteBatch.draw(tr, useDrawX, useDrawY);
 
                 rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
 
-            lastTileWorldX = externalPosX;
-            lastTileWorldY = externalPosY;
+            rc.arraySpriteBatch.draw(selector, px, py, sz, sz);
+
+            lastTileWorldX = drawPosX;
+            lastTileWorldY = drawPosY;
         }
+    }
+
+    public void playPulseAnimation() {
+        playPulseAnimation = true;
+        pulseAnimationDelta = 0f;
     }
 
 }

@@ -240,13 +240,13 @@ public abstract class ServerEntity {
     }
 
     public boolean isInWater() {
-        BiomeType b = getTileBiome();
-        return b == BiomeType.LAKE || b == BiomeType.OCEAN || b == BiomeType.RIVER || b == BiomeType.PUDDLE;
+        var dtp = getCurrentTile().dynamicTileParts;
+        return TileLayerType.isWater(dtp[2].emulatingType);
     }
 
     public boolean isInDeepWater() {
-        BiomeType b = getTileBiome();
-        return b == BiomeType.OCEAN_DEEP || b == BiomeType.LAKE_DEEP || b == BiomeType.RIVER_DEEP;
+        var dtp = getCurrentTile().dynamicTileParts;
+        return TileLayerType.isDeepWater(dtp[2].emulatingType);
     }
 
     public void attemptMove(float x, float y) {
@@ -298,11 +298,11 @@ public abstract class ServerEntity {
     }
 
     public float movementSpeedMultiplicator() {
-        boolean water = isInWater();
-        if(water) return 0.6f;
-
         boolean deepWater = isInDeepWater();
         if(deepWater) return 0.3f;
+
+        boolean water = isInWater();
+        if(water) return 0.6f;
 
         int tileX = ExpoShared.posToTile(posX);
         int tileY = ExpoShared.posToTile(posY);

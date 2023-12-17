@@ -11,51 +11,49 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public enum ServerEntityType {
 
-    PLAYER(0, "Player", false),
-    DUMMY(1, "Dummy", false),
-    GRASS(2, "Grass", true),
-    OAK_TREE(3, "OakTree", true),
-    MUSHROOM_RED(4, "MushroomRed", false),
-    MUSHROOM_BROWN(5, "MushroomBrown", false),
-    BUSH(6, "Bush", false),
-    ITEM(7, "Item", true),
-    ANCIENT_TREE(8, "AncientTree", false),
-    GRAVESTONE(9, "Gravestone", true),
-    DANDELION(10, "Dandelion", false),
-    POPPY(11, "Poppy", false),
-    BLUEBERRY_BUSH(12, "BlueberryBush", true),
-    WORM(13, "Worm", false),
-    ROCK(14, "Rock", true),
-    CRAB(15, "Crab", true),
-    DYNAMIC_3D_TILE(16, "Dynamic3DTile", true),
-    WHEAT_PLANT(17, "WheatPlant", false),
-    SUNFLOWER(18, "Sunflower", false),
-    FIREFLY(19, "Firefly", false),
-    MUSHROOM_GLOWING(20, "MushroomGlowing", false),
-    LILYPAD(21, "Lilypad", true),
-    ZOMBIE(22, "Zombie", false),
-    MAGGOT(23, "Maggot", false),
-    FENCE_STICK(24, "FenceStick", true),
-    CROP_WHEAT(25, "CropWheat", true),
-    BOULDER(26, "Boulder", true),
-    CRATE(27, "Crate", true),
-    OAK_TREE_SAPLING(28, "OakTreeSapling", false),
-    CATTAIL(29, "Cattail", true),
-    CHICKEN(30, "Chicken", true),
-    SIGN(31, "Sign", true),
-    CAMPFIRE(32, "Campfire", true),
-    WOODFOLK(33, "Woodfolk", false),
-    ALOE_VERA(34, "AloeVera", false),
-    TORCH(35, "Torch", false),
+    PLAYER(0, false),
+    DUMMY(1, false),
+    GRASS(2, true),
+    OAK_TREE(3, true),
+    MUSHROOM_RED(4, false),
+    MUSHROOM_BROWN(5, false),
+    BUSH(6, false),
+    ITEM(7, true),
+    ANCIENT_TREE(8, false),
+    GRAVESTONE(9, true),
+    DANDELION(10, false),
+    POPPY(11, false),
+    BLUEBERRY_BUSH(12, true),
+    WORM(13, false),
+    ROCK(14, true),
+    CRAB(15, true),
+    DYNAMIC_3D_TILE(16, true),
+    WHEAT_PLANT(17, false),
+    SUNFLOWER(18, false),
+    FIREFLY(19, false),
+    MUSHROOM_GLOWING(20, false),
+    LILYPAD(21, true),
+    ZOMBIE(22, false),
+    MAGGOT(23, false),
+    FENCE_STICK(24, true),
+    CROP_WHEAT(25, true),
+    BOULDER(26, true),
+    CRATE(27, true),
+    OAK_TREE_SAPLING(28, false),
+    CATTAIL(29, true),
+    CHICKEN(30, true),
+    SIGN(31, true),
+    CAMPFIRE(32, true),
+    WOODFOLK(33, false),
+    ALOE_VERA(34, false),
+    TORCH(35, false),
     ;
 
     public final int ENTITY_ID;
-    public final String ENTITY_NAME;
     public final boolean ADVANCED_PAYLOAD;
 
-    ServerEntityType(int ENTITY_ID, String ENTITY_NAME, boolean ADVANCED_PAYLOAD) {
+    ServerEntityType(int ENTITY_ID, boolean ADVANCED_PAYLOAD) {
         this.ENTITY_ID = ENTITY_ID;
-        this.ENTITY_NAME = ENTITY_NAME;
         this.ADVANCED_PAYLOAD = ADVANCED_PAYLOAD;
     }
 

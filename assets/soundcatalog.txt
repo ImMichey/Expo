@@ -122,7 +122,7 @@ grass_hit_1.wav
 grass_hit_2.wav
 grass_hit_3.wav
 
-#eat;true;0.9-1.4;SFX;1.0
+#eat;true;0.9-1.1;SFX;1.0
 eat_1.wav
 
 #falling_tree;true;1.0-1.0;SFX;0.5

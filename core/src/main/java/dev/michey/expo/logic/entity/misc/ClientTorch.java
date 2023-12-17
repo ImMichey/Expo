@@ -13,6 +13,7 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
@@ -20,7 +21,7 @@ import dev.michey.expo.util.ParticleEmitter;
 
 import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
-public class ClientTorch extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientTorch extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private TextureRegion torch;
     private TextureRegion selectionTexture;
@@ -48,23 +49,25 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
         torchLight.setFlickering(6.0f, 0.15f);
 
         particleEmitter = new ParticleEmitter(new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                .amount(2, 4)
+                .amount(1, 2)
                 .scale(0.3f, 0.7f)
-                .lifetime(0.35f, 0.55f)
+                .lifetime(0.6f, 1.0f)
                 .color(ParticleColorMap.of(14))
                 .position(finalDrawPosX - 0.5f, finalDrawPosY + 13f)
-                .velocity(-16, 16, 48, 112)
-                .fadeout(0.3f)
+                .velocity(-8, 8, 8, 28)
+                .fadeout(0.6f)
                 .randomRotation()
                 .rotateWithVelocity()
                 .textureRange(15, 15)
                 .decreaseSpeed()
                 .offset(4, 6)
-                .depth(depth + 0.001f), 0.05f, 0.05f, 0.05f);
+                .depth(depth + 0.001f), 0.05f, 0.1f, 0.1f);
         particleEmitter.setLinkedEntity(this);
     }
 
-    private void createSoundAndHandle(float maxAudibleRange) {
+    private void createSoundAndHandle() {
+        float maxAudibleRange = PLAYER_AUDIO_RANGE * 0.125f;
+
         if(torchSound != null) {
             if(torchSound.postCalcVolume <= 0.0f) {
                 AudioEngine.get().killSound(torchSound.id);
@@ -73,7 +76,7 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
         } else {
             if(AudioEngine.get().dstPlayer(clientPosX, clientPosY + 13) < maxAudibleRange) {
                 torchSound = AudioEngine.get().playSoundGroupManaged("campfire", new
-                        Vector2(clientPosX, clientPosY + 13), maxAudibleRange, true, 0.4f);
+                        Vector2(clientPosX, clientPosY + 13), maxAudibleRange, true, 0.125f);
             }
         }
     }
@@ -81,6 +84,11 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("wood_hit");
+
+        if(newHealth <= 0) {
+            //AudioEngine.get().playSoundGroupManaged("campfire_extinguish", new Vector2(clientPosX, clientPosY + torch.getRegionHeight() * 0.5f),
+            //        PLAYER_AUDIO_RANGE * 0.45f, false, 0.6f);
+        }
 
         ParticleSheet.Common.spawnWoodHitParticles(this, clientPosX, clientPosY + torch.getRegionHeight() * 0.5f);
         ParticleSheet.Common.spawnDustHitParticles(this);
@@ -100,7 +108,7 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
         torchLight.update(finalDrawPosX + 1.5f, finalDrawPosY + 13f, delta);
         particleEmitter.tick(delta);
         visibleToRenderEngine = RenderContext.get().inDrawBounds(this);
-        createSoundAndHandle(PLAYER_AUDIO_RANGE * 0.45f);
+        createSoundAndHandle();
 
         if(visibleToRenderEngine) {
             fireAnimation.tick(delta);
@@ -152,6 +160,11 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
     @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.TORCH;
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO50(rc, 0.4f, 0.4f, 0, 0);
     }
 
 }

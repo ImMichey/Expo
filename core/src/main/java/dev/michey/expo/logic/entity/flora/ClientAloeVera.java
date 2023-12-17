@@ -44,6 +44,9 @@ public class ClientAloeVera extends ClientEntity implements SelectableEntity, Re
         contactAnimator.onContact();
 
         ParticleSheet.Common.spawnGrassHitParticles(this);
+        if(newHealth <= 0) {
+            ParticleSheet.Common.spawnDustHitParticles(this);
+        }
     }
 
     @Override

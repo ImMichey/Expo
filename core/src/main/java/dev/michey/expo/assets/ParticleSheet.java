@@ -14,6 +14,8 @@ import dev.michey.expo.util.ParticleColorMap;
 
 import java.util.HashMap;
 
+import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
+
 public class ParticleSheet {
 
     private final HashMap<Integer, TextureRegion> particleTextureMap;
@@ -54,6 +56,47 @@ public class ParticleSheet {
     }
 
     public static class Common {
+
+        public static void spawnDustConstructFloorParticles(float x, float y) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(12, 18)
+                    .scale(0.6f, 1.0f)
+                    .lifetime(0.4f, 1.0f)
+                    .color(ParticleColorMap.of(15))
+                    .position(x, y)
+                    .velocity(-32, 32, 4, 40)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeoutLifetime(0.8f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .offset(16, 16)
+                    .depth(y)
+                    .spawn();
+        }
+
+        public static void spawnDustConstructEntityParticles(float x, float y, TextureRegion texture) {
+            if(!GameSettings.get().enableParticles) return;
+            float calculatedOffset = Math.max(texture.getRegionWidth() - 8, 2);
+            float offset = (TILE_SIZE - calculatedOffset) * 0.5f;
+            int plusParticles = (int) (calculatedOffset / 2);
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(4 + plusParticles, 8 + plusParticles)
+                    .scale(0.6f, 1.0f)
+                    .lifetime(0.4f, 1.0f)
+                    .color(ParticleColorMap.of(15))
+                    .position(x + offset, y + 1)
+                    .velocity(-32, 32, 4, 40)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeoutLifetime(0.8f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .offset(calculatedOffset, 2)
+                    .depth(y + 1)
+                    .spawn();
+        }
 
         public static void spawnPlayerFootstepParticles(ClientPlayer entity) {
             if(!GameSettings.get().enableParticles) return;
@@ -97,13 +140,13 @@ public class ParticleSheet {
         public static void spawnTorchParticles(float depth, float x, float y) {
             if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                    .amount(2, 4)
+                    .amount(1, 2)
                     .scale(0.3f, 0.7f)
-                    .lifetime(0.35f, 0.55f)
+                    .lifetime(0.6f, 1.0f)
                     .color(ParticleColorMap.of(14))
                     .position(x - 2, y - 4)
-                    .velocity(-16, 16, 48, 112)
-                    .fadeout(0.3f)
+                    .velocity(-8, 8, 8, 28)
+                    .fadeout(0.5f)
                     .randomRotation()
                     .rotateWithVelocity()
                     .textureRange(15, 15)

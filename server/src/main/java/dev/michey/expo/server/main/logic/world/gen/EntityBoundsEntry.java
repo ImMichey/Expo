@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class EntityBoundsEntry {
 
@@ -10,9 +9,7 @@ public class EntityBoundsEntry {
     public float width;
     public float height;
 
-    public EntityBoundsEntry(JSONObject object) {
-        JSONArray array = object.getJSONArray("bbox");
-
+    public EntityBoundsEntry(JSONArray array) {
         this.xOffset = array.getFloat(0);
         this.yOffset = array.getFloat(1);
         this.width = array.getFloat(2);

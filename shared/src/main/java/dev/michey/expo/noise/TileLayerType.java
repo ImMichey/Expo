@@ -97,6 +97,13 @@ public enum TileLayerType {
         };
     }
 
+    public static boolean isDeepWater(TileLayerType type) {
+        return switch (type) {
+            case WATER_DEEP, SOIL_DEEP_WATERLOGGED -> true;
+            default -> false;
+        };
+    }
+
     public static boolean isWater(TileLayerType type) {
         return switch (type) {
             case WATER, WATER_DEEP, WATER_SANDY, WATER_OVERLAY, SAND_WATERLOGGED, SOIL_DEEP_WATERLOGGED, SOIL_WATERLOGGED -> true;

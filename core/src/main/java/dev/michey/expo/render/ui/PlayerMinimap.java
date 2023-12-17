@@ -110,8 +110,9 @@ public class PlayerMinimap {
                         }
 
                         TileLayerType use;
+                        TileLayerType t1 = tile.dynamicTileParts[1].emulatingType;
 
-                        if(tile.biome == BiomeType.OCEAN_DEEP || tile.biome == BiomeType.LAKE_DEEP || tile.biome == BiomeType.RIVER_DEEP) {
+                        if(t1 == TileLayerType.WATER_DEEP || t1 == TileLayerType.SOIL_DEEP_WATERLOGGED) {
                             use = TileLayerType.WATER_DEEP;
                         } else {
                             ServerEntity sd3d = tile.hasTileBasedEntity(ServerEntityType.DYNAMIC_3D_TILE);
@@ -169,8 +170,9 @@ public class PlayerMinimap {
                         int tileArray = relativeTileY * ROW_TILES + relativeTileX;
 
                         TileLayerType use;
+                        TileLayerType t1 = chunk.dynamicTiles[tileArray][1].emulatingType;
 
-                        if(chunk.biomes[tileArray] == BiomeType.OCEAN_DEEP) {
+                        if(t1 == TileLayerType.WATER_DEEP || t1 == TileLayerType.SOIL_DEEP_WATERLOGGED) {
                             use = TileLayerType.WATER_DEEP;
                         } else {
                             ClientEntity te = null;

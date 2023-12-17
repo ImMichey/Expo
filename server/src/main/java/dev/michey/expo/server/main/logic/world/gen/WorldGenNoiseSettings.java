@@ -14,19 +14,12 @@ public class WorldGenNoiseSettings {
     public NoiseWrapper terrainTemperature;
     public NoiseWrapper terrainMoisture;
 
-    /** Noise RIVERS */
-    public NoiseWrapper river;
-
     /** Noise POST PROCESS */
     //public HashMap<String, NoisePostProcessor> postProcessList;
     public LinkedList<NoisePostProcessor> postProcessList;
 
     public boolean isTerrainGenerator() {
         return terrainElevation != null;
-    }
-
-    public boolean isRiversGenerator() {
-        return river != null;
     }
 
     public boolean isPostProcessorGenerator() {
@@ -112,22 +105,12 @@ public class WorldGenNoiseSettings {
         }
     }
 
-    public void parseRivers(JSONObject o) {
-        river = new NoiseWrapper("terrainElevation",
-                o.getInt("octaves"),
-                o.getInt("type"),
-                o.has("fractalType") ? o.getInt("fractalType") : -1,
-                o.getFloat("frequency"),
-                o.has("noiseOffset") ? o.getInt("noiseOffset") : 0);
-    }
-
     @Override
     public String toString() {
         return "WorldGenNoiseSettings{" +
                 "terrainElevation=" + terrainElevation +
                 ", terrainTemperature=" + terrainTemperature +
                 ", terrainMoisture=" + terrainMoisture +
-                ", river=" + river +
                 ", postProcessList=" + postProcessList +
                 '}';
     }

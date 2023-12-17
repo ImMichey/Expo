@@ -124,6 +124,7 @@ public class PlayerUI {
     public final TextureRegion slotSelectionMarker;
 
     public final TextureRegion iconAttackDamage;
+    public final TextureRegion iconHealthRestore;
     public final TextureRegion iconHungerRestore;
     public final TextureRegion iconHungerCooldownRestore;
 
@@ -177,6 +178,7 @@ public class PlayerUI {
         iconAttackDamage = new TextureRegion(icons, 0, 0, 9, 9);
         iconHungerRestore = new TextureRegion(icons, 10, 0, 9, 9);
         iconHungerCooldownRestore = new TextureRegion(icons, 20, 0, 9, 9);
+        iconHealthRestore = new TextureRegion(icons, 30, 0, 9, 9);
 
         chat = new ExpoClientChat(this);
 

@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,10 +39,6 @@ public class WorldGenSettings {
             noiseSettings.parseTerrain(object.getJSONObject("terrain"));
         }
 
-        if(object.has("rivers")) {
-            noiseSettings.parseRivers(object.getJSONObject("rivers"));
-        }
-
         if(object.has("biomes")) {
             JSONArray ba = object.getJSONArray("biomes");
 
@@ -75,7 +72,7 @@ public class WorldGenSettings {
                 for(int i = 0; i < entityArray.length(); i++) {
                     JSONObject singlePopulatorObject = entityArray.getJSONObject(i);
                     EntityPopulator populator = new EntityPopulator(singlePopulatorObject);
-                    populator.dimensionBounds = EntityPopulationBounds.get().getFor(populator.type);
+                    populator.dimensionBounds = EntityMetadataMapper.get().getFor(populator.type).getPopulationBbox();
                     list.add(populator);
                 }
 
@@ -89,7 +86,7 @@ public class WorldGenSettings {
         for(int i = 0; i < array.length(); i++) {
             JSONObject entry = array.getJSONObject(i);
             TilePopulator tilePopulator = new TilePopulator(entry);
-            tilePopulator.dimensionBounds = EntityPopulationBounds.get().getFor(tilePopulator.type);
+            tilePopulator.dimensionBounds = EntityMetadataMapper.get().getFor(tilePopulator.type).getPopulationBbox();
 
             for(BiomeType b : tilePopulator.biomes) {
                 tilePopulatorMap.computeIfAbsent(b, k -> new LinkedList<>());

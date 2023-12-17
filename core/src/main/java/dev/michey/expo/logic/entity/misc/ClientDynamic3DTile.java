@@ -3,13 +3,13 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.SquishAnimatorAdvanced2D;
@@ -18,6 +18,7 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.util.EntityRemovalReason;
+import dev.michey.expo.util.ExpoShared;
 
 public class ClientDynamic3DTile extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
@@ -89,12 +90,14 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         playEntitySound("stone_hit");
         squishAnimator2D.reset();
 
-        if(selected && newHealth <= 0) {
-            CameraShake.invoke(1.25f, 0.33f);
+        if(newHealth <= 0) {
+            if(selected) {
+                CameraShake.invoke(1.25f, 0.33f);
+            }
+            ParticleSheet.Common.spawnDustConstructFloorParticles(clientPosX, clientPosY);
         }
 
         ParticleSheet.Common.spawnDynamic3DHitParticles(this);
-        //spawnDamageIndicator((int) damage, clientPosX + 8 + MathUtils.random(-2f, 2f), clientPosY + textureHeight + 4, new Vector2(0, 1));
     }
 
     @Override
@@ -106,20 +109,19 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             createTexture();
         }
 
-        /*
         ClientPlayer local = ClientPlayer.getLocalPlayer();
         boolean playerBehind;
 
         if(local != null) {
             if(local.depth > depth) {
-                float buffer = 4;
+                float buffer = 0;
 
                 playerBehind = ExpoShared.overlap(new float[] {
-                        local.clientPosX, local.clientPosY,
-                        local.clientPosX + local.textureWidth, local.clientPosY + local.textureHeight
+                        local.finalDrawPosX, local.finalDrawPosY,
+                        local.finalDrawPosX + local.textureWidth, local.finalDrawPosY + local.textureHeight
                 }, new float[] {
-                        finalTextureStartX - buffer, finalTextureStartY - buffer,
-                        finalTextureStartX + textureWidth + buffer, finalTextureStartY + textureHeight + buffer
+                        finalTextureStartX - buffer, finalTextureStartY + 32 - buffer,
+                        finalTextureStartX + textureWidth + buffer, finalTextureStartY + 48 + buffer
                 });
             } else {
                 playerBehind = false;
@@ -145,7 +147,6 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
             playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
         }
-        */
     }
 
     @Override
@@ -232,7 +233,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
         setSelectionValuesNoOutline();
 
-        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated * 0.5f);
+        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated);
         rc.arraySpriteBatch.draw(created,
                 finalDrawPosX - squishAnimator2D.squishX1,
                 finalDrawPosY + squishAnimator2D.squishY1,

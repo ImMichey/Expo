@@ -113,7 +113,32 @@
         "ai.fleeSpeed": 48.0,
         "healthBar.offsetY": 16.0
     },
+    "GRASS": {
+        "bbox.population": [-4.0, 0, 8, 7]
+    },
+    "MUSHROOM_RED": {
+        "bbox.population": [-4.0, 0, 8, 7]
+    },
+    "MUSHROOM_BROWN": {
+        "bbox.population": [-4.0, 0, 8, 7]
+    },
+    "MUSHROOM_GLOWING": {
+        "bbox.population": [-4.0, 0, 8, 7]
+    },
+    "BLUEBERRY_BUSH": {
+        "bbox.population": [-7.5, 0, 15, 13]
+    },
+    "ROCK": {
+        "bbox.population": [-5.0, 0, 10, 10]
+    },
+    "SUNFLOWER": {
+        "bbox.population": [-5.0, 0, 10, 9]
+    },
+    "LILYPAD": {
+        "bbox.population": [-5.0, 0, 10, 8]
+    },
     "OAK_TREE": {
+        "bbox.population": [-13.0, -7, 27, 21],
         "maxHp.var1": 120.0,
         "maxHp.var2": 120.0,
         "maxHp.var3": 150.0,
@@ -129,17 +154,29 @@
         "name.var6": "Large Oak Tree",
         "name.trunk": "Oak Tree Trunk"
     },
+    "CATTAIL": {
+        "bbox.population": [-6.0, 0, 12.0, 8.0]
+    },
+    "CAMPFIRE": {
+        "bbox.population": [-5.0, 0, 10.0, 12.0]
+    },
+    "ALOE_VERA": {
+        "bbox.population": [-11.0, 0, 22.0, 14.0]
+    },
     "BUSH": {
+        "bbox.population": [-8.0, 0, 16, 12],
         "maxHp": 40.0,
         "name": "Bush"
     },
     "BOULDER": {
+        "bbox.population": [-8.0, 0, 16, 10],
         "maxHp.var1": 75.0,
         "maxHp.var2": 90.0,
         "name.var1": "Boulder",
         "name.var2": "Coal Boulder"
     },
     "DYNAMIC_3D_TILE": {
+        "bbox.population": [0, 0, 16.0, 16.0],
         "maxHp.DIRT": 75.0,
         "maxHp.ROCK": 75.0,
         "maxHp.OAKPLANKWALL": 75.0,

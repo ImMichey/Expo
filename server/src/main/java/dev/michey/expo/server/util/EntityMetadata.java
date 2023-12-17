@@ -1,6 +1,7 @@
 package dev.michey.expo.server.util;
 
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.world.gen.EntityBoundsEntry;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -9,9 +10,20 @@ import java.util.LinkedList;
 public class EntityMetadata {
 
     private final JSONObject object;
+    private final EntityBoundsEntry populationBbox;
 
     public EntityMetadata(JSONObject object) {
         this.object = object;
+
+        if(object.has("bbox.population")) {
+            populationBbox = new EntityBoundsEntry(object.getJSONArray("bbox.population"));
+        } else {
+            populationBbox = null;
+        }
+    }
+
+    public EntityBoundsEntry getPopulationBbox() {
+        return populationBbox;
     }
 
     public float getMaxHealth() {

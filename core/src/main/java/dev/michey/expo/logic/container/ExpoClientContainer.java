@@ -36,6 +36,7 @@ public class ExpoClientContainer {
 
     /** Dedicated server communication */
     private ExpoClient client;
+    private String loadingMessage = "def";
 
     /** The game world */
     private ClientWorld clientWorld;
@@ -141,7 +142,7 @@ public class ExpoClientContainer {
                 if(ExpoServerLocal.get() != null) {
                     string = "Loading World '" + ExpoServerLocal.get().getWorldSaveHandler().getWorldName() + "'...";
                 } else {
-                    string = "Retrieving World data...";
+                    string = loadingMessage;
                 }
 
                 r.globalGlyph.setText(r.m6x11_border_use, string);
@@ -185,6 +186,10 @@ public class ExpoClientContainer {
                 float w3 = playerUI.glyphLayout.width;
                 useFont.draw(r.hudBatch, pos, Gdx.graphics.getWidth() - w3 - spacing, Gdx.graphics.getHeight() - h * 3 - spacing * 4);
             }
+            long memory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+            String mem = readableFileSize(memory) + "/" + readableFileSize(Runtime.getRuntime().totalMemory()) + " Memory usage";
+            playerUI.glyphLayout.setText(useFont, mem);
+            useFont.draw(r.hudBatch, mem, Gdx.graphics.getWidth() - playerUI.glyphLayout.width - spacing, Gdx.graphics.getHeight() - h * 4 - spacing * 5);
             r.hudBatch.end();
 
             RenderContext.get().hudFbo.end();
@@ -208,7 +213,7 @@ public class ExpoClientContainer {
 
     public String readableFileSize(long size) {
         if(size <= 0) return "0";
-        final String[] units = new String[] {"B", "kB", "MB", "GB", "TB"};
+        final String[] units = new String[] {"B", "KB", "MB", "GB", "TB"};
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
@@ -237,6 +242,10 @@ public class ExpoClientContainer {
 
         AudioEngine.get().killAll();
         INSTANCE = null;
+    }
+
+    public void setLoadingMessage(String loadingMessage) {
+        this.loadingMessage = loadingMessage;
     }
 
     public ExpoClient getClient() {

@@ -52,7 +52,8 @@ public class ServerCampfire extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void tick(float delta) {
-        burnDuration -= delta;
+        float multiplier = isRaining() ? 1.5f : 1.0f;
+        burnDuration -= delta * multiplier;
 
         if((oldBurnDuration > 0 && burnDuration <= 0) || (oldBurnDuration < 0 && burnDuration > 0)) {
             ServerPackets.p30EntityDataUpdate(this);

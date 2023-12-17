@@ -63,6 +63,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     /** Is this the player controlled player entity? */
     public boolean player;
     public ClientSelector selector;
+    public boolean resetSelector;
 
     /** Player velocity */
     private int cachedVelocityX;
@@ -321,11 +322,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
                     if(placeData.floorType != null) {
                         selector.currentSelectorType = SelectorType.PLACE_TILE;
-                        selector.currentEntityPlacementTexture = null;
                     } else {
                         selector.currentSelectorType = SelectorType.PLACE_ENTITY;
-                        selector.currentEntityPlacementTexture = placeData.previewTextureName;
                     }
+                    selector.currentEntityPlacementTexture = placeData.previewTextureName;
 
                     ofx = placeData.previewOffsetX;
                     ofy = placeData.previewOffsetY;
@@ -340,19 +340,40 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 // Scan process
                 float tx = RenderContext.get().mouseWorldGridX;
                 float ty = RenderContext.get().mouseWorldGridY;
-                float range = mapping.logic.range;
+                float range = mapping.logic.range + 8;
 
                 if(scanTile) {
                     selector.currentlyVisible = true;
+                    selector.useTileCheck = true;
+
                     float d1 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty);
                     float d2 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty);
                     float d3 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty + 16);
                     float d4 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty + 16);
 
-                    if(d1 <= range || d2 <= range || d3 <= range || d4 <= range) {
-                        selector.externalPosX = tx + ofx;
-                        selector.externalPosY = ty + ofy;
+                    float d5 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 8, ty);
+                    float d6 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty + 8);
+                    float d7 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty + 8);
+                    float d8 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 8, ty + 16);
+
+                    float pvtAdjustmentX = 0, pvtAdjustmentY = 0;
+
+                    if(mapping.logic.placeData != null) {
+                        TextureRegion pvt = tr(mapping.logic.placeData.previewTextureName);
+                        pvtAdjustmentX = mapping.logic.placeData.previewOffsetX - pvt.getRegionWidth() * 0.5f;
+                        pvtAdjustmentY = mapping.logic.placeData.previewOffsetY;
+                    }
+
+                    if(d1 <= range || d2 <= range || d3 <= range || d4 <= range || d5 <= range || d6 <= range || d7 <= range || d8 <= range) {
+                        // Selected tile is in range, pick it
+                        selector.tileGridX = ExpoShared.posToTile(tx);
+                        selector.tileGridY = ExpoShared.posToTile(ty);
+                        selector.worldX = (int) tx;
+                        selector.worldY = (int) ty;
+                        selector.drawPosX = selector.worldX + 8 + pvtAdjustmentX;
+                        selector.drawPosY = selector.worldY + pvtAdjustmentY;
                     } else {
+                        // Selected tile is not in range, pick the closest tile
                         Vector2 dst = GenerationUtils.circular(RenderContext.get().mouseRotation + 270, range);
                         float ntx = playerReachCenterX + dst.x;
                         float nty = playerReachCenterY + dst.y;
@@ -360,8 +381,12 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         int _tix = ExpoShared.posToTile(ntx);
                         int _tiy = ExpoShared.posToTile(nty);
 
-                        selector.externalPosX = ExpoShared.tileToPos(_tix) + ofx;
-                        selector.externalPosY = ExpoShared.tileToPos(_tiy) + ofy;
+                        selector.tileGridX = _tix;
+                        selector.tileGridY = _tiy;
+                        selector.worldX = ExpoShared.tileToPos(_tix);
+                        selector.worldY = ExpoShared.tileToPos(_tiy);
+                        selector.drawPosX = selector.worldX + 8 + pvtAdjustmentX;
+                        selector.drawPosY = selector.worldY + pvtAdjustmentY;
 
                         if(selector.currentSelectorType == SelectorType.DIG_SCYTHE || selector.currentSelectorType == SelectorType.DIG_SHOVEL) {
                             selector.blockSelection = true;
@@ -369,6 +394,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     }
                 } else if(scanFreely) {
                     selector.currentlyVisible = true;
+                    selector.useFreeCheck = true;
 
                     // Revisit later.
                     float mx = RenderContext.get().mouseWorldX;
@@ -378,19 +404,26 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     float d = Vector2.dst(playerReachCenterX, playerReachCenterY, mx, my);
 
                     if(d > range) {
-                        Vector2 temp = new Vector2(mx, my)
-                                .sub(playerReachCenterX, playerReachCenterY).nor().scl(range);
+                        Vector2 temp = new Vector2(mx, my).sub(playerReachCenterX, playerReachCenterY).nor().scl(range);
                         desiredX = temp.x + playerReachCenterX + ofx;
                         desiredY = temp.y + playerReachCenterY + ofy;
                     }
 
-                    selector.externalPosX = desiredX;
-                    selector.externalPosY = desiredY;
+                    selector.worldX = (int) desiredX;
+                    selector.worldY = (int) desiredY;
+
+                    //selector.externalPosX = desiredX;
+                    //selector.externalPosY = desiredY;
                 } else {
                     selector.currentlyVisible = false;
                 }
             } else {
                 selector.currentlyVisible = false;
+            }
+
+            if(resetSelector) {
+                resetSelector = false;
+                selector.reset0 = true;
             }
 
             // Player direction
@@ -504,7 +537,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
             if(IngameInput.get().rightJustPressed()) {
                 if(selector.canDoAction()) {
-                    ClientPackets.p34PlayerPlace(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray,
+                    selector.playPulseAnimation();
+                    ClientPackets.p34PlayerPlace(selector.toChunkX, selector.toChunkY, selector.tileGridX, selector.tileGridY, selector.toTileArray,
                             (int) RenderContext.get().mouseWorldX, (int) RenderContext.get().mouseWorldY);
                 } else {
                     if(ClientEntityManager.get().selectedEntity != null) {
@@ -544,7 +578,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     AudioEngine.get().playSoundGroup("punch");
 
                     if(selector.canDoAction()) {
-                        ClientPackets.p31PlayerDig(selector.selectionChunkX, selector.selectionChunkY, selector.selectionTileX, selector.selectionTileY, selector.selectionTileArray);
+                        selector.playPulseAnimation();
+                        ClientPackets.p31PlayerDig(selector.toChunkX, selector.toChunkY, selector.tileGridX, selector.tileGridY, selector.toTileArray);
                     }
                 } else {
                     AudioEngine.get().playSoundGroupManaged("punch", new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE, false);
@@ -781,7 +816,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         updateTextureBounds(use_body.getRegionWidth(), use_body.getRegionHeight(), 0.5f, 0);
 
         playerReachCenterX = finalTextureCenterX;
-        playerReachCenterY = clientPosY + 7;
+        playerReachCenterY = clientPosY + 14;
 
         chooseArrayBatch(rc, interpolatedBlink);
         rc.useArrayBatch();
@@ -1392,27 +1427,16 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     }
 
     public float toMouthX() {
-        return finalDrawPosX + (direction() == 1 ? 6.5f : 2.5f);
+        return finalDrawPosX + (direction() == 1 ? 7f : 4f);
     }
 
     public float toMouthY() {
-        return finalDrawPosY + 10.5f;
+        return finalDrawPosY + 19f + motionOffset;
     }
 
     private float getFinalArmRotation() {
         if(punchAnimation) return currentPunchAngle;
         return player ? RenderContext.get().mouseRotation : lerpedServerPunchAngle;
-    }
-
-    private TextureRegion[] shadowSheet(TextureRegion base, int x, int y, int frames, int cellWidth, int width, int maxHeight, int[] heightArray) {
-        TextureRegion[] array = new TextureRegion[frames];
-
-        for(int i = 0; i < array.length; i++) {
-            int py = maxHeight - heightArray[i];
-            array[i] = new TextureRegion(base, x + (i * cellWidth), y + py, width, heightArray[i]);
-        }
-
-        return array;
     }
 
     public void applyHealthHunger(float health, float hunger) {

@@ -13,10 +13,7 @@ import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,7 +31,6 @@ public class ClientChunkGrid {
     public Noise terrainNoiseHeight;
     public Noise terrainNoiseTemperature;
     public Noise terrainNoiseMoisture;
-    public Noise riverNoise;
     public WorldGenNoiseSettings noiseSettings;
     public List<BiomeDefinition> biomeDefinitionList;
 
@@ -54,7 +50,6 @@ public class ClientChunkGrid {
             terrainNoiseHeight = new Noise();
             terrainNoiseTemperature = new Noise();
             terrainNoiseMoisture = new Noise();
-            riverNoise = new Noise();
             noiseCacheMap = new HashMap<>();
             noisePostProcessorMap = new LinkedList<>();
         }
@@ -77,10 +72,6 @@ public class ClientChunkGrid {
             noiseSettings.terrainMoisture.applyTo(terrainNoiseMoisture);
         }
 
-        if(noiseSettings.isRiversGenerator()) {
-            noiseSettings.river.applyTo(riverNoise);
-        }
-
         if(noiseSettings.isPostProcessorGenerator()) {
             for(NoisePostProcessor npp : noiseSettings.postProcessList) {
                 Noise noise = new Noise(worldSeed);
@@ -88,6 +79,8 @@ public class ClientChunkGrid {
                 noisePostProcessorMap.add(new Pair<>(npp, noise));
                 ExpoLogger.log(npp.noiseWrapper.name + ": " + noise.getSeed());
             }
+
+            noiseSettings.postProcessList.sort(Comparator.comparingInt(o -> -o.priority));
         }
     }
 
@@ -178,11 +171,6 @@ public class ClientChunkGrid {
             float moisture = normalized(terrainNoiseMoisture, x, y);
 
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
-                if(toCheck != BiomeType.OCEAN_DEEP) {
-                    float river = normalized(riverNoise, x, y);
-                    if(river >= 0.975f) return new Pair<>(BiomeType.RIVER, river);
-                }
-
                 for(var pair : noisePostProcessorMap) {
                     if(pair.key.postProcessorLogic instanceof PostProcessorBiome ppb) {
                         float _norm = normalized(pair.value, x, y);

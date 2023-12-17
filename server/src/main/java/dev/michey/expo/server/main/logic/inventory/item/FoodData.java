@@ -7,9 +7,12 @@ public class FoodData {
     public float hungerRestore;
     public float hungerCooldownRestore;
 
+    public float healthRestore;
+
     public FoodData(JSONObject object) {
-        hungerRestore = object.getFloat("hungerRestore");
-        hungerCooldownRestore = object.getFloat("hungerCooldownRestore");
+        if(object.has("hungerRestore")) hungerRestore = object.getFloat("hungerRestore");
+        if(object.has("hungerCooldownRestore")) hungerCooldownRestore = object.getFloat("hungerCooldownRestore");
+        if(object.has("healthRestore")) healthRestore = object.getFloat("healthRestore");
     }
 
 }

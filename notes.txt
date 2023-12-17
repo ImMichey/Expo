@@ -1,19 +1,14 @@
 [Add]
-* Bandage item
 * Player buff effect system
 * Fix selection system
 * New Oak Plank Wall textures [maybe 32px high]
 * New Stick Fence textures
 * New PickupLine replacement
 * Item Eat/Use feedback
-* Fix 'retrieving world data' text when connecting to multiplayer
-* Fix client side minimap with rivers
 * Fix multiplayer punching delay? feels unnatural
-* Fix torch sound range/volume
-* Give torches ambient shadows
 
 [Known Bugs]
-* Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer
+* Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer                                P11 packet gets sent !?
 * AO bug, similar to above, not sure if related or separate bug
 * Some shift-click crafting visual glitches
 * Sometimes entities are not being deleted instantly (only happens in multiplayer?)

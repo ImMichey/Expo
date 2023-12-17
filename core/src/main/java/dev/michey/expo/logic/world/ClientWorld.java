@@ -35,7 +35,7 @@ import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
-import dev.michey.expo.server.main.logic.world.gen.EntityPopulationBounds;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
@@ -187,7 +187,6 @@ public class ClientWorld {
         clientChunkGrid.terrainNoiseHeight.setSeed(seed);
         clientChunkGrid.terrainNoiseTemperature.setSeed(seed + 1);
         clientChunkGrid.terrainNoiseMoisture.setSeed(seed + 2);
-        clientChunkGrid.riverNoise.setSeed(seed);
     }
 
     private void calculateWorldTime(float delta) {
@@ -722,7 +721,7 @@ public class ClientWorld {
 
                         if(Expo.get().getImGuiExpo().renderEntityBbox.get()) {
                             if(ServerWorld.get() != null) {
-                                var type = EntityPopulationBounds.get().getFor(all.getEntityType().ENTITY_SERVER_TYPE);
+                                var type = EntityMetadataMapper.get().getFor(all.getEntityType().ENTITY_SERVER_TYPE).getPopulationBbox();
 
                                 if(type != null) {
                                     float[] pos = type.toWorld(all.serverPosX, all.serverPosY);

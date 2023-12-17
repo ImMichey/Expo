@@ -46,6 +46,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private float playerBehindInterpolated = 1.0f;
     private float resetShadowFadeTimer;
 
+    private boolean drawTrunk, drawLeaves;
+
     private TextureRegion selectionTrunk;
 
     public final SquishAnimator2D squishAnimator2D = new SquishAnimator2D(0.2f, 1.5f, 1.5f);
@@ -327,7 +329,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             contactAnimator.tick(delta);
             foliageAnimator.resetWind();
 
-            if(visibleToRenderEngine) {
+            if(visibleToRenderEngine || drawTrunk || drawLeaves) {
                 leafParticleEmitter.tick(delta);
             }
 
@@ -462,9 +464,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         Affine2 shadowL = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, -leavesOffsetX() - squishAnimator2D.squishX * 0.5f, leavesOffsetY() + leavesDisplacement + squishAnimator2D.squishY * 0.5f);
 
         float[] trunkVertices = rc.arraySpriteBatch.obtainShadowVertices(trunkShadowMask, shadowT);
-        boolean drawTrunk = rc.verticesInBounds(trunkVertices);
-
-        boolean drawLeaves = !cut && rc.verticesInBounds(rc.arraySpriteBatch.obtainShadowVertices(leavesShadowMask, shadowL));
+        drawTrunk = rc.verticesInBounds(trunkVertices);
+        drawLeaves = !cut && rc.verticesInBounds(rc.arraySpriteBatch.obtainShadowVertices(leavesShadowMask, shadowL));
 
         if(drawTrunk || drawLeaves) {
             rc.useArrayBatch();

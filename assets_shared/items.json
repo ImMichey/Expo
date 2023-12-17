@@ -253,7 +253,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "FLOOR_1",
-                    "floorType": "GRASS"
+                    "floorType": "GRASS",
+                    "previewTexture": "t2"
                 }
             }
         },
@@ -280,7 +281,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "FLOOR_1",
-                    "floorType": "SAND"
+                    "floorType": "SAND",
+                    "previewTexture": "t24"
                 }
             }
         },
@@ -307,7 +309,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "FLOOR_0",
-                    "floorType": "DIRT"
+                    "floorType": "DIRT",
+                    "previewTexture": "dirt_floor_item"
                 }
             }
         },
@@ -778,7 +781,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "FLOOR_1",
-                    "floorType": "OAK_PLANK"
+                    "floorType": "OAK_PLANK",
+                    "previewTexture": "t201"
                 }
             }
         },
@@ -822,7 +826,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "FLOOR_2",
-                    "floorType": "OAK_PLANK_WALL"
+                    "floorType": "OAK_PLANK_WALL",
+                    "previewTexture": "t267,tile_oakplankwall_elevation_2"
                 }
             }
         },
@@ -851,8 +856,7 @@
                     "type": "ENTITY",
                     "entityType": "CRATE",
                     "previewTexture": "entity_crate",
-                    "placeAlignmentOffsetX": 1,
-                    "previewOffsetX": 1
+                    "placeAlignmentOffsetX": 1
                 }
             }
         },
@@ -993,7 +997,7 @@
                         },
                         "particleEmitter": {
                             "emitterName": "torch",
-                            "emitterDelay": 0.05
+                            "emitterDelay": 0.1
                         },
                         "soundEmitter": {
                             "soundGroup": "campfire",
@@ -1010,7 +1014,8 @@
                     "alignment": "TILE",
                     "type": "ENTITY",
                     "entityType": "TORCH",
-                    "previewTexture": "entity_torch"
+                    "previewTexture": "entity_torch",
+                    "placeAlignmentOffsetX": 8.0
                 }
             }
         },
@@ -1032,7 +1037,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "FLOOR_2",
-                    "floorType": "ROCK_WALL"
+                    "floorType": "ROCK_WALL",
+                    "previewTexture": "t157,tile_rock_elevation_2"
                 }
             }
         },
@@ -1054,7 +1060,8 @@
                 "placeData": {
                     "alignment": "TILE",
                     "type": "FLOOR_2",
-                    "floorType": "DIRT_WALL"
+                    "floorType": "DIRT_WALL",
+                    "previewTexture": "t223,tile_dirt_elevation_2"
                 }
             }
         },
@@ -1268,8 +1275,7 @@
                     "type": "ENTITY",
                     "entityType": "CAMPFIRE",
                     "previewTexture": "entity_campfire",
-                    "placeAlignmentOffsetX": 8.0,
-                    "previewOffsetX": -4
+                    "placeAlignmentOffsetX": 8.0
                 }
             }
         },
@@ -1336,7 +1342,10 @@
                 }
             },
             "logic": {
-                "toolType": "ITEM"
+                "toolType": "ITEM",
+                "foodData": {
+                    "healthRestore": 15.0
+                }
             }
         }
     ]

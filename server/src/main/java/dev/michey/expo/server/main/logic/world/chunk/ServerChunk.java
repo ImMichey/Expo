@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -12,6 +11,7 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.*;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
@@ -181,7 +181,7 @@ public class ServerChunk {
 
         for(ServerEntity entity : dimension.getEntityManager().getAllEntities()) {
             if(entity.chunkX >= acceptChunkXMin && entity.chunkX <= acceptChunkXMax && entity.chunkY >= acceptChunkYMin && entity.chunkY <= acceptChunkYMax) {
-                addToList(EntityPopulationBounds.get().getFor(entity.getEntityType()), entity, existingEntityDimensionMap);
+                addToList(EntityMetadataMapper.get().getFor(entity.getEntityType()).getPopulationBbox(), entity, existingEntityDimensionMap);
             }
         }
 
@@ -189,7 +189,7 @@ public class ServerChunk {
         for(EntityOperation operation : dimension.getEntityManager().getEntityOperationQueue()) {
             if(operation.add) {
                 if(operation.payload.chunkX >= acceptChunkXMin && operation.payload.chunkX <= acceptChunkXMax && operation.payload.chunkY >= acceptChunkYMin && operation.payload.chunkY <= acceptChunkYMax) {
-                    addToList(EntityPopulationBounds.get().getFor(operation.payload.getEntityType()), operation.payload, existingEntityDimensionMap);
+                    addToList(EntityMetadataMapper.get().getFor(operation.payload.getEntityType()).getPopulationBbox(), operation.payload, existingEntityDimensionMap);
                 }
             }
         }
@@ -223,7 +223,7 @@ public class ServerChunk {
                                         ServerTile proposedTile = getDimension().getChunkHandler().getTile(proposedTileX, proposedTileY);
 
                                         if(proposedTile != null && proposedTile.biome == t) {
-                                            EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
+                                            EntityBoundsEntry entry = EntityMetadataMapper.get().getFor(populator.type).getPopulationBbox();
                                             var check = causesCollision(proposedX, proposedY, entry, existingEntityDimensionMap, wx, wy);
 
                                             if(!check.key) {
@@ -264,7 +264,7 @@ public class ServerChunk {
                     boolean spawn = rnd.random() < populator.spawnChance;
 
                     if(spawn) {
-                        EntityBoundsEntry entry = EntityPopulationBounds.get().getFor(populator.type);
+                        EntityBoundsEntry entry = EntityMetadataMapper.get().getFor(populator.type).getPopulationBbox();
                         var check = causesCollision(p.absoluteX, p.absoluteY, entry, existingEntityDimensionMap, wx, wy);
 
                         if(!check.key) {

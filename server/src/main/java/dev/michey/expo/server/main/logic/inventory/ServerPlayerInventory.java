@@ -98,10 +98,19 @@ public class ServerPlayerInventory extends ServerInventory {
                         // Is food item
                         float hr = mapping.logic.foodData.hungerRestore;
                         float hcr = mapping.logic.foodData.hungerCooldownRestore;
+                        float hpr = mapping.logic.foodData.healthRestore;
                         ServerPlayer p = getOwner();
+                        boolean use = false;
 
-                        if(p.hunger < 100f) {
-                            p.consumeFood(hr, hcr);
+                        if(p.hunger < 100 && hr > 0) {
+                            use = true;
+                        }
+                        if(p.health < 100 && hpr > 0) {
+                            use = true;
+                        }
+
+                        if(use) {
+                            p.consumeFood(hr, hcr, hpr);
                             ServerPackets.p23PlayerLifeUpdate(p.health, p.hunger, PacketReceiver.player(p));
                             ServerPackets.p28PlayerFoodParticle(p.entityId, oldIds[0], PacketReceiver.whoCanSee(p));
 

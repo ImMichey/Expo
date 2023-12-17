@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.Expo;
+import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ChatMessage;
 import dev.michey.expo.console.GameConsole;
@@ -18,7 +20,9 @@ import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.server.main.logic.inventory.item.FloorType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.*;
@@ -49,6 +53,7 @@ public class ExpoClientPacketReader {
     private void handlePacket(Packet o, boolean local) {
         if(o instanceof P44_Connect_Rsp p) {
             if(p.credentialsSuccessful) {
+                ExpoClientContainer.get().setLoadingMessage("Connected to server, attempting authentication...");
                 GameConsole.get().addSystemSuccessMessage("Passed initial server connection check: " + p.message);
 
                 if(p.requiresSteamTicket && STEAM_INITIALIZED) {
@@ -57,12 +62,14 @@ public class ExpoClientPacketReader {
                     ClientPackets.p45AuthReq(ClientStatic.PLAYER_USERNAME, null);
                 }
             } else {
+                ExpoClientContainer.get().setLoadingMessage("Connected to server, error: " + p.message);
                 GameConsole.get().addSystemErrorMessage("Failed initial server connection check: " + p.message);
                 Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             }
         } else if(o instanceof P1_Auth_Rsp p) {
             if(p.authSuccessful) {
+                ExpoClientContainer.get().setLoadingMessage("Retrieving world data...");
                 GameConsole.get().addSystemSuccessMessage("Successfully joined server: " + p.authMessage + " (" + p.serverTps + " TPS)");
                 if(!local) {
                     ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
@@ -70,6 +77,7 @@ public class ExpoClientPacketReader {
                 }
                 ExpoClientContainer.get().setServerTickRate(p.serverTps);
             } else {
+                ExpoClientContainer.get().setLoadingMessage("Failed authentication: " + p.authMessage);
                 GameConsole.get().addSystemErrorMessage("Failed to auth with server: " + p.authMessage);
                 Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                 Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
@@ -290,9 +298,7 @@ public class ExpoClientPacketReader {
             if(entity != null) {
                 ClientPlayer player = (ClientPlayer) entity;
 
-                if(p.animationId == PLAYER_ANIMATION_ID_PICKUP) {
-                    //player.playPickupAnimation();
-                } else if(p.animationId == PLAYER_ANIMATION_ID_PLACE) {
+                if(p.animationId == PLAYER_ANIMATION_ID_PLACE) {
                     player.playPunchAnimation();
                 }
             }
@@ -315,12 +321,28 @@ public class ExpoClientPacketReader {
             }
 
             ClientEntityManager.get().removeEntity(p.entityId, p.reason);
+        } else if(o instanceof P46_EntityConstruct p) {
+            ItemMapping mapping = ItemMapper.get().getMapping(p.itemId);
+            FloorType ft = mapping.logic.placeData.floorType;
+
+            float twx = ExpoShared.tileToPos(p.tileX);
+            float twy = ExpoShared.tileToPos(p.tileY);
+
+            if(ft != null) {
+                // Placed thing is a floor
+                ParticleSheet.Common.spawnDustConstructFloorParticles(twx, twy);
+            } else {
+                ParticleSheet.Common.spawnDustConstructEntityParticles(twx, twy, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
+            }
+
+            AudioEngine.get().playSoundGroupManaged("pop", new Vector2(twx + 8, twy + 8), PLAYER_AUDIO_RANGE, false);
         }
     }
 
     private void applyHeldItemIds(ClientPlayer player, int[] ids) {
         if(ids[0] != -1) {
             player.updateHoldingItemSprite(ids[0]);
+            player.resetSelector = true;
         }
         player.holdingItemId = ids[0];
 

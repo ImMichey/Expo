@@ -229,19 +229,18 @@ public class ClientChunk {
             if(tileEntityGrid == null) return;
         }
 
+        boolean doNeighbourTileChecks = true;
+
         if(tileEntityGrid != null && tileEntityGrid[tileArray] != -1) {
             ClientEntity entity = getTileEntityAt(tileArray, 0, 0);
 
-            if(entity != null) {
-                if(entity.getEntityType() == ClientEntityType.DYNAMIC_3D_TILE) {
-                    Arrays.fill(ambientOcclusion[tileArray], 1.0f);
-                } else {
-                    Arrays.fill(ambientOcclusion[tileArray], 0.0f);
-                }
-            } else {
-                Arrays.fill(ambientOcclusion[tileArray], 0.0f);
+            if(entity != null && entity.getEntityType() == ClientEntityType.DYNAMIC_3D_TILE) {
+                doNeighbourTileChecks = false;
+                Arrays.fill(ambientOcclusion[tileArray], 1.0f);
             }
-        } else {
+        }
+
+        if(doNeighbourTileChecks) {
             // neighbours
             ClientEntity[] x = getNeighbouringEntities(tileArray);
 
@@ -331,6 +330,8 @@ public class ClientChunk {
                     if(entity != null) {
                         if(entity.getEntityType() == ClientEntityType.DYNAMIC_3D_TILE) {
                             Arrays.fill(ambientOcclusion[i], 1.0f);
+                        } else {
+                            getAmbientOcclusionAt(i);
                         }
                     }
                 } else {

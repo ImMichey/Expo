@@ -47,17 +47,17 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
                 new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                         .amount(2, 5)
                         .scale(0.45f, 0.85f)
-                        .lifetime(0.4f, 0.65f)
+                        .lifetime(0.6f, 1.2f)
                         .color(ParticleColorMap.of(14))
                         .position(finalDrawPosX + 10f, finalDrawPosY + 16f)
-                        .velocity(-16, 16, 48, 112)
-                        .fadeout(0.3f)
+                        .velocity(-12, 12, 8, 34)
+                        .fadeout(0.6f)
                         .randomRotation()
                         .rotateWithVelocity()
                         .textureRange(15, 15)
                         .decreaseSpeed()
                         .offset(5, 4)
-                        .depth(depth + 0.001f), 0, 0.04f, 0.06f);
+                        .depth(depth + 0.001f), 0, 0.1f, 0.1f);
         campfireSmokeEmitter.setLinkedEntity(this);
     }
 
@@ -100,7 +100,9 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
         }
     }
 
-    private void createSoundAndHandle(boolean shouldExist, float maxAudibleRange) {
+    private void createSoundAndHandle(boolean shouldExist) {
+        float maxAudibleRange = PLAYER_AUDIO_RANGE * 0.33f;
+
         if(campfireSound != null) {
             if(campfireSound.postCalcVolume <= 0.0f || !shouldExist) {
                 AudioEngine.get().killSound(campfireSound.id);
@@ -109,7 +111,7 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
         } else if(shouldExist) {
             if(AudioEngine.get().dstPlayer(clientPosX, clientPosY + 15) < maxAudibleRange) {
                 campfireSound = AudioEngine.get().playSoundGroupManaged("campfire", new
-                        Vector2(clientPosX, clientPosY + 15), maxAudibleRange, true, 0.825f);
+                        Vector2(clientPosX, clientPosY + 15), maxAudibleRange, true, 0.75f);
             }
         }
     }
@@ -130,7 +132,7 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
     public void tick(float delta) {
         syncPositionWithServer();
         constructLight();
-        createSoundAndHandle(burning, PLAYER_AUDIO_RANGE * 0.45f);
+        createSoundAndHandle(burning);
 
         if(burning) {
             if(campfireLight != null) campfireLight.update(clientPosX, clientPosY + 15f, delta);

@@ -116,7 +116,6 @@ public abstract class ServerDimension {
         chunkHandler.getTerrainNoiseHeight().setSeed(seed);
         chunkHandler.getTerrainNoiseTemperature().setSeed(seed + 1);
         chunkHandler.getTerrainNoiseMoisture().setSeed(seed + 2);
-        chunkHandler.getRiverNoise().setSeed(seed);
 
         if(chunkHandler.getGenSettings().getNoiseSettings() != null) {
             for(NoisePostProcessor npp : chunkHandler.getGenSettings().getNoiseSettings().postProcessList) {

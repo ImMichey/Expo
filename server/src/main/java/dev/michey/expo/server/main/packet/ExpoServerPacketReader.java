@@ -143,11 +143,20 @@ public class ExpoServerPacketReader {
 
             String requiredPassword = ExpoServerConfiguration.get().getPassword();
 
+            // ##################################################### Slot auth
+            if(PlayerConnectionHandler.get().connectionList.size() >= ExpoServerConfiguration.get().getMaxPlayers()) {
+                authorized = false;
+                message = "Server is full";
+            }
+            // ##################################################### Slot auth
+
             // ##################################################### Password auth
-            if(!requiredPassword.isEmpty()) {
-                if(!requiredPassword.equals(p.password)) {
-                    authorized = false;
-                    message = "Invalid password";
+            if(authorized) {
+                if(!requiredPassword.isEmpty()) {
+                    if(!requiredPassword.equals(p.password)) {
+                        authorized = false;
+                        message = "Invalid password";
+                    }
                 }
             }
             // ##################################################### Password auth

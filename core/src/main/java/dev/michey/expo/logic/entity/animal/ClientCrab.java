@@ -24,6 +24,7 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
         animationHandler.addAnimation("attack", new ExpoAnimation("entity_crab_variation_" + variant + "_pinch", 8, 0.08f));
         animationHandler.addFootstepOn(new String[] {"walk"}, 4, 10);
         animationHandler.addAnimationSound("attack", "crab_snip", 5, 0.5f);
+        animationHandler.getActiveAnimation().randomOffset();
 
         updateTextureBounds(animationHandler.getActiveFrame());
     }

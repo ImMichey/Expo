@@ -41,6 +41,9 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
         playEntitySound("grass_hit");
 
         ParticleSheet.Common.spawnBlueberryHitParticles(this);
+        if(newHealth <= 0) {
+            ParticleSheet.Common.spawnDustHitParticles(this);
+        }
     }
 
     @Override

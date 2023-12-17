@@ -13,6 +13,9 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ExpoShared;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class InteractableItemSlot extends InteractableUIElement {
 
     public InteractableItemSlot(int containerId, int inventorySlotId) {
@@ -151,18 +154,29 @@ public class InteractableItemSlot extends InteractableUIElement {
 
                 parent.drawTooltipColored(mapping.displayName, mapping.color, lines);
             } else if(mapping.logic.isFood()) {
-                int seconds = (int) mapping.logic.foodData.hungerCooldownRestore;
-                int restore = (int) mapping.logic.foodData.hungerRestore;
+                int hungerCooldownRestore = (int) mapping.logic.foodData.hungerCooldownRestore;
+                int hungerRestore = (int) mapping.logic.foodData.hungerRestore;
+                int healthRestore = (int) mapping.logic.foodData.healthRestore;
+
+                List<String> tooltip = new LinkedList<>();
+                List<TextureRegion> icons = new LinkedList<>();
+
+                if(healthRestore > 0) {
+                    tooltip.add(parent.COLOR_DESCRIPTOR_HEX + "Heals [#" + parent.COLOR_GREEN_HEX + "]" + healthRestore + "% health" + parent.COLOR_DESCRIPTOR_HEX);
+                    icons.add(parent.iconHealthRestore);
+                }
+                if(hungerRestore > 0) {
+                    tooltip.add(parent.COLOR_DESCRIPTOR_HEX + "Fills [#" + parent.COLOR_GREEN_HEX + "]" + hungerRestore + "% hunger" + parent.COLOR_DESCRIPTOR_HEX);
+                    icons.add(parent.iconHungerRestore);
+                }
+                if(hungerCooldownRestore > 0) {
+                    tooltip.add(parent.COLOR_DESCRIPTOR_HEX + "Sates [#" + parent.COLOR_GREEN_HEX + "]" + hungerCooldownRestore + " second" + (hungerCooldownRestore == 1 ? "" : "s"));
+                    icons.add(parent.iconHungerCooldownRestore);
+                }
 
                 parent.drawTooltipColored(mapping.displayName, mapping.color,
-                        new TextureRegion[] {
-                                parent.iconHungerRestore,
-                                parent.iconHungerCooldownRestore
-                        },
-                        new String[] {
-                                parent.COLOR_DESCRIPTOR_HEX + "Fills [#" + parent.COLOR_GREEN_HEX + "]" + restore + "% hunger" + parent.COLOR_DESCRIPTOR_HEX,
-                                parent.COLOR_DESCRIPTOR_HEX + "Sates [#" + parent.COLOR_GREEN_HEX + "]" + seconds + " second" + (seconds == 1 ? "" : "s")
-                        });
+                        icons.toArray(new TextureRegion[0]),
+                        tooltip.toArray(new String[0]));
             } else {
                 parent.drawTooltipColored(mapping.displayName, mapping.color);
             }
