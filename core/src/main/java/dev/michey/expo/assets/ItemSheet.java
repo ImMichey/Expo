@@ -65,7 +65,8 @@ public class ItemSheet {
         add("item_campfire", 46, 15, 17);
         add("item_hedge_wall", 47, 12, 13);
         add("item_aloe_vera", 48, 10, 10);
-        add("item_bandage", 49, 8, 14);
+        add("item_bandage", 49, 14, 10);
+        add("item_aloe_vera_seeds", 50, 9, 8);
     }
 
     public TextureRegion get(String name) {

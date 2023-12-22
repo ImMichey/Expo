@@ -1,6 +1,5 @@
 package dev.michey.expo.server.main.logic.entity.flora;
 
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;

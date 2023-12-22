@@ -109,43 +109,45 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             createTexture();
         }
 
-        ClientPlayer local = ClientPlayer.getLocalPlayer();
-        boolean playerBehind;
+        if(visibleToRenderEngine) {
+            ClientPlayer local = ClientPlayer.getLocalPlayer();
+            boolean playerBehind;
 
-        if(local != null) {
-            if(local.depth > depth) {
-                float buffer = 4;
+            if(local != null) {
+                if(local.depth > depth) {
+                    float buffer = 32;
 
-                playerBehind = ExpoShared.overlap(new float[] {
-                        local.finalDrawPosX, local.finalDrawPosY,
-                        local.finalDrawPosX + local.textureWidth, local.finalDrawPosY + local.textureHeight
-                }, new float[] {
-                        finalTextureStartX - buffer, finalTextureStartY + 32 - buffer,
-                        finalTextureStartX + textureWidth + buffer, finalTextureStartY + 48 + buffer
-                });
+                    playerBehind = ExpoShared.overlap(new float[] {
+                            local.finalDrawPosX, local.finalDrawPosY,
+                            local.finalDrawPosX + local.textureWidth, local.finalDrawPosY + local.textureHeight
+                    }, new float[] {
+                            finalTextureStartX - buffer, finalTextureStartY + 32,
+                            finalTextureStartX + textureWidth + buffer, finalTextureStartY + 48
+                    });
+                } else {
+                    playerBehind = false;
+                }
             } else {
                 playerBehind = false;
             }
-        } else {
-            playerBehind = false;
-        }
 
-        float MAX_BEHIND_DELTA = 0.4f;
-        float MAX_BEHIND_STRENGTH = 0.5f;
-        Interpolation useInterpolation = Interpolation.circleIn;
+            float MAX_BEHIND_DELTA = 0.4f;
+            float MAX_BEHIND_STRENGTH = 0.5f;
+            Interpolation useInterpolation = Interpolation.circleIn;
 
-        if(playerBehind && playerBehindDelta < MAX_BEHIND_DELTA) {
-            playerBehindDelta += delta;
-            if(playerBehindDelta > MAX_BEHIND_DELTA) playerBehindDelta = MAX_BEHIND_DELTA;
+            if(playerBehind && playerBehindDelta < MAX_BEHIND_DELTA) {
+                playerBehindDelta += delta;
+                if(playerBehindDelta > MAX_BEHIND_DELTA) playerBehindDelta = MAX_BEHIND_DELTA;
 
-            playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
-        }
+                playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
+            }
 
-        if(!playerBehind && playerBehindDelta > 0.0f) {
-            playerBehindDelta -= delta;
-            if(playerBehindDelta < 0) playerBehindDelta = 0;
+            if(!playerBehind && playerBehindDelta > 0.0f) {
+                playerBehindDelta -= delta;
+                if(playerBehindDelta < 0) playerBehindDelta = 0;
 
-            playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
+                playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
+            }
         }
     }
 
@@ -196,7 +198,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             }
         }
 
-        if(emulatingType == TileLayerType.OAKPLANKWALL) {
+        if(emulatingType == TileLayerType.OAKPLANKWALL && visibleToRenderEngine) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.draw(ao, finalDrawPosX - 2, finalDrawPosY - 2);

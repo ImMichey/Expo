@@ -24,6 +24,10 @@ public class GenerationRandom {
         random = new RandomXS128(n);
     }
 
+    public double randomD() {
+        return random.nextDouble();
+    }
+
     public float random() {
         return random.nextFloat();
     }

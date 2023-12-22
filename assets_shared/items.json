@@ -594,7 +594,6 @@
                     "type": "ENTITY",
                     "entityType": "MUSHROOM_GLOWING",
                     "previewTexture": "entity_mushroom_glowing",
-                    "previewOffsetX": -4,
                     "sound": "plant"
                 }
             }
@@ -1345,6 +1344,36 @@
                 "toolType": "ITEM",
                 "foodData": {
                     "healthRestore": 15.0
+                }
+            }
+        },
+        {
+            "identifier": "item_aloe_vera_seeds",
+            "id": 51,
+            "displayName": "Aloe Vera Seeds",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_aloe_vera_seeds"
+                },
+                "held": {
+                    "texture": "item_aloe_vera_seeds",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "CROP_WHEAT",
+                    "placeAlignmentOffsetX": 8,
+                    "placeAlignmentOffsetY": 3,
+                    "floorRequirement": "SOIL_FARMLAND"
                 }
             }
         }

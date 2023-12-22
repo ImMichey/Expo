@@ -232,7 +232,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             contactAnimator.STRENGTH = 2.0f;
             contactAnimator.STRENGTH_DECREASE = 0.4f;
 
-            foliageAnimator = new FoliageAnimator(0.5f, 1.2f, 0.01f, 0.02f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f);
+            foliageAnimator = new FoliageAnimator(this, 0.5f, 1.2f, 0.01f, 0.02f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f);
 
             leafParticleEmitter = new ParticleEmitter(
                     new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
@@ -326,44 +326,44 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         syncPositionWithServer();
 
         if(!cut) {
-            contactAnimator.tick(delta);
-            foliageAnimator.resetWind();
-
             if(visibleToRenderEngine || drawTrunk || drawLeaves) {
                 leafParticleEmitter.tick(delta);
-            }
 
-            ClientPlayer local = ClientPlayer.getLocalPlayer();
-            boolean playerBehind;
+                contactAnimator.tick(delta);
+                foliageAnimator.resetWind();
 
-            if(local != null && local.depth > depth) {
-                playerBehind = ExpoShared.overlap(new float[] {
-                        local.finalTextureStartX, local.finalTextureStartY,
-                        local.finalTextureStartX + local.textureWidth, local.finalTextureStartY + local.textureHeight
-                }, new float[] {
-                        finalTextureStartX + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement,
-                        finalTextureStartX + leavesWidth() + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement + leavesHeight()
-                });
-            } else {
-                playerBehind = false;
-            }
+                ClientPlayer local = ClientPlayer.getLocalPlayer();
+                boolean playerBehind;
 
-            float INTERPOLATION_SPEED_IN = 2.5f;
-            float INTERPOLATION_SPEED_OUT = 1.25f;
-            float MAX_TRANSPARENCY = 0.6f;
+                if(local != null && local.depth > depth) {
+                    playerBehind = ExpoShared.overlap(new float[] {
+                            local.finalTextureStartX, local.finalTextureStartY,
+                            local.finalTextureStartX + local.textureWidth, local.finalTextureStartY + local.textureHeight
+                    }, new float[] {
+                            finalTextureStartX + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement,
+                            finalTextureStartX + leavesWidth() + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement + leavesHeight()
+                    });
+                } else {
+                    playerBehind = false;
+                }
 
-            if(playerBehind && playerBehindDelta > 0) {
-                playerBehindDelta -= delta * INTERPOLATION_SPEED_IN;
-                if(playerBehindDelta < 0) playerBehindDelta = 0;
+                float INTERPOLATION_SPEED_IN = 2.5f;
+                float INTERPOLATION_SPEED_OUT = 1.25f;
+                float MAX_TRANSPARENCY = 0.6f;
 
-                playerBehindInterpolated = 1f - MAX_TRANSPARENCY + Interpolation.smooth2.apply(playerBehindDelta) * MAX_TRANSPARENCY;
-            }
+                if(playerBehind && playerBehindDelta > 0) {
+                    playerBehindDelta -= delta * INTERPOLATION_SPEED_IN;
+                    if(playerBehindDelta < 0) playerBehindDelta = 0;
 
-            if(!playerBehind && playerBehindDelta < 1) {
-                playerBehindDelta += delta * INTERPOLATION_SPEED_OUT;
-                if(playerBehindDelta > 1) playerBehindDelta = 1;
+                    playerBehindInterpolated = 1f - MAX_TRANSPARENCY + Interpolation.smooth2.apply(playerBehindDelta) * MAX_TRANSPARENCY;
+                }
 
-                playerBehindInterpolated = 1f - MAX_TRANSPARENCY + Interpolation.smooth2.apply(playerBehindDelta) * MAX_TRANSPARENCY;
+                if(!playerBehind && playerBehindDelta < 1) {
+                    playerBehindDelta += delta * INTERPOLATION_SPEED_OUT;
+                    if(playerBehindDelta > 1) playerBehindDelta = 1;
+
+                    playerBehindInterpolated = 1f - MAX_TRANSPARENCY + Interpolation.smooth2.apply(playerBehindDelta) * MAX_TRANSPARENCY;
+                }
             }
         }
     }

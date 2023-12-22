@@ -536,7 +536,7 @@ public abstract class ClientEntity {
         rc.bindAndSetSelection(rc.arraySpriteBatch, 2048, Color.WHITE, true);
     }
 
-    private void drawAO(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {
+    protected void drawAO(RenderContext rc, float scaleX, float scaleY, float offsetX, float offsetY) {
         float fw = rc.aoTexture.getWidth() * scaleX;
         float fh = rc.aoTexture.getHeight() * scaleY;
         rc.aoBatch.draw(rc.aoTexture, clientPosX - fw * 0.5f + offsetX, clientPosY - fh * 0.5f + offsetY, fw, fh);

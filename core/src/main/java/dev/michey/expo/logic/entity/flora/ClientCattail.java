@@ -19,7 +19,7 @@ import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientCattail extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
-    private final FoliageAnimator foliageAnimator = new FoliageAnimator(0.8f, 1.7f, 0.02f, 0.03f, 0.035f, 0.05f, 2.0f, 5.0f, 0.5f, 1.5f);
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(this, 0.8f, 1.7f, 0.02f, 0.03f, 0.035f, 0.05f, 2.0f, 5.0f, 0.5f, 1.5f);
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
     private int variant;

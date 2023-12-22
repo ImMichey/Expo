@@ -18,9 +18,11 @@ import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
+import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
+
 public class ClientGrass extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
-    private final FoliageAnimator foliageAnimator = new FoliageAnimator();
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(this);
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
     private int variant;
@@ -42,13 +44,13 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
             h = 9;
         } else if(variant == 2) {
             w = 12;
-            h = 10;
+            h = 9;
         } else if(variant == 3) {
             w = 13;
-            h = 8;
+            h = 7;
         } else if(variant == 4) {
             w = 13;
-            h = 10;
+            h = 9;
         } else if(variant == 5) {
             w = 11;
             h = 6;
@@ -88,8 +90,11 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
-        foliageAnimator.resetWind();
-        contactAnimator.tick(delta);
+
+        if(visibleToRenderEngine) {
+            foliageAnimator.resetWind();
+            contactAnimator.tick(delta);
+        }
     }
 
     @Override
@@ -146,8 +151,9 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAOAuto100(rc);
-        //drawAOAuto33(rc);
+        float scale = textureWidth / rc.aoTexture.getWidth();
+        if(rc.aoBatch.getPackedColor() != TRANS_100_PACKED) rc.aoBatch.setPackedColor(TRANS_100_PACKED);
+        drawAO(rc, scale, scale, 0, 0.5f);
     }
 
     @Override

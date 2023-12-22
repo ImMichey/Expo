@@ -42,7 +42,7 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
 
     // Externally set by ClientPlayer
     public int tileGridX, tileGridY;    // Tile position [0, 1, 2, 3, etc.]
-    public int worldX, worldY;          // Mouse world position
+    public float worldX, worldY;          // Mouse world position
     public boolean useTileCheck;
     public boolean useFreeCheck;
     public float drawPosX, drawPosY;
@@ -85,6 +85,9 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
             return;
         }
 
+        ClientPlayer p = ClientPlayer.getLocalPlayer();
+        if(p.holdingItemId == -1) return;
+
         // Get current chunk
         toChunkX = ExpoShared.posToChunk(worldX);
         toChunkY = ExpoShared.posToChunk(worldY);
@@ -93,10 +96,13 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
         var chunk = chunkGrid().getChunk(toChunkX, toChunkY);
         if(chunk == null) return;
 
-        toTileArray = getTileArray();
+        ItemMapping mapping = ItemMapper.get().getMapping(p.holdingItemId);
 
-        ClientPlayer p = ClientPlayer.getLocalPlayer();
-        ItemMapping mapping = (p.holdingItemId == -1 ? null : ItemMapper.get().getMapping(p.holdingItemId));
+        if(mapping.logic.placeData != null && mapping.logic.placeData.type == PlaceType.ENTITY && mapping.logic.placeData.alignment == PlaceAlignment.UNRESTRICTED) {
+            toTileArray = 0;
+        } else {
+            toTileArray = getTileArray();
+        }
 
         TileLayerType t0 = chunk.dynamicTiles[toTileArray][0].emulatingType;
         TileLayerType t1 = chunk.dynamicTiles[toTileArray][1].emulatingType;

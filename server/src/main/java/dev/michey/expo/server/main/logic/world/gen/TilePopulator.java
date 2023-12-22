@@ -12,7 +12,7 @@ public class TilePopulator {
 
     public BiomeType[] biomes;
     public ServerEntityType type;
-    public float chance;
+    public double chance;
     public float[] spawnOffsets;
     public boolean asStaticEntity;
     public EntityBoundsEntry dimensionBounds = null;
@@ -34,7 +34,7 @@ public class TilePopulator {
         }
 
         type = ServerEntityType.valueOf(entry.getString("type"));
-        chance = entry.getFloat("chance");
+        chance = entry.getDouble("chance");
         asStaticEntity = entry.getBoolean("static");
         spawnOffsets = JsonConverter.pullFloats(entry.getJSONArray("spawnOffsets"));
         if(entry.has("priority")) priority = entry.getInt("priority");

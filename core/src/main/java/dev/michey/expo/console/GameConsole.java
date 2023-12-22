@@ -96,6 +96,7 @@ public class GameConsole {
         resolver.addCommand(new CommandRiver());
         resolver.addCommand(new CommandSpeed());
         resolver.addCommand(new CommandFps());
+        resolver.addCommand(new CommandTps());
         resolver.addCommand(new CommandSaves());
         resolver.addCommand(new CommandSpawn());
         resolver.addCommand(new CommandTp());

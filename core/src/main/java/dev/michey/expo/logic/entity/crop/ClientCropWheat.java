@@ -18,7 +18,7 @@ import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientCropWheat extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
-    private final FoliageAnimator foliageAnimator = new FoliageAnimator(
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(this,
             0.5f, 1.0f, 0.02f, 0.03f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f
     );
     private final ContactAnimator contactAnimator = new ContactAnimator(this);

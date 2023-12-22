@@ -336,7 +336,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
                 boolean scanTile = false;
                 boolean scanFreely = false;
-                float ofx = 0, ofy = 0;
+
 
                 if(mapping.logic.isSpecialType()) {
                     ToolType tt = mapping.logic.toolType;
@@ -361,9 +361,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     }
                     selector.currentEntityPlacementTexture = placeData.previewTextureName;
 
-                    ofx = placeData.previewOffsetX;
-                    ofy = placeData.previewOffsetY;
-
                     if(placeData.alignment == PlaceAlignment.TILE) {
                         scanTile = true;
                     } else {
@@ -375,6 +372,13 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 float tx = RenderContext.get().mouseWorldGridX;
                 float ty = RenderContext.get().mouseWorldGridY;
                 float range = mapping.logic.range + 8;
+                float pvtAdjustmentX = 0, pvtAdjustmentY = 0;
+
+                if(mapping.logic.placeData != null) {
+                    TextureRegion pvt = tr(mapping.logic.placeData.previewTextureName);
+                    pvtAdjustmentX = mapping.logic.placeData.previewOffsetX - pvt.getRegionWidth() * 0.5f;
+                    pvtAdjustmentY = mapping.logic.placeData.previewOffsetY;
+                }
 
                 if(scanTile) {
                     selector.currentlyVisible = true;
@@ -389,14 +393,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     float d6 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx, ty + 8);
                     float d7 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 16, ty + 8);
                     float d8 = Vector2.dst(playerReachCenterX, playerReachCenterY, tx + 8, ty + 16);
-
-                    float pvtAdjustmentX = 0, pvtAdjustmentY = 0;
-
-                    if(mapping.logic.placeData != null) {
-                        TextureRegion pvt = tr(mapping.logic.placeData.previewTextureName);
-                        pvtAdjustmentX = mapping.logic.placeData.previewOffsetX - pvt.getRegionWidth() * 0.5f;
-                        pvtAdjustmentY = mapping.logic.placeData.previewOffsetY;
-                    }
 
                     if(d1 <= range || d2 <= range || d3 <= range || d4 <= range || d5 <= range || d6 <= range || d7 <= range || d8 <= range) {
                         // Selected tile is in range, pick it
@@ -433,21 +429,18 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     // Revisit later.
                     float mx = RenderContext.get().mouseWorldX;
                     float my = RenderContext.get().mouseWorldY;
-                    float desiredX = mx + ofx;
-                    float desiredY = my + ofy;
                     float d = Vector2.dst(playerReachCenterX, playerReachCenterY, mx, my);
 
                     if(d > range) {
                         Vector2 temp = new Vector2(mx, my).sub(playerReachCenterX, playerReachCenterY).nor().scl(range);
-                        desiredX = temp.x + playerReachCenterX + ofx;
-                        desiredY = temp.y + playerReachCenterY + ofy;
+                        mx = temp.x + playerReachCenterX;
+                        my = temp.y + playerReachCenterY;
                     }
 
-                    selector.worldX = (int) desiredX;
-                    selector.worldY = (int) desiredY;
-
-                    //selector.externalPosX = desiredX;
-                    //selector.externalPosY = desiredY;
+                    selector.worldX = mx;
+                    selector.worldY = my;
+                    selector.drawPosX = mx + pvtAdjustmentX;
+                    selector.drawPosY = my + pvtAdjustmentY;
                 } else {
                     selector.currentlyVisible = false;
                 }
@@ -588,7 +581,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 if(selector.canDoAction()) {
                     selector.playPulseAnimation();
                     ClientPackets.p34PlayerPlace(selector.toChunkX, selector.toChunkY, selector.tileGridX, selector.tileGridY, selector.toTileArray,
-                            (int) RenderContext.get().mouseWorldX, (int) RenderContext.get().mouseWorldY);
+                            selector.worldX, selector.worldY);
                 } else {
                     if(ClientEntityManager.get().selectedEntity != null) {
                         ClientPackets.p39PlayerInteractEntity();

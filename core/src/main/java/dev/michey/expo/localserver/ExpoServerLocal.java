@@ -40,12 +40,13 @@ public class ExpoServerLocal extends ExpoServerBase {
             @Override
             public void run() {
                 long initialTime = System.nanoTime();
-                final double timeU = 1_000_000_000 / (double) ExpoShared.DEFAULT_LOCAL_TICK_RATE;
+                double timeU;
                 double deltaU = 0;
                 int ticks = 0;
                 long timer = System.currentTimeMillis();
 
                 while(!gameLogicThread.isInterrupted()) {
+                    timeU = 1_000_000_000 / (double) ExpoShared.DEFAULT_LOCAL_TICK_RATE;
                     long currentTime = System.nanoTime();
                     deltaU += (currentTime - initialTime) / timeU;
                     initialTime = currentTime;

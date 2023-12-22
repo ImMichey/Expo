@@ -10,6 +10,7 @@
 * Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer                                P11 packet gets sent !?
 * AO bug, similar to above, not sure if related or separate bug
 * Some shift-click crafting visual glitches
+* UI item textures cut off on top?
 * Sometimes entities are not being deleted instantly (only happens in multiplayer?)
 * Head armor glitches (not implemented properly yet)
 * java.lang.InterruptedException
@@ -26,6 +27,3 @@
 [Ideas]
 * Hinini
 * FrogLib
-
-[Crazy Seeds]
-107664500

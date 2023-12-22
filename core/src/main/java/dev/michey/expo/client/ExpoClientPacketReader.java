@@ -337,10 +337,11 @@ public class ExpoClientPacketReader {
                 // Placed thing is a floor
                 ParticleSheet.Common.spawnDustConstructFloorParticles(twx, twy);
             } else {
-                ParticleSheet.Common.spawnDustConstructEntityParticles(twx, twy, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
+                ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX - ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName).getRegionWidth(), p.worldY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
             }
 
-            AudioEngine.get().playSoundGroupManaged("place", new Vector2(twx + 8, twy + 8), PLAYER_AUDIO_RANGE, false);
+            String soundName = mapping.logic.placeData.sound != null ? mapping.logic.placeData.sound : "place";
+            AudioEngine.get().playSoundGroupManaged(soundName, new Vector2(p.worldX, p.worldY), PLAYER_AUDIO_RANGE, false);
         }
     }
 

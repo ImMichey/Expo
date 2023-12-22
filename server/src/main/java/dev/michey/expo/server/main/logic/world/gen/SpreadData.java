@@ -9,14 +9,15 @@ public class SpreadData {
 
     public boolean spreadUseNextTarget;
     public int[] spreadBetweenAmount;
-    public float spreadChance;
+    public double spreadChance;
     public float[] spreadBetweenDistance;
     public ServerEntityType[] spreadBetweenEntities;
     public boolean spreadAsStaticEntity;
     public float[] spreadOffsets;
+    public boolean spreadIgnoreOriginBounds;
 
     public SpreadData(JSONObject spreadData) {
-        spreadChance = spreadData.getFloat("spreadChance");
+        spreadChance = spreadData.getDouble("spreadChance");
 
         spreadBetweenAmount = new int[2];
         for(int i = 0; i < 2; i++) spreadBetweenAmount[i] = spreadData.getJSONArray("spread").getInt(i);
@@ -33,6 +34,7 @@ public class SpreadData {
         for(int i = 0; i < 2; i++) spreadOffsets[i] = spreadData.getJSONArray("spreadOffsets").getFloat(i);
 
         if(spreadData.has("spreadUseNextTarget")) spreadUseNextTarget = spreadData.getBoolean("spreadUseNextTarget");
+        if(spreadData.has("spreadIgnoreOriginBounds")) spreadIgnoreOriginBounds = spreadData.getBoolean("spreadIgnoreOriginBounds");
     }
 
     @Override
@@ -45,6 +47,7 @@ public class SpreadData {
                 ", spreadBetweenEntities=" + Arrays.toString(spreadBetweenEntities) +
                 ", spreadAsStaticEntity=" + spreadAsStaticEntity +
                 ", spreadOffsets=" + Arrays.toString(spreadOffsets) +
+                ", spreadIgnoreOriginBounds=" + spreadIgnoreOriginBounds +
                 '}';
     }
 

@@ -23,6 +23,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public int age;
     public int variant;
     public boolean cut;
+    public boolean emptyCrown;
     public float trunkConversionHealth = 30;
     public float leavesOffset;
 
@@ -148,6 +149,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                 .optional("falling", falling, falling)
                 .optional("fallingEnd", fallingEnd, falling)
                 .optional("fallingDirectionRight", fallingDirectionRight, falling)
+                .add("emptyCrown", emptyCrown)
                 ;
     }
 
@@ -161,6 +163,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
             fallingEnd = saved.getFloat("fallingEnd");
             fallingDirectionRight = saved.getBoolean("fallingDirectionRight");
         }
+        emptyCrown = saved.getBoolean("emptyCrown");
         ageFromVariant();
     }
 

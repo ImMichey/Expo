@@ -429,11 +429,13 @@ public class ServerPackets {
     }
 
     /** Sends the P46_EntityConstruct packet via UDP protocol. */
-    public static void p46EntityConstruct(int itemId, int tileX, int tileY, PacketReceiver receiver) {
+    public static void p46EntityConstruct(int itemId, int tileX, int tileY, float worldX, float worldY, PacketReceiver receiver) {
         P46_EntityConstruct p = new P46_EntityConstruct();
         p.itemId = itemId;
         p.tileX = tileX;
         p.tileY = tileY;
+        p.worldX = worldX;
+        p.worldY = worldY;
         udp(p, receiver);
     }
 

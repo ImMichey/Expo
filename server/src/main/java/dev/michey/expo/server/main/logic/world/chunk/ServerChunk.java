@@ -208,7 +208,7 @@ public class ServerChunk {
                             int _y = i / ROW_TILES;
 
                             if((_x % populator.skip) == 0 && (_y % populator.skip) == 0) {
-                                boolean spawn = rnd.random() < populator.chance;
+                                boolean spawn = rnd.randomD() < populator.chance;
 
                                 if(spawn) {
                                     float proposedX = ExpoShared.tileToPos(tile.tileX) + 8 + rnd.random(populator.spawnOffsets[0], populator.spawnOffsets[1]);
@@ -236,11 +236,21 @@ public class ServerChunk {
 
                                                     registerMap.add(generatedEntity);
 
-                                                    if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
-                                                        doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
-                                                    }
+                                                    if(populator.spreadData != null) {
+                                                        if(!populator.spreadData.spreadIgnoreOriginBounds) {
+                                                            addToList(check.value, generatedEntity, existingEntityDimensionMap);
+                                                        }
 
-                                                    addToList(check.value, generatedEntity, existingEntityDimensionMap);
+                                                        if(rnd.randomD() < populator.spreadData.spreadChance) {
+                                                            doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
+                                                        }
+
+                                                        if(populator.spreadData.spreadIgnoreOriginBounds) {
+                                                            addToList(check.value, generatedEntity, existingEntityDimensionMap);
+                                                        }
+                                                    } else {
+                                                        addToList(check.value, generatedEntity, existingEntityDimensionMap);
+                                                    }
                                                 }
                                             }
                                         }
@@ -281,7 +291,7 @@ public class ServerChunk {
 
                                 registerMap.add(generatedEntity);
 
-                                if(populator.spreadData != null && rnd.random() < populator.spreadData.spreadChance) {
+                                if(populator.spreadData != null && rnd.randomD() < populator.spreadData.spreadChance) {
                                     doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, p.absoluteX, p.absoluteY, entry, wx, wy);
                                 }
 

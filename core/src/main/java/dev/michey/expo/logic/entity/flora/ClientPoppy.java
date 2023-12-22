@@ -18,7 +18,7 @@ import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientPoppy extends ClientEntity implements SelectableEntity {
 
-    private final FoliageAnimator foliageAnimator = new FoliageAnimator();
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(this);
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
     private Texture poppy;

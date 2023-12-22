@@ -12,7 +12,7 @@ public class ExpoLight {
 
     /** Direct access light. */
     public PointLight box2dLight;
-    private boolean staticLight;
+    private final boolean staticLight;
 
     public boolean pulsating = false;
     public float pulsatingAlpha = 0f;
@@ -29,7 +29,7 @@ public class ExpoLight {
 
     public ExpoLight(float distance, int rays, float constant, float quadratic, boolean staticLight) {
         box2dLight = new PointLight(RenderContext.get().lightEngine.rayHandler, rays);
-        box2dLight.setXray(true);
+        //box2dLight.setXray(true);
         box2dLight.setFalloff(constant, 0.0f, quadratic);
         box2dLight.setDistance(distance);
         pulsatingMinDistance = distance;

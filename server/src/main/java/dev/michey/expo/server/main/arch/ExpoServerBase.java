@@ -150,6 +150,10 @@ public abstract class ExpoServerBase {
         }
     }
 
+    public void setTicksPerSecond(int amount) {
+        tps = amount;
+    }
+
     /** Called when the game server should be started, returns whether it was successful or not. */
     public abstract boolean startServer();
 

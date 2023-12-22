@@ -657,7 +657,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 }
             }
 
-            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, mouseWorldX, mouseWorldY, PacketReceiver.whoCanSee(tile));
             ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
             { // Update inventory
@@ -681,7 +681,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 }
             }
 
-            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, mouseWorldX, mouseWorldY, PacketReceiver.whoCanSee(tile));
             ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
             { // Update inventory
@@ -705,7 +705,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 }
             }
 
-            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+            ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, mouseWorldX, mouseWorldY, PacketReceiver.whoCanSee(tile));
             ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
             { // Update inventory
@@ -742,7 +742,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
                     createdTileEntity.attachToTile(chunk, x, y);
 
-                    ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+                    ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, mouseWorldX, mouseWorldY, PacketReceiver.whoCanSee(tile));
                     ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
                     useItemAmount(item);
@@ -755,7 +755,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 placedEntity.posY = mouseWorldY + p.placeAlignmentOffsetY;
                 ServerWorld.get().registerServerEntity(entityDimension, placedEntity);
 
-                ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, PacketReceiver.whoCanSee(tile));
+                ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, mouseWorldX + p.placeAlignmentOffsetX, mouseWorldY + p.placeAlignmentOffsetY, PacketReceiver.whoCanSee(tile));
                 ServerPackets.p38PlayerAnimation(entityId, PLAYER_ANIMATION_ID_PLACE, PacketReceiver.whoCanSee(this));
 
                 useItemAmount(item);
