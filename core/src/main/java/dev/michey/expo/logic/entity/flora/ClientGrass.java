@@ -1,11 +1,8 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -15,7 +12,6 @@ import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
 import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
@@ -26,46 +22,22 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
     private int variant;
-    private Texture grass;
-    private TextureRegion grassShadow;
+    private TextureRegion grassTexture, grassTexture_sel;
     private float[] interactionPointArray;
 
     private final float colorOffset = MathUtils.random(0.15f);
 
     @Override
     public void onCreation() {
-        grass = ExpoAssets.get().texture("foliage/entity_grass/entity_grass_" + variant + ".png");
-        grassShadow = new TextureRegion(t("foliage/entity_grass/entity_grass_" + variant + "_shadow.png"));
+        grassTexture = new TextureRegion(tr("entity_grass_redo_" + variant));
+        grassTexture_sel = generateSelectionTexture(grassTexture);
 
-        float w = 0, h = 0;
-
-        if(variant == 1) {
-            w = 11;
-            h = 9;
-        } else if(variant == 2) {
-            w = 12;
-            h = 9;
-        } else if(variant == 3) {
-            w = 13;
-            h = 7;
-        } else if(variant == 4) {
-            w = 13;
-            h = 9;
-        } else if(variant == 5) {
-            w = 11;
-            h = 6;
-        } else if(variant == 6) {
-            w = 12;
-            h = 10;
-        } else if(variant == 7) {
-            w = 19;
-            h = 9;
-        } else if(variant == 8) {
-            w = 20;
-            h = 12;
+        if(MathUtils.randomBoolean()) {
+            grassTexture.flip(true, false);
+            grassTexture_sel.flip(true, false);
         }
 
-        updateTextureBounds(w, h, 1, 1);
+        updateTextureBounds(grassTexture);
         interactionPointArray = generateInteractionArray(2);
     }
 
@@ -108,14 +80,14 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
         setSelectionValues(Color.BLACK);
 
         rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-        rc.arraySpriteBatch.end();
+        rc.arraySpriteBatch.drawShiftedVertices(grassTexture_sel, finalSelectionDrawPosX, finalSelectionDrawPosY + contactAnimator.squishAdjustment,
+                grassTexture_sel.getRegionWidth(), grassTexture_sel.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
         rc.arraySpriteBatch.setColor(Color.WHITE);
     }
 
     @Override
     public void render(RenderContext rc, float delta) {
-        visibleToRenderEngine = rc.inDrawBounds(this);
+        visibleToRenderEngine = rc.inDrawBounds(this, 4);
 
         if(visibleToRenderEngine) {
             foliageAnimator.calculateWindOnDemand();
@@ -125,28 +97,21 @@ public class ClientGrass extends ClientEntity implements SelectableEntity, Refle
             rc.useRegularArrayShader();
 
             rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
-            rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawShiftedVertices(grassTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                    grassTexture.getRegionWidth(), grassTexture.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment + 2, grass.getWidth(), grass.getHeight() * contactAnimator.squish * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawShiftedVertices(grassTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                grassTexture.getRegionWidth(), grassTexture.getRegionHeight() * contactAnimator.squish * -1, foliageAnimator.value + contactAnimator.value, 0);
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        foliageAnimator.calculateWindOnDemand();
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(grassShadow, shadow);
-        boolean drawGrass = rc.verticesInBounds(grassVertices);
-
-        if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-        }
+        drawWindShadowIfVisible(grassTexture, foliageAnimator, contactAnimator);
     }
 
     @Override

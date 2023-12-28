@@ -23,7 +23,7 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
 
     @Override
     public void onCreation() {
-        texture = tr("testtree");
+        texture = tr("entity_mushroom_glowing");
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
@@ -119,8 +119,7 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
 
     @Override
     public void renderAO(RenderContext rc) {
-        //drawAO100(rc, 0.2f, 0.2f, 0, 0);
-        drawAO100(rc, 1.0f, 1.0f, 0, 2);
+        drawAO100(rc, 0.2f, 0.2f, 0, 0);
     }
 
 }

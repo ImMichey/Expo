@@ -20,24 +20,12 @@ public class ServerGrass extends ServerEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        variant = rnd.random(1, 8);
+        variant = rnd.random(1, 4);
     }
 
     @Override
     public void onDie() {
-        float yOff = 10.5f;
-        float h = 0;
-
-        if(variant == 1) h = 9;
-        if(variant == 2) h = 10;
-        if(variant == 3) h = 8;
-        if(variant == 4) h = 10;
-        if(variant == 5) h = 6;
-        if(variant == 6) h = 10;
-        if(variant == 7) h = 9;
-        if(variant == 8) h = 12;
-
-        spawnItemsAround(1, 2, 0, (h - yOff) * 0.5f, "item_grassfiber", 8);
+        spawnItemsAround(1, 2, 0, 0, "item_grassfiber", 8);
     }
 
     @Override

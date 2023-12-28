@@ -117,7 +117,9 @@ public abstract class ClientEntity {
         lastPosY = yPos;
     }
 
-    public void syncPositionWithServer() {
+    public boolean syncPositionWithServer() {
+        boolean rtn = doLerp;
+
         if(doLerp) {
             if(ExpoServerBase.get() != null) {
                 doLerp = false;
@@ -142,6 +144,8 @@ public abstract class ClientEntity {
                 }
             }
         }
+
+        return rtn;
     }
 
     public void updateChunkAndTile() {

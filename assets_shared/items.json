@@ -3,6 +3,7 @@
         {
             "identifier": "item_stick",
             "id": 0,
+            "category": "MATERIAL",
             "displayName": "Stick",
             "displayNameColor": "#ffffff",
             "render": {
@@ -25,6 +26,7 @@
         {
             "identifier": "item_blueberry",
             "id": 1,
+            "category": "FOOD",
             "displayName": "Blueberry",
             "displayNameColor": "#ffffff",
             "render": {
@@ -51,6 +53,7 @@
         {
             "identifier": "item_flint_pickaxe",
             "id": 2,
+            "category": "TOOL",
             "displayName": "Flint Pickaxe",
             "displayNameColor": "#ffffff",
             "render": {
@@ -78,6 +81,7 @@
         {
             "identifier": "item_flint_axe",
             "id": 3,
+            "category": "TOOL",
             "displayName": "Flint Axe",
             "displayNameColor": "#ffffff",
             "render": {
@@ -105,6 +109,7 @@
         {
             "identifier": "item_iron_pickaxe",
             "id": 4,
+            "category": "TOOL",
             "displayName": "Iron Pickaxe",
             "displayNameColor": "#ffffff",
             "render": {
@@ -129,6 +134,7 @@
         {
             "identifier": "item_iron_axe",
             "id": 5,
+            "category": "TOOL",
             "displayName": "Iron Axe",
             "displayNameColor": "#ffffff",
             "render": {
@@ -153,6 +159,7 @@
         {
             "identifier": "item_leaf_helmet",
             "id": 6,
+            "category": "ARMOR",
             "displayName": "Leaf Head-wear",
             "displayNameColor": "#ffffff",
             "render": {
@@ -184,6 +191,7 @@
         {
             "identifier": "item_grassfiber",
             "id": 7,
+            "category": "MATERIAL",
             "displayName": "Grass Fiber",
             "displayNameColor": "#ffffff",
             "render": {
@@ -206,6 +214,7 @@
         {
             "identifier": "item_flint_shovel",
             "id": 8,
+            "category": "TOOL",
             "displayName": "Flint Shovel",
             "displayNameColor": "#ffffff",
             "render": {
@@ -233,6 +242,7 @@
         {
             "identifier": "item_floor_grass",
             "id": 9,
+            "category": "BUILDING",
             "displayName": "Grass Floor",
             "displayNameColor": "#ffffff",
             "render": {
@@ -261,6 +271,7 @@
         {
             "identifier": "item_floor_sand",
             "id": 10,
+            "category": "BUILDING",
             "displayName": "Sand Floor",
             "displayNameColor": "#ffffff",
             "render": {
@@ -289,6 +300,7 @@
         {
             "identifier": "item_floor_dirt",
             "id": 11,
+            "category": "BUILDING",
             "displayName": "Dirt Floor",
             "displayNameColor": "#ffffff",
             "render": {
@@ -317,6 +329,7 @@
         {
             "identifier": "item_op_shovel",
             "id": 12,
+            "category": "TOOL",
             "displayName": "Admin Shovel",
             "displayNameColor": "#ff7f00",
             "render": {
@@ -343,6 +356,7 @@
         {
             "identifier": "item_flint",
             "id": 13,
+            "category": "MATERIAL",
             "displayName": "Flint",
             "displayNameColor": "#ffffff",
             "render": {
@@ -365,6 +379,7 @@
         {
             "identifier": "item_worm",
             "id": 14,
+            "category": "FOOD",
             "displayName": "Worm",
             "displayNameColor": "#ffffff",
             "render": {
@@ -391,6 +406,7 @@
         {
             "identifier": "item_cord",
             "id": 15,
+            "category": "MATERIAL",
             "displayName": "Weak Cord",
             "displayNameColor": "#ffffff",
             "render": {
@@ -413,6 +429,7 @@
         {
             "identifier": "item_rock",
             "id": 16,
+            "category": "MATERIAL",
             "displayName": "Rock",
             "displayNameColor": "#ffffff",
             "render": {
@@ -435,6 +452,7 @@
         {
             "identifier": "item_oak_log",
             "id": 17,
+            "category": "MATERIAL",
             "displayName": "Oak Log",
             "displayNameColor": "#ffffff",
             "render": {
@@ -457,6 +475,7 @@
         {
             "identifier": "item_acorn",
             "id": 18,
+            "category": "MISC",
             "displayName": "Acorn",
             "displayNameColor": "#ffffff",
             "render": {
@@ -489,6 +508,7 @@
         {
             "identifier": "item_mushroom_red",
             "id": 19,
+            "category": "FOOD",
             "displayName": "Red Mushroom",
             "displayNameColor": "#ffffff",
             "render": {
@@ -515,6 +535,7 @@
         {
             "identifier": "item_mushroom_brown",
             "id": 20,
+            "category": "FOOD",
             "displayName": "Brown Mushroom",
             "displayNameColor": "#ffffff",
             "render": {
@@ -541,6 +562,7 @@
         {
             "identifier": "item_oak_plank",
             "id": 21,
+            "category": "MATERIAL",
             "displayName": "Oak Wood Plank",
             "displayNameColor": "#ffffff",
             "render": {
@@ -563,6 +585,7 @@
         {
             "identifier": "item_mushroom_glowing",
             "id": 22,
+            "category": "MISC",
             "displayName": "Glowing Mushroom",
             "displayNameColor": "#00ffff",
             "render": {
@@ -601,6 +624,7 @@
         {
             "identifier": "item_flint_scythe",
             "id": 23,
+            "category": "TOOL",
             "displayName": "Flint Scythe",
             "displayNameColor": "#ffffff",
             "render": {
@@ -628,6 +652,7 @@
         {
             "identifier": "item_wheat",
             "id": 24,
+            "category": "MATERIAL",
             "displayName": "Wheat",
             "displayNameColor": "#ffffff",
             "render": {
@@ -650,6 +675,7 @@
         {
             "identifier": "item_wheat_seeds",
             "id": 25,
+            "category": "MISC",
             "displayName": "Wheat Seeds",
             "displayNameColor": "#ffffff",
             "render": {
@@ -680,6 +706,7 @@
         {
             "identifier": "item_maggot",
             "id": 26,
+            "category": "FOOD",
             "displayName": "Maggot",
             "displayNameColor": "#ffffff",
             "render": {
@@ -706,6 +733,7 @@
         {
             "identifier": "item_wood_mask",
             "id": 27,
+            "category": "ARMOR",
             "displayName": "Wood Mask",
             "displayNameColor": "#ffffff",
             "render": {
@@ -737,6 +765,7 @@
         {
             "identifier": "item_fence_stick",
             "id": 28,
+            "category": "BUILDING",
             "displayName": "Stick Fence",
             "displayNameColor": "#ffffff",
             "render": {
@@ -760,6 +789,7 @@
         {
             "identifier": "item_oak_plank_floor",
             "id": 29,
+            "category": "BUILDING",
             "displayName": "Oak Plank Floor",
             "displayNameColor": "#ffffff",
             "render": {
@@ -788,6 +818,7 @@
         {
             "identifier": "item_birch_log",
             "id": 30,
+            "category": "MATERIAL",
             "displayName": "Birch Log",
             "displayNameColor": "#ffffff",
             "render": {
@@ -810,6 +841,7 @@
         {
             "identifier": "item_oak_plank_wall",
             "id": 31,
+            "category": "BUILDING",
             "displayName": "Oak Plank Wall",
             "displayNameColor": "#ffffff",
             "render": {
@@ -833,6 +865,7 @@
         {
             "identifier": "item_crate",
             "id": 32,
+            "category": "BUILDING",
             "displayName": "Crate",
             "displayNameColor": "#ffffff",
             "render": {
@@ -862,6 +895,7 @@
         {
             "identifier": "item_carrot",
             "id": 33,
+            "category": "FOOD",
             "displayName": "Carrot",
             "displayNameColor": "#ffffff",
             "render": {
@@ -888,6 +922,7 @@
         {
             "identifier": "item_coal",
             "id": 34,
+            "category": "MATERIAL",
             "displayName": "Coal",
             "displayNameColor": "#ffffff",
             "render": {
@@ -910,6 +945,7 @@
         {
             "identifier": "item_dirt",
             "id": 35,
+            "category": "MATERIAL",
             "displayName": "Dirt",
             "displayNameColor": "#ffffff",
             "render": {
@@ -932,6 +968,7 @@
         {
             "identifier": "item_sand",
             "id": 36,
+            "category": "MATERIAL",
             "displayName": "Sand",
             "displayNameColor": "#ffffff",
             "render": {
@@ -954,6 +991,7 @@
         {
             "identifier": "item_torch",
             "id": 37,
+            "category": "BUILDING",
             "displayName": "Torch",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1021,6 +1059,7 @@
         {
             "identifier": "item_rock_wall",
             "id": 38,
+            "category": "BUILDING",
             "displayName": "Stone Wall",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1044,6 +1083,7 @@
         {
             "identifier": "item_dirt_wall",
             "id": 39,
+            "category": "BUILDING",
             "displayName": "Dirt Wall",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1067,6 +1107,7 @@
         {
             "identifier": "item_insect_net",
             "id": 40,
+            "category": "TOOL",
             "displayName": "Insect Net",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1091,6 +1132,7 @@
         {
             "identifier": "item_firefly",
             "id": 41,
+            "category": "MISC",
             "displayName": "Firefly",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1130,6 +1172,7 @@
         {
             "identifier": "item_crab_meat_raw",
             "id": 42,
+            "category": "FOOD",
             "displayName": "Raw Crab Meat",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1156,6 +1199,7 @@
         {
             "identifier": "item_sign",
             "id": 44,
+            "category": "BUILDING",
             "displayName": "Sign",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1185,6 +1229,7 @@
         {
             "identifier": "item_wood_club",
             "id": 45,
+            "category": "TOOL",
             "displayName": "Wooden Club",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1215,6 +1260,7 @@
         {
             "identifier": "item_flint_dagger",
             "id": 46,
+            "category": "TOOL",
             "displayName": "Flint Knife",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1242,6 +1288,7 @@
         {
             "identifier": "item_campfire",
             "id": 47,
+            "category": "BUILDING",
             "displayName": "Campfire",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1281,6 +1328,7 @@
         {
             "identifier": "item_hedge_wall",
             "id": 48,
+            "category": "BUILDING",
             "displayName": "Hedge Wall",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1303,6 +1351,7 @@
         {
             "identifier": "item_aloe_vera",
             "id": 49,
+            "category": "MATERIAL",
             "displayName": "Aloe Vera Leaf",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1325,6 +1374,7 @@
         {
             "identifier": "item_bandage",
             "id": 50,
+            "category": "CONSUMABLE",
             "displayName": "Bandage",
             "displayNameColor": "#ffffff",
             "render": {
@@ -1350,6 +1400,7 @@
         {
             "identifier": "item_aloe_vera_seeds",
             "id": 51,
+            "category": "MISC",
             "displayName": "Aloe Vera Seeds",
             "displayNameColor": "#ffffff",
             "render": {

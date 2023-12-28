@@ -34,11 +34,11 @@ public class ServerBlueberryBush extends ServerEntity {
         if(hasBerries) {
             hasBerries = false;
 
-            spawnItemsAround(0, 4.25f, 14, 18,
+            spawnItemsAround(0, 0, 14, 18,
                     new SpawnItem("item_blueberry", 2, 3))
             ;
 
-            ServerPackets.p30EntityDataUpdate(entityId, new Object[] {false}, PacketReceiver.whoCanSee(this));
+            ServerPackets.p30EntityDataUpdate(entityId, getPacketPayload(), PacketReceiver.whoCanSee(this));
             ServerPackets.p24PositionalSound("crab_snip", posX, posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(this));
 
             return false;
@@ -55,7 +55,7 @@ public class ServerBlueberryBush extends ServerEntity {
             if(berryRegrowthDelta <= 0) {
                 berryRegrowthDelta = MathUtils.random(180f, 300f);
                 hasBerries = true;
-                ServerPackets.p30EntityDataUpdate(entityId, new Object[] {true}, PacketReceiver.whoCanSee(this));
+                ServerPackets.p30EntityDataUpdate(entityId, getPacketPayload(), PacketReceiver.whoCanSee(this));
             }
         }
     }

@@ -492,7 +492,8 @@ public class ClientWorld {
                     ClientEntityType.DAMAGE_INDICATOR,
                     ClientEntityType.SIGN,
                     ClientEntityType.SELECTOR,
-                    ClientEntityType.PLAYER
+                    ClientEntityType.PLAYER,
+                    ClientEntityType.PICKUP_LINE
                     );
 
             if(displayBlur) {

@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
@@ -17,6 +18,9 @@ import dev.michey.expo.util.EntityRemovalReason;
 import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
 
 public class ClientItem extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
+
+    public static final float DEFAULT_SCALE = 0.875f;
+    public static final float SCALE_DURATION = 0.25f;
 
     public int itemId;
     public int itemAmount;
@@ -41,8 +45,8 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     @Override
     public void onCreation() {
         ir = ItemMapper.get().getMapping(itemId).uiRender;
-        currentScaleX = 0.875f;
-        currentScaleY = 0.875f;
+        currentScaleX = DEFAULT_SCALE;
+        currentScaleY = DEFAULT_SCALE;
 
         updateTextureBounds(ir[0].useWidth * currentScaleX, ir[0].useHeight * currentScaleY, 0, 0);
         playEntitySound("pop", 0.5f);
@@ -56,14 +60,26 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     }
     @Override
     public void tick(float delta) {
-        syncPositionWithServer();
-        updateTexturePositionData();
+        if(syncPositionWithServer()) {
+            updateTexturePositionData();
+        }
 
         if(isMoving()) {
             calculateReflection();
         }
 
         lifetime += delta;
+
+        /*
+        if(lifetime <= SCALE_DURATION) {
+            float norm = Math.abs(lifetime / SCALE_DURATION - 1);
+            currentScaleX = DEFAULT_SCALE + 0.625f * norm;
+            currentScaleY = DEFAULT_SCALE + 0.625f * norm;
+        } else {
+            currentScaleX = DEFAULT_SCALE;
+            currentScaleY = DEFAULT_SCALE;
+        }
+        */
 
         if(lifetime <= 0.05f) {
             useAlpha = lifetime / 0.05f;
@@ -132,8 +148,6 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             rc.itemShineShader.bind();
             rc.itemShineShader.setUniformf("u_delta", rc.deltaTotal * SHIMMER_SPEED + shimmerOffset * SHIMMER_SPEED);
 
-            float dsp = textureWidth - textureWidth * stackX;
-
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
 
             for(ItemRender ir : ir) {
@@ -148,22 +162,24 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
 
             if(itemAmount > 1 || !ItemMapper.get().getMapping(itemId).logic.isSpecialType()) {
                 String numberAsString = String.valueOf(itemAmount);
+                BitmapFont uf = rc.m6x11_border_all[0];
+                rc.globalGlyph.setText(uf, numberAsString);
+                float fontScale = (currentScaleX + 0.125f) * 0.5f;
+                float fw = rc.globalGlyph.width * fontScale;
+
+                uf.getData().setScale(fontScale);
+                uf.setColor(1.0f, 1.0f, 1.0f, useAlpha);
 
                 float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
                 float vx = finalTextureStartX;
                 float vy = finalTextureStartY;
-                float fontScale = 0.5f;
+                float ex = (slotW - ir[0].useWidth) * 0.5f * currentScaleX + ir[0].useWidth * currentScaleX + vx - fw - currentScaleX;
+                float y = vy + floatingPos + bounce;
 
-                float ex = (slotW - ir[0].useWidth) * 0.5f * currentScaleX + ir[0].useWidth * currentScaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * currentScaleX;
-                float y = vy + floatingPos - 7 * fontScale + bounce;
+                uf.draw(rc.arraySpriteBatch, numberAsString, ex, y);
 
-                int add = 0;
-
-                for(char c : numberAsString.toCharArray()) {
-                    TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
-                    rc.arraySpriteBatch.draw(indiNumber, ex + add - dsp * 0.5f, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
-                    add += (int) (6 * fontScale);
-                }
+                uf.setColor(Color.WHITE);
+                uf.getData().setScale(1.0f);
             }
 
             rc.arraySpriteBatch.setColor(Color.WHITE);

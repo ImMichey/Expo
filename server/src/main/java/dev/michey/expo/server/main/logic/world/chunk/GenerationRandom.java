@@ -48,6 +48,10 @@ public class GenerationRandom {
         return start + random.nextInt(end - start + 1);
     }
 
+    public int of(int... values) {
+        return values[random.nextInt(values.length)];
+    }
+
     public boolean randomBoolean() {
         return random.nextBoolean();
     }

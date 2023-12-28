@@ -14,6 +14,7 @@ import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.misc.ClientPickupLine;
 import dev.michey.expo.logic.entity.particle.ClientParticleFood;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.PlayerInventory;
@@ -286,10 +287,46 @@ public class ExpoClientPacketReader {
                     .rotateWithVelocity()
                     .spawn();
         } else if(o instanceof P36_PlayerReceiveItem p) {
+            ClientPlayer cp = ClientPlayer.getLocalPlayer();
+            if(cp == null) return;
+
+            var all = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PICKUP_LINE);
+            var add = ClientEntityManager.get().getEntitiesInAdditionQueue();
+
             for(int i = 0; i < p.itemIds.length; i++) {
-                int id = p.itemIds[i];
-                int amount = p.itemAmounts[i];
-                ExpoClientContainer.get().getPlayerUI().addPickupLine(id, amount);
+                int seekId = p.itemIds[i];
+                ClientPickupLine copyTo = null;
+
+                for(var existing : all) {
+                    ClientPickupLine clientPickupLine = (ClientPickupLine) existing;
+
+                    if(clientPickupLine.id == seekId) {
+                        copyTo = clientPickupLine;
+                        break;
+                    }
+                }
+
+                for(var existing : add) {
+                    if(existing.getEntityType() == ClientEntityType.PICKUP_LINE) {
+                        ClientPickupLine clientPickupLine = (ClientPickupLine) existing;
+
+                        if(clientPickupLine.id == seekId) {
+                            copyTo = clientPickupLine;
+                            break;
+                        }
+                    }
+                }
+
+                if(copyTo == null) {
+                    ClientPickupLine cpl = new ClientPickupLine();
+                    cpl.id = p.itemIds[i];
+                    cpl.amount = p.itemAmounts[i];
+                    cpl.reset();
+                    ClientEntityManager.get().addClientSideEntity(cpl);
+                } else {
+                    copyTo.amount += p.itemAmounts[i];
+                    copyTo.reset();
+                }
             }
         } else if(o instanceof P37_EntityTeleport p) {
             ClientEntity entity = entityFromId(p.entityId);

@@ -30,7 +30,7 @@ public class FoliageAnimator {
 
     public FoliageAnimator(ClientEntity parentEntity) {
         // Default values for grass
-        this(parentEntity, 0.5f, 1.2f, 0.02f, 0.04f, 0.04f, 0.06f, 2.0f, 5.0f, 0.5f, 1.5f);
+        this(parentEntity, 1.0f, 1.5f, 0.01f, 0.015f, 0.015f, 0.0225f, 2.0f, 5.0f, 0.5f, 1.5f);
     }
 
     public void resetWind() {
@@ -39,6 +39,13 @@ public class FoliageAnimator {
 
     public void calculateWindOnDemand() {
         if(!calculatedWindThisTick && parentEntity.visibleToRenderEngine) {
+            calculatedWindThisTick = true;
+            value = ShadowUtils.getWind(u_maxStrength, u_minStrength, RenderContext.get().deltaTotal * u_speed + u_offset, u_interval, u_detail);
+        }
+    }
+
+    public void calculateWindOnDemand(boolean shadowVisible) {
+        if(!calculatedWindThisTick && (shadowVisible || parentEntity.visibleToRenderEngine)) {
             calculatedWindThisTick = true;
             value = ShadowUtils.getWind(u_maxStrength, u_minStrength, RenderContext.get().deltaTotal * u_speed + u_offset, u_interval, u_detail);
         }

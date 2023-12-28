@@ -43,6 +43,19 @@ public class ClientInventory {
         return true;
     }
 
+    public int getItemAmount(int id) {
+        int total = 0;
+
+        for(ClientInventorySlot slot : slots) {
+            if(slot.item == null) continue;
+            if(slot.item.itemId == id) {
+                total += slot.item.itemAmount;
+            }
+        }
+
+        return total;
+    }
+
     public boolean hasItem(int id, int amount) {
         var slots = getSlots();
         int required = amount;

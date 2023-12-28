@@ -88,7 +88,7 @@ public class ExpoCamera {
             }
 
             float newZoom = Interpolation.pow5Out.apply(startZoom, goalZoom, zoomDelta);
-            newZoom = (float) Math.round(newZoom * 100) / 100;
+            newZoom = (float) Math.round(newZoom * 10000) / 10000;
             RenderContext.get().expoCamera.camera.zoom = newZoom;
             RenderContext.get().zoomNotify = true;
         }
@@ -152,8 +152,10 @@ public class ExpoCamera {
         float movementCameraX = dstX;
         float movementCameraY = dstY;
 
-        if(Math.abs(dstX) > 0.003f) movementCameraX *= LERP_FACTOR * RenderContext.get().delta;
-        if(Math.abs(dstY) > 0.003f) movementCameraY *= LERP_FACTOR * RenderContext.get().delta * RenderContext.get().aspectRatio;
+        if(Math.abs(dstX) > 0.002f)
+            movementCameraX *= LERP_FACTOR * RenderContext.get().delta;
+        if(Math.abs(dstY) > 0.002f)
+            movementCameraY *= LERP_FACTOR * RenderContext.get().delta * RenderContext.get().aspectRatio;
 
         movementPosition.add(movementCameraX, movementCameraY);
 

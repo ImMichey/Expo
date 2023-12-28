@@ -1,7 +1,7 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -52,7 +52,7 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, useAlpha);
 
-        for (ItemRender ir : ir) {
+        for(ItemRender ir : ir) {
             rc.arraySpriteBatch.draw(ir.useTextureRegion,
                     finalDrawPosX + ir.offsetX * scaleX,
                     finalDrawPosY + ir.offsetY * scaleY + floatingPos + floatingPosAnimation,
@@ -62,22 +62,24 @@ public class ClientGhostItem extends ClientEntity implements AmbientOcclusionEnt
 
         if(amount > 1 || !ItemMapper.get().getMapping(itemId).logic.isSpecialType()) {
             String numberAsString = String.valueOf(amount);
+            BitmapFont uf = rc.m6x11_border_all[0];
+            rc.globalGlyph.setText(uf, numberAsString);
+            float fontScale = (scaleX + 0.125f) * 0.5f;
+            float fw = rc.globalGlyph.width * fontScale;
+
+            uf.getData().setScale(fontScale);
+            uf.setColor(1.0f, 1.0f, 1.0f, useAlpha);
 
             float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
             float vx = finalTextureStartX;
             float vy = finalTextureStartY;
-            float fontScale = 0.5f;
+            float ex = (slotW - ir[0].useWidth) * 0.5f * scaleX + ir[0].useWidth * scaleX + vx - fw - scaleX;
+            float y = vy + floatingPos + floatingPosAnimation;
 
-            float ex = (slotW - ir[0].useWidth) * 0.5f * scaleX + ir[0].useWidth * scaleX + vx - (numberAsString.length() * 6 * fontScale) - 1 * scaleX;
-            float y = vy + floatingPosAnimation + floatingPos - 7 * fontScale;
+            uf.draw(rc.arraySpriteBatch, numberAsString, ex, y);
 
-            int add = 0;
-
-            for(char c : numberAsString.toCharArray()) {
-                TextureRegion indiNumber = rc.getNumber(Integer.parseInt(String.valueOf(c)));
-                rc.arraySpriteBatch.draw(indiNumber, ex + add, y, indiNumber.getRegionWidth() * fontScale, indiNumber.getRegionHeight() * fontScale);
-                add += (int) (6 * fontScale);
-            }
+            uf.setColor(Color.WHITE);
+            uf.getData().setScale(1.0f);
         }
 
         rc.arraySpriteBatch.setColor(Color.WHITE);

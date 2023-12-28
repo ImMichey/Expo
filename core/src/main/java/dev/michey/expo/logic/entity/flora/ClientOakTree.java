@@ -201,6 +201,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         trunkShadowMask = tr("eot_trunk_" + cutStr + variant);
         selectionTrunk = generateSelectionTexture(trunk);
 
+
         leavesVariant = MathUtils.random() <= 0.25f ? 2 : 1;
 
         if(variant >= 1 && variant <= 2) {
@@ -512,7 +513,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         if(cut && resetShadowFadeTimer <= 0) {
             drawAO100(rc, 0.5f, 0.75f, 1, 3.5f);
         } else {
-            drawAO50(rc, 1.0f, 1.25f, 1, 3.5f);
+            drawAO100(rc, 1.0f, 1.25f, 1, 3.5f);
         }
     }
 

@@ -29,7 +29,7 @@ public enum ServerEntityType {
     CRAB(15, true),
     DYNAMIC_3D_TILE(16, true),
     WHEAT_PLANT(17, false),
-    SUNFLOWER(18, false),
+    SUNFLOWER(18, true),
     FIREFLY(19, false),
     MUSHROOM_GLOWING(20, false),
     LILYPAD(21, true),

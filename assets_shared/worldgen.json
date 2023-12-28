@@ -241,8 +241,8 @@
                     "biome": "DENSE_FOREST",
                     "type": "OAK_TREE",
                     "static": true,
-                    "chance": 0.8,
-                    "spawnOffsets": [-28.0, 28.0, -28.0, 28.0],
+                    "chance": 1,
+                    "spawnOffsets": [-32.0, 32.0, -32.0, 32.0],
                     "skip": 4,
                     "priority": 100,
                     "skipChunkChance": 0.08,
@@ -264,8 +264,8 @@
                     "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
                     "spreadData": {
                         "spread": [2, 6],
-                        "spreadChance": 1.0,
-                        "spreadDis": [11.0, 22.0],
+                        "spreadChance": 0.8,
+                        "spreadDis": [10.0, 20.0],
                         "spreadType": ["GRASS"],
                         "spreadStatic": true,
                         "spreadOffsets": [0.0, 0.0]
@@ -694,21 +694,6 @@
                         "spreadType": ["ROCK"],
                         "spreadStatic": true,
                         "spreadOffsets": [0.0, 2.0]
-                    }
-                },
-                {
-                    "biome": ["DENSE_FOREST", "PLAINS"],
-                    "type": "CHICKEN",
-                    "static": false,
-                    "chance": 0.0001,
-                    "spawnOffsets": [0.0, 0.0, 0.0, 0.0],
-                    "spreadData": {
-                        "spread": [1, 3],
-                        "spreadChance": 1.0,
-                        "spreadDis": [16.0, 32.0],
-                        "spreadType": ["CHICKEN"],
-                        "spreadStatic": false,
-                        "spreadOffsets": [0.0, 0.0]
                     }
                 },
                 {

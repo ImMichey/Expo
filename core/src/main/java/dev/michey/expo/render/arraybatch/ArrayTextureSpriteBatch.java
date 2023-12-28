@@ -16,10 +16,6 @@
 
 package dev.michey.expo.render.arraybatch;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.LifecycleListener;
@@ -34,9 +30,12 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.util.GameSettings;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 
 /** Draws batched quads using indices.
  * <p>
@@ -849,6 +848,53 @@ public class ArrayTextureSpriteBatch implements Batch {
     @Override
     public void draw (TextureRegion region, float x, float y) {
         draw(region, x, y, region.getRegionWidth(), region.getRegionHeight());
+    }
+
+    public void drawShiftedVertices(TextureRegion region, float x, float y, float w, float h, float shiftX, float shiftY) {
+        if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before drawShiftedVertices.");
+
+        float[] vertices = this.vertices;
+
+        flushIfFull();
+
+        final float ti = activateTexture(region.getTexture());
+
+        final float fx2 = x + w;
+        final float fy2 = y + h;
+        final float u = region.getU() * subImageScaleWidth;
+        final float v = region.getV2() * subImageScaleHeight;
+        final float u2 = region.getU2() * subImageScaleWidth;
+        final float v2 = region.getV() * subImageScaleHeight;
+
+        float color = this.colorPacked;
+
+        vertices[idx++] = x;
+        vertices[idx++] = y;
+        vertices[idx++] = color;
+        vertices[idx++] = u;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = x + shiftX;
+        vertices[idx++] = fy2 + shiftY;
+        vertices[idx++] = color;
+        vertices[idx++] = u;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2 + shiftX;
+        vertices[idx++] = fy2 + shiftY;
+        vertices[idx++] = color;
+        vertices[idx++] = u2;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2;
+        vertices[idx++] = y;
+        vertices[idx++] = color;
+        vertices[idx++] = u2;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
     }
 
     @Override

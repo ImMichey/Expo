@@ -138,7 +138,7 @@
         "bbox.population": [-5.0, 0, 10, 8]
     },
     "OAK_TREE": {
-        "bbox.population": [-11.0, -1, 23, 12],
+        "bbox.population": [-15.0, -4, 31, 16],
         "maxHp.var1": 120.0,
         "maxHp.var2": 120.0,
         "maxHp.var3": 150.0,

@@ -65,6 +65,7 @@ public enum ClientEntityType {
     DAMAGE_INDICATOR(-9, "DamageIndicator", null),
     CLOUD(-10, "Cloud", null),
     HEALTH_BAR(-11, "HealthBar", null),
+    PICKUP_LINE(-12, "PickupLine", null),
 
     ;
 
@@ -89,6 +90,9 @@ public enum ClientEntityType {
             case -7 -> new ClientPuddle();
             case -8 -> new ClientFallingTree();
             case -9 -> new ClientDamageIndicator();
+            case -10 -> new ClientCloud();
+            case -11 -> new ClientHealthBar();
+            case -12 -> new ClientPickupLine();
             case 0 -> new ClientPlayer();
             case 1 -> new ClientDummy();
             case 2 -> new ClientGrass();

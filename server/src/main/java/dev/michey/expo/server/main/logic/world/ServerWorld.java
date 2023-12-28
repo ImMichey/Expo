@@ -61,6 +61,7 @@ public class ServerWorld {
                 executorService.invokeAll(dimensionTickCollection);
             } catch (InterruptedException e) {
                 log("ServerWorld ExecutorService crashed");
+                ExpoShared.DUMP_THREADS = true;
                 e.printStackTrace();
                 executorService.shutdown();
             } catch (RejectedExecutionException ignored) { }

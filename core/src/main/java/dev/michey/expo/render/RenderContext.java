@@ -164,10 +164,6 @@ public class RenderContext {
     public float offset = 0.0f;
     public float skew = 0.0f;
 
-    /** Numbers */
-    private final TextureRegion[] numbers;
-    private final TextureRegion[] numbersOutline;
-
     /** Game camera */
     public ExpoCamera expoCamera;
     public boolean zoomNotify;
@@ -288,21 +284,7 @@ public class RenderContext {
 
         aoTexture = ExpoAssets.get().texture("ao_tex_60_20.png");
 
-        numbers = new TextureRegion[10];
-        TextureRegion baseTexture = ExpoAssets.get().textureRegion("numbers");
-
         square = ExpoAssets.get().findTile("square16x16");
-
-        for(int i = 0; i < 10; i++) {
-            numbers[i] = new TextureRegion(baseTexture, i * 8, 0, 6, 8);
-        }
-
-        numbersOutline = new TextureRegion[10];
-        TextureRegion baseTexture2 = ExpoAssets.get().textureRegion("numbersOutline");
-
-        for(int i = 0; i < 10; i++) {
-            numbersOutline[i] = new TextureRegion(baseTexture2, i * 8, 0, 7, 9);
-        }
 
         TextureRegion baseButton = ExpoAssets.get().textureRegion("ui_button_patches");
         buttonParts = new TextureRegion[7];
@@ -498,6 +480,16 @@ public class RenderContext {
         tilesFbo = createFBO(w, h);
     }
 
+    public boolean inDrawBounds(ClientEntity entity, float buffer) {
+        float x = entity.finalTextureStartX - buffer;
+        float y = entity.finalTextureStartY - buffer;
+
+        return drawStartX <= (x + entity.textureWidth + buffer)
+                && drawEndX >= x
+                && drawStartY <= (y + entity.textureHeight + buffer)
+                && drawEndY >= y;
+    }
+
     public boolean inDrawBounds(ClientEntity entity) {
         float x = entity.finalTextureStartX;
         float y = entity.finalTextureStartY;
@@ -506,6 +498,13 @@ public class RenderContext {
                 && drawEndX >= x
                 && drawStartY <= (y + entity.textureHeight)
                 && drawEndY >= y;
+    }
+
+    public boolean verticesInBounds(float[] vertices, float buffer) {
+        return (vertices[0] - buffer) < drawEndX
+                && (vertices[2] + buffer) > drawStartX
+                && (vertices[1] - buffer) < drawEndY
+                && (vertices[3] + buffer) > drawStartY;
     }
 
     public boolean verticesInBounds(float[] vertices) {
@@ -638,14 +637,6 @@ public class RenderContext {
 
         lastFBOWidth = width;
         lastFBOHeight = height;
-    }
-
-    public TextureRegion getNumber(int number) {
-        return numbers[number];
-    }
-
-    public TextureRegion getNumberOutline(int number) {
-        return numbersOutline[number];
     }
 
     public void drawSquareRounded(float x, float y, float w, float h) {

@@ -1,7 +1,7 @@
 package dev.michey.expo.logic.entity.flora;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -15,21 +15,29 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
 
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
-    private TextureRegion mask;
-    private Texture bush;
-    private Texture bushFruits;
+    private TextureRegion bushTexture, bushTexture_sel;
+    private TextureRegion bushFruits, bushFruits_sel;
     private float[] interactionPointArray;
 
     private boolean hasBerries;
 
     @Override
     public void onCreation() {
-        mask = tr("ebbbmask");
-        bush = t("foliage/entity_blueberrybush/ebbb0.png");
-        bushFruits = t("foliage/entity_blueberrybush/ebbb1.png");
+        bushTexture = new TextureRegion(tr("entity_bbb"));
+        bushFruits = new TextureRegion(tr("entity_bbb_fruits"));
+        bushTexture_sel = generateSelectionTexture(bushTexture);
+        bushFruits_sel = generateSelectionTexture(bushFruits);
 
-        updateTextureBounds(16, 16, 1, 1);
+        if(MathUtils.randomBoolean()) {
+            bushTexture.flip(true, false);
+            bushFruits.flip(true, false);
+            bushTexture_sel.flip(true, false);
+            bushFruits_sel.flip(true, false);
+        }
+
+        updateTextureBounds(bushTexture);
         interactionPointArray = generateInteractionArray(3);
+
         contactAnimator.enableSquish = false;
         contactAnimator.STRENGTH = 2.0f;
         contactAnimator.STRENGTH_DECREASE = 0.4f;
@@ -60,10 +68,9 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         setSelectionValues();
-
-        Texture useTex = hasBerries ? bushFruits : bush;
-        rc.arraySpriteBatch.drawCustomVertices(useTex, finalDrawPosX, finalDrawPosY, useTex.getWidth(), useTex.getHeight(), contactAnimator.value, contactAnimator.value);
-        rc.arraySpriteBatch.end();
+        TextureRegion use = hasBerries ? bushFruits_sel : bushTexture_sel;
+        rc.arraySpriteBatch.drawShiftedVertices(use, finalSelectionDrawPosX, finalSelectionDrawPosY + contactAnimator.squishAdjustment,
+                use.getRegionWidth(), use.getRegionHeight() * contactAnimator.squish, contactAnimator.value, 0);
     }
 
     @Override
@@ -76,29 +83,33 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth(textureOffsetY + 1);
+            updateDepth(textureOffsetY);
+
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            Texture useTex = hasBerries ? bushFruits : bush;
-            rc.arraySpriteBatch.drawCustomVertices(useTex, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, useTex.getWidth(), useTex.getHeight() * contactAnimator.squish, contactAnimator.value, contactAnimator.value);
+            TextureRegion use = hasBerries ? bushFruits : bushTexture;
+            rc.arraySpriteBatch.drawShiftedVertices(use, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                    use.getRegionWidth(), use.getRegionHeight() * contactAnimator.squish, contactAnimator.value, 0);
         }
     }
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        Texture useTex = hasBerries ? bushFruits : bush;
-        rc.arraySpriteBatch.drawCustomVertices(useTex, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment + 2, useTex.getWidth(), useTex.getHeight() * contactAnimator.squish * -1, contactAnimator.value, contactAnimator.value);
+        TextureRegion use = hasBerries ? bushFruits : bushTexture;
+        rc.arraySpriteBatch.drawShiftedVertices(use, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                use.getRegionWidth(), use.getRegionHeight() * contactAnimator.squish * -1, contactAnimator.value, 0);
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        drawWindShadowIfVisible(mask, contactAnimator);
+        TextureRegion use = hasBerries ? bushFruits : bushTexture;
+        drawWindShadowIfVisible(use, contactAnimator);
     }
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.4f, 0.4f, 0, 1.5f);
+        drawAO100(rc, 0.5f, 0.5f, 0, 1.5f);
     }
 
     @Override

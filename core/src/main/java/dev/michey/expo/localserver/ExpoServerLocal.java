@@ -16,6 +16,7 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public class ExpoServerLocal extends ExpoServerBase {
 
     private Thread gameLogicThread;
+    private boolean stop;
 
     public ExpoServerLocal(String worldName, int worldSeed) {
         super(true, worldName, worldSeed);
@@ -45,7 +46,7 @@ public class ExpoServerLocal extends ExpoServerBase {
                 int ticks = 0;
                 long timer = System.currentTimeMillis();
 
-                while(!gameLogicThread.isInterrupted()) {
+                while(!stop) {
                     timeU = 1_000_000_000 / (double) ExpoShared.DEFAULT_LOCAL_TICK_RATE;
                     long currentTime = System.nanoTime();
                     deltaU += (currentTime - initialTime) / timeU;
@@ -77,11 +78,13 @@ public class ExpoServerLocal extends ExpoServerBase {
         log("Stopping local ExpoServer");
         running = false;
         serverContainer.cancelAll();
-        gameLogicThread.interrupt();
+        stop = true;
         getWorldSaveHandler().updateAndSave(ServerWorld.get());
         ServerPlayer sp = ServerPlayer.getLocalPlayer();
         if(sp != null) sp.updateSaveFile();
         getWorldSaveHandler().getPlayerSaveHandler().saveAll();
+
+        ExpoShared.threadDump();
     }
 
     @Override

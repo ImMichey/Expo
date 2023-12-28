@@ -71,6 +71,14 @@ public class UICraftRecipeSlot extends InteractableUIElement {
         ItemMapping mapping = ItemMapper.get().getMapping(recipe.outputId);
         String outputText = recipe.outputAmount + "x " + mapping.displayName;
 
+        //
+        int[] itemExistence = new int[recipe.inputIds.length];
+        for(int i = 0; i < recipe.inputIds.length; i++) {
+            int checkForId = recipe.inputIds[i];
+            itemExistence[i] = ClientPlayer.getLocalPlayer().playerInventory.getItemAmount(checkForId);
+        }
+        //
+
         ui.glyphLayout.setText(rc.m6x11_use, outputText);
         float titleWidth = ui.glyphLayout.width;
 
@@ -84,7 +92,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
         float maxIngredientRowWidth = 0;
 
         for(int i = 0; i < recipe.inputIds.length; i++) {
-            String ingredientRowText = recipe.inputAmounts[i] + "x " + ItemMapper.get().getMapping(recipe.inputIds[i]).displayName;
+            String ingredientRowText = ItemMapper.get().getMapping(recipe.inputIds[i]).displayName + " (" + itemExistence[i] + "/" + recipe.inputAmounts[i] + ")";
             ui.glyphLayout.setText(rc.m5x7_use, ingredientRowText);
             float ingredientRowWidth = ui.glyphLayout.width + 28 * ui.uiScale;
             if(ingredientRowWidth > innerWidth) innerWidth = ingredientRowWidth;
@@ -116,7 +124,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
 
             int id = recipe.inputIds[i];
             int am = recipe.inputAmounts[i];
-            boolean hasIngredient = ClientPlayer.getLocalPlayer().playerInventory.hasItem(id, am);
+            boolean hasIngredient = itemExistence[i] >= am;// ClientPlayer.getLocalPlayer().playerInventory.hasItem(id, am);
             if(!hasIngredient) {
                 hasAllIngredients = false;
             }
@@ -124,7 +132,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
             ItemMapping m = ItemMapper.get().getMapping(id);
             rc.drawItemTextures(m.uiRender, _cx, _cy + _coy, 24, 24);
 
-            String ingredientText = am + "x " + m.displayName;
+            String ingredientText = m.displayName + " (" + itemExistence[i] + "/" + recipe.inputAmounts[i] + ")";
             ui.glyphLayout.setText(rc.m5x7_use, ingredientText);
             float th = ui.glyphLayout.height;
 

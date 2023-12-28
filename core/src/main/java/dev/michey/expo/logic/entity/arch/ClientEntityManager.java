@@ -422,6 +422,10 @@ public class ClientEntityManager {
         return idEntityMap.get(entityId);
     }
 
+    public ConcurrentLinkedQueue<ClientEntity> getEntitiesInAdditionQueue() {
+        return additionQueue;
+    }
+
     public List<ClientEntity> getEntitiesByType(ClientEntityType type) {
         return typeEntityListMap.get(type);
     }

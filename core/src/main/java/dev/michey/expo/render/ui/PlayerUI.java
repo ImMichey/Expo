@@ -29,7 +29,6 @@ import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.util.ClientPackets;
 import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoShared;
@@ -37,7 +36,6 @@ import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.weather.Weather;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import static dev.michey.expo.util.ClientStatic.DEV_MODE;
 
@@ -71,13 +69,11 @@ public class PlayerUI {
     private final Color COLOR_RED = new Color(210f / 255f, 27f / 255f, 27f / 255f, 1.0f);
     public final String COLOR_DESCRIPTOR_HEX = "[#5875b0]";
     public final String COLOR_DESCRIPTOR2_HEX = "[#bdc4d4]";
+    public final Color COLOR_TEX_DESCRIPTOR = Color.valueOf("#9ec07f");
     private final float[] COLOR_GRADIENTS = new float[] {100f, 80f, 60f, 40f, 20f, 0f};
 
     public InteractableItemSlot[] hotbarSlots;
     public InteractableUIElement hoveredSlot = null;
-
-    public List<PickupLine> pickupLines;
-    public final Object PICKUP_LOCK = new Object();
 
     /** Fade in */
     public float fadeInDelta;
@@ -128,6 +124,8 @@ public class PlayerUI {
     public final TextureRegion iconHungerRestore;
     public final TextureRegion iconHungerCooldownRestore;
 
+    public final TextureRegion[] tooltipDescriptor;
+
     public UIContainer currentContainer = null;
 
     /** Singleton instance */
@@ -154,7 +152,6 @@ public class PlayerUI {
         whiteSquare = tr("square16x16");
 
         playerMinimap = new PlayerMinimap(this, tr("ui_minimap"), tr("ui_minimap_arrow"), tr("ui_minimap_player"));
-        pickupLines = new LinkedList<>();
 
         glyphLayout = new GlyphLayout();
 
@@ -173,6 +170,16 @@ public class PlayerUI {
         tooltipFillerLight = new TextureRegion(tooltip, 20, 2+16, 1, 1);
         tooltipFillerCrafting = new TextureRegion(tooltip, 22, 2+16, 1, 1);
         // tooltip end
+
+        TextureRegion desc = tr("tooltip_desc");
+        tooltipDescriptor = new TextureRegion[7];
+        tooltipDescriptor[0] = new TextureRegion(desc, 0, 0, 17, 5);
+        tooltipDescriptor[1] = new TextureRegion(desc, 0, 6, 19, 5);
+        tooltipDescriptor[2] = new TextureRegion(desc, 0, 12, 37, 5);
+        tooltipDescriptor[3] = new TextureRegion(desc, 0, 18, 48, 5);
+        tooltipDescriptor[4] = new TextureRegion(desc, 0, 24, 25, 5);
+        tooltipDescriptor[5] = new TextureRegion(desc, 0, 30, 36, 5);
+        tooltipDescriptor[6] = new TextureRegion(desc, 0, 36, 20, 5);
 
         TextureRegion icons = tr("icons");
         iconAttackDamage = new TextureRegion(icons, 0, 0, 9, 9);
@@ -194,22 +201,6 @@ public class PlayerUI {
         hotbarSlots[0].selected = true;
 
         changeUiScale();
-    }
-
-    public void addPickupLine(int itemId, int itemAmount) {
-        synchronized(PICKUP_LOCK) {
-            for(PickupLine pl : pickupLines) {
-                if(pl.itemId == itemId) {
-                    pickupLines.remove(pl);
-                    pl.lifetime = 0;
-                    pl.itemAmount += itemAmount;
-                    pickupLines.add(pl);
-                    return;
-                }
-            }
-
-            pickupLines.add(new PickupLine(itemId, itemAmount));
-        }
     }
 
     public TextureRegion tr(String name) {
@@ -474,12 +465,8 @@ public class PlayerUI {
         }
 
         glyphLayout.setText(rc.m5x7_border_use, "U");
-        Vector2 startHudPos = ClientUtils.entityPosToHudPos(ClientPlayer.getLocalPlayer().clientPosX, ClientPlayer.getLocalPlayer().clientPosY + 32 + glyphLayout.height);
-        float MAX_LINE_LIFETIME = 1.5f;
 
-        // Draw pickup lines
-        BitmapFont useFont = rc.m5x7_border_use;
-
+        /*
         synchronized(PICKUP_LOCK) {
             int yOffset = 0;
 
@@ -502,13 +489,13 @@ public class PlayerUI {
                 float rmAlpha = line.lifetime / MAX_LINE_LIFETIME;
 
                 // Draw background
-                /*
+
                 int spc = 2;
                 float uh = mapping.uiRender[0].useHeight * uiScale;
                 rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, 0.25f - rmAlpha / 4);
                 rc.hudBatch.draw(rc.square, startX - spc * uiScale, startY - spc * uiScale, fullWidth + spc * 2 * uiScale, Math.max(uh, glyphLayout.height) + spc * 2 * uiScale);
                 rc.hudBatch.setColor(Color.WHITE);
-                */
+
 
                 rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - rmAlpha);
                 useFont.setColor(mapping.color.r, mapping.color.g, mapping.color.b, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
@@ -530,6 +517,7 @@ public class PlayerUI {
             useFont.setColor(Color.WHITE);
             pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
         }
+        */
 
         if(currentContainer != null && currentContainer.visible) {
             currentContainer.draw(rc, this);

@@ -428,22 +428,16 @@ public class ClientChunk {
         int dirX = 0, dirY = 0;
 
         switch(id - type.TILE_ID_DATA[0]) {
-            case 3, 6 -> {
-                dirX = 0;
-                dirY = -1;
-            }
+            case 3, 6 -> //dirX = 0;
+                    dirY = -1;
             case 2 -> {
                 dirX = 1;
                 dirY = -1;
             }
-            case 9, 15 -> {
-                dirX = -1;
-                dirY = 0;
-            }
-            case 4, 10 -> {
-                dirX = 1;
-                dirY = 0;
-            }
+            case 9, 15 -> //dirY = 0;
+                    dirX = -1;
+            case 4, 10 -> //dirY = 0;
+                    dirX = 1;
             case 7 -> {
                 dirX = -1;
                 dirY = -1;
@@ -452,18 +446,18 @@ public class ClientChunk {
                 dirX = 1;
                 dirY = 1;
             }
-            case 13, 16 -> {
-                dirX = 0;
-                dirY = 1;
-            }
+            case 13, 16 -> //dirX = 0;
+                    dirY = 1;
             case 17 -> {
                 dirX = -1;
                 dirY = 1;
             }
+            /*
             case 18, 19, 20, 21 -> {
                 dirX = 0;
                 dirY = 0;
             }
+            */
         }
 
         return new Pair<>(dirX, dirY);
@@ -502,12 +496,12 @@ public class ClientChunk {
 
         int cy1 =       chunkY + 1;
         int cyN1 =      chunkY - 1;
-        boolean y1 =    cy1  >= vp[2] && cy1 <= vp[3];      // one up in bounds?
+        boolean y1 =    cy1  >= vp[2] && cy1  <= vp[3];     // one up in bounds?
         boolean yN1 =   cyN1 >= vp[2] && cyN1 <= vp[3];     // one down in bounds?
 
         int cx1 =       chunkX + 1;
         int cxN1 =      chunkX - 1;
-        boolean x1 =    cx1  >= vp[0] && cx1 <= vp[1];      // one right in bounds?
+        boolean x1 =    cx1  >= vp[0] && cx1  <= vp[1];     // one right in bounds?
         boolean xN1 =   cxN1 >= vp[0] && cxN1 <= vp[1];     // one left in bounds?
 
         boolean[] check = new boolean[8];

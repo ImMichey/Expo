@@ -81,6 +81,8 @@ public class ExpoShared {
     public static final int CONTAINER_ID_VOID = -1;
     public static final int CONTAINER_ID_PLAYER = -2;
 
+    public static boolean DUMP_THREADS = false;
+
     /** Global random */
     public static final Random RANDOM = new Random();
 
@@ -189,6 +191,7 @@ public class ExpoShared {
     }
 
     public static void threadDump() {
+        if(!DUMP_THREADS) return;
         new Thread(() -> {
             try {
                 Thread.sleep(1000);

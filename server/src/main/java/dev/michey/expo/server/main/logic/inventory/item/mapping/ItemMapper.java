@@ -34,6 +34,7 @@ public class ItemMapper {
             String identifier = entry.getString("identifier");
             String displayName = entry.getString("displayName");
             String displayNameColor = entry.getString("displayNameColor");
+            ItemCategory category = ItemCategory.valueOf(entry.getString("category"));
             int id = entry.getInt("id");
 
             ItemLogic logic = new ItemLogic(entry.getJSONObject("logic"));
@@ -65,7 +66,7 @@ public class ItemMapper {
                 }
             }
 
-            ItemMapping mapping = new ItemMapping(identifier, id, displayName, displayNameColor, uiRender, heldRender, armorRender, logic);
+            ItemMapping mapping = new ItemMapping(identifier, id, category, displayName, displayNameColor, uiRender, heldRender, armorRender, logic);
             itemMappings.put(identifier, mapping);
             itemMappingsId.put(id, mapping);
 

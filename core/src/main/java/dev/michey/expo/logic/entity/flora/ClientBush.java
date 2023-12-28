@@ -1,7 +1,7 @@
 package dev.michey.expo.logic.entity.flora;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -16,16 +16,22 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
 
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
-    private Texture texture;
-    private TextureRegion shadowMask;
+    private TextureRegion bushTexture, bushTexture_sel;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        texture = t("foliage/entity_bush/entity_bush.png");
-        shadowMask = tr("entity_bush_sm");
-        updateTextureBounds(18, 17, 1, 1);
+        bushTexture = new TextureRegion(tr("entity_bush"));
+        bushTexture_sel = generateSelectionTexture(bushTexture);
+
+        if(MathUtils.randomBoolean()) {
+            bushTexture.flip(true, false);
+            bushTexture_sel.flip(true, false);
+        }
+
+        updateTextureBounds(bushTexture);
         interactionPointArray = generateInteractionArray(3);
+
         contactAnimator.enableSquish = false;
     }
 
@@ -56,7 +62,8 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         setSelectionValues();
-        rc.arraySpriteBatch.drawCustomVertices(texture, finalDrawPosX, finalDrawPosY, texture.getWidth(), texture.getHeight(), contactAnimator.value, contactAnimator.value);
+        rc.arraySpriteBatch.drawShiftedVertices(bushTexture_sel, finalSelectionDrawPosX, finalSelectionDrawPosY + contactAnimator.squishAdjustment,
+                bushTexture_sel.getRegionWidth(), bushTexture_sel.getRegionHeight() * contactAnimator.squish, contactAnimator.value, 0);
     }
 
     @Override
@@ -73,18 +80,21 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawCustomVertices(texture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, texture.getWidth(), texture.getHeight() * contactAnimator.squish, contactAnimator.value, contactAnimator.value);
+
+            rc.arraySpriteBatch.drawShiftedVertices(bushTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                    bushTexture.getRegionWidth(), bushTexture.getRegionHeight() * contactAnimator.squish, contactAnimator.value, 0);
         }
     }
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.drawCustomVertices(texture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment + 2, texture.getWidth(), texture.getHeight() * contactAnimator.squish * -1, contactAnimator.value, contactAnimator.value);
+        rc.arraySpriteBatch.drawShiftedVertices(bushTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                bushTexture.getRegionWidth(), bushTexture.getRegionHeight() * contactAnimator.squish * -1, contactAnimator.value, 0);
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        drawWindShadowIfVisible(shadowMask, contactAnimator);
+        drawWindShadowIfVisible(bushTexture, contactAnimator);
     }
 
     @Override
