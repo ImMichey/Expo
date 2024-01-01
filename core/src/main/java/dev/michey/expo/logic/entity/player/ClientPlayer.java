@@ -25,6 +25,7 @@ import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.font.GradientFont;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
@@ -1184,10 +1185,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     @Override
     public void renderTop(RenderContext rc, float delta) {
         if(Expo.get().isMultiplayer() || DEV_MODE) {
-            BitmapFont use = rc.m5x7_border_all[1];
+            BitmapFont use = rc.pickupFont;
             use.getData().setScale(0.5f);
             rc.globalGlyph.setText(use, username);
-            use.draw(rc.arraySpriteBatch, username, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY + 32 + rc.globalGlyph.height);
+            GradientFont.drawGradient(use, rc.arraySpriteBatch, username, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY + 32 + rc.globalGlyph.height);
             use.getData().setScale(1.0f);
         }
     }

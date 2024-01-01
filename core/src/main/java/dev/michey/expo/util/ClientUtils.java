@@ -1,6 +1,7 @@
 package dev.michey.expo.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
@@ -54,6 +55,21 @@ public class ClientUtils {
         if(Gdx.input.isKeyJustPressed(onKeyCode) && DEV_MODE) {
             takeScreenshot(name);
         }
+    }
+
+    public static Color darker(Color src, float factor) {
+        float r = src.r;
+        float g = src.g;
+        float b = src.b;
+        return new Color(r * factor, g * factor, b * factor, src.a);
+    }
+
+    public static Color darker(Color src) {
+        float factor = 0.975f;
+        float r = src.r;
+        float g = src.g;
+        float b = src.b;
+        return new Color(r * factor, g * factor, b * factor, src.a);
     }
 
 }

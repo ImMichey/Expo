@@ -7,10 +7,13 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.font.GradientFont;
 import dev.michey.expo.render.visbility.TopVisibilityEntity;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
+
+import static dev.michey.expo.util.ClientUtils.darker;
 
 public class ClientPickupLine extends ClientEntity implements TopVisibilityEntity {
 
@@ -25,7 +28,9 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
     public int amount;
     private ItemMapping mapping;
     public String displayText;
-    public Color displayColor = Color.WHITE;
+
+    public Color topColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+    public Color bottomColor;
 
     @Override
     public void onCreation() {
@@ -34,7 +39,9 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
 
     public void setMapping() {
         mapping = ItemMapper.get().getMapping(id);
-        displayColor = mapping.color;
+
+        topColor = mapping.color;
+        bottomColor = darker(topColor);
     }
 
     public void setCustomDisplayText(String text) {
@@ -42,7 +49,8 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
     }
 
     public void setCustomDisplayColor(Color color) {
-        displayColor = color;
+        topColor = color;
+        bottomColor = darker(topColor);
     }
 
     @Override
@@ -93,7 +101,7 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         clientPosY += delta * FLOAT_SPEED;
         updateDepth();
 
-        BitmapFont f = rc.m5x7_border_all[1];
+        BitmapFont f = rc.pickupFont;
         rc.globalGlyph.setText(f, displayText);
 
         float scl = 1.0f;
@@ -118,14 +126,21 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
                     ir.useTextureRegion.getRegionWidth() * scl, ir.useTextureRegion.getRegionHeight() * scl);
         }
 
-        f.setColor(displayColor.r, displayColor.g, displayColor.b, alpha / ALPHA_DURATION);
-
         f.getData().setScale(scl * fontScale);
-        f.draw(rc.arraySpriteBatch, displayText, clientPosX - totalW * 0.5f + (GAP + iconW) * scl, clientPosY + rc.globalGlyph.height * fontScale * scl + (maxH - rc.globalGlyph.height * fontScale * scl) * 0.5f);
-        f.getData().setScale(1.0f);
 
-        rc.arraySpriteBatch.setColor(Color.WHITE);
+        topColor.a = alpha / ALPHA_DURATION;
+        bottomColor.a = alpha / ALPHA_DURATION;
+
+        GradientFont.drawGradient(f, rc.arraySpriteBatch, displayText,
+                clientPosX - totalW * 0.5f + (GAP + iconW) * scl, clientPosY + rc.globalGlyph.height * fontScale * scl + (maxH - rc.globalGlyph.height * fontScale * scl) * 0.5f,
+                topColor, bottomColor);
+
+        topColor.a = 1.0f;
+        bottomColor.a = 1.0f;
+
         f.setColor(Color.WHITE);
+        f.getData().setScale(1.0f);
+        rc.arraySpriteBatch.setColor(Color.WHITE);
     }
 
 }

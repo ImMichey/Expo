@@ -22,7 +22,7 @@ public class ItemRenderLight {
         if(parse.has("color")) {
             color = JsonConverter.pullColor(parse.getJSONArray("color"));
         } else {
-            color = Color.WHITE;
+            color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         }
 
         if(parse.has("distance")) {
