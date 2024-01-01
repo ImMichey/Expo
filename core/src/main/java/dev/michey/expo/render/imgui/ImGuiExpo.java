@@ -33,6 +33,8 @@ import imgui.flag.ImGuiCol;
 import imgui.type.ImBoolean;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ImGuiExpo {
 
@@ -70,6 +72,7 @@ public class ImGuiExpo {
     public final ImBoolean renderPunchData = new ImBoolean(false);
     public final ImBoolean renderHitbox = new ImBoolean(false);
     public final ImBoolean entityBrainStates = new ImBoolean(false);
+    public final ImBoolean renderDebugPoints = new ImBoolean(true);
     private final float[] speed = new float[1];
     private final float[] minStrength = new float[1];
     private final float[] maxStrength = new float[1];
@@ -88,6 +91,8 @@ public class ImGuiExpo {
     private final float[] colorLight = new float[3];
     private final float[] gradientStartOffset = new float[1];
     private final float[] gradientMultiplier = new float[1];
+
+    public final List<DebugPoint> drawPoints = new LinkedList<>();
 
     public void draw() {
         drawExpoWindow();
@@ -505,6 +510,7 @@ public class ImGuiExpo {
                 ImGui.checkbox("Entity Generation Box", renderEntityBbox);
                 ImGui.checkbox("Player punch data", renderPunchData);
                 ImGui.checkbox("Entity hitbox", renderHitbox);
+                ImGui.checkbox("Debug Points", renderDebugPoints);
 
                 if(ImGui.sliderFloat("speed", speed, 0.0f, 10.0f)) r.speed = speed[0];
                 if(ImGui.sliderFloat("minStrength", minStrength, 0.0f, 1.0f)) r.minStrength = minStrength[0];

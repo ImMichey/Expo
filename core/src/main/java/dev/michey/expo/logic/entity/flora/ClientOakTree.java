@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
@@ -29,17 +28,17 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private ContactAnimator contactAnimator;
     private FoliageAnimator foliageAnimator;
     private ParticleEmitter leafParticleEmitter;
+    public final SquishAnimator2D squishAnimator2D = new SquishAnimator2D(0.2f, 1.5f, 1.5f);
 
-    private int variant;
-    private int leavesVariant;
+    private int trunkVariant;
     private boolean cut;
-    private TextureRegion trunk;
-    private Texture leaves;
-    private TextureRegion trunkShadowMask;
-    private TextureRegion leavesShadowMask;
+    private boolean emptyCrown;
+    private float leavesOffset;
+
+    private TextureRegion trunk, trunk_sel;
+    private TextureRegion leaves;
     private float[] interactionPointArray;
 
-    private float leavesDisplacement;
     private final float colorMix = MathUtils.random(0.125f);
 
     private float playerBehindDelta = 1.0f;
@@ -47,10 +46,6 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private float resetShadowFadeTimer;
 
     private boolean drawTrunk, drawLeaves;
-
-    private TextureRegion selectionTrunk;
-
-    public final SquishAnimator2D squishAnimator2D = new SquishAnimator2D(0.2f, 1.5f, 1.5f);
 
     /*
      *      [0] = LeavesWidth
@@ -66,168 +61,157 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
      *          [10] = InteractionWidth
      *          [11] = InteractionHeight
      */
-    public static final float[] LEAVES_SMALL = new float[] {46, 55};
-    public static final float[] LEAVES_MEDIUM = new float[] {55, 72};
+    public static final float[] LEAVES = new float[] {57, 74};
+    public static final float[] TRUNK_VAR1 = new float[] {21, 47};
+    public static final float[] TRUNK_VAR2 = new float[] {21, 66};
 
     public static final float[][] MATRIX = new float[][] {
-        new float[] {
-                LEAVES_SMALL[0], LEAVES_SMALL[1],
-                14, 40,
-                46, 84,
-                17, 29,
-                3, 2,
-                8, 6
-        },
-        new float[] {
-                LEAVES_SMALL[0], LEAVES_SMALL[1],
-                15, 41,
-                46, 87,
-                16, 32,
-                4, 2,
-                9, 6
-        },
-        new float[] {
-                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
-                15, 41,
-                55, 106,
-                20, 34,
-                4, 2,
-                9, 6
-        },
-        new float[] {
-                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
-                18, 70,
-                55, 136,
-                19, 64,
-                5, 2,
-                9, 6
-        },
-        new float[] {
-                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
-                18, 119,
-                55, 184,
-                18, 112,
-                5, 2,
-                12, 6
-        },
-        new float[] {
-                LEAVES_MEDIUM[0], LEAVES_MEDIUM[1],
-                18, 96,
-                55, 162,
-                18, 90,
-                5, 2,
-                12, 6
-        },
+            new float[] {
+                    LEAVES[0], LEAVES[1],
+                    TRUNK_VAR1[0], TRUNK_VAR1[1],
+                    57, 109,
+                    0, 35,
+                    -5, 2,
+                    10, 6
+            },
+            new float[] {
+                    LEAVES[0], LEAVES[1],
+                    TRUNK_VAR2[0], TRUNK_VAR2[1],
+                    57, 128,
+                    0, 54,
+                    -5, 2,
+                    10, 6
+            },
+            new float[] {
+                    LEAVES[0], LEAVES[1],
+                    TRUNK_VAR1[0], TRUNK_VAR1[1],
+                    57, 109,
+                    0, 35,
+                    -5, 2,
+                    10, 6
+            },
+            new float[] {
+                    LEAVES[0], LEAVES[1],
+                    TRUNK_VAR2[0], TRUNK_VAR2[1],
+                    57, 128,
+                    0, 54,
+                    -5, 2,
+                    10, 6
+            },
+            new float[] {
+                    LEAVES[0], LEAVES[1],
+                    TRUNK_VAR1[0], TRUNK_VAR1[1],
+                    57, 109,
+                    0, 35,
+                    -5, 2,
+                    10, 6
+            },
+            new float[] {
+                    LEAVES[0], LEAVES[1],
+                    TRUNK_VAR2[0], TRUNK_VAR2[1],
+                    57, 128,
+                    0, 54,
+                    -5, 2,
+                    10, 6
+            },
     };
 
     public static final float[][] CUT_MATRIX = new float[][] {
-        new float[] {0, 0, 14, 17, 14, 17, 0, 0, 3, 2, 8, 6},
-        new float[] {0, 0, 15, 17, 15, 17, 0, 0, 4, 2, 9, 6},
-        new float[] {0, 0, 15, 17, 15, 17, 0, 0, 4, 2, 9, 6},
-        new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
-        new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
-        new float[] {0, 0, 18, 17, 18, 17, 0, 0, 5, 2, 9, 6},
+        new float[] {0, 0, 21, 16, 21, 16, 0, 0, 3, 2, 8, 6},
+        new float[] {0, 0, 21, 16, 21, 16, 0, 0, 3, 2, 8, 6},
+        new float[] {0, 0, 21, 16, 21, 16, 0, 0, 3, 2, 8, 6},
+        new float[] {0, 0, 21, 16, 21, 16, 0, 0, 3, 2, 8, 6},
+        new float[] {0, 0, 21, 16, 21, 16, 0, 0, 3, 2, 8, 6},
+        new float[] {0, 0, 21, 16, 21, 16, 0, 0, 3, 2, 8, 6},
     };
 
     private float cutTotalWidth() {
-        return CUT_MATRIX[variant - 1][4];
+        return CUT_MATRIX[trunkVariant - 1][4];
     }
 
     private float cutTotalHeight() {
-        return CUT_MATRIX[variant - 1][5];
+        return CUT_MATRIX[trunkVariant - 1][5];
     }
 
     private float cutTrunkWidth() {
-        return CUT_MATRIX[variant - 1][2];
+        return CUT_MATRIX[trunkVariant - 1][2];
     }
 
     private float cutTrunkHeight() {
-        return CUT_MATRIX[variant - 1][3];
+        return CUT_MATRIX[trunkVariant - 1][3];
     }
 
     private float totalWidth() {
-        return MATRIX[variant - 1][4];
+        return MATRIX[trunkVariant - 1][4];
     }
 
     private float totalHeight() {
-        return MATRIX[variant - 1][5];
+        return MATRIX[trunkVariant - 1][5];
     }
 
     private float leavesWidth() {
-        return MATRIX[variant - 1][0];
+        return MATRIX[trunkVariant - 1][0];
     }
 
     private float leavesHeight() {
-        return MATRIX[variant - 1][1];
+        return MATRIX[trunkVariant - 1][1];
     }
 
     public float trunkWidth() {
-        return MATRIX[variant - 1][2];
+        return MATRIX[trunkVariant - 1][2];
     }
 
     public float trunkHeight() {
-        return MATRIX[variant - 1][3];
+        return MATRIX[trunkVariant - 1][3];
     }
 
     private float leavesOffsetX() {
-        return MATRIX[variant - 1][6];
+        return MATRIX[trunkVariant - 1][6];
     }
 
     private float leavesOffsetY() {
-        return MATRIX[variant - 1][7];
+        return MATRIX[trunkVariant - 1][7];
     }
 
     private float interactionWidth() {
-        return MATRIX[variant - 1][10];
+        return MATRIX[trunkVariant - 1][10];
     }
 
     private float interactionHeight() {
-        return MATRIX[variant - 1][11];
+        return MATRIX[trunkVariant - 1][11];
     }
 
     private float interactionOffsetX() {
-        return MATRIX[variant - 1][8];
+        return MATRIX[trunkVariant - 1][8];
     }
 
     private float interactionOffsetY() {
-        return MATRIX[variant - 1][9];
+        return MATRIX[trunkVariant - 1][9];
     }
 
     @Override
     public void onCreation() {
         String cutStr = cut ? "cut_" : "";
-
-        trunk = tr("eot_trunk_" + cutStr + variant);
-        trunkShadowMask = tr("eot_trunk_" + cutStr + variant);
-        selectionTrunk = generateSelectionTexture(trunk);
-
-
-        leavesVariant = MathUtils.random() <= 0.25f ? 2 : 1;
-
-        if(variant >= 1 && variant <= 2) {
-            leaves = t("foliage/entity_oak_tree/leaves_oak_small_" + leavesVariant + ".png");
-            leavesShadowMask = tr("leaves_oak_small_sm");
-        } else {
-            leaves = t("foliage/entity_oak_tree/leaves_oak_big_" + leavesVariant + ".png");
-            leavesShadowMask = tr("leaves_oak_big_sm");
-        }
+        trunk = tr("oak_trunk_" + cutStr + trunkVariant);
+        leaves = tr("oak_leaves_reg_" + trunkVariant);
+        trunk_sel = generateSelectionTexture(trunk);
 
         if(cut) {
             updateTextureBounds(cutTotalWidth(), cutTotalHeight(), 0, 0);
         } else {
-            updateTextureBounds(totalWidth(), totalHeight() + leavesDisplacement, 0, 0);
+            updateTextureBounds(totalWidth(), totalHeight() + leavesOffset, -totalWidth() * 0.5f, 0);
         }
 
         interactionPointArray = new float[] {
-            finalDrawPosX + interactionOffsetX(), finalDrawPosY + interactionOffsetY(),
-            finalDrawPosX + interactionOffsetX() + interactionWidth(), finalDrawPosY + interactionOffsetY(),
-            finalDrawPosX + interactionOffsetX(), finalDrawPosY + interactionOffsetY() + interactionHeight(),
-            finalDrawPosX + interactionOffsetX() + interactionWidth(), finalDrawPosY + interactionOffsetY() + interactionHeight(),
+                clientPosX + interactionOffsetX(), clientPosY + interactionOffsetY(),
+                clientPosX + interactionOffsetX() + interactionWidth(), clientPosY + interactionOffsetY(),
+                clientPosX + interactionOffsetX(), clientPosY + interactionOffsetY() + interactionHeight(),
+                clientPosX + interactionOffsetX() + interactionWidth(), clientPosY + interactionOffsetY() + interactionHeight(),
         };
 
-        updateDepth(5);
+        updateDepth(4);
 
-        if(!cut) {
+        if(!cut && !emptyCrown) {
             contactAnimator = new ContactAnimator(this);
             contactAnimator.small = false;
             contactAnimator.STRENGTH = 2.0f;
@@ -235,6 +219,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
             foliageAnimator = new FoliageAnimator(this, 0.5f, 1.2f, 0.01f, 0.02f, 0.03f, 0.04f, 2.0f, 5.0f, 0.5f, 1.5f);
 
+            Color c = new Color((1.0f - colorMix), 1.0f, (1.0f - colorMix), 1.0f);
             leafParticleEmitter = new ParticleEmitter(
                     new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
                             .amount(1)
@@ -246,40 +231,11 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                             .fadein(0.5f)
                             .fadeout(0.5f)
                             .randomRotation()
+                            .color(c)
                             .rotateWithVelocity()
                             .depth(depth - 0.01f)
                             .dynamicDepth(), 0.5f, 2.0f, 4.0f);
         }
-    }
-
-    @Override
-    public void updateTexturePositionData() {
-        if(cut) {
-            finalDrawPosX = clientPosX - cutTrunkWidth() * 0.5f;
-            finalDrawPosY = clientPosY;
-            finalSelectionDrawPosX = clientPosX - cutTrunkWidth() * 0.5f - 1;   // Avoid when using Texture classes
-            finalSelectionDrawPosY = finalDrawPosY - 1;                         // Avoid when using Texture classes
-
-            finalTextureStartX = clientPosX - cutTrunkWidth() * 0.5f;
-            finalTextureStartY = finalDrawPosY;
-
-            finalTextureCenterX = finalTextureStartX + cutTotalWidth() * 0.5f;
-            finalTextureCenterY = finalTextureStartY + cutTotalHeight() * 0.5f;
-        } else {
-            finalDrawPosX = clientPosX - trunkWidth() * 0.5f;
-            finalDrawPosY = clientPosY;
-            finalSelectionDrawPosX = clientPosX - trunkWidth() * 0.5f - 1;  // Avoid when using Texture classes
-            finalSelectionDrawPosY = finalDrawPosY - 1;                     // Avoid when using Texture classes
-
-            finalTextureStartX = clientPosX - trunkWidth() * 0.5f - leavesOffsetX();
-            finalTextureStartY = finalDrawPosY;
-
-            finalTextureCenterX = finalTextureStartX + totalWidth() * 0.5f;
-            finalTextureCenterY = finalTextureStartY + totalHeight() * 0.5f;
-        }
-
-        finalTextureRootX = finalTextureCenterX;
-        finalTextureRootY = finalTextureStartY;
     }
 
     @Override
@@ -294,14 +250,14 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         squishAnimator2D.reset();
         ParticleSheet.Common.spawnTreeHitParticles(this, clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f);
 
-        if(GameSettings.get().enableParticles && !cut) {
+        if(GameSettings.get().enableParticles && !cut && !emptyCrown) {
             Color c = new Color((1.0f - colorMix), 1.0f, (1.0f - colorMix), 1.0f);
 
             new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
                     .amount(4, 8)
                     .scale(0.4f, 1.0f)
                     .lifetime(0.7f, 2.0f)
-                    .position(finalTextureStartX + 8, clientPosY + leavesOffsetY())
+                    .position(clientPosX - leavesWidth() * 0.5f + 8, clientPosY + leavesOffsetY())
                     .offset(leavesWidth() - 16, leavesHeight() * 0.25f)
                     .velocity(-8, 8, -8, -32)
                     .fadeout(0.25f)
@@ -312,7 +268,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                     .spawn();
         }
 
-        if(!cut) {
+        if(!cut && !emptyCrown) {
             contactAnimator.onContact();
         }
     }
@@ -326,7 +282,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     public void tick(float delta) {
         syncPositionWithServer();
 
-        if(!cut) {
+        if(!cut && !emptyCrown) {
             if(visibleToRenderEngine || drawTrunk || drawLeaves) {
                 leafParticleEmitter.tick(delta);
 
@@ -341,8 +297,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                             local.finalTextureStartX, local.finalTextureStartY,
                             local.finalTextureStartX + local.textureWidth, local.finalTextureStartY + local.textureHeight
                     }, new float[] {
-                            finalTextureStartX + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement,
-                            finalTextureStartX + leavesWidth() + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesDisplacement + leavesHeight()
+                            finalTextureStartX + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesOffset,
+                            finalTextureStartX + leavesWidth() + foliageAnimator.value, finalTextureStartY + leavesOffsetY() + leavesOffset + leavesHeight()
                     });
                 } else {
                     playerBehind = false;
@@ -371,40 +327,27 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        if(!cut) {
+        if(!cut && !emptyCrown) {
             foliageAnimator.calculateWindOnDemand();
         }
         setSelectionValues();
         squishAnimator2D.calculate(delta);
 
-        rc.arraySpriteBatch.draw(selectionTrunk, finalSelectionDrawPosX - squishAnimator2D.squishX * 0.5f, finalSelectionDrawPosY,
-                selectionTrunk.getRegionWidth() + squishAnimator2D.squishX, selectionTrunk.getRegionHeight() + squishAnimator2D.squishY);
+        rc.arraySpriteBatch.draw(trunk_sel, finalDrawPosX - 1 - trunkWidth() * 0.5f - squishAnimator2D.squishX * 0.5f, finalDrawPosY - 1,
+                trunk_sel.getRegionWidth() + squishAnimator2D.squishX, trunk_sel.getRegionHeight() + squishAnimator2D.squishY);
         rc.arraySpriteBatch.end();
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
         rc.arraySpriteBatch.begin();
 
-        if(!cut) {
-            float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
+        if(!cut && !emptyCrown) {
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
-            rc.arraySpriteBatch.drawCustomVertices(leaves,
-                    finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f,
-                    finalTextureStartY + leavesOffsetY() + leavesDisplacement + squishAnimator2D.squishY * 0.5f,
-                    leaves.getWidth() + squishAnimator2D.squishX, leaves.getHeight() + squishAnimator2D.squishY, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawShiftedVertices(leaves,
+                    finalDrawPosX - leavesWidth() * 0.5f - squishAnimator2D.squishX * 0.5f,
+                    finalDrawPosY + leavesOffsetY() + leavesOffset + squishAnimator2D.squishY * 0.5f,
+                    leaves.getRegionWidth() + squishAnimator2D.squishX, leaves.getRegionHeight() + squishAnimator2D.squishY, foliageAnimator.value + contactAnimator.value, 0);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
-
-        /*
-        if(!cut || resetShadowFadeTimer <= 0) {
-            var meta = EntityMetadataMapper.get().getFor(getEntityType().ENTITY_SERVER_TYPE);
-
-            if(cut) {
-                drawHealthBar(rc, serverHealth / meta.getFloat("maxHp.trunk"), textureWidth, meta.getString("name.trunk"));
-            } else {
-                drawHealthBar(rc, (serverHealth - 30) / (meta.getFloat("maxHp.var" + variant) - 30), textureWidth, meta.getString("name.var" + variant));
-            }
-        }
-        */
     }
 
     @Override
@@ -414,27 +357,26 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void render(RenderContext rc, float delta) {
-        visibleToRenderEngine = rc.inDrawBounds(this);
+        visibleToRenderEngine = rc.inDrawBounds(this, 4);
 
         if(visibleToRenderEngine) {
-            if(!cut) {
+            if(!cut && !emptyCrown) {
                 foliageAnimator.calculateWindOnDemand();
             }
             squishAnimator2D.calculate(delta);
-            updateDepth(5);
+            updateDepth(4);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.draw(trunk, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY,
+            rc.arraySpriteBatch.draw(trunk, clientPosX - trunkWidth() * 0.5f - squishAnimator2D.squishX * 0.5f, clientPosY,
                     trunk.getRegionWidth() + squishAnimator2D.squishX, trunk.getRegionHeight() + squishAnimator2D.squishY);
 
-            if(!cut) {
-                float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
+            if(!cut && !emptyCrown) {
                 rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
-                rc.arraySpriteBatch.drawCustomVertices(leaves,
-                        finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f,
-                        finalTextureStartY + leavesOffsetY() + leavesDisplacement + squishAnimator2D.squishY * 0.5f,
-                        leaves.getWidth() + squishAnimator2D.squishX, leaves.getHeight() + squishAnimator2D.squishY, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+                rc.arraySpriteBatch.drawShiftedVertices(leaves,
+                        finalDrawPosX - leavesWidth() * 0.5f - squishAnimator2D.squishX * 0.5f,
+                        finalDrawPosY + leavesOffsetY() + leavesOffset + squishAnimator2D.squishY * 0.5f,
+                        leaves.getRegionWidth() + squishAnimator2D.squishX, leaves.getRegionHeight() + squishAnimator2D.squishY, foliageAnimator.value + contactAnimator.value, 0);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
         }
@@ -442,13 +384,12 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(trunk, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY + 2, trunk.getRegionWidth() + squishAnimator2D.squishX, (trunk.getRegionHeight() + squishAnimator2D.squishY) * -1);
+        rc.arraySpriteBatch.draw(trunk, finalDrawPosX - trunkWidth() * 0.5f - squishAnimator2D.squishX * 0.5f, finalDrawPosY + 2, trunk.getRegionWidth() + squishAnimator2D.squishX, (trunk.getRegionHeight() + squishAnimator2D.squishY) * -1);
 
-        if(!cut) {
-            float dsp = (leaves.getWidth() - leavesWidth()) * 0.5f;
+        if(!cut && !emptyCrown) {
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), 0.9f);
-            rc.arraySpriteBatch.drawCustomVertices(leaves, finalTextureStartX - dsp - squishAnimator2D.squishX * 0.5f, finalTextureStartY - leavesOffsetY() - leavesDisplacement - squishAnimator2D.squishY * 0.5f + 2,
-                    leaves.getWidth() + squishAnimator2D.squishX, (leaves.getHeight() + squishAnimator2D.squishY) * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawShiftedVertices(leaves, finalDrawPosX - leavesWidth() * 0.5f - squishAnimator2D.squishX * 0.5f, finalDrawPosY - leavesOffsetY() - leavesOffset - squishAnimator2D.squishY * 0.5f + 2,
+                    leaves.getRegionWidth() + squishAnimator2D.squishX, (leaves.getRegionHeight() + squishAnimator2D.squishY) * -1, foliageAnimator.value + contactAnimator.value, 0);
 
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
@@ -458,20 +399,20 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     public void renderShadow(RenderContext rc, float delta) {
         if(resetShadowFadeTimer > 0) resetShadowFadeTimer -= delta;
 
-        if(!cut) {
+        if(!cut && !emptyCrown) {
             foliageAnimator.calculateWindOnDemand();
         }
-        Affine2 shadowT = ShadowUtils.createSimpleShadowAffine(finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY);
-        Affine2 shadowL = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, -leavesOffsetX() - squishAnimator2D.squishX * 0.5f, leavesOffsetY() + leavesDisplacement + squishAnimator2D.squishY * 0.5f);
+        Affine2 shadowT = ShadowUtils.createSimpleShadowAffine(clientPosX - trunkWidth() * 0.5f - squishAnimator2D.squishX * 0.5f, clientPosY);
+        Affine2 shadowL = ShadowUtils.createSimpleShadowAffineInternalOffset(clientPosX - leavesWidth() * 0.5f, clientPosY,
+                -leavesOffsetX() - squishAnimator2D.squishX * 0.5f, leavesOffsetY() + leavesOffset + squishAnimator2D.squishY * 0.5f);
 
-        float[] trunkVertices = rc.arraySpriteBatch.obtainShadowVertices(trunkShadowMask, shadowT);
+        float[] trunkVertices = rc.arraySpriteBatch.obtainShadowVertices(trunk, shadowT);
         drawTrunk = rc.verticesInBounds(trunkVertices);
-        drawLeaves = !cut && rc.verticesInBounds(rc.arraySpriteBatch.obtainShadowVertices(leavesShadowMask, shadowL));
+        drawLeaves = !cut && !emptyCrown && rc.verticesInBounds(rc.arraySpriteBatch.obtainShadowVertices(leaves, shadowL));
 
         if(drawTrunk || drawLeaves) {
             rc.useArrayBatch();
             float fraction = 1f / totalHeight();
-            //float fraction = 1f / (totalHeight() + leavesDisplacement);
 
             if(drawTrunk) {
                 float tt;
@@ -484,15 +425,19 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                         tt = fraction * (totalHeight() - cutTotalHeight());
                     }
                 } else {
-                    tt = (totalHeight() - trunkHeight() + leavesDisplacement) * fraction;
+                    if(emptyCrown) {
+                        tt = 0f;
+                    } else {
+                        tt = (totalHeight() - trunkHeight() + leavesOffset) * fraction;
+                    }
                 }
 
                 float topColorT = new Color(0f, 0f, 0f, tt).toFloatBits();
                 float bottomColorT = new Color(0f, 0f, 0f, bt).toFloatBits();
 
-                rc.arraySpriteBatch.drawGradientCustomColor(trunkShadowMask,
-                        trunkShadowMask.getRegionWidth() + squishAnimator2D.squishX,
-                        trunkShadowMask.getRegionHeight() + squishAnimator2D.squishY, shadowT, topColorT, bottomColorT);
+                rc.arraySpriteBatch.drawGradientCustomColor(trunk,
+                        trunk.getRegionWidth() + squishAnimator2D.squishX,
+                        trunk.getRegionHeight() + squishAnimator2D.squishY, shadowT, topColorT, bottomColorT);
             }
 
             if(drawLeaves) {
@@ -501,9 +446,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 float topColorL = new Color(0f, 0f, 0f, tl).toFloatBits();
                 float bottomColorL = new Color(0f, 0f, 0f, bl).toFloatBits();
 
-                rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(leavesShadowMask,
-                        leavesShadowMask.getRegionWidth(),
-                        leavesShadowMask.getRegionHeight(), shadowL, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value, topColorL, bottomColorL);
+                rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(leaves,
+                        leaves.getRegionWidth() + squishAnimator2D.squishX,
+                        leaves.getRegionHeight() + squishAnimator2D.squishY, shadowL, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value, topColorL, bottomColorL);
             }
         }
     }
@@ -520,23 +465,22 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private void spawnFallingTree(float fallingRemaining, boolean fallingDirectionRight) {
         ClientFallingTree fallingTree = new ClientFallingTree();
 
-        fallingTree.clientPosX = clientPosX - 0.5f;
-        fallingTree.clientPosY = clientPosY + 12.0f;
-        fallingTree.depth = fallingTree.clientPosY - 12.001f;
+        fallingTree.clientPosX = clientPosX;
+        fallingTree.clientPosY = clientPosY + 10.0f;
+        fallingTree.depth = fallingTree.clientPosY - 10.001f;
         fallingTree.wakeupId = entityId;
 
-        float baf = leavesWidth() / 128f;
-
-        fallingTree.leavesDisplacement = leavesDisplacement;
-        fallingTree.variant = variant;
-        fallingTree.leavesVariant = leavesVariant;
+        fallingTree.emptyCrown = emptyCrown;
+        fallingTree.leavesDisplacement = leavesOffset;
+        fallingTree.trunkVariant = trunkVariant;
         fallingTree.fallingRightDirection = fallingDirectionRight;
         fallingTree.animationDelta = ServerOakTree.FALLING_ANIMATION_DURATION - fallingRemaining;
         fallingTree.colorDisplacement = colorMix;
-        fallingTree.windDisplacement = (foliageAnimator == null ? 0 : (foliageAnimator.value * baf)) + (contactAnimator == null ? 0 : (contactAnimator.value * baf));
+        fallingTree.windDisplacement = (foliageAnimator == null ? 0 : (foliageAnimator.value)) + (contactAnimator == null ? 0 : (contactAnimator.value));
         fallingTree.windDisplacementBase = fallingTree.windDisplacement;
         fallingTree.transparency = playerBehindInterpolated;
         fallingTree.inheritedSquishAnimator = squishAnimator2D;
+        fallingTree.leavesOffsetY = leavesOffsetY();
 
         entityManager().addClientSideEntity(fallingTree);
     }
@@ -545,36 +489,33 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
         cut = true;
         leafParticleEmitter = null;
 
-        trunk = tr("eot_trunk_cut_" + variant);
-        trunkShadowMask = tr("eot_trunk_cut_" + variant);
-        selectionTrunk = generateSelectionTexture(trunk);
-        updateTextureBounds(cutTotalWidth(), cutTotalHeight(), 0, 0);
+        trunk = tr("oak_trunk_cut_" + trunkVariant);
+        trunk_sel = generateSelectionTexture(trunk);
+        updateTextureBounds(cutTotalWidth(), cutTotalHeight(), -cutTotalWidth() * 0.5f, 0);
 
         resetShadowFadeTimer = ServerOakTree.FALLING_ANIMATION_DURATION;
     }
 
     @Override
     public void applyCreationPayload(Object[] payload) {
-        cut = (boolean) payload[1];
-        variant = (int) payload[0];
+        ServerOakTree.TreeData td = (ServerOakTree.TreeData) payload[0];
 
-        if(leavesVariant == 0) {
-            leavesVariant = MathUtils.random() <= 0.25f ? 2 : 1;
+        trunkVariant = td.trunkVariant();
+        cut = td.cut();
+        leavesOffset = td.leavesOffset();
+        emptyCrown = td.emptyCrown();
+
+        if(td.falling()) {
+            spawnFallingTree(td.fallingRemaining(), td.fallingDirectionRight());
         }
-
-        if((boolean) payload[2]) {
-            spawnFallingTree((float) payload[3], (boolean) payload[4]);
-        }
-
-        leavesDisplacement = (float) payload[5];
     }
 
     @Override
     public void applyEntityUpdatePayload(Object[] payload) {
-        boolean isNowCut = (boolean) payload[0];
+        ServerOakTree.TreeData td = (ServerOakTree.TreeData) payload[0];
 
-        if(isNowCut && !cut) {
-            spawnFallingTree((float) payload[2], (boolean) payload[3]);
+        if(td.cut() && !cut) {
+            spawnFallingTree(td.fallingRemaining(), td.fallingDirectionRight());
         }
     }
 

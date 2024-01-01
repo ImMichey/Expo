@@ -241,7 +241,7 @@
                     "biome": "DENSE_FOREST",
                     "type": "OAK_TREE",
                     "static": true,
-                    "chance": 1,
+                    "chance": 0.5,
                     "spawnOffsets": [-32.0, 32.0, -32.0, 32.0],
                     "skip": 4,
                     "priority": 100,
@@ -340,7 +340,7 @@
                     "biome": "DENSE_FOREST",
                     "type": "BLUEBERRY_BUSH",
                     "static": true,
-                    "chance": 0.001,
+                    "chance": 0.00125,
                     "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
                     "spreadData": {
                         "spread": [1, 3],

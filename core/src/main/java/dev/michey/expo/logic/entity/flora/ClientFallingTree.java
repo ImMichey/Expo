@@ -28,35 +28,32 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
     public float leavesDisplacement;
 
     public float animationDelta;
-    public int variant;
-    public int leavesVariant;
+    public int trunkVariant;
     private float rotation;
     public float colorDisplacement;
     public float windDisplacement;
     public float windDisplacementBase;
     public float transparency;
+    public float leavesOffsetY;
+
+    public boolean emptyCrown;
 
     public float windDisplacementAlpha;
     public float windDisplacementInterpolated;
 
     private final float PHASE_TOTAL_DURATION = 4.3f;
-
-    private final float[] adjustmentValues = new float[6];
     public int wakeupId;
 
     public SquishAnimator2D inheritedSquishAnimator;
 
     @Override
     public void onCreation() {
-        if(variant == 0) variant = 1;
-
-        treeTrunk = tr("eot_falling_trunk_trim_" + variant);
-
-        if(variant >= 1 && variant <= 2) {
-            treeLeaves = tr("leaves_oak_small_" + leavesVariant);
-        } else {
-            treeLeaves = tr("leaves_oak_big_" + leavesVariant);
+        if(trunkVariant == 0) {
+            trunkVariant = 1;
         }
+
+        treeTrunk = tr("oak_trunk_falling_" + trunkVariant);
+        treeLeaves = tr("oak_leaves_reg_" + trunkVariant);
 
         updateTextureBounds(treeLeaves);
 
@@ -74,26 +71,16 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
     public void onDeletion() {
         CameraShake.invoke(5.0f, 0.6f, new Vector2(clientPosX, clientPosY));
 
-        int reach = 90;
+        float reach = ClientOakTree.MATRIX[trunkVariant - 1][1];
         int dir = fallingRightDirection ? 1 : -1;
 
-        if(variant == 1 || variant == 2) {
-            reach = 70;
-        } else if(variant == 4) {
-            reach = 120;
-        } else if(variant == 6) {
-            reach = 220;
-        } else if(variant == 7) {
-            reach = 195;
-        }
-
-        if(GameSettings.get().enableParticles) {
+        if(!emptyCrown && GameSettings.get().enableParticles) {
             new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)
                     .amount(32, 64)
                     .scale(0.6f, 1.1f)
                     .lifetime(0.6f, 2.5f)
-                    .position(clientPosX + ((20 + leavesDisplacement) * dir), clientPosY - 12)
-                    .offset(reach * dir, 0)
+                    .position(clientPosX + ((leavesOffsetY + leavesDisplacement - 10) * dir), clientPosY - 10)
+                    .offset((reach) * dir, 1f)
                     .velocity(-32, 32, 24, 80)
                     .fadeout(0.25f)
                     .randomRotation()
@@ -126,8 +113,6 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         if(transparency < 1) {
             transparency += delta * 0.5f;
         }
-
-        updateAdjustmentValues();
     }
 
     @Override
@@ -146,18 +131,33 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         float isaX = inheritedSquishAnimator.squishX;
         float isaY = inheritedSquishAnimator.squishY;
 
-        rc.arraySpriteBatch.draw(treeTrunk, finalDrawPosX + adjustmentValues[0] - isaX * 0.5f, finalDrawPosY - 22 - adjustmentValues[1], treeTrunk.getRegionWidth() * 0.5f, 0,
+        rc.arraySpriteBatch.draw(treeTrunk,
+                clientPosX - treeTrunk.getRegionWidth() * 0.5f - isaX * 0.5f,
+                clientPosY - 18, treeTrunk.getRegionWidth() * 0.5f, 0,
                 treeTrunk.getRegionWidth() + isaX, treeTrunk.getRegionHeight() + isaY, 1.0f, -1.0f, -rotation);
 
-        rc.arraySpriteBatch.setColor(1.0f - colorDisplacement, 1.0f, 1.0f - colorDisplacement, transparency);
+        if(!emptyCrown) {
+            rc.arraySpriteBatch.setColor(1.0f - colorDisplacement, 1.0f, 1.0f - colorDisplacement, transparency);
 
-        rc.arraySpriteBatch.drawCustomVertices(treeLeaves,
-                finalDrawPosX + adjustmentValues[2] - adjustmentValues[5] * adjustmentValues[3] - isaX * 0.5f,
-                finalDrawPosY - 22 - adjustmentValues[4] * adjustmentValues[3],
-                treeLeaves.getRegionWidth() * 0.5f, 0,
-                treeLeaves.getRegionWidth() + isaX, treeLeaves.getRegionHeight() + isaY, 1.0f, -1.0f, -rotation, windDisplacement, windDisplacement);
+            Vector2 offset = GenerationUtils.circular(rotation, 1);
 
-        rc.arraySpriteBatch.setColor(Color.WHITE);
+            float leavesX = clientPosX - offset.y * treeTrunk.getRegionHeight();
+            float leavesY = clientPosY - 18 - offset.x * treeTrunk.getRegionHeight();
+
+            float offsetX = 10 - leavesDisplacement - leavesOffsetY + treeTrunk.getRegionHeight() - isaY * 0.5f;
+            float offsetY = treeLeaves.getRegionWidth() * -0.5f - isaX * 0.5f;
+
+            leavesX += (offset.y * offsetX) + (offset.x * offsetY);
+            leavesY -= -(offset.x * offsetX) + (offset.y * offsetY);
+
+            rc.arraySpriteBatch.drawCustomVertices(treeLeaves,
+                    leavesX,
+                    leavesY,
+                    0, 0,
+                    treeLeaves.getRegionWidth() + isaX, treeLeaves.getRegionHeight() + isaY, 1.0f, -1.0f, -rotation, windDisplacement, windDisplacement);
+
+            rc.arraySpriteBatch.setColor(Color.WHITE);
+        }
     }
 
     @Override
@@ -176,107 +176,94 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         float isaX = inheritedSquishAnimator.squishX;
         float isaY = inheritedSquishAnimator.squishY;
 
-        rc.arraySpriteBatch.draw(treeTrunk, finalDrawPosX + adjustmentValues[0] - isaX * 0.5f, finalDrawPosY + adjustmentValues[1], treeTrunk.getRegionWidth() * 0.5f, 0,
-                treeTrunk.getRegionWidth() + isaX, treeTrunk.getRegionHeight() + isaY, 1.0f, 1.0f, rotation);
+        rc.arraySpriteBatch.draw(treeTrunk,
+                clientPosX - treeTrunk.getRegionWidth() * 0.5f - isaX * 0.5f,
+                clientPosY,
+                treeTrunk.getRegionWidth() * 0.5f,
+                0,
+                treeTrunk.getRegionWidth() + isaX,
+                treeTrunk.getRegionHeight() + isaY, 1.0f, 1.0f, rotation);
 
-        rc.arraySpriteBatch.setColor(1.0f - colorDisplacement, 1.0f, 1.0f - colorDisplacement, transparency);
+        if(!emptyCrown) {
+            rc.arraySpriteBatch.setColor(1.0f - colorDisplacement, 1.0f, 1.0f - colorDisplacement, transparency);
 
-        rc.arraySpriteBatch.drawCustomVertices(treeLeaves,
-                finalDrawPosX + adjustmentValues[2] - adjustmentValues[5] * adjustmentValues[3] - isaX * 0.5f,
-                finalDrawPosY + adjustmentValues[4] * adjustmentValues[3],
-                treeLeaves.getRegionWidth() * 0.5f, 0,
-                treeLeaves.getRegionWidth() + isaX, treeLeaves.getRegionHeight() + isaY, 1.0f, 1.0f, rotation, windDisplacement, windDisplacement);
+            Vector2 offset = GenerationUtils.circular(rotation, 1);
 
-        rc.arraySpriteBatch.setColor(Color.WHITE);
-    }
+            float leavesX = clientPosX - offset.y * treeTrunk.getRegionHeight();
+            float leavesY = clientPosY + offset.x * treeTrunk.getRegionHeight();
 
-    private void updateAdjustmentValues() {
-        Vector2 disp = GenerationUtils.circular(rotation, 1);
+            float offsetX = 10 - leavesDisplacement - leavesOffsetY + treeTrunk.getRegionHeight() - isaY * 0.5f;
+            float offsetY = treeLeaves.getRegionWidth() * -0.5f - isaX * 0.5f;
 
-        float trunkX = 22f;
-        float trunkY = 0f;
+            leavesX += (offset.y * offsetX) + (offset.x * offsetY);
+            leavesY += -(offset.x * offsetX) + (offset.y * offsetY);
 
-        float leavesX = 0f;
-        float leavesY = 0f;
+            rc.arraySpriteBatch.drawCustomVertices(treeLeaves,
+                    leavesX,
+                    leavesY,
+                    0, 0,
+                    treeLeaves.getRegionWidth() + isaX, treeLeaves.getRegionHeight() + isaY, 1.0f, 1.0f, rotation, windDisplacement, windDisplacement);
 
-        if(variant == 1) {
-            trunkX -= 5.5f;
-
-            leavesX -= 0.5f;
-            leavesY += 17f;
-        } else if(variant == 2) {
-            trunkX -= 6.0f;
-            trunkY += 1.0f;
-
-            leavesY += 20f;
-        } else if(variant == 3) {
-            trunkX -= 1.5f;
-            trunkY += 1.0f;
-
-            leavesY += 22f;
-        } else if(variant == 4) {
-            trunkX -= 3.0f;
-
-            leavesX -= 0.5f;
-            leavesY += 52f;
-        } else if(variant == 5) {
-            trunkX -= 3.0f;
-            trunkY += 1.0f;
-
-            leavesX += 0.5f;
-            leavesY += 100f;
-        } else if(variant == 6) {
-            trunkX -= 3.0f;
-            trunkY += 1.0f;
-
-            leavesX += 0.5f;
-            leavesY += 78f;
+            rc.arraySpriteBatch.setColor(Color.WHITE);
         }
-
-        leavesY += leavesDisplacement;
-
-        adjustmentValues[0] = trunkX;
-        adjustmentValues[1] = trunkY;
-        adjustmentValues[2] = leavesX;
-        adjustmentValues[3] = leavesY;
-        adjustmentValues[4] = disp.x;
-        adjustmentValues[5] = disp.y;
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 trunkShadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(finalTextureStartX, finalTextureStartY - 12, adjustmentValues[0], 12 + adjustmentValues[1],
+        float isaX = inheritedSquishAnimator.squishX;
+        float isaY = inheritedSquishAnimator.squishY;
+
+        Affine2 trunkShadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(clientPosX, clientPosY - 10,
+                -treeTrunk.getRegionWidth() * 0.5f - isaX * 0.5f, 10 + isaY * 0.5f,
                 treeTrunk.getRegionWidth() * 0.5f, 0, rotation);
 
-        Affine2 leavesShadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(finalTextureStartX, finalTextureStartY - 12, adjustmentValues[2] - adjustmentValues[5] * adjustmentValues[3], 12 + adjustmentValues[4] * adjustmentValues[3],
-                treeLeaves.getRegionWidth() * 0.5f, 0, rotation);
+        Vector2 offset = GenerationUtils.circular(rotation, 1);
+
+
+        float leavesX = -offset.y * treeTrunk.getRegionHeight();
+        float leavesY = offset.x * treeTrunk.getRegionHeight();
+        float offsetX = 10 - leavesDisplacement - leavesOffsetY + treeTrunk.getRegionHeight() - isaY * 0.5f;
+        float offsetY = treeLeaves.getRegionWidth() * -0.5f - isaX * 0.5f;
+        leavesX += (offset.y * offsetX) + (offset.x * offsetY);
+        leavesY += -(offset.x * offsetX) + (offset.y * offsetY);
+
+        Affine2 leavesShadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(clientPosX, clientPosY - 10, 0 + leavesX, 10 + leavesY,
+                0, 0, rotation);
 
         rc.useArrayBatch();
         rc.useRegularArrayShader();
 
-        float totalHeight = ClientOakTree.MATRIX[variant - 1][5];
+        float totalHeight = ClientOakTree.MATRIX[trunkVariant - 1][5];
         float fraction = 1f / totalHeight;
-        float trunkDistanceFromGround = 12f + adjustmentValues[1];
+        float trunkDistanceFromGround = 10f;
 
         {
             // Trunk
             float b = 1f - trunkDistanceFromGround * fraction;
-            float t = 1f - (treeTrunk.getRegionHeight() + trunkDistanceFromGround) * fraction;
+            float t;
+
+            if(emptyCrown) {
+                t = 0;
+            } else {
+                t = 1f - (treeTrunk.getRegionHeight() + trunkDistanceFromGround) * fraction;
+            }
+
             float bc = new Color(0, 0, 0, b).toFloatBits();
             float tc = new Color(0, 0, 0, t).toFloatBits();
 
-            rc.arraySpriteBatch.drawGradientCustomColor(treeTrunk, treeTrunk.getRegionWidth(), treeTrunk.getRegionHeight(), trunkShadow, tc, bc);
+            rc.arraySpriteBatch.drawGradientCustomColor(treeTrunk, treeTrunk.getRegionWidth() + isaX, treeTrunk.getRegionHeight() + isaY, trunkShadow, tc, bc);
         }
 
         {
-            // Leaves
-            float b = 0f + ClientOakTree.MATRIX[variant - 1][1] * fraction;
-            float t = 0f;
-            float bc = new Color(0, 0, 0, b).toFloatBits();
-            float tc = new Color(0, 0, 0, t).toFloatBits();
+            if(!emptyCrown) {
+                // Leaves
+                float b = 0f + ClientOakTree.MATRIX[trunkVariant - 1][1] * fraction;
+                float t = 0f;
+                float bc = new Color(0, 0, 0, b).toFloatBits();
+                float tc = new Color(0, 0, 0, t).toFloatBits();
 
-            //rc.arraySpriteBatch.drawGradientCustomVerticesCustomColor(treeLeaves, treeLeaves.getRegionWidth(), treeLeaves.getRegionHeight(), leavesShadow, windDisplacement, windDisplacement, tc, bc);
-            rc.arraySpriteBatch.drawGradientCustomColor(treeLeaves, treeLeaves.getRegionWidth(), treeLeaves.getRegionHeight(), leavesShadow, tc, bc);
+                rc.arraySpriteBatch.drawGradientCustomColor(treeLeaves, treeLeaves.getRegionWidth() + isaX, treeLeaves.getRegionHeight() + isaY, leavesShadow, tc, bc);
+            }
         }
     }
 

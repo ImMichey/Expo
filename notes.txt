@@ -3,9 +3,7 @@
 * Fix selection system
 * New Oak Plank Wall textures [maybe 32px high]
 * New Stick Fence textures
-* Item Eat/Use feedback
 
-        * When items get dropped, start with a higher scale, than get to default scale >> REVISIT LATER MAYBE?
 * Fix ClientPickupLine spacing issues
 
 

@@ -321,6 +321,7 @@ public class ExpoClientPacketReader {
                     ClientPickupLine cpl = new ClientPickupLine();
                     cpl.id = p.itemIds[i];
                     cpl.amount = p.itemAmounts[i];
+                    cpl.setMapping();
                     cpl.reset();
                     ClientEntityManager.get().addClientSideEntity(cpl);
                 } else {
@@ -348,7 +349,7 @@ public class ExpoClientPacketReader {
             ClientPlayer player = ClientPlayer.getLocalPlayer();
             player.getUI().openContainerView(p.type, p.containerId, p.viewSlots);
             AudioEngine.get().playSoundGroup("inv_open");
-        } else if(o instanceof P41_InventoryViewQuit p) {
+        } else if(o instanceof P41_InventoryViewQuit) {
             ClientPlayer player = ClientPlayer.getLocalPlayer();
             player.getUI().closeInventoryView();
         } else if(o instanceof P42_EntityAnimation p) {
@@ -379,6 +380,30 @@ public class ExpoClientPacketReader {
 
             String soundName = mapping.logic.placeData.sound != null ? mapping.logic.placeData.sound : "place";
             AudioEngine.get().playSoundGroupManaged(soundName, new Vector2(p.worldX, p.worldY), PLAYER_AUDIO_RANGE, false);
+        } else if(o instanceof P47_ItemConsume p) {
+            ClientEntity entity = entityFromId(p.entityId);
+
+            if(entity != null) {
+                ClientPlayer player = (ClientPlayer) entity;
+                ItemMapping mapping = ItemMapper.get().getMapping(p.itemId);
+
+                if(mapping.logic.isFood() && ClientPlayer.getLocalPlayer() == player) {
+                    ClientPickupLine cpl = new ClientPickupLine();
+                    cpl.id = p.itemId;
+                    cpl.amount = 1;
+                    cpl.setMapping();
+                    cpl.reset();
+
+                    if(mapping.logic.foodData.hungerRestore > 0) {
+                        cpl.setCustomDisplayText("+" + mapping.logic.foodData.hungerRestore + " Hunger");
+                    } else {
+                        cpl.setCustomDisplayText("+" + mapping.logic.foodData.healthRestore + " Health");
+                    }
+
+                    cpl.setCustomDisplayColor(PlayerUI.get().COLOR_GREEN);
+                    ClientEntityManager.get().addClientSideEntity(cpl);
+                }
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.server.main.logic.inventory.InventoryViewType;
 import dev.michey.expo.server.main.logic.inventory.ServerInventorySlot;
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
@@ -61,6 +62,7 @@ public class ExpoServerRegistry {
                 ServerInventorySlot[].class,
                 TeleportReason.class,
                 BiomeDefinition.class,
+                ServerOakTree.TreeData.class,
 
                 // Packets
                 P0_Connect_Req.class,
@@ -109,7 +111,8 @@ public class ExpoServerRegistry {
                 P43_EntityDeleteAdvanced.class,
                 P44_Connect_Rsp.class,
                 P45_Auth_Req.class,
-                P46_EntityConstruct.class
+                P46_EntityConstruct.class,
+                P47_ItemConsume.class
         );
     }
 

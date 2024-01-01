@@ -14,9 +14,9 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 
 public class ClientPickupLine extends ClientEntity implements TopVisibilityEntity {
 
-    private static final float SCALE_DURATION = 0.15f;
-    private static final float MAX_LIFETIME = 1.33f;
-    private static final float ALPHA_DURATION = 0.5f;
+    private static final float SCALE_DURATION = 0.25f;
+    private static final float MAX_LIFETIME = 1.5f;
+    private static final float ALPHA_DURATION = 0.75f;
     private static final float FLOAT_SPEED = 40;
 
     private float lifetime = MAX_LIFETIME;
@@ -24,10 +24,25 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
     public int id;
     public int amount;
     private ItemMapping mapping;
+    public String displayText;
+    public Color displayColor = Color.WHITE;
 
     @Override
     public void onCreation() {
+
+    }
+
+    public void setMapping() {
         mapping = ItemMapper.get().getMapping(id);
+        displayColor = mapping.color;
+    }
+
+    public void setCustomDisplayText(String text) {
+        displayText = text;
+    }
+
+    public void setCustomDisplayColor(Color color) {
+        displayColor = color;
     }
 
     @Override
@@ -60,6 +75,8 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         ClientPlayer player = ClientPlayer.getLocalPlayer();
         clientPosX = player.clientPosX;
         clientPosY = player.clientPosY + player.textureHeight + 24;
+
+        displayText = amount + "x " + mapping.displayName;
     }
 
     @Override
@@ -76,9 +93,8 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         clientPosY += delta * FLOAT_SPEED;
         updateDepth();
 
-        BitmapFont f = rc.m5x7_border_all[0];
-        String dn = amount + "x " + mapping.displayName;
-        rc.globalGlyph.setText(f, dn);
+        BitmapFont f = rc.m5x7_border_all[1];
+        rc.globalGlyph.setText(f, displayText);
 
         float scl = 1.0f;
         float GAP = 4;
@@ -88,10 +104,12 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
             scl = Interpolation.pow3InInverse.apply(norm);
         }
 
+        float fontScale = 0.5f;
+
         float iconW = mapping.uiRender[0].useWidth;
         float iconH = mapping.uiRender[0].useHeight;
-        float totalW = (rc.globalGlyph.width + GAP + iconW) * scl;
-        float maxH = Math.max(iconH, rc.globalGlyph.height) * scl;
+        float totalW = (rc.globalGlyph.width * fontScale + GAP + iconW) * scl;
+        float maxH = Math.max(iconH, rc.globalGlyph.height * fontScale) * scl;
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha / ALPHA_DURATION);
 
@@ -100,10 +118,10 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
                     ir.useTextureRegion.getRegionWidth() * scl, ir.useTextureRegion.getRegionHeight() * scl);
         }
 
-        f.setColor(mapping.color.r, mapping.color.g, mapping.color.b, alpha / ALPHA_DURATION);
+        f.setColor(displayColor.r, displayColor.g, displayColor.b, alpha / ALPHA_DURATION);
 
-        f.getData().setScale(scl);
-        f.draw(rc.arraySpriteBatch, dn, clientPosX - totalW * 0.5f + (GAP + iconW) * scl, clientPosY + rc.globalGlyph.height * scl + (maxH - rc.globalGlyph.height * scl) * 0.5f);
+        f.getData().setScale(scl * fontScale);
+        f.draw(rc.arraySpriteBatch, displayText, clientPosX - totalW * 0.5f + (GAP + iconW) * scl, clientPosY + rc.globalGlyph.height * fontScale * scl + (maxH - rc.globalGlyph.height * fontScale * scl) * 0.5f);
         f.getData().setScale(1.0f);
 
         rc.arraySpriteBatch.setColor(Color.WHITE);

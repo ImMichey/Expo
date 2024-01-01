@@ -187,82 +187,74 @@ public class Expo implements ApplicationListener {
 		}
 
 		autoExec();
-		sliceAndPatch();
+		//sliceAndPatch();
 	}
 
-	private void sliceAndPatch() {
-		boolean slice = false;
+	public void sliceAndPatch() {
+		ExpoAssets.get().slice("tile_soil", true, 0, 0);
+		ExpoAssets.get().slice("tile_grass", false, 0, 16);
+		ExpoAssets.get().slice("tile_sand", false, 0, 48);
+		ExpoAssets.get().slice("tile_not_set", true, 0, 80);
+		ExpoAssets.get().slice("tile_ocean", false, 0, 96);
+		ExpoAssets.get().slice("tile_ocean_deep", false, 0, 128);
+		ExpoAssets.get().slice("tile_soil_hole", false, 0, 160);
+		ExpoAssets.get().slice("tile_forest", false, 0, 192);
+		ExpoAssets.get().slice("tile_desert", false, 0, 224);
+		ExpoAssets.get().slice("tile_rock", false, 0, 256);
+		ExpoAssets.get().slice("tile_oak_plank", false, 0, 288);
+		ExpoAssets.get().slice("tile_soil_farmland", false, 0, 320);
+		ExpoAssets.get().slice("tile_dirt", false, 0, 352);
+		ExpoAssets.get().slice("tile_water_sandy", false, 0, 384);
+		ExpoAssets.get().slice("tile_oakplankwall", false, 0, 416);
+		ExpoAssets.get().slice("tile_water_overlay", false, 0, 448);
+		ExpoAssets.get().slice("tile_sand_waterlogged", false, 0, 480);
+		ExpoAssets.get().slice("tile_soil_deep_waterlogged", false, 0, 512);
+		ExpoAssets.get().slice("tile_soil_waterlogged", false, 0, 544);
+		ExpoAssets.get().slice("tile_hedge", false, 0, 576);
 
-		if(slice && DEV_MODE) {
-			ExpoAssets.get().slice("tile_soil", true, 0, 0);
-			ExpoAssets.get().slice("tile_grass", false, 0, 16);
-			ExpoAssets.get().slice("tile_sand", false, 0, 48);
-			ExpoAssets.get().slice("tile_not_set", true, 0, 80);
-			ExpoAssets.get().slice("tile_ocean", false, 0, 96);
-			ExpoAssets.get().slice("tile_ocean_deep", false, 0, 128);
-			ExpoAssets.get().slice("tile_soil_hole", false, 0, 160);
-			ExpoAssets.get().slice("tile_forest", false, 0, 192);
-			ExpoAssets.get().slice("tile_desert", false, 0, 224);
-			ExpoAssets.get().slice("tile_rock", false, 0, 256);
-			ExpoAssets.get().slice("tile_oak_plank", false, 0, 288);
-			ExpoAssets.get().slice("tile_soil_farmland", false, 0, 320);
-			ExpoAssets.get().slice("tile_dirt", false, 0, 352);
-			ExpoAssets.get().slice("tile_water_sandy", false, 0, 384);
-			ExpoAssets.get().slice("tile_oakplankwall", false, 0, 416);
-			ExpoAssets.get().slice("tile_water_overlay", false, 0, 448);
-			ExpoAssets.get().slice("tile_sand_waterlogged", false, 0, 480);
-			ExpoAssets.get().slice("tile_soil_deep_waterlogged", false, 0, 512);
-			ExpoAssets.get().slice("tile_soil_waterlogged", false, 0, 544);
-			ExpoAssets.get().slice("tile_hedge", false, 0, 576);
-		}
+		TileMergerV2 merger = new TileMergerV2();
+		merger.prepare();
+		var possibilities = merger.createAllPossibleVariations();
 
-		boolean patch = false;
+		for(TileLayerType tlt : TileLayerType.values()) {
+			int minTile = tlt.TILE_ID_DATA[0];
+			if(tlt.TILE_ID_DATA[0] == -1) continue;
 
-		if(patch && DEV_MODE) {
-			TileMergerV2 merger = new TileMergerV2();
-			merger.prepare();
-			var possibilities = merger.createAllPossibleVariations();
+			String elevationName = TileLayerType.ELEVATION_TEXTURE_MAP.get(tlt);
 
-			for(TileLayerType tlt : TileLayerType.values()) {
-				int minTile = tlt.TILE_ID_DATA[0];
-				if(tlt.TILE_ID_DATA[0] == -1) continue;
+			if(tlt.TILE_ID_DATA.length == 1) {
+				merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, -1);
 
-				String elevationName = TileLayerType.ELEVATION_TEXTURE_MAP.get(tlt);
+				if(ExpoAssets.get().getTileSheet().hasVariation(tlt.TILE_ID_DATA[0])) {
+					int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(tlt.TILE_ID_DATA[0]);
+					ExpoLogger.log("Variations for " + tlt.TILE_ID_DATA[0] + ": " + variations);
 
-				if(tlt.TILE_ID_DATA.length == 1) {
-					merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, -1);
-
-					if(ExpoAssets.get().getTileSheet().hasVariation(tlt.TILE_ID_DATA[0])) {
-						int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(tlt.TILE_ID_DATA[0]);
-						ExpoLogger.log("Variations for " + tlt.TILE_ID_DATA[0] + ": " + variations);
-
-						for(int var = 0; var < variations; var++) {
-							merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, var);
-						}
+					for(int var = 0; var < variations; var++) {
+						merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, var);
 					}
-				} else {
-					for(int[] ids : possibilities.values()) {
-						int[] newIds = new int[ids.length];
+				}
+			} else {
+				for(int[] ids : possibilities.values()) {
+					int[] newIds = new int[ids.length];
 
-						for(int i = 0; i < newIds.length; i++) {
-							newIds[i] = ids[i] + minTile;
+					for(int i = 0; i < newIds.length; i++) {
+						newIds[i] = ids[i] + minTile;
+					}
+
+					if(elevationName == null) {
+						merger.createFreshTile(newIds, null, -1);
+
+						if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
+							int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
+							ExpoLogger.log("Variations for " + newIds[0] + ": " + variations);
+
+							for(int var = 0; var < variations; var++) {
+								merger.createFreshTile(newIds, null, var);
+							}
 						}
-
-						if(elevationName == null) {
-							merger.createFreshTile(newIds, null, -1);
-
-							if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
-								int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
-								ExpoLogger.log("Variations for " + newIds[0] + ": " + variations);
-
-								for(int var = 0; var < variations; var++) {
-									merger.createFreshTile(newIds, null, var);
-								}
-							}
-						} else {
-							for(int ev = 1; ev <= 4; ev++) {
-								merger.createFreshTile(newIds, elevationName + "_" + ev, -1);
-							}
+					} else {
+						for(int ev = 1; ev <= 4; ev++) {
+							merger.createFreshTile(newIds, elevationName + "_" + ev, -1);
 						}
 					}
 				}

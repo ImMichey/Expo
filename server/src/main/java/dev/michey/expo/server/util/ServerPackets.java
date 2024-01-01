@@ -24,9 +24,9 @@ import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 public class ServerPackets {
 
     /** Sends the P1_Auth_Rsp packet via TCP protocol. */
-    public static void p1AuthResponse(boolean authSuccesful, String authMessage, int serverTps, int worldSeed, WorldGenSettings genSettings, PacketReceiver receiver) {
+    public static void p1AuthResponse(boolean authSuccessful, String authMessage, int serverTps, int worldSeed, WorldGenSettings genSettings, PacketReceiver receiver) {
         P1_Auth_Rsp p = new P1_Auth_Rsp();
-        p.authSuccessful = authSuccesful;
+        p.authSuccessful = authSuccessful;
         p.authMessage = authMessage;
         p.serverTps = serverTps;
         p.worldSeed = worldSeed;
@@ -436,6 +436,15 @@ public class ServerPackets {
         p.tileY = tileY;
         p.worldX = worldX;
         p.worldY = worldY;
+        udp(p, receiver);
+    }
+
+    /** Sends the P47_ItemConsume packet via UDP protocol. */
+    public static void p47ItemConsume(int entityId, int itemId, float duration, PacketReceiver receiver) {
+        P47_ItemConsume p = new P47_ItemConsume();
+        p.entityId = entityId;
+        p.itemId = itemId;
+        p.duration = duration;
         udp(p, receiver);
     }
 

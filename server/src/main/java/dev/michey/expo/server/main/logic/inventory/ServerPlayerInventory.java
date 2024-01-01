@@ -100,19 +100,17 @@ public class ServerPlayerInventory extends ServerInventory {
                         float hcr = mapping.logic.foodData.hungerCooldownRestore;
                         float hpr = mapping.logic.foodData.healthRestore;
                         ServerPlayer p = getOwner();
-                        boolean use = false;
+                        boolean use;
 
                         if(p.hunger < 100 && hr > 0) {
                             use = true;
-                        }
-                        if(p.health < 100 && hpr > 0) {
-                            use = true;
-                        }
+                        } else use = p.health < 100 && hpr > 0;
 
                         if(use) {
                             p.consumeFood(hr, hcr, hpr);
                             ServerPackets.p23PlayerLifeUpdate(p.health, p.hunger, PacketReceiver.player(p));
                             ServerPackets.p28PlayerFoodParticle(p.entityId, oldIds[0], PacketReceiver.whoCanSee(p));
+                            ServerPackets.p47ItemConsume(p.entityId, oldIds[0], -1, PacketReceiver.whoCanSee(p));
 
                             int existingAmount = slots[p.selectedInventorySlot].item.itemAmount;
 

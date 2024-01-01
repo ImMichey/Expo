@@ -83,9 +83,9 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     @Override
     public void renderTop(RenderContext rc, float delta) {
-        BitmapFont use = rc.m5x7_border_all[0];
+        BitmapFont use = rc.m6x11_border_all[0];
 
-        use.getData().setScale(scale);
+        use.getData().setScale(scale * 0.75f);
         String s = String.valueOf(damageNumber);
         rc.globalGlyph.setText(use, s);
 

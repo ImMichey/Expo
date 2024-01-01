@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -122,14 +123,17 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
 
         // Draw entity name
         if(suppliedName != null) {
-            rc.globalGlyph.setText(rc.m5x7_border_all[0], suppliedName);
+            BitmapFont use = rc.m5x7_border_all[1];
+            use.getData().setScale(0.5f);
+            rc.globalGlyph.setText(use, suppliedName);
 
             float _x = startX + 1 + (length - rc.globalGlyph.width) * 0.5f;
             float _y = startY + rc.globalGlyph.height + 8;
 
-            rc.m5x7_border_all[0].setColor(1.0f, 1.0f, 1.0f, alpha);
-            rc.m5x7_border_all[0].draw(rc.arraySpriteBatch, suppliedName, _x, _y);
-            rc.m5x7_border_all[0].setColor(Color.WHITE);
+            use.setColor(1.0f, 1.0f, 1.0f, alpha);
+            use.draw(rc.arraySpriteBatch, suppliedName, _x, _y);
+            use.setColor(Color.WHITE);
+            use.getData().setScale(1.0f);
         }
     }
 

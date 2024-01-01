@@ -29,6 +29,7 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.imgui.DebugPoint;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
@@ -593,6 +594,27 @@ public class ClientWorld {
                         }
                     }
                 } catch (ConcurrentModificationException ignored) { }
+
+                if(Expo.get().getImGuiExpo().renderDebugPoints.get()) {
+                    for(DebugPoint dp : Expo.get().getImGuiExpo().drawPoints) {
+                        r.chunkRenderer.setColor(dp.color);
+                        r.chunkRenderer.circle(dp.x, dp.y, 0.5f, 8);
+                    }
+
+                    r.chunkRenderer.end();
+                    r.hudBatch.begin();
+                    for(DebugPoint dp : Expo.get().getImGuiExpo().drawPoints) {
+                        if(dp.marker == null) continue;
+                        Vector2 pos = ClientUtils.entityPosToHudPos(dp.x, dp.y);
+                        r.m5x7_border_all[0].setColor(dp.color);
+                        r.m5x7_border_all[0].draw(r.hudBatch, dp.marker, pos.x, pos.y);
+                        r.m5x7_border_all[0].setColor(Color.WHITE);
+                    }
+                    r.hudBatch.end();
+                    r.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                }
+
+                Expo.get().getImGuiExpo().drawPoints.clear();
 
                 for(ClientEntity all : clientEntityManager.allEntities()) {
                     if(all.visibleToRenderEngine) {

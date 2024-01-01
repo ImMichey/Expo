@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -1183,8 +1184,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     @Override
     public void renderTop(RenderContext rc, float delta) {
         if(Expo.get().isMultiplayer() || DEV_MODE) {
-            rc.globalGlyph.setText(rc.m5x7_border_all[0], username);
-            rc.m5x7_border_all[0].draw(rc.arraySpriteBatch, username, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY + 32 + rc.globalGlyph.height);
+            BitmapFont use = rc.m5x7_border_all[1];
+            use.getData().setScale(0.5f);
+            rc.globalGlyph.setText(use, username);
+            use.draw(rc.arraySpriteBatch, username, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY + 32 + rc.globalGlyph.height);
+            use.getData().setScale(1.0f);
         }
     }
 
