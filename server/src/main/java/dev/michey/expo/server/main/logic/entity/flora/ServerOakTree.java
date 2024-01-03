@@ -33,12 +33,12 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public static float FALLING_ANIMATION_DURATION = 4.25f;
 
     public static final float[][] TREE_BODIES = new float[][] {
-        new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
-        new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
-        new float[] {-6.0f, 4.0f, 13.0f, 4.5f},
-        new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
-        new float[] {-6.0f, 4.0f, 17.0f, 4.5f},
-        new float[] {-6.0f, 4.0f, 15.0f, 4.5f},
+        new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
+        new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
+        new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
+        new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
+        new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
+        new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
     };
     public static final float[] TREE_HEALTH = new float[] {
             120.0f,
@@ -69,7 +69,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
         trunkVariant = rnd.random(1, 6);
 
-        leavesOffset = -rnd.random(0f, 6f);
+        leavesOffset = -rnd.random(0f, 14f);
 
         float modifyRandom = rnd.random();
 

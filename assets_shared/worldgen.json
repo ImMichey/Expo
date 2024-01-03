@@ -22,6 +22,44 @@
                         }
                     },
                     {
+                        "name": "dirt_breaks",
+                        "octaves": 5,
+                        "type": 5,
+                        "frequency": 0.1,
+                        "noiseOffset": 5000,
+                        "logic": {
+                            "check": [
+                                "FOREST",
+                                "GRASS"
+                            ],
+                            "threshold": 0.777,
+                            "replaceType": "LAYER_1",
+                            "replaceTypeSecond": "LAYER_0",
+                            "replaceWith": "EMPTY",
+                            "thresholdSecond": 0.9,
+                            "thresholdReplace": "SOIL_HOLE"
+                        }
+                    },
+                    {
+                        "name": "dirt_pits",
+                        "octaves": 5,
+                        "type": 5,
+                        "frequency": 0.015,
+                        "noiseOffset": 4000,
+                        "logic": {
+                            "check": [
+                                "FOREST",
+                                "GRASS"
+                            ],
+                            "threshold": 0.777,
+                            "replaceType": "LAYER_1",
+                            "replaceTypeSecond": "LAYER_0",
+                            "replaceWith": "EMPTY",
+                            "thresholdSecond": 0.82,
+                            "thresholdReplace": "SOIL_HOLE"
+                        }
+                    },
+                    {
                         "name": "dirt",
                         "octaves": 5,
                         "type": 5,

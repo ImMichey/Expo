@@ -16,7 +16,7 @@ public class SpawnItem {
     public SpawnItem(String identifier, int min, int max, float chance) {
         if(MathUtils.random() <= chance) {
             id = ItemMapper.get().getMapping(identifier).id;
-            amount = MathUtils.random(min, max);
+            amount = min + MathUtils.random(max - min);
         }
     }
 

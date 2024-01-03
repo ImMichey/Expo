@@ -33,6 +33,8 @@ public class ClientBush extends ClientEntity implements SelectableEntity, Reflec
         interactionPointArray = generateInteractionArray(3);
 
         contactAnimator.enableSquish = false;
+        contactAnimator.STRENGTH = 2.33f;
+        contactAnimator.STRENGTH_DECREASE = 0.5f;
     }
 
     @Override

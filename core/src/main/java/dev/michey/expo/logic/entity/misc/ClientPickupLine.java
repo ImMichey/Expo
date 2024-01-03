@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
+import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.font.GradientFont;
 import dev.michey.expo.render.visbility.TopVisibilityEntity;
@@ -32,9 +33,20 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
     public Color topColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     public Color bottomColor;
 
+    private ClientPhysicsBody physicsBody;
+
     @Override
     public void onCreation() {
+        RenderContext rc = RenderContext.get();
+        BitmapFont f = rc.pickupFont;
+        rc.globalGlyph.setText(f, displayText);
+        float iconW = mapping.uiRender[0].useWidth;
+        float iconH = mapping.uiRender[0].useHeight;
+        float GAP = 4;
+        float totalW = (rc.globalGlyph.width * 0.5f + GAP + iconW);
+        float maxH = Math.max(iconH, rc.globalGlyph.height * 0.5f);
 
+        physicsBody = new ClientPhysicsBody(this, -totalW * 0.5f - 2, -2f, totalW + 4, maxH + 4);
     }
 
     public void setMapping() {
@@ -55,7 +67,7 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
 
     @Override
     public void onDeletion() {
-
+        if(physicsBody != null) physicsBody.dispose();
     }
 
     @Override
@@ -85,6 +97,12 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         clientPosY = player.clientPosY + player.textureHeight + 24;
 
         displayText = amount + "x " + mapping.displayName;
+
+        if(physicsBody != null) {
+            var response = physicsBody.moveAbsolute(clientPosX, clientPosY, ClientPhysicsBody.pickupCollisionFilter);
+            clientPosX = response.goalX - physicsBody.xOffset;
+            clientPosY = response.goalY - physicsBody.yOffset;
+        }
     }
 
     @Override
@@ -98,7 +116,21 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
 
         float alpha = Math.min(lifetime, ALPHA_DURATION);
 
-        clientPosY += delta * FLOAT_SPEED;
+        if(alpha <= 0.25f) {
+            if(physicsBody != null) {
+                physicsBody.dispose();
+                physicsBody = null;
+            }
+        }
+
+        if(physicsBody != null) {
+            var result = physicsBody.move(0, delta * FLOAT_SPEED, ClientPhysicsBody.pickupCollisionFilter);
+            clientPosX = result.goalX - physicsBody.xOffset;
+            clientPosY = result.goalY - physicsBody.yOffset;
+        } else {
+            clientPosY += delta * FLOAT_SPEED;
+        }
+
         updateDepth();
 
         BitmapFont f = rc.pickupFont;
@@ -118,7 +150,6 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         float iconH = mapping.uiRender[0].useHeight;
         float totalW = (rc.globalGlyph.width * fontScale + GAP + iconW) * scl;
         float maxH = Math.max(iconH, rc.globalGlyph.height * fontScale) * scl;
-
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha / ALPHA_DURATION);
 
         for(ItemRender ir : mapping.uiRender) {

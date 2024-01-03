@@ -30,15 +30,15 @@ public class ItemSheet {
         add("item_dirt", 11, 11, 11);
         add("item_op_shovel", 12, 15, 15);
         add("item_flint", 13, 8, 8);
-        add("item_worm", 14, 8, 12);
+        add("item_worm", 14, 14, 11);
         add("item_cord", 15, 11, 12);
         add("item_rock", 16, 8, 7);
         add("item_oak_log", 17, 15, 15);
         add("item_acorn", 18, 12, 12);
-        add("item_mushroom_red", 19, 8, 9);
-        add("item_mushroom_brown", 20, 8, 9);
+        add("item_mushroom_red", 19, 11, 12);
+        add("item_mushroom_brown", 20, 11, 12);
         add("item_oak_plank", 21, 14, 11);
-        add("item_mushroom_glowing", 22, 8, 9);
+        add("item_mushroom_glowing", 22, 11, 12);
         add("item_flint_scythe", 23, 16, 15);
         add("item_wheat", 24, 13, 12);
         add("item_wheat_seeds", 25, 9, 8);
@@ -49,7 +49,7 @@ public class ItemSheet {
         add("item_birch_log", 30, 15, 15);
         add("item_oak_plank_wall", 31, 12, 13);
         add("item_crate", 32, 14, 16);
-        add("item_carrot", 33, 14, 14);
+        add("item_carrot", 33, 12, 13);
         add("item_coal", 34, 10, 10);
         add("item_dirt_floor", 35, 13, 8);
         add("item_sand_floor", 36, 13, 8);
@@ -65,8 +65,9 @@ public class ItemSheet {
         add("item_campfire", 46, 15, 17);
         add("item_hedge_wall", 47, 12, 13);
         add("item_aloe_vera", 48, 10, 10);
-        add("item_bandage", 49, 14, 10);
+        add("item_bandage", 49, 15, 10);
         add("item_aloe_vera_seeds", 50, 9, 8);
+        add("item_lilypad", 51, 11, 8);
     }
 
     public TextureRegion get(String name) {

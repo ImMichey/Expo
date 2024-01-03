@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -19,13 +18,13 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
     private final FoliageAnimator foliageAnimator = new FoliageAnimator(this);
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
-    private Texture dandelion;
+    private TextureRegion dandelion;
     private TextureRegion shadow;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        dandelion = t("foliage/entity_dandelion/entity_dandelion.png");
+        dandelion = tr("entity_dandelion");
         shadow = tr("entity_dandelion_shadow_mask");
 
         updateTextureBounds(11, 9, 1, 1);
@@ -84,7 +83,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
         foliageAnimator.calculateWindOnDemand();
         setSelectionValues(Color.BLACK);
 
-        rc.arraySpriteBatch.drawCustomVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawShiftedVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getRegionWidth(), dandelion.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
         rc.arraySpriteBatch.end();
     }
 
@@ -98,7 +97,7 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawCustomVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getWidth(), dandelion.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawShiftedVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getRegionWidth(), dandelion.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
         }
     }
 

@@ -5,8 +5,6 @@ import com.badlogic.gdx.math.MathUtils;
 
 import java.util.HashMap;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class TileSheet {
 
     private final ExpoAssets assets;
@@ -61,7 +59,7 @@ public class TileSheet {
     }
 
     private void multiEntry(String name, int amount) {
-        log("TileSheet entry: " + name + " " + currentId + " - " + (currentId + amount - 1));
+        //log("TileSheet entry: " + name + " " + currentId + " - " + (currentId + amount - 1));
         for(int i = 0; i < amount; i++) tilesetTextureMap.put(currentId + i, assets.findTile(name + "_" + i));
         currentId += amount;
     }

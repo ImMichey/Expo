@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.light.box2dport.PointLight;
+import dev.michey.expo.util.ClientUtils;
 import dev.michey.expo.util.ExpoTime;
 
 public class ExpoLight {
@@ -28,8 +29,8 @@ public class ExpoLight {
     public float flickerValue;
 
     public ExpoLight(float distance, int rays, float constant, float quadratic, boolean staticLight) {
-        box2dLight = new PointLight(RenderContext.get().lightEngine.rayHandler, rays);
-        //box2dLight.setXray(true);
+        box2dLight = new PointLight(RenderContext.get().lightEngine.rayHandler, ClientUtils.rays(rays));
+        box2dLight.setXray(true);
         box2dLight.setFalloff(constant, 0.0f, quadratic);
         box2dLight.setDistance(distance);
         pulsatingMinDistance = distance;

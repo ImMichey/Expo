@@ -71,7 +71,7 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
             }
         } else {
             if(campfireLight == null) {
-                campfireLight = new ExpoLight(166, 16, 0.375f, 0.675f, true);
+                campfireLight = new ExpoLight(166, 32, 0.375f, 0.675f, true);
                 campfireLight.color(0.992f, 0.541f, 0.184f, 1f);
                 campfireLight.setFlickering(6.0f, 0.15f);
             }

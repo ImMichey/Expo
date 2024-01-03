@@ -5,7 +5,6 @@ ao_tex_60_20.png
 
 foliage/entity_dandelion/entity_dandelion.png
 foliage/entity_poppy/entity_poppy.png
-foliage/entity_cattail/cattail_variation_new_1.png
 foliage/entity_aloevera/entity_aloevera.png
 foliage/entity_aloevera/entity_aloevera_sm.png
 foliage/entity_cattail/cattail_variation_1.png

@@ -32,9 +32,9 @@ public abstract class ServerDimension {
 
     /** Dimension data */
     public float dimensionTime = ExpoTime.worldDurationHours(8);
-    public Weather dimensionWeather = Weather.SUN;
-    public float dimensionWeatherDuration = Weather.SUN.generateWeatherDuration();
-    public float dimensionWeatherStrength = Weather.SUN.generateWeatherStrength();
+    public Weather dimensionWeather;
+    public float dimensionWeatherDuration;
+    public float dimensionWeatherStrength;
 
     /** Entity handler */
     private final ServerDimensionEntityManager entityManager;
@@ -65,6 +65,17 @@ public abstract class ServerDimension {
             }
 
         };
+
+        boolean rain = MathUtils.random() < 0.25f;
+
+        if(rain) {
+            dimensionWeather = Weather.RAIN;
+        } else {
+            dimensionWeather = Weather.SUN;
+        }
+
+        dimensionWeatherDuration = dimensionWeather.generateWeatherDuration();
+        dimensionWeatherStrength = dimensionWeather.generateWeatherStrength();
     }
 
     private void tickDimension() {
@@ -209,7 +220,7 @@ public abstract class ServerDimension {
         return pair;
     }
 
-    /** Wrapper method to enable multi-threading. Don't touch. */
+    /** Wrapper method to enable multi-threading. Will probably change this in the future. */
     public Callable<Void> tick() {
         tickDimension();
         return () -> null;

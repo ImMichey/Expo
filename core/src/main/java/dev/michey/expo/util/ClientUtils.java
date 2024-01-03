@@ -57,6 +57,12 @@ public class ClientUtils {
         }
     }
 
+    /** Converts the ray amount to a settings-based ray count. */
+    public static int rays(int base) {
+        int quality = GameSettings.get().lightQuality;
+        return base / quality;
+    }
+
     public static Color darker(Color src, float factor) {
         float r = src.r;
         float g = src.g;

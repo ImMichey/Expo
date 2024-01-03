@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.font.GradientFont;
 import dev.michey.expo.render.visbility.TopVisibilityEntity;
 
 public class ClientDamageIndicator extends ClientEntity implements TopVisibilityEntity {
@@ -25,11 +26,14 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
     private float alpha = 1.0f;
     private float scale = 1.0f;
 
+    private float SPEED;
+
     @Override
     public void onCreation() {
         updateDepth();
         startX = clientPosX;
         startY = clientPosY;
+        SPEED = 1.3f + MathUtils.random(0.4f);
     }
 
     @Override
@@ -39,25 +43,27 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     @Override
     public void tick(float delta) {
-        float LIFETIME_SPEED = 1.5f;
-        lifetime -= delta * LIFETIME_SPEED;
+        //float LIFETIME_SPEED = 1.5f;
+        lifetime -= delta * SPEED;
 
         if(lifetime <= 0) {
             entityManager().removeEntity(this);
         } else {
             float _i = Interpolation.exp5Out.apply(1f - lifetime);
-            float _s = MathUtils.sin(lifetime * MathUtils.PI2) * 3f;
+            float _s = MathUtils.sin(lifetime * MathUtils.PI2) * 3f * lifetime;
             clientPosX = startX + _s;
             clientPosY = startY + _i * 48;
 
-            if(lifetime >= 0.75f) {
-                alpha = 1.0f;
+            if(lifetime >= 0.8f) {
+                alpha = 1f - (lifetime - 0.8f) * 5f;
+            } else if(lifetime <= 0.4) {
+                alpha = lifetime / 0.4f;
             } else {
-                alpha = Interpolation.smooth.apply(lifetime * 4 / 3);
+                alpha = 1.0f;
             }
 
             if(lifetime >= 0.75f) {
-                scale = 1f + Interpolation.exp10Out.apply((lifetime - 0.75f) * 4) * 0.25f;
+                scale = 1f + ((lifetime - 0.75f) * 4);
             } else {
                 scale = 1f;
             }
@@ -83,15 +89,14 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
 
     @Override
     public void renderTop(RenderContext rc, float delta) {
-        BitmapFont use = rc.m6x11_border_all[0];
+        BitmapFont use = rc.damageFont;
 
-        use.getData().setScale(scale * 0.75f);
+        use.getData().setScale(scale * 0.4f);
         String s = String.valueOf(damageNumber);
         rc.globalGlyph.setText(use, s);
 
-        use.setColor(color.r, color.g, color.b, alpha);
-        use.draw(rc.arraySpriteBatch, s, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY);
-        use.setColor(Color.WHITE);
+        color.a = alpha;
+        GradientFont.drawGradient(use, rc.arraySpriteBatch, s, clientPosX - rc.globalGlyph.width * 0.5f, clientPosY, color);
 
         use.getData().setScale(1.0f);
     }

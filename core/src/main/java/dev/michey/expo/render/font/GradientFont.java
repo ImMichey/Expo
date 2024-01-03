@@ -2,6 +2,7 @@ package dev.michey.expo.render.font;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
+import dev.michey.expo.log.ExpoLogger;
 
 import static dev.michey.expo.util.ClientUtils.darker;
 

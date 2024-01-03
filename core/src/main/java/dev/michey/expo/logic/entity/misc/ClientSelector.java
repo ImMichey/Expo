@@ -145,7 +145,7 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                     if(placeData.alignment == PlaceAlignment.TILE) {
                         if(!layer1Wall && !layer2Wall && !tileEntity) {
                             if(placeData.floorRequirement != null) {
-                                if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement) {
+                                if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement || t2 == placeData.floorRequirement) {
                                     eligible = true;
                                     text = "[RMB] Place object";
                                 }

@@ -103,7 +103,7 @@
                 "toolType": "AXE",
                 "attackSpeed": 0.4,
                 "attackDamage": 16.0,
-                "harvestDamage": 1555.0
+                "harvestDamage": 15.0
             }
         },
         {
@@ -1030,7 +1030,7 @@
                             "flicker": true,
                             "flickerStrength": 6.0,
                             "flickerCooldown": 0.15,
-                            "rayCount": 48
+                            "rayCount": 64
                         },
                         "particleEmitter": {
                             "emitterName": "torch",
@@ -1425,6 +1425,38 @@
                     "placeAlignmentOffsetX": 8,
                     "placeAlignmentOffsetY": 3,
                     "floorRequirement": "SOIL_FARMLAND"
+                }
+            }
+        },
+        {
+            "identifier": "item_lilypad",
+            "id": 52,
+            "category": "MISC",
+            "displayName": "Lilypad",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_lilypad"
+                },
+                "held": {
+                    "texture": "item_lilypad",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "LILYPAD",
+                    "placeAlignmentOffsetX": 0,
+                    "placeAlignmentOffsetY": 4,
+                    "floorRequirement": "WATER_OVERLAY",
+                    "previewTexture": "entity_lilypad_1"
                 }
             }
         }

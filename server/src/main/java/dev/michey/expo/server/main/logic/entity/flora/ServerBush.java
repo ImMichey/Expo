@@ -22,7 +22,9 @@ public class ServerBush extends ServerEntity {
     public void onDie() {
         spawnItemsAround(0, 3.25f, 10, 14,
                 new SpawnItem("item_stick", 2, 3),
-                new SpawnItem("item_grassfiber", 0, 1))
+                new SpawnItem("item_grassfiber", 0, 1),
+                new SpawnItem("item_worm", 1, 1, 0.05f)
+                )
         ;
     }
 

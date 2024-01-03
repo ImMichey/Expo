@@ -10,8 +10,6 @@ import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.util.EntityRemovalReason;
-import dev.michey.expo.util.ParticleBuilder;
-import dev.michey.expo.util.ParticleColorMap;
 
 public class ClientLilypad extends ClientEntity implements SelectableEntity, ReflectableEntity {
 
@@ -27,6 +25,7 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void onCreation() {
+        if(variant == 0) variant = 1;
         texture = tr("entity_lilypad_" + variant);
         selectionTexture = generateSelectionTexture(texture);
 

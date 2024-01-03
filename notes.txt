@@ -1,10 +1,7 @@
 [Add]
 * Player buff effect system
 * Fix selection system
-* New Oak Plank Wall textures [maybe 32px high]
 * New Stick Fence textures
-
-* Fix ClientPickupLine spacing issues
 
 
 [Known Bugs]

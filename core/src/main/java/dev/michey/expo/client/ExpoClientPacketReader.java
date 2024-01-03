@@ -27,8 +27,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.*;
-
-import java.util.Arrays;
+import dev.michey.expo.weather.Weather;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.STEAM_INITIALIZED;
@@ -90,7 +89,6 @@ public class ExpoClientPacketReader {
             }
         } else if(o instanceof P3_PlayerJoin p) {
             ExpoClientContainer.get().notifyPlayerJoin(p.username);
-            log("Join " + p.username);
         } else if(o instanceof P2_EntityCreate p) {
             // log("Creating Entity object " + p.entityId + " " + p.entityType);
             ClientEntity entity = ClientEntityManager.get().createFromPacket(p);
@@ -108,8 +106,7 @@ public class ExpoClientPacketReader {
                 ClientEntityManager.get().removeEntity(p.entityList[i], p.reasons[i]);
             }
         } else if(o instanceof P9_PlayerCreate p) {
-            log("Creating Player object " + p.entityId + " " + p.entityType + " " + p.username + " " + p.player);
-            log("Held item ids: " + Arrays.toString(p.equippedItemIds));
+            //log("Creating Player object " + p.entityId + " " + p.entityType + " " + p.username + " " + p.player);
 
             ClientPlayer player = new ClientPlayer();
             player.tileEntityTileArray = -1;
@@ -152,7 +149,7 @@ public class ExpoClientPacketReader {
             }
         } else if(o instanceof P14_WorldUpdate p) {
             ClientWorld w = ExpoClientContainer.get().getClientWorld();
-            log("Received WORLD UPDATE " + p.worldTime + " " + p.worldWeather + " " + p.weatherStrength + " (cl: " + w.worldTime + ")");
+            log("Received World update (worldTime/worldWeather/worldStrength): " + p.worldTime + "/" + Weather.idToWeather(p.worldWeather).name() + "/" + p.weatherStrength + " (cl: " + w.worldTime + ")");
 
             w.worldTime = p.worldTime;
             w.worldWeather = p.worldWeather;

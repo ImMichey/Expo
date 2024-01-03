@@ -13,9 +13,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.dongbat.jbump.Item;
+import com.dongbat.jbump.Rect;
+import com.dongbat.jbump.World;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -52,6 +56,10 @@ public class ClientWorld {
     /** Entity handler */
     private final ClientEntityManager clientEntityManager;
     private final ClientChunkGrid clientChunkGrid;
+
+    /** Client-side physics simulation */
+    private final World<ClientEntity> clientPhysicsWorld;
+
     /** Optimization */
     private final ClientChunk[] drawChunks;
     private final int[] cachedViewport = new int[] {Integer.MAX_VALUE, 0, 0, 0};
@@ -90,6 +98,17 @@ public class ClientWorld {
         clientChunkGrid = new ClientChunkGrid();
         drawChunks = new ClientChunk[PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y];
         ambientOcclusionQueue = new LinkedList<>();
+        clientPhysicsWorld = new World<>(64) {
+
+            @Override
+            public void remove(Item item) {
+                // Band-aid fix to stupid JBump :D
+                Rect rect = getRect(item);
+                if(rect == null) return;
+                super.remove(item);
+            }
+
+        };
     }
 
     /** Ticking the game world. */
@@ -563,6 +582,22 @@ public class ClientWorld {
 
                         r.chunkRenderer.setColor(Color.WHITE);
                     }
+
+                    r.chunkRenderer.end();
+                    r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                    r.chunkRenderer.setColor(Color.YELLOW);
+                    var world = ExpoClientContainer.get().getClientWorld().getClientPhysicsWorld();
+
+                    try {
+                        for(var o : world.getRects()) {
+                            r.chunkRenderer.rect(o.x, o.y, o.w, o.h);
+                        }
+                    } catch (ConcurrentModificationException e) {
+                        // ignore it because it happens due to different tick rates between client->localserver
+                        // and JBump doesn't offer any ability to get the physic bodies thread-safe
+                    }
+
+                    r.chunkRenderer.setColor(Color.WHITE);
                 }
 
                 if(Expo.get().getImGuiExpo().renderChunkBorders.get()) {
@@ -1291,6 +1326,10 @@ public class ClientWorld {
 
     public ClientChunkGrid getClientChunkGrid() {
         return clientChunkGrid;
+    }
+
+    public World<ClientEntity> getClientPhysicsWorld() {
+        return clientPhysicsWorld;
     }
 
 }

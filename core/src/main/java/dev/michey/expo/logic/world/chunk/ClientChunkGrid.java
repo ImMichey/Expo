@@ -18,8 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static dev.michey.expo.log.ExpoLogger.log;
-
 public class ClientChunkGrid {
 
     private static ClientChunkGrid INSTANCE;
@@ -64,7 +62,7 @@ public class ClientChunkGrid {
     public void applyGenSettings(WorldGenNoiseSettings noiseSettings, List<BiomeDefinition> biomeDefinitionList, int worldSeed) {
         this.noiseSettings = noiseSettings;
         this.biomeDefinitionList = biomeDefinitionList;
-        log("Applying world gen mapping " + noiseSettings);
+        //log("Applying world gen mapping " + noiseSettings);
 
         if(noiseSettings.isTerrainGenerator()) {
             noiseSettings.terrainElevation.applyTo(terrainNoiseHeight);

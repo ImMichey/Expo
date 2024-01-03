@@ -133,6 +133,7 @@ public class RenderContext {
     public BitmapFont m5x7_use, m6x11_use, m5x7_border_use, m6x11_border_use, m5x7_shadow_use;
 
     public BitmapFont pickupFont;
+    public BitmapFont damageFont;
 
     /** Frame buffers */
     public int lastFBOWidth, lastFBOHeight;
@@ -218,6 +219,26 @@ public class RenderContext {
 
             pickupFont.getData().markupEnabled = true;
             pickupFont.setUseIntegerPositions(false);
+
+            generator.dispose();
+        }
+
+        {
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/m6x11.ttf"));
+            FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+            parameter.shadowOffsetX = 1;
+            parameter.shadowOffsetY = 1;
+            parameter.size = 32;
+            parameter.borderWidth = 1.0f;
+            parameter.borderColor = new Color(48f / 255f, 48f / 255f, 48f / 255f, 1);
+            parameter.shadowColor = new Color(0f, 0f, 0f, 1.0f);
+            parameter.spaceX = -1;
+
+            damageFont = generator.generateFont(parameter);
+
+            damageFont.getData().markupEnabled = true;
+            damageFont.setUseIntegerPositions(false);
 
             generator.dispose();
         }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.font.GradientFont;
 import dev.michey.expo.render.visbility.TopVisibilityEntity;
 import dev.michey.expo.server.util.EntityMetadata;
 import dev.michey.expo.server.util.EntityMetadataMapper;
@@ -16,6 +17,8 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
     public float damage;
     public float removalDelta;
     public float removalDelay;
+
+    private Color color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
     @Override
     public void onCreation() {
@@ -123,16 +126,16 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
 
         // Draw entity name
         if(suppliedName != null) {
-            BitmapFont use = rc.m5x7_border_all[1];
+            BitmapFont use = rc.pickupFont;
             use.getData().setScale(0.5f);
             rc.globalGlyph.setText(use, suppliedName);
 
             float _x = startX + 1 + (length - rc.globalGlyph.width) * 0.5f;
             float _y = startY + rc.globalGlyph.height + 8;
 
-            use.setColor(1.0f, 1.0f, 1.0f, alpha);
-            use.draw(rc.arraySpriteBatch, suppliedName, _x, _y);
-            use.setColor(Color.WHITE);
+            color.a = alpha;
+            GradientFont.drawGradient(use, rc.arraySpriteBatch, suppliedName, _x, _y, color);
+
             use.getData().setScale(1.0f);
         }
     }

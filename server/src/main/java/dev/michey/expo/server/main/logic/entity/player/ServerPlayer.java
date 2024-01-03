@@ -573,10 +573,13 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             if(!isNewChunk) {
                 long cached = hasSeenChunks.get(chunk.getChunkKey());
                 resend = cached < chunk.lastTileUpdate;
+
+                if(resend) {
+                    ExpoLogger.log("RESEND DATA " + chunk.getChunkKey() + ": " + cached + " " + chunk.lastTileUpdate);
+                }
             }
 
             if(resend || isNewChunk) {
-                ExpoLogger.log("Resending chunk " + chunk.getChunkKey() + " flags: " + resend + "/" + isNewChunk);
                 hasSeenChunks.put(chunk.getChunkKey(), chunk.lastTileUpdate);
                 chunkPacketList.add(new Pair<>(chunk.getChunkKey(), chunk));
             }
@@ -770,13 +773,15 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         for(String affectedChunkKey : affectedChunks) {
             // Update tile timestamp
             ServerChunk sv = getChunkGrid().getActiveChunk(affectedChunkKey);
-            sv.lastTileUpdate = now;
 
             for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
                 if(player.canSeeChunk(affectedChunkKey)) {
+                    ExpoLogger.log(">>>Putting " + now + " for " + affectedChunkKey);
                     player.hasSeenChunks.put(affectedChunkKey, now);
                 }
             }
+
+            sv.lastTileUpdate = now;
         }
     }
 
