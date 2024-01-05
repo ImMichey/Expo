@@ -28,7 +28,7 @@ public class ClientChunk {
     public ClientDynamicTilePart[][] dynamicTiles;
 
     public int[] tileEntityGrid; // is null by default
-    private int tileEntityCount;
+    public int tileEntityCount;
     public boolean ranAmbientOcclusion;
     private int initializationTileCount;
 
@@ -106,6 +106,7 @@ public class ClientChunk {
         }
 
         if(chunkContainsWater) {
+            /*
             waterDisplacement = new Pair[dynamicTiles.length][];
 
             for(int i = 0; i < waterDisplacement.length; i++) {
@@ -125,6 +126,7 @@ public class ClientChunk {
                     }
                 }
             }
+            */
         }
 
         ambientOcclusion = new float[ROW_TILES * ROW_TILES][];

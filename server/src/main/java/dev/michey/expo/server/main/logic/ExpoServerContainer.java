@@ -1,11 +1,8 @@
 package dev.michey.expo.server.main.logic;
 
 import dev.michey.expo.server.main.arch.ExpoServerBase;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.packet.ExpoServerListener;
-
-import static dev.michey.expo.log.ExpoLogger.log;
 
 public class ExpoServerContainer {
 

@@ -1,7 +1,6 @@
 package dev.michey.expo.server.main.logic.world.dimension;
 
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
@@ -92,6 +91,9 @@ public class ServerDimensionEntityManager {
             ServerPlayer closestPlayer = getClosestPlayer(item, 20.0f);
 
             if(closestPlayer != null) {
+                if(closestPlayer.itemCooldown) {
+                    continue;
+                }
                 int lastId = closestPlayer.getCurrentItemId();
 
                 int total = item.itemContainer.itemAmount;

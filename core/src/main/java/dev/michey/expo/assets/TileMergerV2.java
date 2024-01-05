@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.log.ExpoLogger;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 
 import java.io.File;
 import java.util.Arrays;
@@ -26,7 +25,7 @@ public class TileMergerV2 {
         allTilesPixmap = tex.getTextureData().consumePixmap();
     }
 
-    public void createFreshTile(int[] layerIds, String elevationTextureName, int variation) {
+    public void createFreshTile(int[] layerIds, String elevationTextureName, int variation, int[] rawIds) {
         if(layerIds[0] == -1) return;
 
         StringBuilder builder = new StringBuilder();
@@ -100,13 +99,24 @@ public class TileMergerV2 {
         }
 
         if(elevationTextureName != null) {
-            TextureRegion elevationTexture = ExpoAssets.get().findTile(elevationTextureName);
-            pixmap.drawPixmap(allTilesPixmap,
-                    0, 16,
-                    elevationTexture.getRegionX(),
-                    elevationTexture.getRegionY(),
-                    elevationTexture.getRegionWidth(),
-                    elevationTexture.getRegionHeight());
+            if(rawIds[0] == 0) {
+                ExpoLogger.log("-> " + elevationTextureName + " " + Arrays.toString(layerIds) + " " + layerIds[0]);
+                TextureRegion elevationBase = getFrom(layerIds[0], variation);
+                pixmap.drawPixmap(allTilesPixmap,
+                        0, 16,
+                        elevationBase.getRegionX(),
+                        elevationBase.getRegionY(),
+                        elevationBase.getRegionWidth(),
+                        1);
+            } else {
+                TextureRegion elevationTexture = ExpoAssets.get().findTile(elevationTextureName);
+                pixmap.drawPixmap(allTilesPixmap,
+                        0, 16,
+                        elevationTexture.getRegionX(),
+                        elevationTexture.getRegionY(),
+                        elevationTexture.getRegionWidth(),
+                        elevationTexture.getRegionHeight());
+            }
         }
 
         writeToFile(pixmap, key);

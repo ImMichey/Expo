@@ -8,12 +8,12 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 
-public class ClientGravestone extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientGravestone extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private TextureRegion texture;
-    private TextureRegion shadowMask;
     private TextureRegion selectionTexture;
     private float[] interactionPointArray;
 
@@ -22,7 +22,6 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
     @Override
     public void onCreation() {
         texture = tr("entity_gravestone");
-        shadowMask = tr("entity_gravestone_shadow_mask");
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray();
@@ -75,13 +74,13 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(shadowMask, shadow);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
+            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
         }
     }
 
@@ -93,6 +92,11 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
     @Override
     public ClientEntityType getEntityType() {
         return ClientEntityType.GRAVESTONE;
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.4f, 0.4f, 0, 1);
     }
 
 }

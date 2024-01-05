@@ -14,6 +14,7 @@ public class ClientRaindrop extends ClientEntity {
     private float groundY;
     private float velocityX, velocityY;
     private boolean splash;
+    private float scale;
 
     private TextureRegion raindropTexture;
     private float animationAlpha = 1.0f;
@@ -24,7 +25,7 @@ public class ClientRaindrop extends ClientEntity {
     public void onCreation() {
         raindropTexture = tr("raindrop");
 
-        splashAnimation = new ExpoAnimation("rainsplash", 4, 0.15f);
+        splashAnimation = new ExpoAnimation("rainsplash", 5, 0.15f);
     }
 
     @Override
@@ -42,8 +43,7 @@ public class ClientRaindrop extends ClientEntity {
 
             if(clientPosY <= groundY) {
                 splash = true;
-                clientPosX -= 3;
-                updateTextureBounds(3.5f, 2.5f, 0, 0);
+                updateTextureBounds(9 * scale, 5 * scale, 0, 0);
             } else {
                 updateTexturePositionData();
             }
@@ -57,32 +57,31 @@ public class ClientRaindrop extends ClientEntity {
         if(splash) {
             splashAnimation.tick(delta);
 
-            if(splashAnimation.isAnimationFinished()) {
+            if(splashAnimation.isAnimationFinished() || !visibleToRenderEngine) {
                 entityManager().removeEntity(this);
             } else {
-                if(visibleToRenderEngine) {
-                    TextureRegion anim = splashAnimation.getFrame();
+                TextureRegion anim = splashAnimation.getFrame();
+                float w = anim.getRegionWidth() * scale;
+                rc.useArrayBatch();
 
-                    rc.useArrayBatch();
-
-                    if(animationAlpha < 1.0f) {
-                        rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
-                        rc.arraySpriteBatch.draw(anim, finalDrawPosX, finalDrawPosY, textureWidth, textureHeight);
-                        rc.arraySpriteBatch.setColor(Color.WHITE);
-                    } else {
-                        rc.arraySpriteBatch.draw(anim, finalDrawPosX, finalDrawPosY, textureWidth, textureHeight);
-                    }
+                if(animationAlpha < 1.0f) {
+                    rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, animationAlpha);
+                    rc.arraySpriteBatch.draw(anim, clientPosX - w * 0.5f, clientPosY, w, anim.getRegionHeight() * scale);
+                    rc.arraySpriteBatch.setColor(Color.WHITE);
+                } else {
+                    rc.arraySpriteBatch.draw(anim, clientPosX - w * 0.5f, clientPosY, w, anim.getRegionHeight() * scale);
                 }
 
                 // 0.6 = fin
-                if(splashAnimation.getDelta() >= 0.3f) {
-                    animationAlpha = 1f - ((splashAnimation.getDelta() - 0.3f) / 0.3f * 0.5f);
+                if(splashAnimation.getDelta() >= 0.375f) {
+                    animationAlpha = 1f - ((splashAnimation.getDelta() - 0.375f) / 0.375f);
                 }
             }
         } else {
             if(visibleToRenderEngine) {
                 rc.useArrayBatch();
-                rc.arraySpriteBatch.draw(raindropTexture, finalDrawPosX, finalDrawPosY, 0, 0, textureWidth, textureHeight, 1.0f, 1.0f, rotation);
+                rc.arraySpriteBatch.draw(raindropTexture, clientPosX, clientPosY, 0, 0,
+                        raindropTexture.getRegionWidth() * scale, raindropTexture.getRegionHeight() * scale, 1.0f, 1.0f, rotation);
             }
         }
     }
@@ -100,12 +99,13 @@ public class ClientRaindrop extends ClientEntity {
     public void initRaindrop(float x, float y, float groundY, float rotation, float velocityX, float velocityY) {
         clientPosX = x;
         clientPosY = y;
-        float scale = 0.4f + MathUtils.random(0.1f);
+        this.scale = 0.4f + MathUtils.random(0.1f);
         this.groundY = groundY;
         this.rotation = rotation;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
-        updateTextureBounds(scale, 4f * scale, 0, 0);
+
+        updateTextureBounds(10 * scale, 10 * scale, 0, 0, -5 * scale, -5 * scale);
     }
 
 }

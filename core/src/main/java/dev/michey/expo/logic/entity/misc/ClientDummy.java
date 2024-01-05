@@ -12,7 +12,7 @@ public class ClientDummy extends ClientEntity {
 
     @Override
     public void onCreation() {
-        texture = ExpoAssets.get().textureRegion("tile_not_set");
+        texture = ExpoAssets.get().findTile("tile_not_set");
         updateTextureBounds(texture);
     }
 

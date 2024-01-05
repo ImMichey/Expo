@@ -743,6 +743,7 @@ public class PlayerUI {
         }
     }
 
+    // TODO: #1
     public void drawCursor(ClientInventoryItem item) {
         ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
         RenderContext rc = RenderContext.get();

@@ -135,7 +135,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     private float punchStart;
     private float punchEnd;
     public float currentPunchAngle;
-    private float clientPunchEnd;
     private boolean punchAnimation;
     private int punchDirection;
     private boolean punchSound = true;
@@ -680,7 +679,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         // Player footstep sounds
         if((playerWalkIndex == 1 || playerWalkIndex == 5) && (playerWalkIndex != lastPlayerWalkIndex)) {
-            onFootstep();
+            if(getCurrentChunk() != null) {
+                onFootstep();
+            }
         }
 
         lastPlayerWalkIndex = playerWalkIndex;

@@ -22,7 +22,7 @@ public class ClientChunkGrid {
 
     private static ClientChunkGrid INSTANCE;
 
-    private final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
+    public final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
     public final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     /** Minimap only noise logic on dedicated server connection. */

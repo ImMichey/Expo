@@ -114,8 +114,8 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             boolean playerBehind;
 
             if(local != null) {
-                if(local.depth > depth) {
-                    float buffer = 32;
+                if(local.depth > (depth + 15)) {
+                    float buffer = 8;
 
                     playerBehind = ExpoShared.overlap(new float[] {
                             local.finalDrawPosX, local.finalDrawPosY,

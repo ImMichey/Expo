@@ -17,8 +17,6 @@ import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
 
-import static com.badlogic.gdx.math.Interpolation.exp10In;
-
 public class ClientFallingTree extends ClientEntity implements ReflectableEntity {
 
     private TextureRegion treeTrunk;
@@ -125,7 +123,16 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         float MAX_ROTATION = 100.0f;
 
         float negation = fallingRightDirection ? -1 : 1;
-        float interpolated = Interpolation.exp10In.apply(animationDelta / PHASE_TOTAL_DURATION);
+        float percentage = animationDelta / PHASE_TOTAL_DURATION;
+        float interpolated = schizoInterpolation(percentage);
+        rotation = (MAX_ROTATION) * negation * interpolated;
+
+        if(percentage >= 0.75f) {
+            interpolated = 0.75f + Interpolation.pow4In.apply((percentage - 0.75f) * 4);
+        } else {
+            interpolated = percentage;
+        }
+
         rotation = (MAX_ROTATION) * negation * interpolated;
 
         float isaX = inheritedSquishAnimator.squishX;
@@ -160,6 +167,16 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         }
     }
 
+    // \log\left(x^{2}\ +\ 1\right)\ +\ x^{25}
+    // \log\left(\left(x^{2}\right)+1\right)+x^{25}
+    private static Interpolation pow10In = new Interpolation.PowIn(12);
+
+    private static float schizoInterpolation(float percentage) {
+        float lg = (float) Math.log(percentage * percentage * percentage);
+        if(lg <= 0) lg = 0;
+        return (float) (lg + Math.pow(percentage, 9));
+    }
+
     @Override
     public void render(RenderContext rc, float delta) {
         visibleToRenderEngine = true;
@@ -170,7 +187,8 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         float MAX_ROTATION = 100.0f;
 
         float negation = fallingRightDirection ? -1 : 1;
-        float interpolated = exp10In.apply(animationDelta / PHASE_TOTAL_DURATION);
+        float percentage = animationDelta / PHASE_TOTAL_DURATION;
+        float interpolated = schizoInterpolation(percentage);
         rotation = (MAX_ROTATION) * negation * interpolated;
 
         float isaX = inheritedSquishAnimator.squishX;

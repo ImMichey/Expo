@@ -21,9 +21,9 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     public int variant = 1;
 
     public static final float[][] ROCK_BODIES = new float[][] {
-            new float[] {-9.0f, 2.0f, 18.0f, 6.0f},
-            new float[] {-9.0f, 2.0f, 18.0f, 6.0f},
-            new float[] {-9.0f, 2.0f, 18.0f, 6.0f},
+            new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
+            new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
+            new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
     };
 
     public ServerBoulder() {
@@ -50,7 +50,7 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
             variant = 1;
             health = 105.0f;
         } else
-            */if(ch <= 0.3) {
+            */if(ch <= 0.2) {
             variant = 2;
             health = 90.0f;
         } else {

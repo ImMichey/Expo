@@ -5,26 +5,15 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.TimeUtils;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
-import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
-import dev.michey.expo.server.main.logic.world.chunk.ServerChunkGrid;
-import dev.michey.expo.util.Pair;
-import make.some.noise.Noise;
+import dev.michey.expo.util.ExpoShared;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
@@ -54,53 +43,56 @@ public class CommandNoise extends AbstractConsoleCommand {
 
     @Override
     public void executeCommand(String[] args) {
-        new Thread(() -> {
-            final int pxmapsize = 768 * 2;
-            int runs = pxmapsize / 16;
-            Pixmap pixmap = new Pixmap(pxmapsize, pxmapsize, Pixmap.Format.RGBA8888);
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-            for(int i = 0; i < runs; i++) {
-                for(int j = 0; j < runs; j++) {
-                    ServerChunk c = getChunk(i, j);
+        final int pxmapsize = 2048;
+        int runs = pxmapsize / 16;
+        ServerChunk[] chunks = new ServerChunk[runs * runs];
+        Pixmap pixmap = new Pixmap(pxmapsize, pxmapsize, Pixmap.Format.RGBA8888);
 
-                    for(int t = 0; t < c.tiles.length; t++) {
-                        int _x = i * 16 + t % ROW_TILES;
-                        int _y = j * 16 + t / ROW_TILES;
+        ExpoLogger.log("Starting...");
 
-                        BiomeType b = c.tiles[t].biome;
+        for(int i = 0; i < runs; i++) {
+            for(int j = 0; j < runs; j++) {
+                int finalI = i;
+                int finalJ = j;
 
-                        if(b == BiomeType.FOREST || b == BiomeType.PLAINS || b == BiomeType.DENSE_FOREST) {
-                            //float avg = c.tiles[t].foliageColor;
-                            //avgList.add(avg);
-                        }
-
-                        float[] colors = c.tiles[t].biome.BIOME_COLOR;
-                        pixmap.drawPixel(_x, _y, Color.rgba8888(colors[0], colors[1], colors[2], 1.0f));
-                    }
-                }
+                executorService.execute(() -> {
+                    ServerChunk c = getChunk(finalI, finalJ);
+                    int index = finalJ * runs + finalI;
+                    chunks[index] = c;
+                });
             }
+        }
 
-            /*
-            avgList.sort(Float::compare);
+        ExpoLogger.log("Started... ");
+        executorService.shutdown();
 
-            StringBuilder builder = new StringBuilder();
-            for(Float f : avgList) {
-                builder.append(f);
-                builder.append(System.lineSeparator());
+        try {
+            if(!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                ExpoLogger.log("Failed to finish task in 60 seconds.");
             }
-            try {
-                Files.writeString(Paths.get(Gdx.files.local("testfile.txt").path()), builder.toString(), StandardOpenOption.CREATE_NEW);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        ExpoLogger.log("Finished, now writing...");
+
+        for(ServerChunk c : chunks) {
+            for(int x = 0; x < c.tiles.length; x++) {
+                int tileX = ExpoShared.posToTile(ExpoShared.chunkToPos(c.chunkX)) + x % ROW_TILES;
+                int tileY = ExpoShared.posToTile(ExpoShared.chunkToPos(c.chunkY)) + x / ROW_TILES;
+                BiomeType b = c.tiles[x].biome;
+                float[] colors = b.BIOME_COLOR;
+                pixmap.drawPixel(tileX, tileY, Color.rgba8888(colors[0], colors[1], colors[2], 1.0f));
             }
-            */
+        }
 
-            FileHandle fh = Gdx.files.local("noiseCmd/_" + System.currentTimeMillis() + ".png");
-            PixmapIO.writePNG(fh, pixmap);
-            pixmap.dispose();
+        FileHandle fh = Gdx.files.local("noiseCmd/_" + System.currentTimeMillis() + ".png");
+        PixmapIO.writePNG(fh, pixmap);
+        pixmap.dispose();
 
-            success("Written noise image to " + fh.path());
-        }).start();
+        success("Written noise image to " + fh.path());
 
         // -----------
         /*

@@ -223,14 +223,14 @@ public class Expo implements ApplicationListener {
 			String elevationName = TileLayerType.ELEVATION_TEXTURE_MAP.get(tlt);
 
 			if(tlt.TILE_ID_DATA.length == 1) {
-				merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, -1);
+				merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, -1, tlt.TILE_ID_DATA);
 
 				if(ExpoAssets.get().getTileSheet().hasVariation(tlt.TILE_ID_DATA[0])) {
 					int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(tlt.TILE_ID_DATA[0]);
 					ExpoLogger.log("Variations for " + tlt.TILE_ID_DATA[0] + ": " + variations);
 
 					for(int var = 0; var < variations; var++) {
-						merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, var);
+						merger.createFreshTile(new int[] {tlt.TILE_ID_DATA[0]}, null, var, tlt.TILE_ID_DATA);
 					}
 				}
 			} else {
@@ -242,19 +242,19 @@ public class Expo implements ApplicationListener {
 					}
 
 					if(elevationName == null) {
-						merger.createFreshTile(newIds, null, -1);
+						merger.createFreshTile(newIds, null, -1, ids);
 
 						if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
 							int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
 							ExpoLogger.log("Variations for " + newIds[0] + ": " + variations);
 
 							for(int var = 0; var < variations; var++) {
-								merger.createFreshTile(newIds, null, var);
+								merger.createFreshTile(newIds, null, var, ids);
 							}
 						}
 					} else {
 						for(int ev = 1; ev <= 4; ev++) {
-							merger.createFreshTile(newIds, elevationName + "_" + ev, -1);
+							merger.createFreshTile(newIds, elevationName + "_" + ev, -1, ids);
 						}
 					}
 				}

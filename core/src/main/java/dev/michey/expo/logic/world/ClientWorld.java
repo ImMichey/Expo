@@ -68,7 +68,7 @@ public class ClientWorld {
     /** Time */
     public float worldTime;
     public final float MAX_SHADOW_X = 1.75f;
-    public final float MIN_SHADOW_Y = 0.33f;
+    public final float MIN_SHADOW_Y = 0.5f;
     public final float MAX_SHADOW_Y = 1.5f;
     public final float SHADOW_ALPHA_TRANSITION_DURATION = 2.0f;
     public final Interpolation SHADOW_ALPHA_INTERPOLATION = Interpolation.fade;
@@ -440,7 +440,7 @@ public class ClientWorld {
                 r.waterDistortionShader.bind();
                 r.waterDistortionShader.setUniformf("u_time", r.deltaTotal * r.waterReflectionSpeed);
                 r.waterDistortionShader.setUniformf("u_screenSize", Gdx.graphics.getWidth() * r.expoCamera.camera.zoom, Gdx.graphics.getHeight() * r.expoCamera.camera.zoom);
-                r.waterDistortionShader.setUniformf("u_cameraPos", r.cameraX, r.cameraY);
+                r.waterDistortionShader.setUniformf("u_cameraPos", r.expoCamera.camera.position.x, r.expoCamera.camera.position.y);
                 r.waterDistortionShader.setUniformf("u_waterSkewX", r.waterSkewX);
                 r.waterDistortionShader.setUniformf("u_waterSkewY", r.waterSkewY);
 
@@ -555,6 +555,9 @@ public class ClientWorld {
             if(r.drawTileInfo) {
                 r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
                 r.chunkRenderer.setColor(Color.WHITE);
+                r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE * 0.5f, TILE_SIZE * 0.5f);
+                r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE, TILE_SIZE * 0.5f);
+                r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE * 0.5f, TILE_SIZE);
                 r.chunkRenderer.rect(r.mouseWorldGridX, r.mouseWorldGridY, TILE_SIZE, TILE_SIZE);
                 r.chunkRenderer.end();
             }
@@ -943,6 +946,31 @@ public class ClientWorld {
         cachedViewport[1] = viewport[1];
         cachedViewport[2] = viewport[2];
         cachedViewport[3] = viewport[3];
+
+        /*
+        if(!sameViewport && (cachedViewport[0] != Integer.MAX_VALUE)) {
+            for(ClientChunk current : clientChunkGrid.clientChunkMap.values()) {
+                int middleX = viewport[0] + PLAYER_CHUNK_VIEW_RANGE_DIR_X;
+                int middleY = viewport[2] + PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
+
+                int dstX = Math.abs(middleX - current.chunkX);
+                int dstY = Math.abs(middleY - current.chunkY);
+
+                boolean outOfRangeX = dstX >= PLAYER_CHUNK_VIEW_RANGE_X;
+                boolean outOfRangeY = dstY >= PLAYER_CHUNK_VIEW_RANGE_Y;
+
+                boolean empty = current.tileEntityCount == 0;
+                boolean visibleLogic = (current.chunkX >= viewport[0] && current.chunkX <= viewport[1] && current.chunkY >= viewport[2] && current.chunkY <= viewport[3]);
+
+                if(!visibleLogic && empty && (outOfRangeX || outOfRangeY)) {
+                    String key = current.chunkX + "," + current.chunkY;
+                    clientChunkGrid.clientChunkMap.remove(key);
+                }
+            }
+        }
+
+        ClientUtils.log("Size: " + clientChunkGrid.clientChunkMap.size() + "/" + (ServerPlayer.getLocalPlayer().hasSeenChunks.size()), Input.Keys.X);
+        */
     }
 
     private void addQueuedAO(int[] indexes, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) {

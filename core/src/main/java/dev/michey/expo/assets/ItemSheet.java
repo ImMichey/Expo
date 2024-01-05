@@ -49,7 +49,7 @@ public class ItemSheet {
         add("item_birch_log", 30, 15, 15);
         add("item_oak_plank_wall", 31, 12, 13);
         add("item_crate", 32, 14, 16);
-        add("item_carrot", 33, 12, 13);
+        add("item_carrot", 33, 14, 15);
         add("item_coal", 34, 10, 10);
         add("item_dirt_floor", 35, 13, 8);
         add("item_sand_floor", 36, 13, 8);

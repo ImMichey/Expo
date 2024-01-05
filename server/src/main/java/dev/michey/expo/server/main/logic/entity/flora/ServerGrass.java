@@ -20,7 +20,7 @@ public class ServerGrass extends ServerEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        variant = rnd.random(1, 5);
+        variant = rnd.random(1, 4);
     }
 
     @Override

@@ -76,9 +76,10 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         if(modifyRandom <= 0.03f) {
             cut = true;
             health = trunkConversionHealth;
-        } else if(modifyRandom <= 0.06f) {
+        }/* else if(modifyRandom <= 0.06f) {
             emptyCrown = true;
         }
+        */
     }
 
     @Override

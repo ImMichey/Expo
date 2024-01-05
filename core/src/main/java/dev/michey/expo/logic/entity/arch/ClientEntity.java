@@ -497,6 +497,10 @@ public abstract class ClientEntity {
         return TileLayerType.isWater(getCurrentTileLayers()[2].emulatingType);
     }
 
+    public ClientChunk getCurrentChunk() {
+        return chunkGrid().getChunk(posToChunk(clientPosX), posToChunk(clientPosY));
+    }
+
     public ClientDynamicTilePart[] getCurrentTileLayers() {
         int cx = posToChunk(clientPosX);
         int cy = posToChunk(clientPosY);

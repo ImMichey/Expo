@@ -96,8 +96,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public int selectedEntity = -1;
 
-    public HashMap<String, Long> hasSeenChunks = new HashMap<>();
-    //public int[] currentlyVisibleChunks;
+    public boolean itemCooldown;
+
+    public HashMap<ServerChunk, Long> hasSeenChunks = new HashMap<>();
     public ServerChunk[] currentlyVisibleChunks;
     private final LinkedList<Pair<String, ServerChunk>> chunkPacketList = new LinkedList<>();
 
@@ -139,8 +140,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
         ServerGravestone gravestone = new ServerGravestone();
         gravestone.owner = username;
-        gravestone.posX = posX;
-        gravestone.posY = posY;
+        gravestone.posX = (int) posX;
+        gravestone.posY = (int) posY;
         gravestone.setStaticEntity();
         ServerWorld.get().registerServerEntity(entityDimension, gravestone);
 
@@ -208,6 +209,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     @Override
     public void tick(float delta) {
         updateChunks();
+        itemCooldown = false;
 
         /*
         if(hasSeenChunks.size() < (PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y)) {
@@ -562,16 +564,39 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         chunkPacketList.clear();
         currentlyVisibleChunks = getChunkGrid().getChunksInPlayerRange(this);
 
+        /*
+        List<ServerChunk> remove = new LinkedList<>();
+
+        for(ServerChunk seen : hasSeenChunks.keySet()) {
+            int middleX = posToChunk(posX);
+            int middleY = posToChunk(posY);
+
+            int dstX = Math.abs(middleX - seen.chunkX);
+            int dstY = Math.abs(middleY - seen.chunkY);
+
+            boolean outOfRangeX = dstX >= PLAYER_CHUNK_VIEW_RANGE_X;
+            boolean outOfRangeY = dstY >= PLAYER_CHUNK_VIEW_RANGE_Y;
+
+            if(outOfRangeX || outOfRangeY) {
+                remove.add(seen);
+            }
+        }
+
+        for(ServerChunk chunk : remove) {
+            hasSeenChunks.remove(chunk);
+        }
+        */
+
         for(ServerChunk chunk : currentlyVisibleChunks) {
             if(chunk == null) continue; // If null, it is generating/loading from disk right now; otherwise it is fully loaded.
 
             // var pair = getChunkGrid().generatingChunkMap.get(chunk.getChunkKey());
             // boolean isGenerating = pair != null && pair.value.contains(entityId);
-            boolean isNewChunk = !hasSeenChunks.containsKey(chunk.getChunkKey());
+            boolean isNewChunk = !hasSeenChunks.containsKey(chunk);
             boolean resend = false;
 
             if(!isNewChunk) {
-                long cached = hasSeenChunks.get(chunk.getChunkKey());
+                long cached = hasSeenChunks.get(chunk);
                 resend = cached < chunk.lastTileUpdate;
 
                 if(resend) {
@@ -580,7 +605,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             }
 
             if(resend || isNewChunk) {
-                hasSeenChunks.put(chunk.getChunkKey(), chunk.lastTileUpdate);
+                hasSeenChunks.put(chunk, chunk.lastTileUpdate);
                 chunkPacketList.add(new Pair<>(chunk.getChunkKey(), chunk));
             }
         }
@@ -777,7 +802,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
                 if(player.canSeeChunk(affectedChunkKey)) {
                     ExpoLogger.log(">>>Putting " + now + " for " + affectedChunkKey);
-                    player.hasSeenChunks.put(affectedChunkKey, now);
+                    player.hasSeenChunks.put(sv, now);
                 }
             }
 
@@ -874,7 +899,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
                     for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
                         if(player.canSeeChunk(affectedChunkKey)) {
-                            player.hasSeenChunks.put(affectedChunkKey, now);
+                            player.hasSeenChunks.put(sv, now);
                         }
                     }
                 }
