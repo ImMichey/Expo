@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.ai.AIConstants;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.util.EntityMetadata;
 import dev.michey.expo.server.util.GenerationUtils;
 
@@ -51,9 +52,14 @@ public class BrainModuleStroll extends BrainModule {
 
         ServerEntity entity = getBrain().getEntity();
         float sp = entity.movementSpeedMultiplicator();
+
+        float mvx = dirVector.x * delta * strollSpeed * sp;
+        float mvy = dirVector.y * delta * strollSpeed * sp;
+
         entity.attemptMove(
-                dirVector.x * delta * strollSpeed * sp,
-                dirVector.y * delta * strollSpeed * sp
+                mvx,
+                mvy,
+                PhysicsBoxFilters.generalFilter, entity.velToPos(mvx), entity.velToPos(mvy)
         );
     }
 

@@ -25,6 +25,19 @@
             "timer": 2,
             "playerDistanceMin": 384,
             "entityCapPerPlayer": 8
+        },
+        {
+            "dimensions": ["overworld"],
+            "identifier": "slime_natural",
+            "timeframes": [0, 1440],
+            "type": "SLIME",
+            "biomes": ["PLAINS", "FOREST", "DENSE_FOREST", "WHEAT_FIELDS", "DESERT", "BEACH"],
+            "amountMin": 1,
+            "amountMax": 3,
+            "chance": 0.002,
+            "timer": 1,
+            "playerDistanceMin": 256,
+            "entityCapPerPlayer": 8
         }
     ]
 }

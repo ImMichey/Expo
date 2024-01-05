@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.ai.AIConstants;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.world.bbox.KnockbackCalculation;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.util.EntityMetadata;
 
 public class BrainModuleFlee extends BrainModule {
@@ -82,9 +83,14 @@ public class BrainModuleFlee extends BrainModule {
             dirVector.set(entity.posX, entity.posY).sub(attacker.posX, attacker.posY).nor();
             getBrain().setLastMovementDirection(dirVector);
             float sp = entity.movementSpeedMultiplicator();
+
+            float mvx = dirVector.x * delta * fleeSpeed * sp;
+            float mvy = dirVector.y * delta * fleeSpeed * sp;
+
             entity.attemptMove(
-                    dirVector.x * delta * fleeSpeed * sp,
-                    dirVector.y * delta * fleeSpeed * sp
+                    mvx,
+                    mvy,
+                    PhysicsBoxFilters.generalFilter, entity.velToPos(mvx), entity.velToPos(mvy)
             );
         }
     }

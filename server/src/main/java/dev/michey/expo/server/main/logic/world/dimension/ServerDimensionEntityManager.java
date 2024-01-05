@@ -74,13 +74,59 @@ public class ServerDimensionEntityManager {
             }
         }
 
+        /*
+        long b = System.nanoTime();
+        TEST_MAP.clear();
+        for(ServerEntityType type : ServerEntityType.values()) {
+            var map = typeEntityListMap.get(type);
+            if(map.isEmpty()) continue;
+            long _a = System.nanoTime();
+            for(ServerEntity entity : map) {
+                entity.tick(delta);
+
+                if(!entity.staticPosition) {
+                    entity.changedChunk = false;
+                    int chunkX = ExpoShared.posToChunk(entity.posX);
+                    int chunkY = ExpoShared.posToChunk(entity.posY);
+
+                    if(entity.forceChunkChange || entity.chunkX != chunkX || entity.chunkY != chunkY) {
+                        entity.forceChunkChange = false;
+                        entity.chunkX = chunkX;
+                        entity.chunkY = chunkY;
+                        entity.changedChunk = true;
+                        entity.onChunkChanged();
+                    }
+                }
+            }
+            long _b = System.nanoTime();
+            TEST_MAP.put(type, new Pair<>((_b - _a), map.size()));
+        }
+
+        ExpoLogger.log("ENT tick=" + st(d, a) + "\t\t op=" + st(b, a) + "\t logic=" + st(c, b) + "\t merge=" + st(d, c));
+
+        if(((c - b) / 1_000_000d * ExpoShared.DEFAULT_LOCAL_TICK_RATE) >= 100) {
+            for(ServerEntityType set : TEST_MAP.keySet()) {
+                var pair = TEST_MAP.get(set);
+                ExpoLogger.log("\t" + set.name() + "(" + pair.value + ")" + ": " + pair.key);
+            }
+        }
+        */
+
         runItemMerge(delta);
+    }
+
+    public static HashMap<ServerEntityType, Pair<Long, Integer>> TEST_MAP = new HashMap<>();
+
+    private String st(long l1, long l2) {
+        return String.format(Locale.US, "%.2f", ((l1 - l2) / 1_000_000d * ExpoShared.DEFAULT_LOCAL_TICK_RATE)) + "%";
     }
 
     private void runItemMerge(float delta) {
         mergeItemMap.clear();
+        List<ServerEntity> itemEntities = typeEntityListMap.get(ServerEntityType.ITEM);
+        if(itemEntities.isEmpty()) return;
 
-        for(ServerEntity itemEntity : typeEntityListMap.get(ServerEntityType.ITEM)) {
+        for(ServerEntity itemEntity : itemEntities) {
             ServerItem item = (ServerItem) itemEntity;
 
             if(item.pickupImmunity > 0) {

@@ -2,7 +2,7 @@ package dev.michey.expo.server.main.logic.inventory;
 
 import dev.michey.expo.server.main.logic.inventory.item.ItemMetadata;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
-import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -44,14 +44,14 @@ public class InventoryFileLoader {
 
             if(object.has("meta")) {
                 item.itemMetadata = new ItemMetadata();
-                loadMetadataFromStorage(item.itemMetadata, object.getJSONObject("meta"));
+                loadMetadataFromStorage(item, object.getJSONObject("meta"));
             }
         }
     }
 
-    private static void loadMetadataFromStorage(ItemMetadata metadata, JSONObject object) {
-        metadata.toolType = ToolType.valueOf(object.getString("type"));
-        metadata.durability = object.getInt("durability");
+    private static void loadMetadataFromStorage(ServerInventoryItem item, JSONObject object) {
+        item.itemMetadata.toolType = ItemMapper.get().getMapping(item.itemId).logic.toolType;
+        item.itemMetadata.durability = object.getInt("durability");
     }
 
     public static JSONObject itemToStorageObject(ServerInventoryItem item) {
@@ -73,7 +73,6 @@ public class InventoryFileLoader {
     private static JSONObject metadataToStorageObject(ItemMetadata metadata) {
         JSONObject object = new JSONObject();
 
-        object.put("type", metadata.toolType.name());
         object.put("durability", metadata.durability);
 
         return object;

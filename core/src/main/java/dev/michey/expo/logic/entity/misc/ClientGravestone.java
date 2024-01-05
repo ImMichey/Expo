@@ -24,7 +24,7 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
         texture = tr("entity_gravestone");
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
-        interactionPointArray = generateInteractionArray();
+        interactionPointArray = generateInteractionArray(1, 3);
     }
 
     @Override

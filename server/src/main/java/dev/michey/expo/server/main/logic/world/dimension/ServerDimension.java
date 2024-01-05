@@ -95,13 +95,13 @@ public abstract class ServerDimension {
 
         /*
         if(dimensionName.equals("overworld")) {
-            ExpoLogger.log("Total timeframe: tick=" + st(e, a) + "\t chunks=" + st(b, a) + "\t esm=" + st(c, b) + "\t ent=" + st(d, c) + "\t vsb=" + st(e, d));
+            ExpoLogger.log("tick=" + st(e, a) + "\t\t chunks=" + st(b, a) + "\t esm=" + st(c, b) + "\t ent=" + st(d, c) + "\t vsb=" + st(e, d));
         }
         */
     }
 
     private String st(long l1, long l2) {
-        return String.format(Locale.US, "%.2f", ((l1 - l2) / 1_000_000d * 240d)) + "%";
+        return String.format(Locale.US, "%.2f", ((l1 - l2) / 1_000_000d * ExpoShared.DEFAULT_LOCAL_TICK_RATE)) + "%";
     }
 
     private void generateWeather() {

@@ -312,11 +312,6 @@ public class ServerChunkGrid {
                 }
             }
         }
-
-        // Inactivity chunks (special)
-        {
-
-        }
     }
 
     /** Returns all active chunks with their respective inactivity timestamp. */

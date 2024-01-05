@@ -60,6 +60,25 @@
         "ai.attackAt": 0.125,
         "ai.attackRange": 8.0
     },
+    "SLIME": {
+        "name": "Slime",
+        "maxHp": 60,
+        "ai.idleMin": 1.0,
+        "ai.idleMax": 3.0,
+        "ai.idleSeekDistance": 120.0,
+        "ai.strollMin": 3.0,
+        "ai.strollMax": 6.0,
+        "ai.strollSpeed": 12.0,
+        "ai.strollSeekDistance": 132.0,
+        "ai.chaseDistance": 148.0,
+        "ai.chaseSpeed": 36.0,
+        "ai.attackDistance": 8.0,
+        "ai.attackCooldown": 1.0,
+        "ai.attackDuration": 0.2,
+        "ai.attackDamage": 12.0,
+        "ai.attackAt": 0.125,
+        "ai.attackRange": 8.0
+    },
     "PLAYER": {
         "maxHp": 100,
         "healthBar.offsetY": 8.0

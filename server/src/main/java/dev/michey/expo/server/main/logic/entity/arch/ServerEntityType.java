@@ -4,6 +4,7 @@ import dev.michey.expo.server.main.logic.entity.animal.*;
 import dev.michey.expo.server.main.logic.entity.container.ServerCrate;
 import dev.michey.expo.server.main.logic.entity.crop.ServerCropWheat;
 import dev.michey.expo.server.main.logic.entity.flora.*;
+import dev.michey.expo.server.main.logic.entity.hostile.ServerSlime;
 import dev.michey.expo.server.main.logic.entity.hostile.ServerWoodfolk;
 import dev.michey.expo.server.main.logic.entity.hostile.ServerZombie;
 import dev.michey.expo.server.main.logic.entity.misc.*;
@@ -47,6 +48,7 @@ public enum ServerEntityType {
     WOODFOLK(33, false),
     ALOE_VERA(34, false),
     TORCH(35, false),
+    SLIME(36, false),
     ;
 
     public final int ENTITY_ID;
@@ -95,6 +97,7 @@ public enum ServerEntityType {
             case 33 -> new ServerWoodfolk();
             case 34 -> new ServerAloeVera();
             case 35 -> new ServerTorch();
+            case 36 -> new ServerSlime();
             default -> null;
         };
     }
@@ -137,6 +140,7 @@ public enum ServerEntityType {
             case "WOODFOLK", "WOOD_FOLK" -> new ServerWoodfolk();
             case "ALOE", "ALOE_VERA", "ALOEVERA", "VERA" -> new ServerAloeVera();
             case "TORCH" -> new ServerTorch();
+            case "SLIME" -> new ServerSlime();
             default -> null;
         };
     }

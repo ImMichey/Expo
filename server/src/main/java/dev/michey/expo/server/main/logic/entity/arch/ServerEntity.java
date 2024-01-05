@@ -249,6 +249,7 @@ public abstract class ServerEntity {
         return TileLayerType.isDeepWater(dtp[2].emulatingType);
     }
 
+    /*
     public void attemptMove(float x, float y) {
         attemptMove(x, y, PhysicsBoxFilters.generalFilter);
     }
@@ -256,6 +257,7 @@ public abstract class ServerEntity {
     public void attemptMove(float x, float y, CollisionFilter filter) {
         attemptMove(x, y, filter, velToPos(x), velToPos(y));
     }
+    */
 
     public void attemptMove(float x, float y, CollisionFilter filter, int dirX, int dirY) {
         float dst = Math.abs(x) + Math.abs(y);

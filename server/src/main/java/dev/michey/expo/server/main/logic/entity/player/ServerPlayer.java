@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.dongbat.jbump.CollisionFilter;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
@@ -202,8 +203,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     @Override
-    public void attemptMove(float x, float y) {
-        attemptMove(x, y, PhysicsBoxFilters.playerCollisionFilter);
+    public void attemptMove(float x, float y, CollisionFilter filter, int dirX, int dirY) {
+        super.attemptMove(x, y, PhysicsBoxFilters.playerCollisionFilter, dirX, dirY);
     }
 
     @Override

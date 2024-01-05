@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.ai.entity;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.ai.AIConstants;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.util.EntityMetadata;
 
 public class BrainModuleChase extends BrainModule {
@@ -76,9 +77,14 @@ public class BrainModuleChase extends BrainModule {
                     dirVector.set(chase.posX, chase.posY).sub(entity.posX, entity.posY).nor();
                     getBrain().setLastMovementDirection(dirVector);
                     float sp = entity.movementSpeedMultiplicator();
+
+                    float mvx = dirVector.x * delta * chaseSpeed * sp;
+                    float mvy = dirVector.y * delta * chaseSpeed * sp;
+
                     entity.attemptMove(
-                            dirVector.x * delta * chaseSpeed * sp,
-                            dirVector.y * delta * chaseSpeed * sp
+                            mvx,
+                            mvy,
+                            PhysicsBoxFilters.generalFilter, entity.velToPos(mvx), entity.velToPos(mvy)
                     );
                 }
             } else {
