@@ -16,7 +16,7 @@ public class ServerWhitelist {
     private static ServerWhitelist INSTANCE;
 
     /** Disk file name */
-    private final String WHITELIST_FILE = "whitelist.txt";
+    private static final String WHITELIST_FILE = "whitelist.txt";
     private File file;
 
     /** Whitelisted player container */

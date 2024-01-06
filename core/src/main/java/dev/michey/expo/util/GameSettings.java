@@ -15,7 +15,7 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public class GameSettings {
 
     private static GameSettings INSTANCE;
-    private final String SETTINGS_FILE_NAME = "settings.json";
+    private static final String SETTINGS_FILE_NAME = "settings.json";
     public int maxTickRate = 60;
 
     // Window variables

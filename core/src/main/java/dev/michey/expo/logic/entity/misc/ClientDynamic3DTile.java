@@ -161,6 +161,9 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             squishAnimator2D.calculate(delta);
             if(un) notifySquish(n);
 
+            boolean hasNeighbourBelow = n[2] != null && n[2].getEntityType() == ClientEntityType.DYNAMIC_3D_TILE;
+            float linePxFix = hasNeighbourBelow ? 0.01f : 0f;
+
             updateDepth();
             rc.useArrayBatch();
             rc.useRegularArrayShader();
@@ -168,9 +171,9 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated);
             rc.arraySpriteBatch.draw(created,
                     finalDrawPosX - squishAnimator2D.squishX1,
-                    finalDrawPosY + squishAnimator2D.squishY1,
+                    finalDrawPosY + squishAnimator2D.squishY1 - linePxFix,
                     created.getRegionWidth() + squishAnimator2D.squishX2,
-                    created.getRegionHeight() + squishAnimator2D.squishY2);
+                    created.getRegionHeight() + squishAnimator2D.squishY2 + linePxFix);
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }

@@ -39,7 +39,7 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
     public float windDisplacementAlpha;
     public float windDisplacementInterpolated;
 
-    private final float PHASE_TOTAL_DURATION = 4.3f;
+    private static final float PHASE_TOTAL_DURATION = 4.3f;
     public int wakeupId;
 
     public SquishAnimator2D inheritedSquishAnimator;

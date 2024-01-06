@@ -179,8 +179,8 @@ public class ServerDimensionEntityManager {
             item.blockedForMerge = false;
         }
 
-        for(int itemId : mergeItemMap.keySet()) {
-            List<ServerItem> itemsInCategory = mergeItemMap.get(itemId);
+        for(Map.Entry<Integer, List<ServerItem>> entrySet : mergeItemMap.entrySet()) {
+            List<ServerItem> itemsInCategory = mergeItemMap.get(entrySet.getKey());
 
             for(ServerItem item : itemsInCategory) {
                 var match = findClosestItem(item, itemsInCategory);

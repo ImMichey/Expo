@@ -28,6 +28,7 @@ import dev.michey.expo.util.Pair;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
@@ -49,7 +50,7 @@ public class PlayerMinimap {
     private final HashMap<BiomeType, HashSet<int[]>> minimapBiomeContainerMap;
     private final HashMap<ClientPlayer, Pair<Float, Float>> drawUsers;
 
-    private final int MAP_SIZE = 96;
+    private static final int MAP_SIZE = 96;
 
     private int centerTileX, centerTileY;
     public boolean incomplete = true;
@@ -88,8 +89,8 @@ public class PlayerMinimap {
             centerTileX = newTileX;
             centerTileY = newTileY;
 
-            for(var k : minimapContainerMap.keySet()) minimapContainerMap.get(k).clear();
-            for(var k : minimapBiomeContainerMap.keySet()) minimapBiomeContainerMap.get(k).clear();
+            for(Map.Entry<TileLayerType, HashSet<int[]>> entrySet : minimapContainerMap.entrySet()) entrySet.getValue().clear();
+            for(Map.Entry<BiomeType, HashSet<int[]>> entrySet : minimapBiomeContainerMap.entrySet()) entrySet.getValue().clear();
 
             int startX = centerTileX - MAP_SIZE / 2;
             int startY = centerTileY - MAP_SIZE / 2;
@@ -298,9 +299,9 @@ public class PlayerMinimap {
             }
         }
 
-        for(ClientPlayer player : drawUsers.keySet()) {
-            Pair<Float, Float> pos = drawUsers.get(player);
-            r.m5x7_border_use.draw(r.hudBatch, player.username, pos.key, pos.value);
+        for(Map.Entry<ClientPlayer, Pair<Float, Float>> entrySet : drawUsers.entrySet()) {
+            Pair<Float, Float> pos = drawUsers.get(entrySet.getKey());
+            r.m5x7_border_use.draw(r.hudBatch, entrySet.getKey().username, pos.key, pos.value);
         }
     }
 

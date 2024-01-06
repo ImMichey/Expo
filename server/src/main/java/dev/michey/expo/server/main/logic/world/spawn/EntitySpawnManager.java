@@ -76,14 +76,14 @@ public class EntitySpawnManager {
                 if(!inTimeFrame) continue;
                 captureEntitySnapshot(es);
 
-                nextChunk: for(ServerChunk chunk : entitiesPerChunkMap.keySet()) {
-                    int existing = entitiesPerChunkMap.get(chunk);
+                nextChunk: for(Map.Entry<ServerChunk, Integer> entrySet : entitiesPerChunkMap.entrySet()) {
+                    int existing = entitiesPerChunkMap.get(entrySet.getKey());
 
                     if(es.entityCapPerPlayer == -1) {
-                        populationChunkCandidateList.add(chunk);
+                        populationChunkCandidateList.add(entrySet.getKey());
                     } else {
                         if(existing < es.entityCapPerPlayer) {
-                            for(ServerPlayer inRange : playersInChunkMap.get(chunk)) {
+                            for(ServerPlayer inRange : playersInChunkMap.get(entrySet.getKey())) {
                                 int playerIndividualCap = playerEntityTrackerMap.get(inRange);
 
                                 if(playerIndividualCap >= es.entityCapPerPlayer) {
@@ -91,7 +91,7 @@ public class EntitySpawnManager {
                                 }
                             }
 
-                            populationChunkCandidateList.add(chunk);
+                            populationChunkCandidateList.add(entrySet.getKey());
                         }
                     }
                 }
@@ -100,8 +100,8 @@ public class EntitySpawnManager {
                 // Each chunk has < entityCapPerPlayer entities.
                 Collections.shuffle(populationChunkCandidateList, ExpoShared.RANDOM);
 
-                nextPlayer: for(ServerPlayer existingPlayer : playerEntityTrackerMap.keySet()) {
-                    int existingFor = playerEntityTrackerMap.get(existingPlayer);
+                nextPlayer: for(Map.Entry<ServerPlayer, Integer> entrySet : playerEntityTrackerMap.entrySet()) {
+                    int existingFor = playerEntityTrackerMap.get(entrySet.getKey());
 
                     if(es.entityCapPerPlayer != -1 && existingFor >= es.entityCapPerPlayer) {
                         continue;
@@ -133,9 +133,9 @@ public class EntitySpawnManager {
                                     ServerWorld.get().registerServerEntity(dimension.getDimensionName(), spawned);
 
                                     int newValueChunk = entitiesPerChunkMap.get(candidateChunk) + 1;
-                                    int newValuePlayer = playerEntityTrackerMap.get(existingPlayer) + 1;
+                                    int newValuePlayer = playerEntityTrackerMap.get(entrySet.getKey()) + 1;
                                     entitiesPerChunkMap.put(candidateChunk, newValueChunk);
-                                    playerEntityTrackerMap.put(existingPlayer, newValuePlayer);
+                                    playerEntityTrackerMap.put(entrySet.getKey(), newValuePlayer);
 
                                     if(newValuePlayer >= es.entityCapPerPlayer) {
                                         continue nextPlayer;

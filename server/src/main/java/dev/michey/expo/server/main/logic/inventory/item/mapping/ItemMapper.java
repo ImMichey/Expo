@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.inventory.item.mapping;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import dev.michey.expo.util.ExpoShared;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -125,7 +126,7 @@ public class ItemMapper {
     }
 
     public ItemMapping randomMapping() {
-        return itemMappingsId.values().stream().skip(new Random().nextInt(itemMappings.size())).findFirst().orElse(null);
+        return itemMappingsId.values().stream().skip(ExpoShared.RANDOM.nextInt(itemMappings.size())).findFirst().orElse(null);
     }
 
     public List<ItemRender> getDynamicAnimationList() {

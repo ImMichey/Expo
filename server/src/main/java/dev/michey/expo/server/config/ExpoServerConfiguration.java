@@ -15,7 +15,7 @@ import static dev.michey.expo.log.ExpoLogger.log;
 public class ExpoServerConfiguration {
 
     /** Disk file name */
-    private final String CONFIG_FILE = "serverConfig.json";
+    private static final String CONFIG_FILE = "serverConfig.json";
 
     /** Configuration properties */
     private String serverName = "default-server";

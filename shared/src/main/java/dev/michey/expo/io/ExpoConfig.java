@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.Map;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -119,8 +120,8 @@ public class ExpoConfig {
     private String propertiesToJsonString() {
         JSONObject object = new JSONObject();
 
-        for(String key : properties.keySet()) {
-            object.put(key, properties.get(key));
+        for(Map.Entry<String, Object> key : properties.entrySet()) {
+            object.put(key.getKey(), key.getValue());
         }
 
         return object.toString(4);

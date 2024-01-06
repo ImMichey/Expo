@@ -1,6 +1,5 @@
 package dev.michey.expo.server.fs.world;
 
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.io.ExpoFile;
 import dev.michey.expo.io.ExpoFileCreator;
 import dev.michey.expo.log.ExpoLogger;
@@ -24,9 +23,9 @@ public class WorldSaveFile {
 
     /** File names */
     private static final String SAVE_FOLDER = "saves";
-    private final String PLAYER_FOLDER = "players";
-    private final String WORLD_BASE_FILE = "world.json";
-    private final String DIMENSIONS_FOLDER = "dimensions";
+    private static final String PLAYER_FOLDER = "players";
+    private static final String WORLD_BASE_FILE = "world.json";
+    private static final String DIMENSIONS_FOLDER = "dimensions";
 
     /** world.json properties */
     private final String worldName;

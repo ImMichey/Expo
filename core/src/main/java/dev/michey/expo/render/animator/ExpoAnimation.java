@@ -7,6 +7,7 @@ import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.util.AnimationSound;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ExpoAnimation {
 
@@ -55,7 +56,8 @@ public class ExpoAnimation {
         if(playSoundMap != null) {
             int currentFrameIndex = getFrameIndex();
 
-            for(AnimationSound as : playSoundMap.keySet()) {
+            for(Map.Entry<AnimationSound, Boolean> entrySet : playSoundMap.entrySet()) {
+                AnimationSound as = entrySet.getKey();
                 if(!playSoundMap.get(as)) {
                     if(currentFrameIndex >= as.animationIndex) {
                         handler.getEntity().playEntitySound(as.groupName, as.volumeMultiplier);

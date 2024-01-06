@@ -67,11 +67,11 @@ public class ClientWorld {
 
     /** Time */
     public float worldTime;
-    public final float MAX_SHADOW_X = 1.75f;
-    public final float MIN_SHADOW_Y = 0.5f;
-    public final float MAX_SHADOW_Y = 1.5f;
-    public final float SHADOW_ALPHA_TRANSITION_DURATION = 2.0f;
-    public final Interpolation SHADOW_ALPHA_INTERPOLATION = Interpolation.fade;
+    public static final float MAX_SHADOW_X = 1.75f;
+    public static final float MIN_SHADOW_Y = 0.5f;
+    public static final float MAX_SHADOW_Y = 1.5f;
+    public static final float SHADOW_ALPHA_TRANSITION_DURATION = 2.0f;
+    public static final Interpolation SHADOW_ALPHA_INTERPOLATION = Interpolation.fade;
     public float worldSunShadowX = MAX_SHADOW_X;
     public float worldSunShadowY = MAX_SHADOW_Y;
     public float worldSunShadowAlpha = 1.0f;

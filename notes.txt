@@ -5,7 +5,6 @@
 
 [Things To-Do 06.01.2024]
 * Fix Chunk Data P11 resend packet bug when placing objects
-* Fix padding line visual bug with Dynamic 3D Tiles
 * Add new Brain Module Hop
 * Make Notifications more beautiful
 * Fix Blueberry Bush berry colors

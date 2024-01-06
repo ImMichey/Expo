@@ -25,7 +25,7 @@ public class GameConsole {
     private final ConsoleCommandResolver resolver;
     // Console message history
     private final List<ConsoleMessage> messageHistory;
-    private final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 _-:?!;<>[]#(){}./,&äöüÄÖÜß+=~";
+    private static final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 _-:?!;<>[]#(){}./,&äöüÄÖÜß+=~";
     private final HashMap<Integer, ConsoleMessage> indexToMessageMap;
     private int historyLinesTotal;
     // Console command line

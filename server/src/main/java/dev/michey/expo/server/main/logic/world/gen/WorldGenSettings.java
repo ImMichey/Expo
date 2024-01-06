@@ -5,10 +5,7 @@ import dev.michey.expo.server.util.EntityMetadataMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class WorldGenSettings {
 
@@ -94,8 +91,8 @@ public class WorldGenSettings {
             }
         }
 
-        for(BiomeType toSort : tilePopulatorMap.keySet()) {
-            tilePopulatorMap.get(toSort).sort(Comparator.comparing(o -> -o.priority));
+        for(Map.Entry<BiomeType, List<TilePopulator>> entry : tilePopulatorMap.entrySet()) {
+            entry.getValue().sort(Comparator.comparing(o -> -o.priority));
         }
     }
 

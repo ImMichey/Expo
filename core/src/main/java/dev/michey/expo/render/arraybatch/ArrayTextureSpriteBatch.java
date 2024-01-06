@@ -70,8 +70,8 @@ public class ArrayTextureSpriteBatch implements Batch {
     static final int VERTEX_SIZE = 2 + 1 + 2;
     static final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
-    private final int spriteVertexSize = VERTEX_SIZE;
-    private final int spriteFloatSize = SPRITE_SIZE;
+    private static final int spriteVertexSize = VERTEX_SIZE;
+    private static final int spriteFloatSize = SPRITE_SIZE;
 
     /** The maximum number of available texture slots for the fragment shader */
     private final int maxTextureSlots;

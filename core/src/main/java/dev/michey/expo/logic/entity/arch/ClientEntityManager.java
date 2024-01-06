@@ -229,8 +229,9 @@ public class ClientEntityManager {
             float lowestProximityDistance = Float.MAX_VALUE;
             float lowestDirectDistance = Float.MAX_VALUE;
 
-            for(ClientEntity e : selectableEntities.keySet()) {
-                Object[] data = selectableEntities.get(e);
+            for(Map.Entry<ClientEntity, Object[]> entrySet : selectableEntities.entrySet()) {
+                ClientEntity e = entrySet.getKey();
+                Object[] data = entrySet.getValue();
                 boolean direct = (boolean) data[0];
 
                 if(direct) {

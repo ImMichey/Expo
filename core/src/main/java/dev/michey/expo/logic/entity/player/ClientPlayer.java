@@ -54,6 +54,7 @@ import dev.michey.expo.util.PacketUtils;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static dev.michey.expo.util.ClientStatic.*;
 import static dev.michey.expo.util.ExpoShared.*;
@@ -78,8 +79,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public int[] clientViewport = new int[] {Integer.MAX_VALUE, 0, 0, 0};
 
     /** Player textures */
-    private final float PLAYER_BLINK_COOLDOWN = 3.0f;
-    private final float PLAYER_BREATHE_COOLDOWN = 1.0f;
+    private static final float PLAYER_BLINK_COOLDOWN = 3.0f;
+    private static final float PLAYER_BREATHE_COOLDOWN = 1.0f;
     private float playerBreatheDelta = MathUtils.random(PLAYER_BREATHE_COOLDOWN);
     private float playerBlinkDelta = MathUtils.random(PLAYER_BLINK_COOLDOWN);
 
@@ -127,7 +128,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             use_armor_chest_body, use_armor_chest_backArm, use_armor_chest_frontArm,
             use_backArm_Detached;
     private float motionOffset;
-    private final float backArmOffsetY = 7;
+    private static final float backArmOffsetY = 7;
 
     /** Player punch */
     public float punchStartAngle;
@@ -1043,7 +1044,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 if(holdingItemId != -1 && holdingItemSprites != null) {
                     ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
                     int dirCheck = direction();
-                    Vector2 v = (punchAnimation || (holdingItemId != -1)) ? GenerationUtils.circular(getFinalArmRotation(), 1) : NULL_ROTATION_VECTOR;
+                    Vector2 v = punchAnimation ? GenerationUtils.circular(getFinalArmRotation(), 1) : NULL_ROTATION_VECTOR;
 
                     for(int i = 0; i < holdingItemSprites.length; i++) {
                         Sprite holdingItemSprite = holdingItemSprites[i];
@@ -1438,9 +1439,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         if(itemSoundMap != null) {
             List<Integer> remove = null;
 
-            for(int iid : itemSoundMap.keySet()) {
+            for(Map.Entry<Integer, TrackedSoundData> entrySet : itemSoundMap.entrySet()) {
+                int iid = entrySet.getKey();
+
                 if(iid != itemId) {
-                    AudioEngine.get().killSound(itemSoundMap.get(iid).id);
+                    AudioEngine.get().killSound(entrySet.getValue().id);
 
                     if(remove == null) remove = new LinkedList<>();
                     remove.add(iid);

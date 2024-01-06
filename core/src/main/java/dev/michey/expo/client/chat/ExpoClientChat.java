@@ -31,7 +31,7 @@ public class ExpoClientChat {
     public BitmapFont chatUseFont;
     // Console message history
     private final List<ChatMessage> messageHistory;
-    private final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 _-:?!;<>[]#(){}./,&äöüÄÖÜß+=~";
+    private static final String ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 _-:?!;<>[]#(){}./,&äöüÄÖÜß+=~";
     private final HashMap<Integer, ChatMessage> indexToMessageMap;
     private int historyLinesTotal;
     // Console command line
