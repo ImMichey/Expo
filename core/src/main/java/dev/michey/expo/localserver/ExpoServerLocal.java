@@ -90,7 +90,7 @@ public class ExpoServerLocal extends ExpoServerBase {
     @Override
     public void broadcastPacketTCP(Packet packet) {
         if(ExpoClientContainer.get().getPacketReader() == null) return;
-        ExpoClientContainer.get().getPacketReader().handlePacketLocal(packet);
+        ExpoClientContainer.get().getPacketEvaluator().queuePacket(packet);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ExpoServerLocal extends ExpoServerBase {
     @Override
     public void broadcastPacketUDP(Packet packet) {
         if(ExpoClientContainer.get() == null) return;
-        ExpoClientContainer.get().getPacketReader().handlePacketLocal(packet);
+        ExpoClientContainer.get().getPacketEvaluator().queuePacket(packet);
     }
 
     @Override

@@ -26,7 +26,6 @@ public class ClientChunkGrid {
     public final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
     public final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     public final ConcurrentLinkedQueue<P11_ChunkData> queuedChunkDataList;
-    private boolean activeChunkWork;
 
     /** Minimap only noise logic on dedicated server connection. */
     public Noise terrainNoiseHeight;

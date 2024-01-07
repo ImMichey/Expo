@@ -2,7 +2,10 @@ package dev.michey.expo.client;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import dev.michey.expo.client.serialization.ExpoClientSerialization;
+import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.server.main.packet.ExpoServerRegistry;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ExpoShared;
@@ -14,7 +17,6 @@ public class ExpoClient {
     /** Kryo layer */
     private Client kryoClient;
     private ExpoClientPacketReader packetReader;
-    private ExpoClientListener packetListener;
 
     /** Packet tracking */
     public int bytesInTcp;
@@ -56,18 +58,22 @@ public class ExpoClient {
         lastBytesUpdate = System.currentTimeMillis();
         ExpoServerRegistry.registerPackets(kryoClient.getKryo());
         packetReader = new ExpoClientPacketReader();
-        packetListener = new ExpoClientListener(packetReader);
-        kryoClient.addListener(packetListener);
+        kryoClient.addListener(new Listener() {
+
+            @Override
+            public void received(Connection connection, Object object) {
+                if(object instanceof Packet p) {
+                    ExpoClientContainer.get().getPacketEvaluator().queuePacket(p);
+                }
+            }
+
+        });
 
         return null;
     }
 
     public Client getKryoClient() {
         return kryoClient;
-    }
-
-    public ExpoClientListener getPacketListener() {
-        return packetListener;
     }
 
     public ExpoClientPacketReader getPacketReader() {

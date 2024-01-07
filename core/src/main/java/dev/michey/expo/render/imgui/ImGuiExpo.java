@@ -390,7 +390,7 @@ public class ImGuiExpo {
                 ImGui.indent();
                 if(local == null) {
                     ImGui.text("Ping: " + ExpoClientContainer.get().getClient().getKryoClient().getReturnTripTime());
-                    ImGui.text("Incoming packets queued: " + ExpoClientContainer.get().getClient().getPacketListener().getQueuedPacketAmount());
+                    ImGui.text("Incoming packets queued: " + ExpoClientContainer.get().getPacketEvaluator().getQueuedPacketAmount());
                 }
                 if(ImGui.treeNode(300, "Client entities: " + ClientEntityManager.get().entityCount())) {
                     ClientEntityManager m = ClientEntityManager.get();

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.ExpoClient;
+import dev.michey.expo.client.ExpoClientPacketEvaluator;
 import dev.michey.expo.client.ExpoClientPacketReader;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.localserver.ExpoServerLocal;
@@ -33,6 +34,7 @@ public class ExpoClientContainer {
     /** Local server communication */
     private ExpoServerLocal localServer;
     private ExpoClientPacketReader packetReader;
+    private ExpoClientPacketEvaluator packetEvaluator;
 
     /** Dedicated server communication */
     private ExpoClient client;
@@ -75,6 +77,7 @@ public class ExpoClientContainer {
         clientWorld = new ClientWorld();
         playerUI = new PlayerUI();
         playerOnlineList = new ConcurrentHashMap<>();
+        packetEvaluator = new ExpoClientPacketEvaluator(packetReader);
         INSTANCE = this;
     }
 
@@ -199,9 +202,7 @@ public class ExpoClientContainer {
 
         clientWorld.renderWorld();
 
-        if(client != null) {
-            client.getPacketListener().evaluatePackets();
-        }
+        packetEvaluator.handlePackets();
 
         /*
         if(Gdx.input.isKeyJustPressed(Input.Keys.F9) && DEV_MODE && ExpoServerContainer.get() != null) {
@@ -258,6 +259,10 @@ public class ExpoClientContainer {
 
     public ExpoClientPacketReader getPacketReader() {
         return packetReader;
+    }
+
+    public ExpoClientPacketEvaluator getPacketEvaluator() {
+        return packetEvaluator;
     }
 
     public void setServerTickRate(int serverTickRate) {

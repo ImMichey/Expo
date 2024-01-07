@@ -35,22 +35,7 @@ import static dev.michey.expo.util.ExpoShared.*;
 
 public class ExpoClientPacketReader {
 
-    /** Handle an instant incoming packet by a local source (local server). */
-    public void handlePacketLocal(Packet packet) {
-        handlePacket(packet, true);
-    }
-
-    /** Handle an incoming packet by an external source (dedicated server). */
-    public void handlePacketDedicated(Object o) {
-        if(!(o instanceof Packet)) {
-            log("The dedicated server sent an invalid object: " + o.toString());
-            return;
-        }
-
-        handlePacket((Packet) o, false);
-    }
-
-    private void handlePacket(Packet o, boolean local) {
+    protected void handlePacket(Packet o, boolean local) {
         if(o instanceof P44_Connect_Rsp p) {
             if(p.credentialsSuccessful) {
                 ExpoClientContainer.get().setLoadingMessage("Connected to server, attempting authentication...");

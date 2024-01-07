@@ -478,8 +478,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 if(getUI().loadingScreen) {
                     int loadedChunks = ClientChunkGrid.get().getAllClientChunks().size();
                     int requiredChunks = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_X * ExpoShared.PLAYER_CHUNK_VIEW_RANGE_Y;
+                    int entitiesInQueue = ClientEntityManager.get().getEntitiesInAdditionQueue().size();
 
-                    if(loadedChunks >= requiredChunks) {
+                    if(loadedChunks >= requiredChunks && entitiesInQueue < 10) { // entitiesInQueue check might cause issues in the future but for now it's a simple workaround
                         getUI().loadingScreen = false;
                     }
                 } else {
