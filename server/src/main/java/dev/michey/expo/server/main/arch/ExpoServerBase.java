@@ -11,6 +11,9 @@ import dev.michey.expo.server.main.logic.entity.container.ContainerRegistry;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitboxMapper;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
+import dev.michey.expo.server.main.packet.ExpoPacketEvaluator;
+import dev.michey.expo.server.main.packet.ExpoPacketEvaluatorDedicated;
+import dev.michey.expo.server.main.packet.ExpoPacketEvaluatorLocal;
 import dev.michey.expo.server.main.packet.ExpoServerPacketReader;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.server.util.EntityMetadataMapper;
@@ -32,6 +35,7 @@ public abstract class ExpoServerBase {
     /** Lifecycle */
     protected final ExpoServerPacketReader packetReader;
     protected final ExpoServerContainer serverContainer;
+    protected final ExpoPacketEvaluator packetEvaluator;
     protected boolean running = true;
     protected int tps;
 
@@ -46,6 +50,11 @@ public abstract class ExpoServerBase {
         EntityHitboxMapper.get();
         EntityMetadataMapper.get();
         packetReader = new ExpoServerPacketReader();
+        if(localServer) {
+            packetEvaluator = new ExpoPacketEvaluatorLocal(packetReader);
+        } else {
+            packetEvaluator = new ExpoPacketEvaluatorDedicated(packetReader);
+        }
         serverContainer = new ExpoServerContainer();
         worldSaveFile = new WorldSaveFile(worldName, worldSeed);
         new ContainerRegistry();
@@ -165,6 +174,10 @@ public abstract class ExpoServerBase {
     public abstract void broadcastPacketUDP(Packet packet);
     public abstract void broadcastPacketTCPExcept(Packet packet, Connection connection);
     public abstract void broadcastPacketUDPExcept(Packet packet, Connection connection);
+
+    public void handlePackets() {
+        packetEvaluator.handlePackets();
+    }
 
     public boolean isLocalServer() {
         return localServer;

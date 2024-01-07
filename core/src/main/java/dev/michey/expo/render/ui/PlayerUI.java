@@ -20,6 +20,7 @@ import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.ClientInventorySlot;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.render.font.GradientFont;
 import dev.michey.expo.render.ui.container.UIContainer;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.render.ui.notification.UINotification;
@@ -466,59 +467,6 @@ public class PlayerUI {
 
         glyphLayout.setText(rc.m5x7_border_use, "U");
 
-        /*
-        synchronized(PICKUP_LOCK) {
-            int yOffset = 0;
-
-            for(int i = 0; i < pickupLines.size(); i++) {
-                PickupLine line = pickupLines.get(pickupLines.size() - 1 - i);
-                line.lifetime += rc.delta;
-                if(line.lifetime >= MAX_LINE_LIFETIME) continue;
-
-                float dt = Interpolation.circleOut.apply(line.lifetime / MAX_LINE_LIFETIME);
-
-                ItemMapping mapping = ItemMapper.get().getMapping(line.itemId);
-                String displayText = line.itemAmount + "x " + mapping.displayName;
-                glyphLayout.setText(useFont, displayText);
-
-                float fullWidth = mapping.uiRender[0].useWidth * uiScale + 4 * uiScale + glyphLayout.width;
-
-                float startX = startHudPos.x - fullWidth * 0.5f;
-                float startY = startHudPos.y + dt * 48 + yOffset;
-
-                float rmAlpha = line.lifetime / MAX_LINE_LIFETIME;
-
-                // Draw background
-
-                int spc = 2;
-                float uh = mapping.uiRender[0].useHeight * uiScale;
-                rc.hudBatch.setColor(0.0f, 0.0f, 0.0f, 0.25f - rmAlpha / 4);
-                rc.hudBatch.draw(rc.square, startX - spc * uiScale, startY - spc * uiScale, fullWidth + spc * 2 * uiScale, Math.max(uh, glyphLayout.height) + spc * 2 * uiScale);
-                rc.hudBatch.setColor(Color.WHITE);
-
-
-                rc.hudBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f - rmAlpha);
-                useFont.setColor(mapping.color.r, mapping.color.g, mapping.color.b, 1.0f - line.lifetime / MAX_LINE_LIFETIME);
-
-                for(ItemRender ir : mapping.uiRender) {
-                    rc.hudBatch.draw(ir.useTextureRegion,
-                            startX + ir.offsetX * uiScale,
-                            startY + ir.offsetY * uiScale - (mapping.uiRender[0].useHeight * uiScale - glyphLayout.height) * 0.25f,
-                            ir.useTextureRegion.getRegionWidth() * uiScale,
-                            ir.useTextureRegion.getRegionHeight() * uiScale);
-
-                    useFont.draw(rc.hudBatch, displayText, startX + mapping.uiRender[0].useWidth * uiScale + 4 * uiScale, startY + glyphLayout.height);
-                }
-
-                yOffset += (int) (Math.max(glyphLayout.height, mapping.uiRender[0].useHeight * uiScale) + 4 * uiScale);
-            }
-
-            rc.hudBatch.setColor(Color.WHITE);
-            useFont.setColor(Color.WHITE);
-            pickupLines.removeIf(line -> line.lifetime >= MAX_LINE_LIFETIME);
-        }
-        */
-
         if(currentContainer != null && currentContainer.visible) {
             currentContainer.draw(rc, this);
         } else {
@@ -549,8 +497,11 @@ public class PlayerUI {
                     float fullFontWidth = 0;
                     float fullFontHeight = 0;
 
+                    BitmapFont useFont = rc.pickupFont;
+                    useFont.getData().setScale(uiScale * 0.5f);
+
                     for(var piece : not.pieces) {
-                        rc.globalGlyph.setText(rc.m5x7_border_use, piece.text);
+                        rc.globalGlyph.setText(useFont, piece.text);
                         fullFontWidth += rc.globalGlyph.width;
 
                         if(rc.globalGlyph.height > fullFontHeight) {
@@ -558,7 +509,6 @@ public class PlayerUI {
                         }
                     }
 
-                    //rc.globalGlyph.setText(rc.m5x7_border_use, not.text);
                     int iconSpacing = 4;
                     float totalWidth = iconWidth + iconSpacing * uiScale + fullFontWidth;
                     float totalHeight = iconHeight;
@@ -593,16 +543,20 @@ public class PlayerUI {
 
                     float offsetText = 0;
                     for(var piece : not.pieces) {
-                        rc.globalGlyph.setText(rc.m5x7_border_use, piece.text);
+                        rc.globalGlyph.setText(useFont, piece.text);
                         piece.color.a = alpha;
-                        rc.m5x7_border_use.setColor(piece.color);
-                        rc.m5x7_border_use.draw(rc.hudBatch, piece.text,
+
+                        Color col = new Color(piece.color.r, piece.color.g, piece.color.b, alpha);
+
+                        GradientFont.drawGradient(useFont, rc.hudBatch, piece.text,
                                 cx + iconWidth + iconSpacing * uiScale + offsetText,
-                                cy + rc.globalGlyph.height + (totalHeight - rc.globalGlyph.height) * 0.5f - offsetY);
+                                cy + rc.globalGlyph.height + (totalHeight - rc.globalGlyph.height) * 0.5f - offsetY, col);
+
                         offsetText += rc.globalGlyph.width;
                     }
 
                     offsetY += totalHeight + spacing * 2 * uiScale + 2 * uiScale;
+                    useFont.getData().setScale(1.0f);
                 }
 
                 rc.hudBatch.setColor(Color.WHITE);

@@ -85,11 +85,18 @@ public class ClientEntityManager {
 
         // poll addition
         Iterator<ClientEntity> additionIterator = additionQueue.iterator();
+        int serverEntityCapAddition = 100, serverEntityCapRemoval = 100;
+
+        //ClientUtils.log("Sizes Add/Rem: " + additionQueue.size() + "/" + removalQueue.size(), Input.Keys.X);
 
         while(additionIterator.hasNext()) {
             ClientEntity toAdd = additionIterator.next();
 
             if(!idEntityMap.containsKey(toAdd.entityId)) { // Might cause some bugs in the future
+                if(toAdd.getEntityType().ENTITY_ID >= 0) {
+                    serverEntityCapAddition--;
+                }
+
                 boolean add = true;
                 float _px, _py;
 
@@ -138,6 +145,10 @@ public class ClientEntityManager {
             } else {
                 // ExpoLogger.log("Entity addition clash: " + toAdd.getEntityType() + "/" + toAdd.entityId);
             }
+
+            if(serverEntityCapAddition == 0) {
+                break;
+            }
         }
 
         // poll removal
@@ -152,6 +163,10 @@ public class ClientEntityManager {
                 continue;
             } else {
                 entity.removalReason = pair.value;
+            }
+
+            if(entity.getEntityType().ENTITY_ID >= 0) {
+                serverEntityCapRemoval--;
             }
 
             boolean poll = true;
@@ -180,6 +195,10 @@ public class ClientEntityManager {
                 }
 
                 entity.onDeletion();
+            }
+
+            if(serverEntityCapRemoval == 0) {
+                break;
             }
         }
 

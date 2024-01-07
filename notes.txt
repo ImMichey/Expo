@@ -4,13 +4,10 @@
 * New Stick Fence textures
 
 [Things To-Do 06.01.2024]
-* Fix Chunk Data P11 resend packet bug when placing objects
+* Fix Chunk Data P11 resend packet bug when placing objects .. fixed?
 * Add new Brain Module Hop
-* Make Notifications more beautiful
-* Fix Blueberry Bush berry colors
 
 [Known Bugs]
-* Sometimes the Chunk Data gets entirely resent when placing/destroying a tile layer                                P11 packet gets sent !?
 * AO bug, similar to above, not sure if related or separate bug
 * Some shift-click crafting visual glitches
 * Sometimes entities are not being deleted instantly (only happens in multiplayer?)

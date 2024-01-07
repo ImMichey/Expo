@@ -2,7 +2,6 @@ package dev.michey.expo.server.main.logic;
 
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.packet.ExpoServerListener;
 
 public class ExpoServerContainer {
 
@@ -28,9 +27,7 @@ public class ExpoServerContainer {
     public void loop(ExpoServerBase base, float delta) {
         long s = System.nanoTime();
 
-        if(!base.isLocalServer()) {
-            ExpoServerListener.get().evaluatePackets();
-        }
+        base.handlePackets();
 
         long pp = System.nanoTime();
 
@@ -39,7 +36,7 @@ public class ExpoServerContainer {
 
         long pw = System.nanoTime();
 
-        boolean doUpdate = pw - lastUpdate >= 125_000_000;
+        boolean doUpdate = pw - lastUpdate >= 250_000_000;
 
         long ttd = pw - s;
         long ptd = pp - s;

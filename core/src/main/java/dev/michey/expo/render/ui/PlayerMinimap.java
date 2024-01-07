@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
-import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
@@ -30,7 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static dev.michey.expo.util.ExpoShared.ROW_TILES;
+import static dev.michey.expo.util.ExpoShared.*;
 
 public class PlayerMinimap {
 
@@ -92,22 +92,44 @@ public class PlayerMinimap {
             for(Map.Entry<TileLayerType, HashSet<int[]>> entrySet : minimapContainerMap.entrySet()) entrySet.getValue().clear();
             for(Map.Entry<BiomeType, HashSet<int[]>> entrySet : minimapBiomeContainerMap.entrySet()) entrySet.getValue().clear();
 
-            int startX = centerTileX - MAP_SIZE / 2;
-            int startY = centerTileY - MAP_SIZE / 2;
+            int mapBottomCornerX = centerTileX - MAP_SIZE / 2;
+            int mapBottomCornerY = centerTileY - MAP_SIZE / 2;
+            int existing = 0;
+            int shouldExist = Math.min(MAP_SIZE * MAP_SIZE, ROW_TILES * ROW_TILES * PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y);
+
+            int viewportX0 = ExpoShared.posToChunk(player.clientPosX);
+            int viewportY0 = ExpoShared.posToChunk(player.clientPosY);
+            int startChunkTileX = ExpoShared.posToTile(ExpoShared.chunkToPos(viewportX0)) - ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X * ROW_TILES;
+            int startChunkTileY = ExpoShared.posToTile(ExpoShared.chunkToPos(viewportY0)) - ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y * ROW_TILES;
+            int endChunkTileX = startChunkTileX + ExpoShared.PLAYER_CHUNK_VIEW_RANGE_X * ROW_TILES;
+            int endChunkTileY = startChunkTileY + ExpoShared.PLAYER_CHUNK_VIEW_RANGE_Y * ROW_TILES;
+
+            /*
+            ClientUtils.log("[" + incomplete + "] tileLoopSize=" + POSSIBLE_MAP_SIZE_X + "," + POSSIBLE_MAP_SIZE_Y +
+                    " :: diff=" + diffX + "," + diffY +
+                    " :: player=" + player.clientPosX + "," + player.clientPosY +
+                    " :: chunkToPos=" + ExpoShared.chunkToPos(viewportX0) + "," + ExpoShared.chunkToPos(viewportY0) +
+                    " :: center=" + centerTileX + "," + centerTileY + " :: viewport=" + viewportX0 + "," + viewportY0 +
+                    " :: sct=" + startChunkTileX + "," + startChunkTileY + " :: ect=" + endChunkTileX + "," + endChunkTileY, Input.Keys.X);
+            */
 
             if(ExpoServerBase.get() != null) {
                 ServerPlayer localPlayer = ServerPlayer.getLocalPlayer();
 
                 for(int i = 0; i < MAP_SIZE; i++) {
                     for(int j = 0; j < MAP_SIZE; j++) {
-                        int tx = startX + i;
-                        int ty = startY + j;
+                        int tx = mapBottomCornerX + i;
+                        int ty = mapBottomCornerY + j;
 
                         ServerTile tile = localPlayer.getDimension().getChunkHandler().getTile(tx, ty);
 
                         if(tile == null || tile.dynamicTileParts == null || tile.dynamicTileParts[2].emulatingType == null) {
-                            incomplete = true;
+                            // Tile does not exist.
                             continue;
+                        }
+
+                        if(tx >= startChunkTileX && tx < endChunkTileX && ty >= startChunkTileY && ty < endChunkTileY) {
+                            existing++;
                         }
 
                         TileLayerType use;
@@ -148,11 +170,12 @@ public class PlayerMinimap {
                         }
                     }
                 }
+
             } else {
                 for(int i = 0; i < MAP_SIZE; i++) {
                     for(int j = 0; j < MAP_SIZE; j++) {
-                        int tx = startX + i;
-                        int ty = startY + j;
+                        int tx = mapBottomCornerX + i;
+                        int ty = mapBottomCornerY + j;
 
                         int cx = ExpoShared.posToChunk(ExpoShared.tileToPos(tx));
                         int cy = ExpoShared.posToChunk(ExpoShared.tileToPos(ty));
@@ -160,8 +183,11 @@ public class PlayerMinimap {
                         var chunk = ClientChunkGrid.get().getChunk(cx, cy);
 
                         if(chunk == null) {
-                            incomplete = true;
                             continue;
+                        }
+
+                        if(tx >= startChunkTileX && tx < endChunkTileX && ty >= startChunkTileY && ty < endChunkTileY) {
+                            existing++;
                         }
 
                         int startTileX = ExpoShared.posToTile(ExpoShared.chunkToPos(cx));
@@ -212,6 +238,11 @@ public class PlayerMinimap {
                         }
                     }
                 }
+
+            }
+
+            if(shouldExist != existing) {
+                incomplete = true;
             }
 
             pixmap.setColor(0f, 0f, 0f, 0f);

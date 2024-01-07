@@ -157,7 +157,8 @@ public class ClientWorld {
         if(zoom > 0.75f) zoom = 0.75f;
 
         float mul = zoom / (1f / 3f) + 1f;
-        int amount = (int) (weatherStrength * mul);
+        float adjustForViewRange = 1f;//PLAYER_CHUNK_VIEW_RANGE_X / 7f;
+        int amount = (int) (weatherStrength * mul * (adjustForViewRange));
 
         Vector2 basePos = InputUtils.topLeftRainCorner(0, 0);
         Vector2 rightBottomCorner = InputUtils.topLeftRainCorner(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

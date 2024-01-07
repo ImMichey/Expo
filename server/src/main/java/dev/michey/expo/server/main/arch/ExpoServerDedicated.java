@@ -8,7 +8,7 @@ import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.packet.ExpoServerListener;
+import dev.michey.expo.server.main.packet.ExpoPacketEvaluatorDedicated;
 import dev.michey.expo.server.main.packet.ExpoServerRegistry;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.server.steam.ExpoServerSteam;
@@ -27,7 +27,6 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
 
     /** Kryo layer */
     private Server kryoServer;
-    private ExpoServerListener packetListener;
 
     /** Connection handler */
     private final PlayerConnectionHandler connectionHandler;
@@ -62,8 +61,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
         kryoServer.start();
 
         ExpoServerRegistry.registerPackets(kryoServer.getKryo());
-        packetListener = new ExpoServerListener(packetReader);
-        kryoServer.addListener(packetListener);
+        kryoServer.addListener((ExpoPacketEvaluatorDedicated) packetEvaluator);
 
         try {
             log("Attempting to bind server on port " + config.getServerPort());

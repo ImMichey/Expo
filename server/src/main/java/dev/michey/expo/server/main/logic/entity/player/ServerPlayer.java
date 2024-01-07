@@ -612,6 +612,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         }
 
         for(var pair : chunkPacketList) {
+            //ExpoLogger.log("Sending P11 " + pair.key);
             ServerPackets.p11ChunkData(pair.value, PacketReceiver.player(this));
         }
     }
@@ -802,8 +803,8 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
             for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
                 if(player.canSeeChunk(affectedChunkKey)) {
-                    ExpoLogger.log(">>>Putting " + now + " for " + affectedChunkKey);
                     player.hasSeenChunks.put(sv, now);
+                    //ExpoLogger.log("Updated " + sv.getChunkKey());
                 }
             }
 

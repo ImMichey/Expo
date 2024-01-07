@@ -15,6 +15,7 @@ import make.some.noise.Noise;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +25,8 @@ public class ClientChunkGrid {
 
     public final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
     public final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    public final ConcurrentLinkedQueue<P11_ChunkData> queuedChunkDataList;
+    private boolean activeChunkWork;
 
     /** Minimap only noise logic on dedicated server connection. */
     public Noise terrainNoiseHeight;
@@ -43,6 +46,7 @@ public class ClientChunkGrid {
 
     public ClientChunkGrid() {
         clientChunkMap = new ConcurrentHashMap<>();
+        queuedChunkDataList = new ConcurrentLinkedQueue<>();
 
         if(ExpoServerLocal.get() == null) {
             terrainNoiseHeight = new Noise();
@@ -83,7 +87,7 @@ public class ClientChunkGrid {
     }
 
     public void handleChunkData(P11_ChunkData p) {
-        executorService.execute(() -> ClientChunkGrid.get().updateChunkData(p));
+        queuedChunkDataList.add(p);
     }
 
     public void tick(float delta) {
@@ -108,6 +112,11 @@ public class ClientChunkGrid {
             }
         }
 
+        while(!queuedChunkDataList.isEmpty()) {
+            P11_ChunkData polledChunk = queuedChunkDataList.poll();
+            executorService.execute(() -> updateChunkData(polledChunk));
+        }
+
         interpolation = Interpolation.smooth2.apply(waveDelta) * WAVE_STRENGTH;
         ExpoClientContainer.get().getClientWorld().updateChunksToDraw();
     }
@@ -117,7 +126,8 @@ public class ClientChunkGrid {
         ClientChunk existing = clientChunkMap.get(key);
 
         if(existing == null) {
-            clientChunkMap.put(key, new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.tileEntityCount));
+            ClientChunk cc = new ClientChunk(p.chunkX, p.chunkY, p.biomes, p.individualTileData, p.tileEntityCount);
+            clientChunkMap.put(key, cc);
         } else {
             existing.update(p.biomes, p.individualTileData, p.tileEntityCount);
         }

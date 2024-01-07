@@ -3,6 +3,7 @@ package dev.michey.expo.client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
+import dev.michey.expo.log.ExpoLogger;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

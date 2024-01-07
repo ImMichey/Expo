@@ -24,7 +24,7 @@
             "chance": 0.001,
             "timer": 2,
             "playerDistanceMin": 384,
-            "entityCapPerPlayer": 8
+            "entityCapPerPlayer": 6
         },
         {
             "dimensions": ["overworld"],
@@ -36,8 +36,8 @@
             "amountMax": 3,
             "chance": 0.002,
             "timer": 1,
-            "playerDistanceMin": 256,
-            "entityCapPerPlayer": 8
+            "playerDistanceMin": 512,
+            "entityCapPerPlayer": 6
         }
     ]
 }

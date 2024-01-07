@@ -6,39 +6,29 @@ import com.esotericsoftware.kryonet.Listener;
 import dev.michey.expo.server.connection.PlayerConnection;
 import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.Pair;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+public class ExpoPacketEvaluatorDedicated extends ExpoPacketEvaluator implements Listener {
 
-public class ExpoServerListener implements Listener {
-
-    /** Singleton */
-    private static ExpoServerListener INSTANCE;
-
-    /** Packet queue */
-    private ConcurrentLinkedQueue<Pair<Connection, Object>> incomingPacketQueue;
-    private ExpoServerPacketReader packetReader;
-
-    public ExpoServerListener(ExpoServerPacketReader packetReader) {
-        this.packetReader = packetReader;
-        incomingPacketQueue = new ConcurrentLinkedQueue<>();
-        INSTANCE = this;
+    public ExpoPacketEvaluatorDedicated(ExpoServerPacketReader packetReader) {
+        super(packetReader);
     }
 
-    /** At the beginning of every server tick, the queued packets are being evaluated. */
-    public void evaluatePackets() {
+    @Override
+    public void queuePacket(Connection connection, Packet packet) {
+        incomingPacketQueue.add(new Pair<>(connection, packet));
+    }
+
+    @Override
+    public void handlePackets() {
         while(!incomingPacketQueue.isEmpty()) {
             var packet = incomingPacketQueue.poll();
             packetReader.handlePacket(packet.key, packet.value);
         }
-    }
-
-    @Override
-    public void connected(Connection connection) {
-
     }
 
     @Override
@@ -69,11 +59,8 @@ public class ExpoServerListener implements Listener {
     @Override
     public void received(Connection connection, Object object) {
         if(object instanceof FrameworkMessage) return;
-        incomingPacketQueue.add(new Pair<>(connection, object));
-    }
-
-    public static ExpoServerListener get() {
-        return INSTANCE;
+        if(!(object instanceof Packet)) return;
+        incomingPacketQueue.add(new Pair<>(connection, (Packet) object));
     }
 
 }

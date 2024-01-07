@@ -1044,7 +1044,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 if(holdingItemId != -1 && holdingItemSprites != null) {
                     ItemMapping map = ItemMapper.get().getMapping(holdingItemId);
                     int dirCheck = direction();
-                    Vector2 v = punchAnimation ? GenerationUtils.circular(getFinalArmRotation(), 1) : NULL_ROTATION_VECTOR;
+                    Vector2 v = (punchAnimation || (holdingItemId != -1)) ? GenerationUtils.circular(getFinalArmRotation(), 1) : NULL_ROTATION_VECTOR;
 
                     for(int i = 0; i < holdingItemSprites.length; i++) {
                         Sprite holdingItemSprite = holdingItemSprites[i];

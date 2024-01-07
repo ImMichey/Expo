@@ -30,7 +30,7 @@ public class ExpoServerLocal extends ExpoServerBase {
     }
 
     public void consumePacket(Packet packet) {
-        packetReader.handlePacket(packet);
+        packetEvaluator.queuePacket(null, packet);
     }
 
     @Override

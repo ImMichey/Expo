@@ -559,7 +559,10 @@ public class RenderContext {
     }
 
     public boolean inDrawBounds(ClientChunk chunk) {
-        return drawStartX <= chunk.chunkDrawEndX && drawStartY <= chunk.chunkDrawEndY && drawEndX >= chunk.chunkDrawBeginX && drawEndY >= chunk.chunkDrawBeginY;
+        return drawStartX <= chunk.chunkDrawEndX
+                && drawStartY <= chunk.chunkDrawEndY
+                && drawEndX >= chunk.chunkDrawBeginX
+                && drawEndY >= chunk.chunkDrawBeginY;
     }
 
     public void useRegularBatch() {
