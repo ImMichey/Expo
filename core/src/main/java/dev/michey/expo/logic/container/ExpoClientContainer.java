@@ -53,7 +53,6 @@ public class ExpoClientContainer {
 
     public ExpoClientContainer(ExpoServerLocal localServer) {
         this.localServer = localServer;
-        packetReader = new ExpoClientPacketReader();
         init();
     }
 
@@ -77,6 +76,7 @@ public class ExpoClientContainer {
         clientWorld = new ClientWorld();
         playerUI = new PlayerUI();
         playerOnlineList = new ConcurrentHashMap<>();
+        packetReader = new ExpoClientPacketReader();
         packetEvaluator = new ExpoClientPacketEvaluator(packetReader);
         INSTANCE = this;
     }
@@ -201,7 +201,6 @@ public class ExpoClientContainer {
         }
 
         clientWorld.renderWorld();
-
         packetEvaluator.handlePackets();
 
         /*

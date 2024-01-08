@@ -35,6 +35,10 @@ import static dev.michey.expo.util.ExpoShared.*;
 
 public class ExpoClientPacketReader {
 
+    private long lastId;
+    private float lastDelta;
+    private Vector2 lastPos = new Vector2();
+
     protected void handlePacket(Packet o, boolean local) {
         if(o instanceof P44_Connect_Rsp p) {
             if(p.credentialsSuccessful) {
@@ -130,6 +134,21 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P13_EntityMove p) {
             ClientEntity entity = entityFromId(p.entityId);
             if(entity != null) {
+                /*
+                if(entity.getEntityType() == ClientEntityType.PLAYER) {
+                    long idNow = RenderContext.get().frameId;
+                    float deltaNow = RenderContext.get().deltaTotal;
+                    Vector2 posNow = new Vector2(entity.serverPosX, entity.serverPosY);
+
+                    if(deltaNow - lastDelta >= 0.05f) {
+                        ExpoLogger.log("Ids: " + lastId + "->" + idNow + ", Deltas: " + lastDelta + "->" + deltaNow + ", Pos: " + posNow.cpy().sub(lastPos).toString() + " .. " + posNow);
+                    }
+
+                    lastId = idNow;
+                    lastDelta = deltaNow;
+                    lastPos = posNow;
+                }
+                */
                 entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir, p.sprinting, p.distance);
             }
         } else if(o instanceof P14_WorldUpdate p) {
@@ -273,7 +292,7 @@ public class ExpoClientPacketReader {
             if(cp == null) return;
 
             var all = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PICKUP_LINE);
-            var add = ClientEntityManager.get().getEntitiesInAdditionQueue();
+            var add = ClientEntityManager.get().getEntityClientAdditionQueue();
 
             for(int i = 0; i < p.itemIds.length; i++) {
                 int seekId = p.itemIds[i];

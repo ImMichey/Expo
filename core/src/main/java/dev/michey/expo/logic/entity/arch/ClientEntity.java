@@ -409,6 +409,17 @@ public abstract class ClientEntity {
         }
     }
 
+    public void drawShadowIfVisible(TextureRegion texture, float internalOffsetY) {
+        RenderContext rc = RenderContext.get();
+
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, internalOffsetY);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(texture, shadow);
+
+        if(rc.verticesInBounds(vertices)) {
+            rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
+        }
+    }
+
     public void drawWindShadowIfVisible(TextureRegion texture, ContactAnimator contactAnimator) {
         RenderContext rc = RenderContext.get();
 

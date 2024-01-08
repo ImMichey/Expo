@@ -33,7 +33,10 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     private boolean updateTexture = false;
     public TextureRegion created;
+    public TextureRegion createdReflection;
     private TextureRegion ao;
+
+    private ClientEntity[] cachedNeighbours;
 
     @Override
     public void onCreation() {
@@ -76,6 +79,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         }
 
         created = ExpoAssets.get().toTexture(layerIds, elevationName, -1);
+        createdReflection = new TextureRegion(created, 0, 16, created.getRegionWidth(), created.getRegionHeight() - 16);
     }
 
     @Override
@@ -110,12 +114,14 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         }
 
         if(visibleToRenderEngine) {
+            cachedNeighbours = getNeighbouringTileEntitiesNESW();
+
             ClientPlayer local = ClientPlayer.getLocalPlayer();
             boolean playerBehind;
 
-            if(local != null) {
+            if(local != null && (cachedNeighbours[0] == null || cachedNeighbours[0].getEntityType() != ClientEntityType.DYNAMIC_3D_TILE)) {
                 if(local.depth > (depth + 15)) {
-                    float buffer = 8;
+                    float buffer = 32;
 
                     playerBehind = ExpoShared.overlap(new float[] {
                             local.finalDrawPosX, local.finalDrawPosY,
@@ -148,6 +154,8 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
                 playerBehindDeltaInterpolated = useInterpolation.apply(playerBehindDelta / MAX_BEHIND_DELTA) * MAX_BEHIND_STRENGTH;
             }
+        } else {
+            cachedNeighbours = null;
         }
     }
 
@@ -157,11 +165,12 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
         if(visibleToRenderEngine) {
             boolean un = squishAnimator2D.isActive();
-            ClientEntity[] n = getNeighbouringTileEntitiesNESW();
             squishAnimator2D.calculate(delta);
-            if(un) notifySquish(n);
 
-            boolean hasNeighbourBelow = n[2] != null && n[2].getEntityType() == ClientEntityType.DYNAMIC_3D_TILE;
+            if(cachedNeighbours == null) cachedNeighbours = getNeighbouringTileEntitiesNESW();
+            if(un) notifySquish(cachedNeighbours);
+
+            boolean hasNeighbourBelow = cachedNeighbours[2] != null && cachedNeighbours[2].getEntityType() == ClientEntityType.DYNAMIC_3D_TILE;
             float linePxFix = hasNeighbourBelow ? 0.01f : 0f;
 
             updateDepth();
@@ -180,11 +189,11 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(created,
+        rc.arraySpriteBatch.draw(createdReflection,
                 finalDrawPosX - squishAnimator2D.squishX1,
                 finalDrawPosY + squishAnimator2D.squishY1,
-                created.getRegionWidth() + squishAnimator2D.squishX2,
-                (created.getRegionHeight() + squishAnimator2D.squishY2) * -1);
+                createdReflection.getRegionWidth() + squishAnimator2D.squishX2,
+                (createdReflection.getRegionHeight() + squishAnimator2D.squishY2) * -1);
     }
 
     @Override

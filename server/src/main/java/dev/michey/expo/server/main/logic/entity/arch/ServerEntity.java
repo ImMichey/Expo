@@ -465,10 +465,6 @@ public abstract class ServerEntity {
         }
     }
 
-    public boolean postGeneration() {
-        return true;
-    }
-
     public void setDamageableWith(ToolType... types) {
         damageableWith = types;
     }
@@ -522,6 +518,10 @@ public abstract class ServerEntity {
 
     public boolean isRaining() {
         return getDimension().dimensionWeather == Weather.RAIN;
+    }
+
+    public String getImpactSound() {
+        return "slap";
     }
 
 }

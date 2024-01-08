@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
@@ -36,8 +37,11 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.imgui.DebugPoint;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.ui.PlayerUI;
+import dev.michey.expo.server.main.logic.ai.entity.EntityBrain;
+import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
 import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.entity.hostile.ServerSlime;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.util.EntityMetadataMapper;
@@ -610,6 +614,7 @@ public class ClientWorld {
                     r.chunkRenderer.setColor(Color.WHITE);
 
                     for(var c : drawChunks) {
+                        if(c == null) continue;
                         r.chunkRenderer.rect(c.chunkDrawBeginX, c.chunkDrawBeginY, CHUNK_SIZE, CHUNK_SIZE);
                     }
                 }
@@ -781,10 +786,33 @@ public class ClientWorld {
                             r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
                         }
 
+                        if(Expo.get().getImGuiExpo().entityBrainStates.get() && ServerWorld.get() != null) {
+                            r.chunkRenderer.end();
+                            r.hudBatch.begin();
+
+                            ServerEntity se = ServerWorld.get().getMainDimension().getEntityManager().getEntityById(all.entityId);
+                            EntityBrain brain = null;
+
+                            if(se instanceof ServerCrab crab) {
+                                brain = crab.brain;
+                            } else if(se instanceof ServerSlime slime) {
+                                brain = slime.brain;
+                            }
+
+                            if(brain != null) {
+                                Vector2 p = ClientUtils.entityPosToHudPos(all.clientPosX, all.clientPosY + all.textureHeight);
+                                BitmapFont font = r.m5x7_border_all[0];
+                                r.globalGlyph.setText(font, brain.getActiveModule());
+                                font.draw(r.hudBatch, brain.getActiveModule(), p.x - r.globalGlyph.width * 0.5f, p.y + r.globalGlyph.height);
+                            }
+
+                            r.hudBatch.end();
+                            r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                        }
+
                         if(Expo.get().getImGuiExpo().renderEntityBbox.get()) {
                             if(ServerWorld.get() != null) {
                                 var t = EntityMetadataMapper.get().getFor(all.getEntityType().ENTITY_SERVER_TYPE);
-
 
                                 if(t != null) {
                                     var type = t.getPopulationBbox();

@@ -336,7 +336,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
                         if(applied) {
                             removeDurability++;
-                            ServerPackets.p24PositionalSound("slap", se.posX, se.posY, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(se));
+                            ServerPackets.p24PositionalSound(se.getImpactSound(), se.posX, se.posY, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(se));
 
                             // Apply knockback.
                             if(preDamageHp > se.health) {

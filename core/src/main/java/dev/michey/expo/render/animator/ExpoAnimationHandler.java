@@ -14,9 +14,14 @@ public class ExpoAnimationHandler {
     private final HashMap<String, List<ExpoAnimation>> animationMap;
     private ExpoAnimation activeAnimation;
     private String activeName;
+
     private int lastFootstepIndex;
     private String[] footstepAnimations;
     private int[] footstepIndexes;
+
+    private int lastPuddleIndex;
+    private PuddleData[] puddleData;
+
     private boolean cachedMoving;
 
     public ExpoAnimationHandler(ClientEntity parent) {
@@ -62,12 +67,26 @@ public class ExpoAnimationHandler {
                     int currentIndex = getActiveAnimation().getFrameIndex();
 
                     for(int i : footstepIndexes) {
-                        if(i == currentIndex && lastFootstepIndex != i) {
+                        if(currentIndex == i  && lastFootstepIndex != i) {
                             lastFootstepIndex = i;
                             parent.playFootstepSound();
                         }
                     }
                     break;
+                }
+            }
+        }
+
+        if(puddleData != null) {
+            for(PuddleData pd : puddleData) {
+                if(pd.animationName().equals(getActiveAnimationName())) {
+                    int currentIndex = getActiveAnimation().getFrameIndex();
+
+                    if(currentIndex == pd.index() && lastPuddleIndex != pd.index()) {
+                        lastPuddleIndex = pd.index();
+                        parent.spawnPuddle(pd.big(), pd.offsetX(), pd.offsetY());
+                        break;
+                    }
                 }
             }
         }
@@ -82,8 +101,13 @@ public class ExpoAnimationHandler {
         this.footstepIndexes = footstepIndexes;
     }
 
+    public void setPuddleData(PuddleData[] puddleData) {
+        this.puddleData = puddleData;
+    }
+
     public void onAnimationFinish() {
         lastFootstepIndex = 0;
+        lastPuddleIndex = 0;
 
         if(getActiveAnimationName().equals("attack")) {
             switchToAnimation(cachedMoving ? "walk" : "idle");
@@ -159,5 +183,7 @@ public class ExpoAnimationHandler {
     public ClientEntity getEntity() {
         return parent;
     }
+
+    public record PuddleData(String animationName, int index, boolean big, float offsetX, float offsetY) {}
 
 }

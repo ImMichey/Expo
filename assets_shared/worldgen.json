@@ -359,23 +359,6 @@
                 },
                 {
                     "biome": "DENSE_FOREST",
-                    "type": "CAMPFIRE",
-                    "static": false,
-                    "chance": 0.00005,
-                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
-                    "priority": 10000,
-                    "spreadData": {
-                        "spread": [2, 4],
-                        "spreadChance": 1.0,
-                        "spreadDis": [24.0, 32.0],
-                        "spreadType": ["WOODFOLK"],
-                        "spreadStatic": false,
-                        "spreadOffsets": [0.0, 0.0],
-                        "spreadUseNextTarget": false
-                    }
-                },
-                {
-                    "biome": "DENSE_FOREST",
                     "type": "BLUEBERRY_BUSH",
                     "static": true,
                     "chance": 0.00125,

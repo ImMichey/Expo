@@ -4,7 +4,6 @@
 * New Stick Fence textures
 
 [Things To-Do 06.01.2024]
-* Fix Chunk Data P11 resend packet bug when placing objects .. fixed?
 * Add new Brain Module Hop
 
 [Known Bugs]

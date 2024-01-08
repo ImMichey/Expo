@@ -46,10 +46,7 @@ import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.TeleportReason;
-import dev.michey.expo.util.ClientPackets;
-import dev.michey.expo.util.ExpoShared;
-import dev.michey.expo.util.GameSettings;
-import dev.michey.expo.util.PacketUtils;
+import dev.michey.expo.util.*;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -480,7 +477,17 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     int requiredChunks = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_X * ExpoShared.PLAYER_CHUNK_VIEW_RANGE_Y;
                     int entitiesInQueue = ClientEntityManager.get().getEntitiesInAdditionQueue().size();
 
-                    if(loadedChunks >= requiredChunks && entitiesInQueue < 10) { // entitiesInQueue check might cause issues in the future but for now it's a simple workaround
+                    ClientUtils.log("-> " + loadedChunks + "/" + requiredChunks + "/" + entitiesInQueue, Input.Keys.X);
+
+                    if(entitiesInQueue > 0) {
+                        if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+                            for(var x : ClientEntityManager.get().getEntitiesInAdditionQueue()) {
+                                ClientUtils.log(".." + x.getEntityType().name(), Input.Keys.X);
+                            }
+                        }
+                    }
+
+                    if(loadedChunks >= requiredChunks && entitiesInQueue == 0) { // entitiesInQueue check might cause issues in the future but for now it's a simple workaround
                         getUI().loadingScreen = false;
                     }
                 } else {
@@ -562,7 +569,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
             if(timeSinceLastSend >= PLAYER_ARM_MOVEMENT_SEND_RATE) {
                 boolean containerClosed = getUI().currentContainer == null;
-                boolean holdingLeft = IngameInput.get().leftPressed();
+                boolean holdingLeft = IngameInput.get().leftPressed() && ExpoClientContainer.get().getPlayerUI().hoveredSlot == null;
                 boolean differs = lastLeftClickSend != holdingLeft;
 
                 if(holdingLeft) {

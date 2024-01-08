@@ -32,6 +32,8 @@ public class ExpoServerConfiguration {
     private String password = "";
     private boolean authPlayers = true;
     private String steamWebApiKey = "";
+    private int maxPlayerViewDistanceX = 11;
+    private int maxPlayerViewDistanceY = 11;
 
     /** Singleton */
     private static ExpoServerConfiguration INSTANCE;
@@ -127,6 +129,30 @@ public class ExpoServerConfiguration {
                     case "password" -> password = fileAsJson.getString("password");
                     case "authPlayers" -> authPlayers = fileAsJson.getBoolean("authPlayers");
                     case "steamWebApiKey" -> steamWebApiKey = fileAsJson.getString("steamWebApiKey");
+                    case "maxPlayerViewDistanceX" -> maxPlayerViewDistanceX = fileAsJson.getInt("maxPlayerViewDistanceX");
+                    case "maxPlayerViewDistanceY" -> maxPlayerViewDistanceY = fileAsJson.getInt("maxPlayerViewDistanceY");
+                }
+            }
+
+            log("Verifying keys from config file");
+            {
+                // VIEW DISTANCE CHECK
+                if(maxPlayerViewDistanceX < 3) {
+                    maxPlayerViewDistanceX = 3;
+                    log("Setting maxPlayerViewDistanceX to '3' as it's the required minimum view distance.");
+                }
+                if(maxPlayerViewDistanceX % 2 == 0) {
+                    maxPlayerViewDistanceX++;
+                    log("Setting maxPlayerViewDistanceX to '" + maxPlayerViewDistanceX + "' as the parsed number was not an odd number.");
+                }
+
+                if(maxPlayerViewDistanceY < 3) {
+                    maxPlayerViewDistanceY = 3;
+                    log("Setting maxPlayerViewDistanceY to '3' as it's the required minimum view distance.");
+                }
+                if(maxPlayerViewDistanceY % 2 == 0) {
+                    maxPlayerViewDistanceY++;
+                    log("Setting maxPlayerViewDistanceY to '" + maxPlayerViewDistanceY + "' as the parsed number was not an odd number.");
                 }
             }
 
@@ -167,6 +193,8 @@ public class ExpoServerConfiguration {
                 .put("password", password)
                 .put("authPlayers", authPlayers)
                 .put("steamWebApiKey", steamWebApiKey)
+                .put("maxPlayerViewDistanceX", maxPlayerViewDistanceX)
+                .put("maxPlayerViewDistanceY", maxPlayerViewDistanceY)
                 ;
     }
 
@@ -224,6 +252,14 @@ public class ExpoServerConfiguration {
 
     public String getSteamWebApiKey() {
         return steamWebApiKey;
+    }
+
+    public int getMaxPlayerViewDistanceX() {
+        return maxPlayerViewDistanceX;
+    }
+
+    public int getMaxPlayerViewDistanceY() {
+        return maxPlayerViewDistanceY;
     }
 
     public static ExpoServerConfiguration get() {

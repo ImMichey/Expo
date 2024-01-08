@@ -195,6 +195,25 @@ public class ParticleSheet {
                     .spawn();
         }
 
+        public static void spawnBloodParticlesSlime(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(16, 20)
+                    .scale(0.3f, 0.6f)
+                    .lifetime(0.3f, 0.5f)
+                    .color(ParticleColorMap.of(1))
+                    .position(entity.finalTextureCenterX, entity.finalTextureCenterY)
+                    .velocity(-48, 48, -48, 48)
+                    .fadeout(0.3f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .decreaseSpeed()
+                    .depth(entity.depth - 0.001f)
+                    .followEntity(entity)
+                    .spawn();
+        }
+
         public static void spawnDynamic3DHitParticles(ClientDynamic3DTile cd3d) {
             if(!GameSettings.get().enableParticles) return;
 

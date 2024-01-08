@@ -3,15 +3,13 @@ package dev.michey.expo.server.main.logic.entity.misc;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
-import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
-import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import org.json.JSONObject;
 
-public class ServerRock extends ServerEntity implements PhysicsEntity {
+public class ServerRock extends ServerEntity {
 
     /** Physics body */
     private EntityPhysicsBox physicsBody;
@@ -30,13 +28,13 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
     @Override
     public void onCreation() {
         // add physics body of player to world
-        float[] b = ROCK_BODIES[variant - 1];
-        physicsBody = new EntityPhysicsBox(this, b[0], b[1], b[2], b[3]);
+        //float[] b = ROCK_BODIES[variant - 1];
+        //physicsBody = new EntityPhysicsBox(this, b[0], b[1], b[2], b[3]);
     }
 
     @Override
     public void onDeletion() {
-        physicsBody.dispose();
+        //physicsBody.dispose();
     }
 
     @Override
@@ -85,21 +83,6 @@ public class ServerRock extends ServerEntity implements PhysicsEntity {
     @Override
     public Object[] getPacketPayload() {
         return new Object[] {variant};
-    }
-
-    @Override
-    public EntityPhysicsBox getPhysicsBox() {
-        return physicsBody;
-    }
-
-    @Override
-    public void onMoved() {
-
-    }
-
-    @Override
-    public PhysicsMassClassification getPhysicsMassClassification() {
-        return PhysicsMassClassification.LIGHT;
     }
 
 }

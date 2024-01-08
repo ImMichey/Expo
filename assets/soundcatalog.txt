@@ -149,6 +149,13 @@ wood_hit_3.wav
 wood_hit_4.wav
 wood_hit_5.wav
 
+#slime;true;0.9-1.1;SFX;1.0
+slime_1.wav
+slime_2.wav
+slime_3.wav
+slime_4.wav
+slime_5.wav
+
 #wood_break;true;0.9-1.1;SFX;1.0
 wood_break_1.wav
 

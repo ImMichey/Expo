@@ -58,7 +58,8 @@ public class ExpoAnimation {
 
             for(Map.Entry<AnimationSound, Boolean> entrySet : playSoundMap.entrySet()) {
                 AnimationSound as = entrySet.getKey();
-                if(!playSoundMap.get(as)) {
+
+                if(!entrySet.getValue()) {
                     if(currentFrameIndex >= as.animationIndex) {
                         handler.getEntity().playEntitySound(as.groupName, as.volumeMultiplier);
                         playSoundMap.put(as, true);
@@ -71,6 +72,10 @@ public class ExpoAnimation {
             animationFinished = true;
             animationDeltaSinceStart -= totalAnimationDuration;
         }
+    }
+
+    public float getProgress() {
+        return animationDelta / totalAnimationDuration;
     }
 
     public void reset() {

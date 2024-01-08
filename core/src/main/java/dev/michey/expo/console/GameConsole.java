@@ -14,7 +14,9 @@ import dev.michey.expo.command.CommandResolver;
 import dev.michey.expo.console.command.*;
 import dev.michey.expo.render.RenderContext;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.log.ExpoLogger.logc;
@@ -332,8 +334,6 @@ public class GameConsole {
     public void addConsoleMessage(ConsoleMessage message) {
         synchronized (CONSOLE_LOCK) {
             messageHistory.add(message);
-            fullConsoleLine = "";
-            cursorPos = 0;
             currentUpDownIndex = messageHistory.size();
             resetSelection();
 
@@ -393,6 +393,9 @@ public class GameConsole {
             if(!consoleLineIsEmpty()) {
                 addConsoleMessage(new ConsoleMessage(fullConsoleLine, true));
             }
+
+            fullConsoleLine = "";
+            cursorPos = 0;
         } else if(character == '\b') {
             if(!consoleLineIsEmpty()) {
                 if(isTextSelected()) {

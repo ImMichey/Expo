@@ -22,11 +22,11 @@ public class ServerSlime extends ServerEntity implements DamageableEntity, Physi
     public void onCreation() {
         brain = new EntityBrain(this);
         brain.addBrainModule(new BrainModuleIdleHostile());
-        brain.addBrainModule(new BrainModuleStrollHostile());
-        brain.addBrainModule(new BrainModuleChase());
+        brain.addBrainModule(new BrainModuleHopHostile());
+        brain.addBrainModule(new BrainModuleChaseHop());
         brain.addBrainModule(new BrainModuleAttack());
 
-        physicsBody = new EntityPhysicsBox(this, -3, 0, 6, 5);
+        physicsBody = new EntityPhysicsBox(this, -5.5f, 0, 11, 9);
     }
 
     @Override
@@ -39,6 +39,11 @@ public class ServerSlime extends ServerEntity implements DamageableEntity, Physi
     @Override
     public void onDeletion() {
         physicsBody.dispose();
+    }
+
+    @Override
+    public String getImpactSound() {
+        return "bloody_squish";
     }
 
     @Override

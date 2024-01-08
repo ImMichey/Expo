@@ -8,13 +8,13 @@ import dev.michey.expo.server.util.EntityMetadata;
 
 public class BrainModuleChase extends BrainModule {
 
-    private float chaseSpeed;
-    private float maxChaseDistance;
-    private float attackDistance;
-    private float attackCooldown;
-    private int chaseEntityId = -1;
-    private final Vector2 dirVector;
-    private float attackDelta;
+    float chaseSpeed;
+    float maxChaseDistance;
+    float attackDistance;
+    float attackCooldown;
+    int chaseEntityId = -1;
+    float attackDelta;
+    final Vector2 dirVector;
 
     public BrainModuleChase() {
         this.dirVector = new Vector2();

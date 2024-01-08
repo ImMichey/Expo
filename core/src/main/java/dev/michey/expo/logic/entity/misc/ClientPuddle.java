@@ -17,6 +17,7 @@ public class ClientPuddle extends ClientEntity implements ReflectableEntity {
     @Override
     public void onCreation() {
         splashAnimation = new ExpoAnimation("puddle" + (small ? "_small" : "") + (upperPart ? "_upper" : ""), (small ? 7 : 6), 0.1f);
+        visibleToRenderEngine = true;
     }
 
     @Override

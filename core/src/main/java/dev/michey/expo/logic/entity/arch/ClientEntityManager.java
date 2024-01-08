@@ -35,7 +35,8 @@ public class ClientEntityManager {
     private final HashMap<Integer, ClientEntity> idEntityMap;
     private final HashMap<ClientEntityType, LinkedList<ClientEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<Pair<Integer, EntityRemovalReason>> removalQueue;
-    private final ConcurrentLinkedQueue<ClientEntity> additionQueue;
+    private final ConcurrentLinkedQueue<ClientEntity> additionQueueSv;
+    private final ConcurrentLinkedQueue<ClientEntity> additionQueueCl;
     private final HashSet<Pair<ClientChunk, Integer>> ambientOcclusionUpdateSet;
     private final LinkedList<ClientChunk> greenlitAmbientOcclusionList;
 
@@ -63,7 +64,8 @@ public class ClientEntityManager {
         idEntityMap = new HashMap<>();
         typeEntityListMap = new HashMap<>();
         removalQueue = new ConcurrentLinkedQueue<>();
-        additionQueue = new ConcurrentLinkedQueue<>();
+        additionQueueSv = new ConcurrentLinkedQueue<>();
+        additionQueueCl = new ConcurrentLinkedQueue<>();
         ambientOcclusionUpdateSet = new HashSet<>();
         greenlitAmbientOcclusionList = new LinkedList<>();
 
@@ -83,57 +85,20 @@ public class ClientEntityManager {
         ambientOcclusionUpdateSet.clear();
         greenlitAmbientOcclusionList.clear();
 
-        // poll addition
-        Iterator<ClientEntity> additionIterator = additionQueue.iterator();
-        int serverEntityCapAddition = 100, serverEntityCapRemoval = 100;
+        if(!additionQueueCl.isEmpty()) {
+            Iterator<ClientEntity> additionIterator = additionQueueCl.iterator();
 
-        //ClientUtils.log("Sizes Add/Rem: " + additionQueue.size() + "/" + removalQueue.size(), Input.Keys.X);
+            while(additionIterator.hasNext()) {
+                ClientEntity toAdd = additionIterator.next();
 
-        while(additionIterator.hasNext()) {
-            ClientEntity toAdd = additionIterator.next();
-
-            if(!idEntityMap.containsKey(toAdd.entityId)) { // Might cause some bugs in the future
-                if(toAdd.getEntityType().ENTITY_ID >= 0) {
-                    serverEntityCapAddition--;
-                }
-
-                boolean add = true;
-                float _px, _py;
-
-                if(toAdd.entityId < 0) {
-                    _px = toAdd.clientPosX;
-                    _py = toAdd.clientPosY;
-                } else {
-                    _px = toAdd.serverPosX;
-                    _py = toAdd.serverPosY;
-                }
-
-                int chunkX = ExpoShared.posToChunk(_px);
-                int chunkY = ExpoShared.posToChunk(_py);
+                int chunkX = ExpoShared.posToChunk(toAdd.clientPosX);
+                int chunkY = ExpoShared.posToChunk(toAdd.clientPosY);
                 ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
 
-                if(chunk == null) {
-                    add = false;
-                }
-
-                if(add) {
+                if(chunk != null) {
                     depthEntityList.add(toAdd);
                     idEntityMap.put(toAdd.entityId, toAdd);
                     typeEntityListMap.get(toAdd.getEntityType()).add(toAdd);
-
-                    if(toAdd.entityId >= 0 && toAdd.tileEntityTileArray != -1) {
-                        int newAmount = chunk.attachTileEntity(toAdd.entityId, toAdd.tileEntityTileArray);
-
-                        if(!chunk.ranAmbientOcclusion) {
-                            if(newAmount == chunk.getInitializationTileCount()) {
-                                greenlitAmbientOcclusionList.add(chunk);
-                                chunk.ranAmbientOcclusion = true;
-                            }
-                        } else {
-                            ambientOcclusionUpdateSet.add(new Pair<>(chunk, toAdd.tileEntityTileArray));
-                        }
-                    }
-
                     toAdd.onCreation();
 
                     if(toAdd instanceof ReflectableEntity) {
@@ -142,63 +107,110 @@ public class ClientEntityManager {
 
                     additionIterator.remove();
                 }
-            } else {
-                // ExpoLogger.log("Entity addition clash: " + toAdd.getEntityType() + "/" + toAdd.entityId);
             }
+        }
 
-            if(serverEntityCapAddition == 0) {
-                break;
+        int serverEntityCapAddition = 100, serverEntityCapRemoval = 100;
+
+        if(!additionQueueSv.isEmpty()) {
+            Iterator<ClientEntity> additionIterator = additionQueueSv.iterator();
+
+            while(additionIterator.hasNext()) {
+                ClientEntity toAdd = additionIterator.next();
+
+                if(!idEntityMap.containsKey(toAdd.entityId)) { // Might cause some bugs in the future
+                    serverEntityCapAddition--;
+
+                    int chunkX = ExpoShared.posToChunk(toAdd.serverPosX);
+                    int chunkY = ExpoShared.posToChunk(toAdd.serverPosY);
+                    ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
+
+                    if(chunk != null) {
+                        depthEntityList.add(toAdd);
+                        idEntityMap.put(toAdd.entityId, toAdd);
+                        typeEntityListMap.get(toAdd.getEntityType()).add(toAdd);
+
+                        if(toAdd.tileEntityTileArray != -1) {
+                            int newAmount = chunk.attachTileEntity(toAdd.entityId, toAdd.tileEntityTileArray);
+
+                            if(!chunk.ranAmbientOcclusion) {
+                                if(newAmount == chunk.getInitializationTileCount()) {
+                                    greenlitAmbientOcclusionList.add(chunk);
+                                    chunk.ranAmbientOcclusion = true;
+                                }
+                            } else {
+                                ambientOcclusionUpdateSet.add(new Pair<>(chunk, toAdd.tileEntityTileArray));
+                            }
+                        }
+
+                        toAdd.onCreation();
+
+                        if(toAdd instanceof ReflectableEntity) {
+                            toAdd.calculateReflection();
+                        }
+
+                        additionIterator.remove();
+                    }
+                } else {
+                    // ExpoLogger.log("Entity addition clash: " + toAdd.getEntityType() + "/" + toAdd.entityId);
+                }
+
+                if(serverEntityCapAddition == 0) {
+                    break;
+                }
             }
         }
 
         // poll removal
-        Iterator<Pair<Integer, EntityRemovalReason>> operationIterator = removalQueue.iterator();
+        if(!removalQueue.isEmpty()) {
+            Iterator<Pair<Integer, EntityRemovalReason>> operationIterator = removalQueue.iterator();
 
-        while(operationIterator.hasNext()) {
-            Pair<Integer, EntityRemovalReason> pair = operationIterator.next();
-            ClientEntity entity = idEntityMap.get(pair.key);
+            while(operationIterator.hasNext()) {
+                Pair<Integer, EntityRemovalReason> pair = operationIterator.next();
+                ClientEntity entity = idEntityMap.get(pair.key);
 
-            if(entity == null) {
-                // ExpoLogger.log("Entity removal clash: " + pair.key + " (not existing)");
-                continue;
-            } else {
-                entity.removalReason = pair.value;
-            }
-
-            if(entity.getEntityType().ENTITY_ID >= 0) {
-                serverEntityCapRemoval--;
-            }
-
-            boolean poll = true;
-
-            if(entity.removalFade > 0 && entity.removalReason != EntityRemovalReason.DEATH && entity.removalReason != EntityRemovalReason.CAUGHT) {
-                entity.removalFade -= delta;
-                poll = entity.removalFade <= 0;
-            }
-
-            if(poll) {
-                operationIterator.remove();
-
-                depthEntityList.remove(entity);
-                idEntityMap.remove(entity.entityId);
-                typeEntityListMap.get(entity.getEntityType()).remove(entity);
-
-                if(entity.entityId >= 0 && entity.tileEntityTileArray != -1) {
-                    int chunkX = ExpoShared.posToChunk(entity.serverPosX);
-                    int chunkY = ExpoShared.posToChunk(entity.serverPosY);
-                    ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
-                    chunk.detachTileEntity(entity.tileEntityTileArray);
-
-                    if(chunk.visibleLogic && (chunk.ranAmbientOcclusion || chunk.getInitializationTileCount() == 0)) {
-                        ambientOcclusionUpdateSet.add(new Pair<>(chunk, entity.tileEntityTileArray));
-                    }
+                if(entity == null) {
+                    // ExpoLogger.log("Entity removal clash: " + pair.key + " (not existing)");
+                    continue;
+                } else {
+                    entity.removalReason = pair.value;
                 }
 
-                entity.onDeletion();
-            }
+                if(entity.getEntityType().ENTITY_ID >= 0) {
+                    serverEntityCapRemoval--;
+                }
 
-            if(serverEntityCapRemoval == 0) {
-                break;
+                boolean poll = true;
+
+                if(entity.removalFade > 0 && entity.removalReason != EntityRemovalReason.DEATH && entity.removalReason != EntityRemovalReason.CAUGHT) {
+                    entity.removalFade -= delta;
+                    poll = entity.removalFade <= 0;
+                }
+
+                if(poll) {
+                    operationIterator.remove();
+
+                    depthEntityList.remove(entity);
+                    idEntityMap.remove(entity.entityId);
+                    typeEntityListMap.get(entity.getEntityType()).remove(entity);
+
+                    if(entity.entityId >= 0 && entity.tileEntityTileArray != -1) {
+                        int chunkX = ExpoShared.posToChunk(entity.serverPosX);
+                        int chunkY = ExpoShared.posToChunk(entity.serverPosY);
+                        ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
+                        chunk.detachTileEntity(entity.tileEntityTileArray);
+
+                        if(chunk.visibleLogic && (chunk.ranAmbientOcclusion || chunk.getInitializationTileCount() == 0)) {
+                            ambientOcclusionUpdateSet.add(new Pair<>(chunk, entity.tileEntityTileArray));
+                        }
+                    }
+
+                    entity.onDeletion();
+                }
+
+                if(serverEntityCapRemoval == 0) {
+                    break;
+                }
             }
         }
 
@@ -443,7 +455,11 @@ public class ClientEntityManager {
     }
 
     public ConcurrentLinkedQueue<ClientEntity> getEntitiesInAdditionQueue() {
-        return additionQueue;
+        return additionQueueSv;
+    }
+
+    public ConcurrentLinkedQueue<ClientEntity> getEntityClientAdditionQueue() {
+        return additionQueueCl;
     }
 
     public List<ClientEntity> getEntitiesByType(ClientEntityType type) {
@@ -480,7 +496,7 @@ public class ClientEntityManager {
     }
 
     public void addEntity(ClientEntity entity) {
-        additionQueue.add(entity);
+        additionQueueSv.add(entity);
     }
 
     public void removeEntity(ClientEntity entity) {
@@ -528,7 +544,7 @@ public class ClientEntityManager {
 
     public void addClientSideEntity(ClientEntity entity) {
         entity.entityId = generateClientSideEntityId();
-        addEntity(entity);
+        additionQueueCl.add(entity);
     }
 
     // A simple depth comparator

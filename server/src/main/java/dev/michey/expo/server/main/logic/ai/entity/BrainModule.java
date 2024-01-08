@@ -3,7 +3,7 @@ package dev.michey.expo.server.main.logic.ai.entity;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.util.GenerationUtils;
 
 import java.util.List;
 
@@ -48,6 +48,12 @@ public abstract class BrainModule {
         }
 
         return closestEntity;
+    }
+
+    public void setRandomDirectionVector(Vector2 writeTo) {
+        ServerEntity se = getBrain().getEntity();
+        writeTo.set(GenerationUtils.circularRandom(1.0f).add(se.posX, se.posY)).sub(se.posX, se.posY).nor();
+        getBrain().setLastMovementDirection(writeTo);
     }
 
 }

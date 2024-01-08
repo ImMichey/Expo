@@ -71,7 +71,11 @@ public class ServerCommandSpawn extends AbstractServerCommand {
 
         if(args.length >= 3) {
             if(args[2].startsWith("~") && ServerPlayer.getLocalPlayer() != null) {
-                x = parseF(args[2].substring(1), 2) + ServerPlayer.getLocalPlayer().posX;
+                if(args[2].equals("~")) {
+                    x = ServerPlayer.getLocalPlayer().posX;
+                } else {
+                    x = parseF(args[2].substring(1), 2) + ServerPlayer.getLocalPlayer().posX;
+                }
             } else {
                 x = parseF(args, 2);
             }
@@ -79,7 +83,11 @@ public class ServerCommandSpawn extends AbstractServerCommand {
         }
         if(args.length >= 4) {
             if(args[3].startsWith("~") && ServerPlayer.getLocalPlayer() != null) {
-                y = parseF(args[3].substring(1), 3) + ServerPlayer.getLocalPlayer().posY;
+                if(args[3].equals("~")) {
+                    y = ServerPlayer.getLocalPlayer().posY;
+                } else {
+                    y = parseF(args[3].substring(1), 3) + ServerPlayer.getLocalPlayer().posY;
+                }
             } else {
                 y = parseF(args, 3);
             }

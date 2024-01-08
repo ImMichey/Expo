@@ -48,9 +48,7 @@ public class ServerDimensionEntityManager {
             if(entity == null) entity = getEntityById(op.optionalId);
 
             if(op.add) {
-                if(entity.postGeneration()) {
-                    addEntityUnsafely(entity);
-                }
+                addEntityUnsafely(entity);
             } else {
                 removeEntityUnsafely(entity);
             }
@@ -114,8 +112,6 @@ public class ServerDimensionEntityManager {
 
         runItemMerge(delta);
     }
-
-    public static HashMap<ServerEntityType, Pair<Long, Integer>> TEST_MAP = new HashMap<>();
 
     private String st(long l1, long l2) {
         return String.format(Locale.US, "%.2f", ((l1 - l2) / 1_000_000d * ExpoShared.DEFAULT_LOCAL_TICK_RATE)) + "%";

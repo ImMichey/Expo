@@ -17,6 +17,7 @@ public class ExpoServerContainer {
     public long packetTickDuration;
     public long worldTickDuration;
     private long lastUpdate;
+    public long longestTickDuration;
 
     public ExpoServerContainer() {
         serverWorld = new ServerWorld();
@@ -36,17 +37,28 @@ public class ExpoServerContainer {
 
         long pw = System.nanoTime();
 
-        boolean doUpdate = pw - lastUpdate >= 250_000_000;
+        boolean doUpdate = pw - lastUpdate >= 1_000_000_000;
 
         long ttd = pw - s;
         long ptd = pp - s;
         long wtd = pw - pp;
+
+        if(ttd > longestTickDuration) {
+            longestTickDuration = ttd;
+        }
 
         if(doUpdate) {
             totalTickDuration = ttd;
             packetTickDuration = ptd;
             worldTickDuration = wtd;
             lastUpdate = pw;
+            longestTickDuration = 0;
+
+            /*
+            ExpoLogger.log("LongestTickDuration: " + longestTickDuration);
+            int tickRate = base.isLocalServer() ? ExpoShared.DEFAULT_LOCAL_TICK_RATE : ExpoServerDedicated.get().getTicksPerSecond();
+            ExpoLogger.log(String.format(Locale.US, "%.2f", (longestTickDuration / 1_000_000_000d * tickRate)) + "%");
+            */
         }
     }
 
