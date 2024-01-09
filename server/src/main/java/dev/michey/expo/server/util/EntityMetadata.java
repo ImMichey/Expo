@@ -53,6 +53,13 @@ public class EntityMetadata {
         return 0;
     }
 
+    public float getAttackOffsetY() {
+        if(object.has("ai.attackOffsetY")) {
+            return getFloat("ai.attackOffsetY");
+        }
+        return 0;
+    }
+
     public LinkedList<ServerEntityType> getEntityTypes(String key, LinkedList<ServerEntityType> fallback) {
         if(object.has(key)) {
             LinkedList<ServerEntityType> list = new LinkedList<>();

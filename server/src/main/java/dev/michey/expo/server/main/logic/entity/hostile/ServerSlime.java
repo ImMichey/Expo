@@ -26,13 +26,13 @@ public class ServerSlime extends ServerEntity implements DamageableEntity, Physi
         brain.addBrainModule(new BrainModuleChaseHop());
         brain.addBrainModule(new BrainModuleAttack());
 
-        physicsBody = new EntityPhysicsBox(this, -5.5f, 0, 11, 9);
+        physicsBody = new EntityPhysicsBox(this, -6f, 0, 12, 8);
     }
 
     @Override
     public void onDie() {
         if(MathUtils.random() <= 0.5f) {
-            spawnItemsAround(1, 2, 0, 0, "item_oak_log", 8f);
+            spawnItemsAround(1, 2, 0, 0, "item_carrot", 8f);
         }
     }
 

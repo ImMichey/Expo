@@ -315,7 +315,6 @@ public class ClientChunk {
         iterationArray[5] = getTileEntityAt(tileArray, 1, -1);      // SE
         iterationArray[6] = getTileEntityAt(tileArray, -1, -1);     // SW
         iterationArray[7] = getTileEntityAt(tileArray, -1, 1);      // NW
-
         return iterationArray;
     }
 

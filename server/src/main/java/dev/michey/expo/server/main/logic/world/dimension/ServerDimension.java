@@ -19,8 +19,9 @@ import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.Pair;
 import dev.michey.expo.weather.Weather;
 
-import java.util.Locale;
 import java.util.concurrent.Callable;
+
+import static dev.michey.expo.server.util.ServerUtils.dumpPerformanceMetrics;
 
 public abstract class ServerDimension {
 
@@ -88,20 +89,19 @@ public abstract class ServerDimension {
             generateWeather();
         }
 
+        long a = System.nanoTime();
         chunkHandler.tickChunks();
+        long b = System.nanoTime();
         entitySpawnManager.tick(ExpoServerContainer.get().globalDelta);
+        long c = System.nanoTime();
         entityManager.tickEntities(ExpoServerContainer.get().globalDelta);
+        long d = System.nanoTime();
         visibilityController.tick();
+        long e = System.nanoTime();
 
-        /*
-        if(dimensionName.equals("overworld")) {
-            ExpoLogger.log("tick=" + st(e, a) + "\t\t chunks=" + st(b, a) + "\t esm=" + st(c, b) + "\t ent=" + st(d, c) + "\t vsb=" + st(e, d));
+        if(ExpoShared.TRACK_PERFORMANCE && mainDimension) {
+            dumpPerformanceMetrics("ESC.loop()", new String[] {"cnks", "esm", "etick" + (entityManager.getAllEntities().size()), "evc"}, new long[] {a, b, c, d, e});
         }
-        */
-    }
-
-    private String st(long l1, long l2) {
-        return String.format(Locale.US, "%.2f", ((l1 - l2) / 1_000_000d * ExpoShared.DEFAULT_LOCAL_TICK_RATE)) + "%";
     }
 
     private void generateWeather() {

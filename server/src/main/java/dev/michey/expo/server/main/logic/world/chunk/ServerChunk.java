@@ -41,6 +41,7 @@ public class ServerChunk {
     public final ServerTile[] tiles;
     public long lastTileUpdate;
     public boolean inactivity;
+    public boolean ready;
 
     /** Tile based entities */
     private int[] tileBasedEntityIdGrid;
@@ -179,11 +180,13 @@ public class ServerChunk {
         int acceptChunkXMin = chunkX - 1, acceptChunkXMax = chunkX + 1;
         int acceptChunkYMin = chunkY - 1, acceptChunkYMax = chunkY + 1;
 
+        /*
         for(ServerEntity entity : dimension.getEntityManager().getAllEntities()) {
             if(entity.chunkX >= acceptChunkXMin && entity.chunkX <= acceptChunkXMax && entity.chunkY >= acceptChunkYMin && entity.chunkY <= acceptChunkYMax) {
                 addToList(EntityMetadataMapper.get().getFor(entity.getEntityType()).getPopulationBbox(), entity, existingEntityDimensionMap);
             }
         }
+        */
 
         // We are going through this list too as multiple chunks get populated per tick and every generated entity will get added next tick (they are invisible in the list above)
         for(EntityOperation operation : dimension.getEntityManager().getEntityOperationQueue()) {

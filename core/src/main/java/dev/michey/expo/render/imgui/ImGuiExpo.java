@@ -72,7 +72,7 @@ public class ImGuiExpo {
     public final ImBoolean renderPunchData = new ImBoolean(false);
     public final ImBoolean renderHitbox = new ImBoolean(false);
     public final ImBoolean entityBrainStates = new ImBoolean(false);
-    public final ImBoolean renderDebugPoints = new ImBoolean(true);
+    public final ImBoolean renderDebugPoints = new ImBoolean(false);
     private final float[] speed = new float[1];
     private final float[] minStrength = new float[1];
     private final float[] maxStrength = new float[1];

@@ -590,6 +590,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
         for(ServerChunk chunk : currentlyVisibleChunks) {
             if(chunk == null) continue; // If null, it is generating/loading from disk right now; otherwise it is fully loaded.
+            if(!chunk.ready) continue;
 
             // var pair = getChunkGrid().generatingChunkMap.get(chunk.getChunkKey());
             // boolean isGenerating = pair != null && pair.value.contains(entityId);

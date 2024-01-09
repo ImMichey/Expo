@@ -14,6 +14,7 @@ public class BrainModuleChase extends BrainModule {
     float attackCooldown;
     int chaseEntityId = -1;
     float attackDelta;
+    float attackOffsetY;
     final Vector2 dirVector;
 
     public BrainModuleChase() {
@@ -28,6 +29,7 @@ public class BrainModuleChase extends BrainModule {
         chaseSpeed = meta.getFloat("ai.chaseSpeed");
         attackDistance = meta.getFloat("ai.attackDistance");
         attackCooldown = meta.getFloat("ai.attackCooldown");
+        attackOffsetY = meta.getAttackOffsetY();
 
         attackDelta = attackCooldown;
     }
@@ -52,7 +54,7 @@ public class BrainModuleChase extends BrainModule {
             return;
         }
 
-        float dst = Vector2.dst(chase.posX, chase.posY, entity.posX, entity.posY);
+        float dst = Vector2.dst(chase.posX, chase.posY, entity.posX, entity.posY + attackOffsetY);
 
         if(dst > maxChaseDistance) {
             getBrain().resetModule();

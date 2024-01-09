@@ -29,6 +29,7 @@ public class GameSettings {
     public boolean enableDebugGL = false;
     public boolean enableDebugImGui = false;
     public boolean enableDebugMode = false;
+    public boolean enablePerformanceProfiler = false;
 
     // Audio variables
     public float masterVolume = 1.0f;
@@ -90,6 +91,7 @@ public class GameSettings {
                 .put("enableDebugGL", enableDebugGL)
                 .put("enableDebugImGui", enableDebugImGui)
                 .put("enableDebugMode", enableDebugMode)
+                .put("enablePerformanceProfiler", enablePerformanceProfiler)
                 ;
 
         JSONObject audioJson = new JSONObject()
@@ -142,6 +144,7 @@ public class GameSettings {
         enableDebugGL = debugJson.getBoolean("enableDebugGL");
         enableDebugImGui = debugJson.getBoolean("enableDebugImGui");
         enableDebugMode = debugJson.getBoolean("enableDebugMode");
+        enablePerformanceProfiler = debugJson.getBoolean("enablePerformanceProfiler");
 
         JSONObject audioJson = jsonSettings.getJSONObject("audio");
         masterVolume = audioJson.getFloat("masterVolume");

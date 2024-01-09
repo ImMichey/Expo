@@ -39,7 +39,7 @@ public class ServerChunkGrid {
     public final ConcurrentHashMap<String, Pair<ServerChunk, Long>> activeChunkMap; // key = hash, value = pair <chunk, activeTimestamp>
     private final ConcurrentHashMap<String, Pair<ServerChunk, Long>> inactiveChunkMap; // key = hash, value = pair <chunk, inactiveTimestamp>
     private final ConcurrentHashMap<String, ServerTile> tileMap;
-    public final ConcurrentHashMap<String, Pair<ServerChunk, Set<Integer>>> generatingChunkMap; // key = hash, value = pair <chunk, list<playerIds>>
+    public final ConcurrentHashMap<String, Set<Integer>> generatingChunkMap; // key = hash, value = pair <chunk, list<playerIds>>
     public final ExecutorService executorService;
     public final ExecutorService ioExecutorService;
 
@@ -378,27 +378,11 @@ public class ServerChunkGrid {
         return null;
     }
 
-    /* Not used anymore
-    private void notifyPlayers(String hash) {
-        var notify = generatingChunkMap.remove(hash);
-
-        for(int id : notify.value) {
-            ServerEntity player = dimension.getEntityManager().getEntityById(id);
-
-            if(player != null) {
-                ServerPlayer p = (ServerPlayer) player;
-                p.hasSeenChunks.put(hash, notify.key.lastTileUpdate);
-                ServerPackets.p11ChunkData(notify.key, PacketReceiver.player(p));
-            }
-        }
-    }
-    */
-
     private void startChunkGeneration(ServerPlayer requester, String hash, int chunkX, int chunkY) {
         AtomicBoolean resume = new AtomicBoolean(true);
 
         generatingChunkMap.computeIfPresent(hash, (s, serverChunkSetPair) -> {
-            serverChunkSetPair.value.add(requester.entityId);
+            serverChunkSetPair.add(requester.entityId);
             resume.set(false);
             return serverChunkSetPair;
         });
@@ -407,23 +391,25 @@ public class ServerChunkGrid {
             return;
         }
 
-        ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
-
         HashSet<Integer> notifyList = new HashSet<>();
         notifyList.add(requester.entityId);
-        generatingChunkMap.put(hash, new Pair<>(chunk, notifyList));
+        generatingChunkMap.put(hash, notifyList);
 
         if(knownChunkFiles.contains(hash)) {
             // Start a I/O thread and load the chunk content.
             executorService.execute(() -> {
+                ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
                 chunk.loadFromFile();
+                chunk.ready = true;
                 activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
                 generatingChunkMap.remove(hash);
             });
         } else {
             // Start generation task.
             executorService.execute(() -> {
+                ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
                 chunk.generate(true, false);
+                chunk.ready = true;
                 activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
                 generatingChunkMap.remove(hash);
             });
@@ -464,13 +450,9 @@ public class ServerChunkGrid {
             chunk.generate(populate, false);
         }
 
+        chunk.ready = true;
         activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
         return chunk;
-    }
-
-    public void generateChunkSilently(int chunkX, int chunkY) {
-        ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
-        chunk.generate(true, true);
     }
 
     public ServerChunk getActiveChunk(String chunkKey) {

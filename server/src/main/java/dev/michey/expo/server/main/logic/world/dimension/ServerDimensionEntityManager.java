@@ -16,20 +16,19 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerDimensionEntityManager {
 
     /** Storage maps */
-    private final ConcurrentHashMap<Integer, ServerEntity> idEntityMap;
+    private final TreeMap<Integer, ServerEntity> idEntityMap;
     private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
     private final HashMap<Integer, List<ServerItem>> mergeItemMap;
 
     public ServerDimensionEntityManager() {
-        idEntityMap = new ConcurrentHashMap<>();
+        idEntityMap = new TreeMap<>();
         typeEntityListMap = new HashMap<>();
         damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();
@@ -40,8 +39,12 @@ public class ServerDimensionEntityManager {
         }
     }
 
+    // private final HashMap<ServerEntityType, Long> TEST_MAP = new HashMap<>();
+
     /** Main tick method. */
     public void tickEntities(float delta) {
+        //ExpoLogger.log("Ent size: " + idEntityMap.size() + ", opQueu: " + entityOperationQueue.size());
+
         while(!entityOperationQueue.isEmpty()) {
             EntityOperation op = entityOperationQueue.poll();
             ServerEntity entity = op.payload;
@@ -54,7 +57,7 @@ public class ServerDimensionEntityManager {
             }
         }
 
-        for(ServerEntity entity : idEntityMap.values()) {
+        for(ServerEntity entity : getAllEntities()) {
             entity.tick(delta);
 
             if(!entity.staticPosition) {
@@ -73,13 +76,15 @@ public class ServerDimensionEntityManager {
         }
 
         /*
-        long b = System.nanoTime();
-        TEST_MAP.clear();
         for(ServerEntityType type : ServerEntityType.values()) {
             var map = typeEntityListMap.get(type);
             if(map.isEmpty()) continue;
-            long _a = System.nanoTime();
+
             for(ServerEntity entity : map) {
+                if(!TEST_MAP.containsKey(entity.getEntityType())) {
+                    TEST_MAP.put(entity.getEntityType(), 0L);
+                }
+                long a = System.nanoTime();
                 entity.tick(delta);
 
                 if(!entity.staticPosition) {
@@ -95,26 +100,18 @@ public class ServerDimensionEntityManager {
                         entity.onChunkChanged();
                     }
                 }
+
+                long b = System.nanoTime();
+                TEST_MAP.put(type, TEST_MAP.get(type) + (b - a));
             }
-            long _b = System.nanoTime();
-            TEST_MAP.put(type, new Pair<>((_b - _a), map.size()));
         }
 
-        ExpoLogger.log("ENT tick=" + st(d, a) + "\t\t op=" + st(b, a) + "\t logic=" + st(c, b) + "\t merge=" + st(d, c));
-
-        if(((c - b) / 1_000_000d * ExpoShared.DEFAULT_LOCAL_TICK_RATE) >= 100) {
-            for(ServerEntityType set : TEST_MAP.keySet()) {
-                var pair = TEST_MAP.get(set);
-                ExpoLogger.log("\t" + set.name() + "(" + pair.value + ")" + ": " + pair.key);
-            }
+        for(ServerEntityType set : TEST_MAP.keySet()) {
+            ExpoLogger.log("\t" + set.name() + " -> " + TEST_MAP.get(set));
         }
         */
 
         runItemMerge(delta);
-    }
-
-    private String st(long l1, long l2) {
-        return String.format(Locale.US, "%.2f", ((l1 - l2) / 1_000_000d * ExpoShared.DEFAULT_LOCAL_TICK_RATE)) + "%";
     }
 
     private void runItemMerge(float delta) {
@@ -279,14 +276,6 @@ public class ServerDimensionEntityManager {
             damageableEntityMap.remove(entity.entityId);
         }
         entity.onDeletion();
-    }
-
-    /** Removes the ServerEntity from the storage maps without modifying them. */
-    @Deprecated
-    private void removeEntityUnsafely(int entityId) {
-        ServerEntity entity = idEntityMap.get(entityId);
-        idEntityMap.remove(entityId);
-        typeEntityListMap.get(entity.getEntityType()).remove(entity);
     }
 
     /** Returns all entities of the same type in the current dimension. */

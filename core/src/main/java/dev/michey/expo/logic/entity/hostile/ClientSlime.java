@@ -142,7 +142,7 @@ public class ClientSlime extends ClientEntity implements ReflectableEntity, Ambi
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.4f - 0.2f * simulatedHeight / MAX_HEIGHT, 0.5f - 0.25f * simulatedHeight / MAX_HEIGHT, 0, 0.5f);
+        drawAO50(rc, 0.4f - 0.2f * simulatedHeight / MAX_HEIGHT, 0.5f - 0.25f * simulatedHeight / MAX_HEIGHT, 0, 0.5f);
     }
 
 }

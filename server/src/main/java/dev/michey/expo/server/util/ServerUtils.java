@@ -1,6 +1,12 @@
 package dev.michey.expo.server.util;
 
+import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.arch.ExpoServerDedicated;
+import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Location;
+
+import java.util.Locale;
 
 public class ServerUtils {
 
@@ -62,6 +68,49 @@ public class ServerUtils {
         array[7] = new Location(dimension, x - 16, y).toDetailedLocation();
 
         return array;
+    }
+
+    public static void dumpPerformanceMetrics(String prefix, String[] identifier, long[] timestamps) {
+        StringBuilder builder = new StringBuilder();
+        int useTickRate = ExpoServerBase.get().isLocalServer() ? ExpoShared.DEFAULT_LOCAL_TICK_RATE : ExpoServerDedicated.get().getTicksPerSecond();
+        builder.append(prefix).append('\t').append("TPS=").append(useTickRate).append('\t').append('\t');
+
+        dumpSingleMetric(builder, timestamps[timestamps.length - 1] - timestamps[0], "TOTAL");
+        for(int i = 0; i < identifier.length; i++) {
+            String n = identifier[i];
+            long start = timestamps[i];
+            long end = timestamps[i + 1];
+            long diff = end - start;
+            dumpSingleMetric(builder, diff, n);
+        }
+
+        ExpoLogger.log(builder.toString());
+    }
+
+    private static void dumpSingleMetric(StringBuilder builder, long time, String identifier) {
+        double percentage = toPercentage(time);
+        String colorCharacter = toColorCharacter(percentage);
+        String formatted = String.format(Locale.US, "%.2f", percentage) + "%";
+
+        builder.append(identifier).append("=").append(colorCharacter);
+        builder.append(formatted).append(" ");
+        builder.append('\t').append(ExpoShared.RESET);
+    }
+
+    private static double toPercentage(long time) {
+        int useTickRate = ExpoServerBase.get().isLocalServer() ?
+                ExpoShared.DEFAULT_LOCAL_TICK_RATE :
+                ExpoServerDedicated.get().getTicksPerSecond();
+        return (time / 1_000_000d * useTickRate);
+    }
+
+    private static String toColorCharacter(double percentage) {
+        if(percentage < 20) return ExpoShared.GREEN_BRIGHT;
+        if(percentage < 40) return ExpoShared.GREEN;
+        if(percentage < 60) return ExpoShared.YELLOW_BRIGHT;
+        if(percentage < 80) return ExpoShared.YELLOW;
+        if(percentage < 100) return ExpoShared.RED_BRIGHT;
+        return ExpoShared.RED;
     }
 
 }

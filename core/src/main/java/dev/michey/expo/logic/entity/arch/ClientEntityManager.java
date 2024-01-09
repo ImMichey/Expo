@@ -32,7 +32,7 @@ public class ClientEntityManager {
 
     /** Storage maps */
     private final LinkedList<ClientEntity> depthEntityList;
-    private final HashMap<Integer, ClientEntity> idEntityMap;
+    private final TreeMap<Integer, ClientEntity> idEntityMap;
     private final HashMap<ClientEntityType, LinkedList<ClientEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<Pair<Integer, EntityRemovalReason>> removalQueue;
     private final ConcurrentLinkedQueue<ClientEntity> additionQueueSv;
@@ -61,7 +61,7 @@ public class ClientEntityManager {
 
     public ClientEntityManager() {
         depthEntityList = new LinkedList<>();
-        idEntityMap = new HashMap<>();
+        idEntityMap = new TreeMap<>();
         typeEntityListMap = new HashMap<>();
         removalQueue = new ConcurrentLinkedQueue<>();
         additionQueueSv = new ConcurrentLinkedQueue<>();

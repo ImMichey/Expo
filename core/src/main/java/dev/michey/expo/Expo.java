@@ -76,6 +76,7 @@ public class Expo implements ApplicationListener {
 
 	public Expo(GameSettings gameSettings) {
 		if(gameSettings.enableDebugMode) DEV_MODE = true;
+		if(gameSettings.enablePerformanceProfiler) ExpoShared.TRACK_PERFORMANCE = true;
 
 		if(gameSettings.zoomLevel == 0) {
 			DEFAULT_CAMERA_ZOOM = 0.5f;
@@ -187,7 +188,6 @@ public class Expo implements ApplicationListener {
 		}
 
 		autoExec();
-		//sliceAndPatch();
 	}
 
 	public void sliceAndPatch() {

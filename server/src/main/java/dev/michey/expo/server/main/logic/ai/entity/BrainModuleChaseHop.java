@@ -39,7 +39,7 @@ public class BrainModuleChaseHop extends BrainModuleChase {
             return;
         }
 
-        float dst = Vector2.dst(chase.posX, chase.posY, entity.posX, entity.posY);
+        float dst = Vector2.dst(chase.posX, chase.posY, entity.posX, entity.posY + attackOffsetY);
 
         if(dst > maxChaseDistance && remainingDuration <= 0) {
             getBrain().resetModule();
@@ -51,8 +51,13 @@ public class BrainModuleChaseHop extends BrainModuleChase {
                 attackDelta += delta;
 
                 if(attackDelta > attackCooldown && dst <= attackDistance) {
-                    attackDelta = 0;
-                    attack = true;
+                    if(remainingDuration > 0) {
+                        remainingDuration -= delta;
+                    } else {
+                        getBrain().resetMovementPacket();
+                        attackDelta = 0;
+                        attack = true;
+                    }
                 }
             }
 
@@ -92,8 +97,6 @@ public class BrainModuleChaseHop extends BrainModuleChase {
                         }
                     }
                 }
-            } else {
-                getBrain().resetMovementPacket();
             }
         }
     }

@@ -18,6 +18,7 @@ public class BrainModuleAttack extends BrainModule {
     private float attackDamage;
     private float attackAt;
     private float attackRange;
+    private float attackOffsetY;
     private int attackEntityId = -1;
     private boolean attackForce;
 
@@ -33,6 +34,7 @@ public class BrainModuleAttack extends BrainModule {
         attackDamage = meta.getFloat("ai.attackDamage");
         attackAt = meta.getFloat("ai.attackAt");
         attackRange = meta.getFloat("ai.attackRange");
+        attackOffsetY = meta.getAttackOffsetY();
     }
 
     @Override
@@ -58,7 +60,7 @@ public class BrainModuleAttack extends BrainModule {
 
                 ServerEntity attackEntity = getBrain().getEntity().getDimension().getEntityManager().getEntityById(attackEntityId);
 
-                if(attackEntity != null && Vector2.dst(attackEntity.posX, attackEntity.posY, getBrain().getEntity().posX, getBrain().getEntity().posY) <= attackRange) {
+                if(attackEntity != null && Vector2.dst(attackEntity.posX, attackEntity.posY, getBrain().getEntity().posX, getBrain().getEntity().posY + attackOffsetY) <= attackRange) {
                     float preDamageHp = attackEntity.health;
                     boolean applied = attackEntity.applyDamageWithPacket(getBrain().getEntity(), attackDamage);
 
