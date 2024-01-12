@@ -82,6 +82,9 @@ public abstract class ExpoServerBase {
         commandResolver.addCommand(new ServerCommandGive());
         commandResolver.addCommand(new ServerCommandEntityDump());
         commandResolver.addCommand(new ServerCommandGod());
+        commandResolver.addCommand(new ServerCommandKill());
+        commandResolver.addCommand(new ServerCommandKillall());
+        commandResolver.addCommand(new ServerCommandSaveall());
         log("Registered " + commandResolver.getCommandMap().size() + " commands.");
         INSTANCE = this;
         applyFileProperties();
@@ -148,12 +151,6 @@ public abstract class ExpoServerBase {
                 PlayerSaveFile.DEFAULT_PROPERTIES.put("posY", dimension.getDimensionSpawnY());
                 PlayerSaveFile.DEFAULT_PROPERTIES.put("dimensionName", dimension.getDimensionName());
 
-                //int spawnChunkX = ExpoShared.posToChunk(dimension.getDimensionSpawnX());
-                //int spawnChunkY = ExpoShared.posToChunk(dimension.getDimensionSpawnY());
-                //int startChunkX = spawnChunkX - (SPAWN_AREA_CHUNK_RANGE - 1) / 2;
-                //int startChunkY = spawnChunkY - (SPAWN_AREA_CHUNK_RANGE - 1) / 2;
-
-                //dimension.getChunkHandler().initializeSpawnChunks(startChunkX, startChunkY);
                 dimension.onReady();
             }
         }

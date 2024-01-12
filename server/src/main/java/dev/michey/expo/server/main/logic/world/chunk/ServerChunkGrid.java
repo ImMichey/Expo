@@ -2,9 +2,8 @@ package dev.michey.expo.server.main.logic.world.chunk;
 
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
-import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.*;
 import dev.michey.expo.util.ExpoShared;
@@ -13,10 +12,7 @@ import make.some.noise.Noise;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -33,22 +29,22 @@ public class ServerChunkGrid {
     /** Chunk logic */
     private long unloadAfterMillis;
     private long saveAfterMillis;
-    private Pair[] spawnChunks; // can be null if not main dimension
+    private long lastSaveCheckMillis;
 
     /** Multithreading logic */
     public final ConcurrentHashMap<String, Pair<ServerChunk, Long>> activeChunkMap; // key = hash, value = pair <chunk, activeTimestamp>
-    private final ConcurrentHashMap<String, Pair<ServerChunk, Long>> inactiveChunkMap; // key = hash, value = pair <chunk, inactiveTimestamp>
+    public final ConcurrentHashMap<String, Pair<ServerChunk, Long>> inactiveChunkMap; // key = hash, value = pair <chunk, inactiveTimestamp>
     private final ConcurrentHashMap<String, ServerTile> tileMap;
     public final ConcurrentHashMap<String, Set<Integer>> generatingChunkMap; // key = hash, value = pair <chunk, list<playerIds>>
-    public final ExecutorService executorService;
-    public final ExecutorService ioExecutorService;
+    private final HashMap<ServerPlayer, PlayerChunkMemory> playerChunkMemoryMap;
 
     /** Noise logic */
     private final Noise terrainNoiseHeight;
     private final Noise terrainNoiseTemperature;
     private final Noise terrainNoiseMoisture;
     private final HashMap<String, Noise> noisePostProcessorMap;
-    private final ConcurrentHashMap<String, Pair<BiomeType, float[]>> noiseCacheMap;
+    private final ConcurrentSkipListMap<String, Pair<BiomeType, float[]>> noiseCacheMap;
+    //private final ConcurrentHashMap<String, Pair<BiomeType, float[]>> noiseCacheMap;
 
     /** Biome logic */
     private final WorldGenSettings genSettings;
@@ -60,28 +56,11 @@ public class ServerChunkGrid {
         knownChunkFiles = new LinkedList<>();
         tileMap = new ConcurrentHashMap<>();
         noisePostProcessorMap = new HashMap<>();
+        playerChunkMemoryMap = new HashMap<>();
         generatingChunkMap = new ConcurrentHashMap<>();
+        noiseCacheMap = new ConcurrentSkipListMap<>();
         unloadAfterMillis = ExpoShared.UNLOAD_CHUNKS_AFTER_MILLIS;
         saveAfterMillis = ExpoShared.SAVE_CHUNKS_AFTER_MILLIS;
-
-        ThreadFactory tf = new ThreadFactory() {
-            private int nr = -1;
-            @Override
-            public Thread newThread(Runnable r) {
-                nr++;
-                return new Thread(r, "exs-" + nr);
-            }
-        };
-        ThreadFactory io = new ThreadFactory() {
-            private int nr = -1;
-            @Override
-            public Thread newThread(Runnable r) {
-                nr++;
-                return new Thread(r, "io-" + nr);
-            }
-        };
-        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tf);
-        ioExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), io);
 
         genSettings = WorldGen.get().getSettings(dimension.getDimensionName());
         WorldGenNoiseSettings settings = genSettings.getNoiseSettings();
@@ -105,8 +84,6 @@ public class ServerChunkGrid {
                 }
             }
         }
-
-        noiseCacheMap = new ConcurrentHashMap<>();
     }
 
     public void setUnloadAfterMillis(long unloadAfterMillis) {
@@ -239,39 +216,15 @@ public class ServerChunkGrid {
         log("    cached " + knownChunkFiles.size() + " chunk(s).");
     }
 
-    /** Initializes the spawn chunks so they are always active. */
-    public void initializeSpawnChunks(int startChunkX, int startChunkY) {
-        spawnChunks = new Pair[SPAWN_AREA_CHUNK_RANGE * SPAWN_AREA_CHUNK_RANGE];
-
-        for(int i = 0; i < spawnChunks.length; i++) {
-            int x = i % SPAWN_AREA_CHUNK_RANGE;
-            int y = i / SPAWN_AREA_CHUNK_RANGE;
-            spawnChunks[i] = new Pair<>(startChunkX + x, startChunkY + y);
-        }
-
-        log("Loaded " + spawnChunks.length + " spawn chunks for dimension " + dimension.getDimensionName());
-    }
-
     /** Main chunk logic method. */
     public void tickChunks() {
         long now = System.currentTimeMillis();
 
-        // Update spawn chunks constantly, so they aren't marked as inactive
-        if(spawnChunks != null) {
-            /*
-            for(Pair hash : spawnChunks) {
-                ServerChunk chunk = getChunk((Integer) hash.key, (Integer) hash.value);
-                activeChunkMap.get(chunk.getChunkKey()).value = generateInactiveChunkTimestamp();
-            }
-            */
-        }
-
         // Update chunks in proximity of players
         var entityManager = dimension.getEntityManager();
-        LinkedList<ServerEntity> players = entityManager.getEntitiesOf(ServerEntityType.PLAYER);
+        LinkedList<ServerPlayer> players = entityManager.getAllPlayers();
 
-        for(ServerEntity entity : players) {
-            ServerPlayer player = (ServerPlayer) entity;
+        for(ServerPlayer player : players) {
             ServerChunk[] chunksInView = getChunksInPlayerRange(player);
 
             for(ServerChunk chunk : chunksInView) {
@@ -282,28 +235,30 @@ public class ServerChunkGrid {
 
         // Mark active chunks as inactive
         {
-            Iterator<String> iterator = activeChunkMap.keySet().iterator();
+            Iterator<Pair<ServerChunk, Long>> iterator = activeChunkMap.values().iterator();
 
             while(iterator.hasNext()) {
-                String key = iterator.next();
-                var pair = activeChunkMap.get(key);
+                Pair<ServerChunk, Long> pair = iterator.next();
 
                 if((now - pair.value) > 0) { // reached inactive state
                     iterator.remove();
                     pair.value = generateTimestamp();
-                    inactiveChunkMap.put(key, pair);
+                    inactiveChunkMap.put(pair.key.getChunkKey(), pair);
                     pair.key.onInactive();
                 }
             }
         }
 
+        long diff = now - lastSaveCheckMillis;
+        if(diff < 1000L) return;
+        lastSaveCheckMillis = now;
+
         // Save inactive chunks
         {
-            Iterator<String> iterator = inactiveChunkMap.keySet().iterator();
+            Iterator<Pair<ServerChunk, Long>> iterator = inactiveChunkMap.values().iterator();
 
             while(iterator.hasNext()) {
-                String key = iterator.next();
-                var pair = inactiveChunkMap.get(key);
+                Pair<ServerChunk, Long> pair = iterator.next();
 
                 if(now - pair.value > 0) { // reached save state
                     iterator.remove();
@@ -319,20 +274,52 @@ public class ServerChunkGrid {
         return activeChunkMap.values();
     }
 
+    public void removeFromChunkMemoryMap(ServerPlayer player) {
+        playerChunkMemoryMap.remove(player);
+    }
+
     /** Returns an array of all chunks that are in range of given player. The existence of given chunks is not guaranteed. */
     public ServerChunk[] getChunksInPlayerRange(ServerPlayer player) {
         int playerChunkX = ExpoShared.posToChunk(player.posX) - PLAYER_CHUNK_VIEW_RANGE_DIR_X;
         int playerChunkY = ExpoShared.posToChunk(player.posY) - PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
+        var existing = playerChunkMemoryMap.get(player);
+        boolean update = true;
 
-        ServerChunk[] chunks = new ServerChunk[PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y];
+        if(existing != null) {
+            if(existing.originChunkX() == playerChunkX && existing.originChunkY() == playerChunkY) {
+                if(existing.chunkArray() != null) {
+                    ServerChunk[] sc = existing.chunkArray();
+                    int valid = 0;
 
-        for(int i = 0; i < chunks.length; i++) {
-            int x = i % PLAYER_CHUNK_VIEW_RANGE_X;
-            int y = i / PLAYER_CHUNK_VIEW_RANGE_X;
-            chunks[i] = getChunkUnsafe(player, playerChunkX + x, playerChunkY + y);
+                    for(ServerChunk chunk : sc) {
+                        if(chunk != null) {
+                            valid++;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if(valid == existing.chunkArray().length) {
+                        update = false;
+                    }
+                }
+            }
         }
 
-        return chunks;
+        if(update) {
+            ServerChunk[] chunks = new ServerChunk[PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y];
+
+            for(int i = 0; i < chunks.length; i++) {
+                int x = i % PLAYER_CHUNK_VIEW_RANGE_X;
+                int y = i / PLAYER_CHUNK_VIEW_RANGE_X;
+                chunks[i] = getChunkUnsafe(player, playerChunkX + x, playerChunkY + y);
+            }
+
+            playerChunkMemoryMap.put(player, new PlayerChunkMemory(player, playerChunkX, playerChunkY, chunks));
+            return chunks;
+        }
+
+        return existing.chunkArray();
     }
 
     /** Returns an array of all chunk numbers that are in range of given player. */
@@ -397,7 +384,7 @@ public class ServerChunkGrid {
 
         if(knownChunkFiles.contains(hash)) {
             // Start a I/O thread and load the chunk content.
-            executorService.execute(() -> {
+            ServerWorld.get().mtServiceTick.execute(() -> {
                 ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
                 chunk.loadFromFile();
                 chunk.ready = true;
@@ -406,7 +393,7 @@ public class ServerChunkGrid {
             });
         } else {
             // Start generation task.
-            executorService.execute(() -> {
+            ServerWorld.get().mtServiceTick.execute(() -> {
                 ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
                 chunk.generate(true, false);
                 chunk.ready = true;

@@ -11,6 +11,7 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.ServerInventory;
 import dev.michey.expo.server.main.logic.inventory.ServerPlayerInventory;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
@@ -59,7 +60,9 @@ public class ServerPackets {
     }
 
     public static void p2EntityCreate(ServerEntity entity, PacketReceiver receiver) {
-        p2EntityCreate(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, entity.health, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            p2EntityCreate(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, entity.health, receiver);
+        });
     }
 
     /** Sends the P3_PlayerJoin packet via TCP protocol. */
@@ -71,20 +74,23 @@ public class ServerPackets {
 
     /** Sends the P4_EntityDelete packet via TCP protocol. */
     public static void p4EntityDelete(int entityId, EntityRemovalReason reason, PacketReceiver receiver) {
-        //ExpoLogger.log("p4EntityDelete " + entityId + " " + reason);
-        P4_EntityDelete p = new P4_EntityDelete();
-        p.entityId = entityId;
-        p.reason = reason;
-        tcp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P4_EntityDelete p = new P4_EntityDelete();
+            p.entityId = entityId;
+            p.reason = reason;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P6_EntityPosition packet via UDP protocol. */
     public static void p6EntityPosition(int entityId, float xPos, float yPos, PacketReceiver receiver) {
-        P6_EntityPosition p = new P6_EntityPosition();
-        p.entityId = entityId;
-        p.xPos = xPos;
-        p.yPos = yPos;
-        udp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P6_EntityPosition p = new P6_EntityPosition();
+            p.entityId = entityId;
+            p.xPos = xPos;
+            p.yPos = yPos;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P7_ChunkSnapshot packet via UDP protocol. */
@@ -96,28 +102,32 @@ public class ServerPackets {
 
     /** Sends the P8_EntityDeleteStack packet via TCP protocol. */
     public static void p8EntityDeleteStack(int[] entityList, EntityRemovalReason[] reasons, PacketReceiver receiver) {
-        P8_EntityDeleteStack p = new P8_EntityDeleteStack();
-        p.entityList = entityList;
-        p.reasons = reasons;
-        tcp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P8_EntityDeleteStack p = new P8_EntityDeleteStack();
+            p.entityList = entityList;
+            p.reasons = reasons;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P9_PlayerCreate packet via TCP protocol. */
     public static void p9PlayerCreate(int entityId, String dimensionName, float serverPosX, float serverPosY, int direction, String username, boolean player, int[] equippedItemIds, float armRotation, float health, float hunger, PacketReceiver receiver) {
-        P9_PlayerCreate p = new P9_PlayerCreate();
-        p.entityType = ServerEntityType.PLAYER;
-        p.entityId = entityId;
-        p.dimensionName = dimensionName;
-        p.serverPosX = serverPosX;
-        p.serverPosY = serverPosY;
-        p.username = username;
-        p.player = player;
-        p.direction = direction;
-        p.equippedItemIds = equippedItemIds;
-        p.armRotation = armRotation;
-        p.health = health;
-        p.hunger = hunger;
-        tcp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P9_PlayerCreate p = new P9_PlayerCreate();
+            p.entityType = ServerEntityType.PLAYER;
+            p.entityId = entityId;
+            p.dimensionName = dimensionName;
+            p.serverPosX = serverPosX;
+            p.serverPosY = serverPosY;
+            p.username = username;
+            p.player = player;
+            p.direction = direction;
+            p.equippedItemIds = equippedItemIds;
+            p.armRotation = armRotation;
+            p.health = health;
+            p.hunger = hunger;
+            tcp(p, receiver);
+        });
     }
 
     public static void p9PlayerCreate(ServerPlayer entity, boolean player, PacketReceiver receiver) {
@@ -133,51 +143,59 @@ public class ServerPackets {
 
     /** Sends the P11_ChunkData packet via TCP protocol. */
     public static void p11ChunkData(ServerChunk chunk, PacketReceiver receiver) {
-        P11_ChunkData p = new P11_ChunkData();
-        p.chunkX = chunk.chunkX;
-        p.chunkY = chunk.chunkY;
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P11_ChunkData p = new P11_ChunkData();
+            p.chunkX = chunk.chunkX;
+            p.chunkY = chunk.chunkY;
 
-        int s = chunk.tiles.length;
-        p.biomes = new BiomeType[s];
-        p.individualTileData = new DynamicTilePart[s][];
+            int s = chunk.tiles.length;
+            p.biomes = new BiomeType[s];
+            p.individualTileData = new DynamicTilePart[s][];
 
-        for(int i = 0; i < s; i++) {
-            p.biomes[i] = chunk.tiles[i].biome;
-            p.individualTileData[i] = chunk.tiles[i].dynamicTileParts;
-        }
-
-        if(chunk.hasTileBasedEntities()) {
-            int count = 0;
-
-            for(int id : chunk.getTileBasedEntityIdGrid()) {
-                if(id != -1) count++;
+            for(int i = 0; i < s; i++) {
+                p.biomes[i] = chunk.tiles[i].biome;
+                p.individualTileData[i] = chunk.tiles[i].dynamicTileParts;
             }
 
-            p.tileEntityCount = count;
-        }
+            synchronized (chunk.tileEntityLock) {
+                if(chunk.hasTileBasedEntities()) {
+                    int count = 0;
 
-        tcp(p, receiver);
+                    for(int id : chunk.getTileBasedEntityIdGrid()) {
+                        if(id != -1) count++;
+                    }
+
+                    p.tileEntityCount = count;
+                }
+            }
+
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P12_PlayerDirection packet via UDP protocol. */
     public static void p12PlayerDirection(int entityId, int direction, PacketReceiver receiver) {
-        P12_PlayerDirection p = new P12_PlayerDirection();
-        p.entityId = entityId;
-        p.direction = direction;
-        udp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P12_PlayerDirection p = new P12_PlayerDirection();
+            p.entityId = entityId;
+            p.direction = direction;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P13_EntityMove packet via UDP protocol. */
     public static void p13EntityMove(int entityId, int xDir, int yDir, boolean sprinting, float xPos, float yPos, float distance, PacketReceiver receiver) {
-        P13_EntityMove p = new P13_EntityMove();
-        p.entityId = entityId;
-        p.xDir = xDir;
-        p.yDir = yDir;
-        p.xPos = xPos;
-        p.yPos = yPos;
-        p.distance = distance;
-        p.sprinting = sprinting;
-        udp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P13_EntityMove p = new P13_EntityMove();
+            p.entityId = entityId;
+            p.xDir = xDir;
+            p.yDir = yDir;
+            p.xPos = xPos;
+            p.yPos = yPos;
+            p.distance = distance;
+            p.sprinting = sprinting;
+            udp(p, receiver);
+        });
     }
 
     public static void p13EntityMove(int entityId, int xDir, int yDir, float xPos, float yPos, float distance, PacketReceiver receiver) {
@@ -251,10 +269,12 @@ public class ServerPackets {
 
     /** Sends the P22_PlayerArmDirection packet via UDP protocol. */
     public static void p22PlayerArmDirection(int entityId, float rotation, PacketReceiver receiver) {
-        P22_PlayerArmDirection p = new P22_PlayerArmDirection();
-        p.entityId = entityId;
-        p.rotation = rotation;
-        udp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P22_PlayerArmDirection p = new P22_PlayerArmDirection();
+            p.entityId = entityId;
+            p.rotation = rotation;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P23_PlayerLifeUpdate packet via UDP protocol. */
@@ -311,7 +331,7 @@ public class ServerPackets {
     }
 
     /** Sends the P29_EntityCreateAdvanced packet via TCP protocol. */
-    public static void p29EntityCreateAdvanced(ServerEntityType entityType, int entityId, float serverPosX, float serverPosY, int tileArray, float health, Object[] payload, PacketReceiver receiver) {
+    private static void p29EntityCreateAdvanced(ServerEntityType entityType, int entityId, float serverPosX, float serverPosY, int tileArray, float health, Object[] payload, PacketReceiver receiver) {
         P29_EntityCreateAdvanced p = new P29_EntityCreateAdvanced();
         p.entityType = entityType;
         p.entityId = entityId;
@@ -324,8 +344,10 @@ public class ServerPackets {
     }
 
     public static void p29EntityCreateAdvanced(ServerEntity entity, PacketReceiver receiver) {
-        int tileEntityId = entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1;
-        p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, tileEntityId, entity.health, entity.getPacketPayload(), receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            int tileEntityId = entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1;
+            p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, tileEntityId, entity.health, entity.getPacketPayload(), receiver);
+        });
     }
 
     /** Sends the P30_EntityDataUpdate packet via UDP protocol. */
@@ -346,13 +368,15 @@ public class ServerPackets {
 
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
     public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, PacketReceiver receiver) {
-        P32_ChunkDataSingle p = new P32_ChunkDataSingle();
-        p.chunkX = chunkX;
-        p.chunkY = chunkY;
-        p.layer = layer;
-        p.tileArray = tileArray;
-        p.tile = dynamicTile;
-        udp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P32_ChunkDataSingle p = new P32_ChunkDataSingle();
+            p.chunkX = chunkX;
+            p.chunkY = chunkY;
+            p.layer = layer;
+            p.tileArray = tileArray;
+            p.tile = dynamicTile;
+            udp(p, receiver);
+        });
     }
 
     public static void p32ChunkDataSingle(ServerTile tile, int layer) {
@@ -419,13 +443,15 @@ public class ServerPackets {
 
     /** Sends the P43_EntityDeleteAdvanced packet via TCP protocol. */
     public static void p43EntityDeleteAdvanced(int entityId, EntityRemovalReason reason, float damage, float newHealth, int damageSourceEntityId, PacketReceiver receiver) {
-        P43_EntityDeleteAdvanced p = new P43_EntityDeleteAdvanced();
-        p.entityId = entityId;
-        p.reason = reason;
-        p.damage = damage;
-        p.newHealth = newHealth;
-        p.damageSourceEntityId = damageSourceEntityId;
-        tcp(p, receiver);
+        ServerWorld.get().mtServiceTick.execute(() -> {
+            P43_EntityDeleteAdvanced p = new P43_EntityDeleteAdvanced();
+            p.entityId = entityId;
+            p.reason = reason;
+            p.damage = damage;
+            p.newHealth = newHealth;
+            p.damageSourceEntityId = damageSourceEntityId;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P46_EntityConstruct packet via UDP protocol. */

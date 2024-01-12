@@ -14,14 +14,13 @@ import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnDatabase;
 import dev.michey.expo.server.main.logic.world.spawn.EntitySpawnManager;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
+import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
 import dev.michey.expo.util.Pair;
 import dev.michey.expo.weather.Weather;
 
 import java.util.concurrent.Callable;
-
-import static dev.michey.expo.server.util.ServerUtils.dumpPerformanceMetrics;
 
 public abstract class ServerDimension {
 
@@ -100,7 +99,7 @@ public abstract class ServerDimension {
         long e = System.nanoTime();
 
         if(ExpoShared.TRACK_PERFORMANCE && mainDimension) {
-            dumpPerformanceMetrics("ESC.loop()", new String[] {"cnks", "esm", "etick" + (entityManager.getAllEntities().size()), "evc"}, new long[] {a, b, c, d, e});
+            ServerUtils.recordPerformanceMetric("ESC.loop()", new String[] {"cnks", "esm", "etick" + (entityManager.getAllEntities().size()), "evc"}, new long[] {a, b, c, d, e});
         }
     }
 

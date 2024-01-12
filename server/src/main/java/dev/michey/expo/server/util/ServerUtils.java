@@ -6,6 +6,7 @@ import dev.michey.expo.server.main.arch.ExpoServerDedicated;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Location;
 
+import java.util.LinkedList;
 import java.util.Locale;
 
 public class ServerUtils {
@@ -70,25 +71,49 @@ public class ServerUtils {
         return array;
     }
 
-    public static void dumpPerformanceMetrics(String prefix, String[] identifier, long[] timestamps) {
-        StringBuilder builder = new StringBuilder();
-        int useTickRate = ExpoServerBase.get().isLocalServer() ? ExpoShared.DEFAULT_LOCAL_TICK_RATE : ExpoServerDedicated.get().getTicksPerSecond();
-        builder.append(prefix).append('\t').append("TPS=").append(useTickRate).append('\t').append('\t');
+    record PerformanceMetric(String prefix, String[] identifier, long[] timestamps, int tickRate) {
 
-        dumpSingleMetric(builder, timestamps[timestamps.length - 1] - timestamps[0], "TOTAL");
-        for(int i = 0; i < identifier.length; i++) {
-            String n = identifier[i];
-            long start = timestamps[i];
-            long end = timestamps[i + 1];
-            long diff = end - start;
-            dumpSingleMetric(builder, diff, n);
-        }
-
-        ExpoLogger.log(builder.toString());
     }
 
-    private static void dumpSingleMetric(StringBuilder builder, long time, String identifier) {
-        double percentage = toPercentage(time);
+    private static final LinkedList<PerformanceMetric> metrics = new LinkedList<>();
+    private static final Object lock = new Object();
+
+    public static void recordPerformanceMetric(String prefix, String[] identifier, long[] timestamps, int tickRate) {
+        synchronized (lock) {
+            metrics.add(new PerformanceMetric(prefix, identifier, timestamps, tickRate));
+        }
+    }
+
+    public static void recordPerformanceMetric(String prefix, String[] identifier, long[] timestamps) {
+        synchronized (lock) {
+            metrics.add(new PerformanceMetric(prefix, identifier, timestamps, ExpoServerBase.get().isLocalServer() ? ExpoShared.DEFAULT_LOCAL_TICK_RATE : ExpoServerDedicated.get().getTicksPerSecond()));
+        }
+    }
+
+    public static void dumpPerformanceMetrics() {
+        synchronized (lock) {
+            for(PerformanceMetric metric : metrics) {
+                StringBuilder builder = new StringBuilder();
+                builder.append(metric.prefix).append('\t').append("TPS=").append(metric.tickRate).append('\t').append('\t');
+
+                dumpSingleMetric(builder, metric.timestamps[metric.timestamps.length - 1] - metric.timestamps[0], "TOTAL", metric.tickRate);
+                for(int i = 0; i < metric.identifier.length; i++) {
+                    String n = metric.identifier[i];
+                    long start = metric.timestamps[i];
+                    long end = metric.timestamps[i + 1];
+                    long diff = end - start;
+                    dumpSingleMetric(builder, diff, n, metric.tickRate);
+                }
+
+                ExpoLogger.log(builder.toString());
+            }
+
+            metrics.clear();
+        }
+    }
+
+    private static void dumpSingleMetric(StringBuilder builder, long time, String identifier, int tickRate) {
+        double percentage = toPercentage(time, tickRate);
         String colorCharacter = toColorCharacter(percentage);
         String formatted = String.format(Locale.US, "%.2f", percentage) + "%";
 
@@ -97,11 +122,8 @@ public class ServerUtils {
         builder.append('\t').append(ExpoShared.RESET);
     }
 
-    private static double toPercentage(long time) {
-        int useTickRate = ExpoServerBase.get().isLocalServer() ?
-                ExpoShared.DEFAULT_LOCAL_TICK_RATE :
-                ExpoServerDedicated.get().getTicksPerSecond();
-        return (time / 1_000_000d * useTickRate);
+    private static double toPercentage(long time, int tickRate) {
+        return (time / 1_000_000d * tickRate);
     }
 
     private static String toColorCharacter(double percentage) {

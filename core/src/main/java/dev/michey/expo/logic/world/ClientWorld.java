@@ -45,6 +45,7 @@ import dev.michey.expo.server.main.logic.entity.hostile.ServerSlime;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
 import dev.michey.expo.server.util.EntityMetadataMapper;
+import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
 
@@ -117,18 +118,27 @@ public class ClientWorld {
 
     /** Ticking the game world. */
     public void tickWorld(float delta, float serverDelta) {
+        long a = System.nanoTime();
         // Tick chunks
         clientChunkGrid.tick(delta);
+
+        long b = System.nanoTime();
 
         // Tick entities
         clientEntityManager.tickEntities(delta);
         //clientChunkGrid.runPostAmbientOcclusion();
 
+        long c = System.nanoTime();
+
         // Tick camera
         RenderContext.get().expoCamera.tick();
 
+        long d = System.nanoTime();
+
         // Calculate world time
         calculateWorldTime(delta);
+
+        long e = System.nanoTime();
 
         // Weather tick
         if(worldWeather == Weather.RAIN.WEATHER_ID) {
@@ -154,6 +164,13 @@ public class ClientWorld {
 
         float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
         AudioEngine.get().ambientVolume("ambience_rain", rainAmbienceVolume * fn);
+
+        long f = System.nanoTime();
+
+        if(TRACK_PERFORMANCE) {
+            ServerUtils.recordPerformanceMetric("CW", new String[] {"chunk", "ent", "cam", "time", "weather"}, new long[] {a, b, c, d, e, f},
+                    Gdx.graphics.getFramesPerSecond());
+        }
     }
 
     private void spawnRain() {

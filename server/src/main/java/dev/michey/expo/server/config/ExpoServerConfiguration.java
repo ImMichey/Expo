@@ -34,6 +34,7 @@ public class ExpoServerConfiguration {
     private String steamWebApiKey = "";
     private int maxPlayerViewDistanceX = 11;
     private int maxPlayerViewDistanceY = 11;
+    private boolean trackPerformance = false;
 
     /** Singleton */
     private static ExpoServerConfiguration INSTANCE;
@@ -131,6 +132,7 @@ public class ExpoServerConfiguration {
                     case "steamWebApiKey" -> steamWebApiKey = fileAsJson.getString("steamWebApiKey");
                     case "maxPlayerViewDistanceX" -> maxPlayerViewDistanceX = fileAsJson.getInt("maxPlayerViewDistanceX");
                     case "maxPlayerViewDistanceY" -> maxPlayerViewDistanceY = fileAsJson.getInt("maxPlayerViewDistanceY");
+                    case "trackPerformance" -> trackPerformance = fileAsJson.getBoolean("trackPerformance");
                 }
             }
 
@@ -195,6 +197,7 @@ public class ExpoServerConfiguration {
                 .put("steamWebApiKey", steamWebApiKey)
                 .put("maxPlayerViewDistanceX", maxPlayerViewDistanceX)
                 .put("maxPlayerViewDistanceY", maxPlayerViewDistanceY)
+                .put("trackPerformance", trackPerformance)
                 ;
     }
 
@@ -260,6 +263,10 @@ public class ExpoServerConfiguration {
 
     public int getMaxPlayerViewDistanceY() {
         return maxPlayerViewDistanceY;
+    }
+
+    public boolean isTrackPerformance() {
+        return trackPerformance;
     }
 
     public static ExpoServerConfiguration get() {

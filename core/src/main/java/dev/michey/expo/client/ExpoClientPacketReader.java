@@ -35,10 +35,6 @@ import static dev.michey.expo.util.ExpoShared.*;
 
 public class ExpoClientPacketReader {
 
-    private long lastId;
-    private float lastDelta;
-    private Vector2 lastPos = new Vector2();
-
     protected void handlePacket(Packet o, boolean local) {
         if(o instanceof P44_Connect_Rsp p) {
             if(p.credentialsSuccessful) {

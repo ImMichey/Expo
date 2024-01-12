@@ -2,6 +2,8 @@ package dev.michey.expo.server.main.logic;
 
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.util.ServerUtils;
+import dev.michey.expo.util.ExpoShared;
 
 public class ExpoServerContainer {
 
@@ -46,6 +48,8 @@ public class ExpoServerContainer {
         if(ttd > longestTickDuration) {
             longestTickDuration = ttd;
         }
+
+        if(ExpoShared.TRACK_PERFORMANCE) ServerUtils.dumpPerformanceMetrics();
 
         if(doUpdate) {
             totalTickDuration = ttd;

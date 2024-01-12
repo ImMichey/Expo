@@ -33,6 +33,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.util.ExpoHardware;
+import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.steam.ExpoSteam;
 import dev.michey.expo.steam.ExpoSteamCallbackThread;
 import dev.michey.expo.steam.SteamLibraryLoaderGdx;
@@ -296,6 +297,7 @@ public class Expo implements ApplicationListener {
 
 		if(activeScreen != null) {
 			activeScreen.render();
+			if(ExpoShared.TRACK_PERFORMANCE) ServerUtils.dumpPerformanceMetrics();
 		}
 
 		GameConsole.get().draw();

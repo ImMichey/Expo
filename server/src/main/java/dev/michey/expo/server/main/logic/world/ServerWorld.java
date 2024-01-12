@@ -11,10 +11,7 @@ import dev.michey.expo.util.ExpoShared;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.*;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -30,6 +27,8 @@ public class ServerWorld {
     /** Multithreaded ticking for every dimension */
     private final ExecutorService executorService;
     private final Collection<Callable<Void>> dimensionTickCollection;
+    public final ExecutorService mtServiceTick;
+    public final ExecutorService mtServiceIO;
 
     /** Entity id tracking */
     private int currentEntityId;
@@ -41,6 +40,25 @@ public class ServerWorld {
         serverDimensionMap = new HashMap<>();
         executorService = Executors.newFixedThreadPool(2);
         dimensionTickCollection = new ArrayList<>();
+
+        ThreadFactory tf = new ThreadFactory() {
+            private int nr = -1;
+            @Override
+            public Thread newThread(Runnable r) {
+                nr++;
+                return new Thread(r, "expo-mtServiceTick-" + nr);
+            }
+        };
+        ThreadFactory io = new ThreadFactory() {
+            private int nr = -1;
+            @Override
+            public Thread newThread(Runnable r) {
+                nr++;
+                return new Thread(r, "expo-mtServiceIO-" + nr);
+            }
+        };
+        mtServiceTick = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tf);
+        mtServiceIO = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), io);
 
         addDimension(ExpoShared.DIMENSION_OVERWORLD, new ServerDimensionOverworld(ExpoShared.DIMENSION_OVERWORLD, true));
         addDimension(ExpoShared.DIMENSION_CAVE, new ServerDimensionCave(ExpoShared.DIMENSION_CAVE, false));
@@ -134,10 +152,8 @@ public class ServerWorld {
     }
 
     public void cancelAll() {
-        for(ServerDimension dim : getDimensions()) {
-            dim.getChunkHandler().executorService.shutdown();
-            dim.getChunkHandler().ioExecutorService.shutdown();
-        }
+        mtServiceTick.shutdown();
+        mtServiceIO.shutdown();
         executorService.shutdown();
     }
 

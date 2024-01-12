@@ -20,6 +20,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.packet.P29_EntityCreateAdvanced;
 import dev.michey.expo.server.packet.P2_EntityCreate;
+import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.util.*;
 
 import java.util.*;
@@ -81,9 +82,12 @@ public class ClientEntityManager {
     }
 
     public void tickEntities(float delta) {
+        long a = System.nanoTime();
         selectableEntities.clear();
         ambientOcclusionUpdateSet.clear();
         greenlitAmbientOcclusionList.clear();
+
+        long b = System.nanoTime();
 
         if(!additionQueueCl.isEmpty()) {
             Iterator<ClientEntity> additionIterator = additionQueueCl.iterator();
@@ -109,6 +113,8 @@ public class ClientEntityManager {
                 }
             }
         }
+
+        long c = System.nanoTime();
 
         int serverEntityCapAddition = 100, serverEntityCapRemoval = 100;
 
@@ -160,6 +166,8 @@ public class ClientEntityManager {
                 }
             }
         }
+
+        long d = System.nanoTime();
 
         // poll removal
         if(!removalQueue.isEmpty()) {
@@ -214,6 +222,8 @@ public class ClientEntityManager {
             }
         }
 
+        long ee = System.nanoTime();
+
         for(ClientChunk chunk : greenlitAmbientOcclusionList) {
             chunk.generateAmbientOcclusion(false);
         }
@@ -228,7 +238,10 @@ public class ClientEntityManager {
             chunk.completeAO();
         }
 
+        long f = System.nanoTime();
+
         depthEntityList.sort(depthSorter);
+        long g = System.nanoTime();
         var player = ClientPlayer.getLocalPlayer();
 
         for(ClientEntity entity : depthEntityList) {
@@ -312,6 +325,12 @@ public class ClientEntityManager {
                 lastEntityId = -1;
                 ClientPackets.p27PlayerEntitySelection(-1);
             }
+        }
+
+        long h = System.nanoTime();
+        if(ExpoShared.TRACK_PERFORMANCE) {
+            ServerUtils.recordPerformanceMetric("entManager", new String[] {"cl", "addCl", "addSv", "rem", "ao", "sort", "tick"}, new long[] {a, b, c, d, ee, f, g, h},
+                    Gdx.graphics.getFramesPerSecond());
         }
     }
 

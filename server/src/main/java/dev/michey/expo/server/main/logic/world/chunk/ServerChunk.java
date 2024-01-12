@@ -47,6 +47,7 @@ public class ServerChunk {
     private int[] tileBasedEntityIdGrid;
     private boolean hasTileBasedEntities = false;
     private int tileBasedEntityAmount;
+    public final Object tileEntityLock = new Object();
 
     /** Inactive chunk properties */
     private List<ServerEntity> inactiveEntities;
@@ -309,24 +310,6 @@ public class ServerChunk {
         for(ServerEntity entity : registerMap) {
             ServerWorld.get().registerServerEntity(dimension.getDimensionName(), entity);
         }
-
-        /*
-        if(inactive) {
-            for(ServerEntity entity : registerMap) {
-                entity.entityId = ServerWorld.get().generateEntityId();
-                entity.entityDimension = dimension.getDimensionName();
-                entity.onCreation();
-            }
-
-            getDimension().getChunkHandler().inactiveChunkMap.put(chunkKey, new Pair<>(this, getDimension().getChunkHandler().generateTimestamp()));
-            onInactiveSilently(registerMap);
-        } else {
-
-        }
-        */
-
-        //ExpoLogger.log("Finish pop " + chunkKey);
-        // log("Population took " + ((System.nanoTime() - start) / 1_000_000.0d) + "ms.");
     }
 
     private void doSpread(SpreadData spreadData,
@@ -535,7 +518,7 @@ public class ServerChunk {
         if(shutdown) {
             new Thread(() -> _onSave(path)).start();
         } else {
-            dimension.getChunkHandler().ioExecutorService.execute(() -> _onSave(path));
+            ServerWorld.get().mtServiceIO.execute(() -> _onSave(path));
         }
     }
 
@@ -549,23 +532,27 @@ public class ServerChunk {
 
     /** Attaches an entity to a tile within the chunk tile structure. */
     public void attachTileBasedEntity(int id, int tx, int ty) {
-        if(!hasTileBasedEntities) {
-            hasTileBasedEntities = true;
-            tileBasedEntityIdGrid = new int[ROW_TILES * ROW_TILES];
-            Arrays.fill(tileBasedEntityIdGrid, -1);
-        }
+        synchronized (tileEntityLock) {
+            if(!hasTileBasedEntities) {
+                hasTileBasedEntities = true;
+                tileBasedEntityIdGrid = new int[ROW_TILES * ROW_TILES];
+                Arrays.fill(tileBasedEntityIdGrid, -1);
+            }
 
-        tileBasedEntityIdGrid[ty * ROW_TILES + tx] = id;
-        tileBasedEntityAmount++;
+            tileBasedEntityIdGrid[ty * ROW_TILES + tx] = id;
+            tileBasedEntityAmount++;
+        }
     }
 
     /** Detaches an entity from a title within the chunk tile structure. */
     public void detachTileBasedEntity(int tx, int ty) {
-        tileBasedEntityIdGrid[ty * ROW_TILES + tx] = -1;
-        tileBasedEntityAmount--;
+        synchronized (tileEntityLock) {
+            tileBasedEntityIdGrid[ty * ROW_TILES + tx] = -1;
+            tileBasedEntityAmount--;
 
-        if(tileBasedEntityAmount == 0) {
-            hasTileBasedEntities = false;
+            if(tileBasedEntityAmount == 0) {
+                hasTileBasedEntities = false;
+            }
         }
     }
 

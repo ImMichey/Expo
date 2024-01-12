@@ -26,6 +26,9 @@ public class ServerDimensionEntityManager {
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
     private final HashMap<Integer, List<ServerItem>> mergeItemMap;
+    private final ArrayList<ServerEntity> justAddedEntityList;
+    private final ArrayList<ServerEntity> justRemovedEntityList;
+    private final ArrayList<ServerEntity> justSwitchedChunksEntityList;
 
     public ServerDimensionEntityManager() {
         idEntityMap = new TreeMap<>();
@@ -33,17 +36,21 @@ public class ServerDimensionEntityManager {
         damageableEntityMap = new HashMap<>();
         entityOperationQueue = new ConcurrentLinkedQueue<>();
         mergeItemMap = new HashMap<>();
+        justAddedEntityList = new ArrayList<>(4096);
+        justRemovedEntityList = new ArrayList<>(4096);
+        justSwitchedChunksEntityList = new ArrayList<>(256);
 
         for(ServerEntityType type : ServerEntityType.values()) {
             typeEntityListMap.put(type, new LinkedList<>());
         }
     }
 
-    // private final HashMap<ServerEntityType, Long> TEST_MAP = new HashMap<>();
-
     /** Main tick method. */
     public void tickEntities(float delta) {
         //ExpoLogger.log("Ent size: " + idEntityMap.size() + ", opQueu: " + entityOperationQueue.size());
+        justAddedEntityList.clear();
+        justRemovedEntityList.clear();
+        justSwitchedChunksEntityList.clear();
 
         while(!entityOperationQueue.isEmpty()) {
             EntityOperation op = entityOperationQueue.poll();
@@ -71,6 +78,7 @@ public class ServerDimensionEntityManager {
                     entity.chunkY = chunkY;
                     entity.changedChunk = true;
                     entity.onChunkChanged();
+                    justSwitchedChunksEntityList.add(entity);
                 }
             }
         }
@@ -262,6 +270,7 @@ public class ServerDimensionEntityManager {
     private void addEntityUnsafely(ServerEntity entity) {
         idEntityMap.put(entity.entityId, entity);
         typeEntityListMap.get(entity.getEntityType()).add(entity);
+        justAddedEntityList.add(entity);
         if(entity instanceof DamageableEntity) {
             damageableEntityMap.put(entity.entityId, entity);
         }
@@ -272,6 +281,7 @@ public class ServerDimensionEntityManager {
     private void removeEntityUnsafely(ServerEntity entity) {
         idEntityMap.remove(entity.entityId);
         typeEntityListMap.get(entity.getEntityType()).remove(entity);
+        justRemovedEntityList.add(entity);
         if(entity instanceof DamageableEntity) {
             damageableEntityMap.remove(entity.entityId);
         }
@@ -357,6 +367,21 @@ public class ServerDimensionEntityManager {
     /** Returns all entities in the current dimension. */
     public Collection<ServerEntity> getAllEntities() {
         return idEntityMap.values();
+    }
+
+    /** Returns all entities in the current dimension that were added in this tick. */
+    public ArrayList<ServerEntity> getJustAddedEntities() {
+        return justAddedEntityList;
+    }
+
+    /** Returns all entities in the current dimension that were removed in this tick. */
+    public ArrayList<ServerEntity> getJustRemovedEntities() {
+        return justRemovedEntityList;
+    }
+
+    /** Returns all entities in the current dimension that changed chunks in this tick. */
+    public ArrayList<ServerEntity> getJustSwitchedChunksEntities() {
+        return justSwitchedChunksEntityList;
     }
 
     /** Returns the entity operation queue in the current dimension. */

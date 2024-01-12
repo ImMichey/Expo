@@ -17,7 +17,6 @@ import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
-import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
 
@@ -224,19 +223,18 @@ public class ExpoClientContainer {
         if(client != null) {
             client.disconnect();
         } else {
-            for(ServerDimension dim : ServerWorld.get().getDimensions()) {
-                dim.getChunkHandler().executorService.shutdown();
-                dim.getChunkHandler().ioExecutorService.shutdown();
+            ServerWorld.get().mtServiceTick.shutdown();
+            ServerWorld.get().mtServiceIO.shutdown();
 
-                try {
-                    if(!dim.getChunkHandler().ioExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                        int didntFinish = dim.getChunkHandler().ioExecutorService.shutdownNow().size();
-                        ExpoLogger.log("Failed to save " + didntFinish + " chunks (thread timeout).");
-                    }
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+            try {
+                if(!ServerWorld.get().mtServiceIO.awaitTermination(60, TimeUnit.SECONDS)) {
+                    int didntFinish = ServerWorld.get().mtServiceIO.shutdownNow().size();
+                    ExpoLogger.log("Failed to save " + didntFinish + " chunks (thread timeout).");
                 }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
             localServer.stopServer();
         }
 

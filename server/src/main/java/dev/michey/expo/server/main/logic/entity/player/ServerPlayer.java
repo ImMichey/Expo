@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.dongbat.jbump.CollisionFilter;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -129,6 +128,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public void onDeletion() {
         // remove physics body of player from world
         physicsBody.dispose();
+
+        // Maybe move this code somewhere else in the future
+        getChunkGrid().removeFromChunkMemoryMap(this);
     }
 
     @Override
@@ -209,6 +211,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     @Override
     public void tick(float delta) {
+        long a = System.nanoTime();
         updateChunks();
         itemCooldown = false;
 
@@ -407,6 +410,11 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 }
             }
         }
+
+        long b = System.nanoTime();
+        if(TRACK_PERFORMANCE) {
+            ServerUtils.recordPerformanceMetric("player" + username, new String[] {"total"}, new long[] {a, b});
+        }
     }
 
     public ServerInventoryItem getCurrentItem() {
@@ -565,29 +573,6 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         chunkPacketList.clear();
         currentlyVisibleChunks = getChunkGrid().getChunksInPlayerRange(this);
 
-        /*
-        List<ServerChunk> remove = new LinkedList<>();
-
-        for(ServerChunk seen : hasSeenChunks.keySet()) {
-            int middleX = posToChunk(posX);
-            int middleY = posToChunk(posY);
-
-            int dstX = Math.abs(middleX - seen.chunkX);
-            int dstY = Math.abs(middleY - seen.chunkY);
-
-            boolean outOfRangeX = dstX >= PLAYER_CHUNK_VIEW_RANGE_X;
-            boolean outOfRangeY = dstY >= PLAYER_CHUNK_VIEW_RANGE_Y;
-
-            if(outOfRangeX || outOfRangeY) {
-                remove.add(seen);
-            }
-        }
-
-        for(ServerChunk chunk : remove) {
-            hasSeenChunks.remove(chunk);
-        }
-        */
-
         for(ServerChunk chunk : currentlyVisibleChunks) {
             if(chunk == null) continue; // If null, it is generating/loading from disk right now; otherwise it is fully loaded.
             if(!chunk.ready) continue;
@@ -600,10 +585,6 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             if(!isNewChunk) {
                 long cached = hasSeenChunks.get(chunk);
                 resend = cached < chunk.lastTileUpdate;
-
-                if(resend) {
-                    ExpoLogger.log("RESEND DATA " + chunk.getChunkKey() + ": " + cached + " " + chunk.lastTileUpdate);
-                }
             }
 
             if(resend || isNewChunk) {

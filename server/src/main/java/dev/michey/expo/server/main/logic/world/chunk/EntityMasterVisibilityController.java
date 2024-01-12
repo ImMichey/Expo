@@ -9,36 +9,35 @@ import java.util.LinkedList;
 public class EntityMasterVisibilityController {
 
     private final ServerDimension dimension;
-    private final LinkedList<ServerEntity> evaluationMap;
 
     public EntityMasterVisibilityController(ServerDimension dimension) {
         this.dimension = dimension;
-        evaluationMap = new LinkedList<>();
     }
 
     public void tick() {
-        evaluationMap.clear();
         var m = dimension.getEntityManager();
-
-        // grab all entities that are new or that just moved between chunks
-        for(ServerEntity e : m.getAllEntities()) {
-            if(!e.trackedVisibility || e.changedChunk) {
-                e.trackedVisibility = true;
-                evaluationMap.add(e);
-            }
-        }
-
         LinkedList<ServerPlayer> playerList = m.getAllPlayers();
 
         for(ServerPlayer player : playerList) {
-            for(ServerEntity toHandle : evaluationMap) {
-                if(toHandle.entityId == player.entityId) continue; // don't let the players track themselves
+            player.entityVisibilityController.cacheChunkBounds();
+        }
+
+        for(ServerPlayer player : playerList) {
+            // Handle newly created entities
+            for(ServerEntity toHandle : dimension.getEntityManager().getJustAddedEntities()) {
+                if(toHandle.entityId == player.entityId) continue;
+                player.entityVisibilityController.handleEntity(toHandle);
+            }
+
+            // Handle entities (usually living entities) that walked between chunks this tick
+            for(ServerEntity toHandle : dimension.getEntityManager().getJustSwitchedChunksEntities()) {
+                if(toHandle.entityId == player.entityId) continue;
                 player.entityVisibilityController.handleEntity(toHandle);
             }
         }
 
         for(ServerPlayer players : playerList) {
-            if(players.changedChunk) {
+            if(players.changedChunk || !dimension.getEntityManager().getJustRemovedEntities().isEmpty()) {
                 players.entityVisibilityController.refreshExistingEntities();
             }
         }

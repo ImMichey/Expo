@@ -10,8 +10,6 @@ import dev.michey.expo.util.ExpoShared;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 /** This class controls the visibility behaviour for multiple entities between multiple players. */
 public class EntityVisibilityController {
@@ -20,17 +18,31 @@ public class EntityVisibilityController {
     private final ServerPlayer player;
     private final HashSet<Integer> visibleEntities;
 
+    private int minChunkX;
+    private int maxChunkX;
+    private int minChunkY;
+    private int maxChunkY;
+
     public EntityVisibilityController(ServerPlayer player) {
         this.player = player;
         visibleEntities = new HashSet<>();
     }
 
+    public void cacheChunkBounds() {
+        int rx = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X;
+        int ry = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
+        minChunkX = player.chunkX - rx;
+        maxChunkX = player.chunkX + rx;
+        minChunkY = player.chunkY - ry;
+        maxChunkY = player.chunkY + ry;
+    }
+
     /** Called when an entity spawned/moved between chunks and is now in range of the player. */
     public void handleEntity(ServerEntity entity) {
         if(canSee(entity)) {
-            if(!visibleEntities.contains(entity.entityId)) {
-                visibleEntities.add(entity.entityId);
+            boolean added = visibleEntities.add(entity.entityId);
 
+            if(added) {
                 if(entity.getEntityType() == ServerEntityType.PLAYER) {
                     ServerPlayer player = (ServerPlayer) entity;
                     ServerPackets.p9PlayerCreate(player, false, PacketReceiver.player(this.player));
@@ -43,43 +55,47 @@ public class EntityVisibilityController {
                 }
             }
         } else {
-            if(visibleEntities.contains(entity.entityId)) {
+            boolean removed = visibleEntities.remove(entity.entityId);
+
+            if(removed) {
                 ServerPackets.p4EntityDelete(entity.entityId, EntityRemovalReason.VISIBILITY, PacketReceiver.player(player));
-                visibleEntities.remove(entity.entityId);
             }
         }
     }
 
     /** Called when the player moved between chunks and is now potentially out of range of previously seen entities. */
     public void refreshExistingEntities() {
-        List<Integer> removePacket = new LinkedList<>();
+        int[] removePacket = new int[visibleEntities.size()];
+        int position = 0;
 
-        for(int entityId : visibleEntities) {
-            ServerEntity e = player.getDimension().getEntityManager().getEntityById(entityId);
-
-            // e == null -> If the entity got destroyed on a different way already.
-            if(e == null || !canSee(e)) {
-                removePacket.add(entityId);
+        for(ServerEntity toHandle : player.getDimension().getEntityManager().getJustRemovedEntities()) {
+            if(visibleEntities.contains(toHandle.entityId)) {
+                removePacket[position++] = toHandle.entityId;
             }
         }
 
-        if(!removePacket.isEmpty()) {
-            removePacket.forEach(visibleEntities::remove); // update visible entities set
-            int[] array = removePacket.stream().mapToInt(i -> i).toArray(); // convert list to array
-            EntityRemovalReason[] removalArray = new EntityRemovalReason[array.length];
-            Arrays.fill(removalArray, EntityRemovalReason.VISIBILITY);
-            ServerPackets.p8EntityDeleteStack(array, removalArray, PacketReceiver.player(player)); // send entity delete packet(s)
-        }
-
-        for(ServerEntityType type : player.getDimension().getEntityManager().getExistingEntityTypes()) {
-            for(ServerEntity entity : player.getDimension().getEntityManager().getEntitiesOf(type)) {
-                int entityId = entity.entityId;
-                if(entityId == player.entityId) continue;
-
-                if(!visibleEntities.contains(entityId)) {
-                    handleEntity(entity);
+        if(player.changedChunk) {
+            for(int ent : visibleEntities) {
+                if(!canSee(player.getDimension().getEntityManager().getEntityById(ent))) {
+                    removePacket[position++] = ent;
                 }
             }
+        }
+
+        if(position > 0) {
+            for(int i = 0; i < position; i++) {
+                visibleEntities.remove(removePacket[i]); // update visible entities set
+            }
+
+            EntityRemovalReason[] removalArray = new EntityRemovalReason[position];
+            Arrays.fill(removalArray, EntityRemovalReason.VISIBILITY);
+            int[] newRemovePacketArray = Arrays.copyOf(removePacket, position);
+            ServerPackets.p8EntityDeleteStack(newRemovePacketArray, removalArray, PacketReceiver.player(player)); // send entity delete packet(s)
+        }
+
+        for(ServerEntity entity : player.getDimension().getEntityManager().getAllEntities()) {
+            if(entity.entityId == player.entityId) continue;
+            handleEntity(entity);
         }
     }
 
@@ -88,13 +104,6 @@ public class EntityVisibilityController {
     }
 
     public boolean canSee(ServerEntity entity) {
-        int rx = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_X;
-        int ry = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_DIR_Y;
-        int minChunkX = player.chunkX - rx;
-        int maxChunkX = player.chunkX + rx;
-        int minChunkY = player.chunkY - ry;
-        int maxChunkY = player.chunkY + ry;
-
         return entity.chunkX >= minChunkX &&
                 entity.chunkX <= maxChunkX &&
                 entity.chunkY >= minChunkY &&

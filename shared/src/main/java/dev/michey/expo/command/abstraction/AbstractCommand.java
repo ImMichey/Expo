@@ -71,6 +71,11 @@ public abstract class AbstractCommand {
         return array[pos];
     }
 
+    public String parseString(String[] array, int pos, String fallback) {
+        if(pos >= array.length) return fallback;
+        return array[pos];
+    }
+
     public void requireString(String raw, String... accepted) throws CommandSyntaxException {
         for(String str : accepted) {
             if(raw.equals(str)) return;
