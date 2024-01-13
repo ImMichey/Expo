@@ -224,11 +224,12 @@ public class ExpoClientContainer {
             client.disconnect();
         } else {
             ServerWorld.get().mtServiceTick.shutdown();
-            ServerWorld.get().mtServiceIO.shutdown();
+            ServerWorld.get().mtVirtualService.shutdown();
+            //ServerWorld.get().mtServiceIO.shutdown();
 
             try {
-                if(!ServerWorld.get().mtServiceIO.awaitTermination(60, TimeUnit.SECONDS)) {
-                    int didntFinish = ServerWorld.get().mtServiceIO.shutdownNow().size();
+                if(!ServerWorld.get().mtVirtualService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    int didntFinish = ServerWorld.get().mtVirtualService.shutdownNow().size();
                     ExpoLogger.log("Failed to save " + didntFinish + " chunks (thread timeout).");
                 }
             } catch (InterruptedException e) {

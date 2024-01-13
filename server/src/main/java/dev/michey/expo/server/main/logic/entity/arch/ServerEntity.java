@@ -42,7 +42,6 @@ public abstract class ServerEntity {
     public boolean persistentEntity = true;
 
     /** Handled by the dimension visibility handler */
-    public boolean trackedVisibility = false;
     public boolean changedChunk = false;
 
     /** ServerEntity base fields */

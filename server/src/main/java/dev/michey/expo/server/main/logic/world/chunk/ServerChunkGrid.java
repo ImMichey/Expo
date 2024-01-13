@@ -222,7 +222,7 @@ public class ServerChunkGrid {
 
         // Update chunks in proximity of players
         var entityManager = dimension.getEntityManager();
-        LinkedList<ServerPlayer> players = entityManager.getAllPlayers();
+        List<ServerPlayer> players = entityManager.getAllPlayers();
 
         for(ServerPlayer player : players) {
             ServerChunk[] chunksInView = getChunksInPlayerRange(player);
@@ -263,7 +263,7 @@ public class ServerChunkGrid {
                 if(now - pair.value > 0) { // reached save state
                     iterator.remove();
                     knownChunkFiles.add(pair.key.getChunkKey());
-                    pair.key.onSave(false);
+                    pair.key.onSave(ServerWorld.get().mtVirtualService, false);
                 }
             }
         }
@@ -462,15 +462,16 @@ public class ServerChunkGrid {
     }
 
     /** Called when the server shuts down and all chunks in memory have to be saved. */
-    public void saveAllChunks() {
+    public void saveAllChunks(ExecutorService shutdownService) {
         log("Saving all chunks for dimension " + dimension.getDimensionName() + " - Active/Inactive: " + activeChunkMap.size() + "/" + inactiveChunkMap.size());
+
         for(var v : activeChunkMap.values()) {
             v.key.onInactive();
-            v.key.onSave(true);
+            v.key.onSave(shutdownService, true);
         }
 
         for(var v : inactiveChunkMap.values()) {
-            v.key.onSave(true);
+            v.key.onSave(shutdownService, true);
         }
     }
 

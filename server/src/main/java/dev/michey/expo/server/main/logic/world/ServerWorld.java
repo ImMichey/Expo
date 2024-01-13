@@ -28,7 +28,7 @@ public class ServerWorld {
     private final ExecutorService executorService;
     private final Collection<Callable<Void>> dimensionTickCollection;
     public final ExecutorService mtServiceTick;
-    public final ExecutorService mtServiceIO;
+    public final ExecutorService mtVirtualService;
 
     /** Entity id tracking */
     private int currentEntityId;
@@ -49,16 +49,8 @@ public class ServerWorld {
                 return new Thread(r, "expo-mtServiceTick-" + nr);
             }
         };
-        ThreadFactory io = new ThreadFactory() {
-            private int nr = -1;
-            @Override
-            public Thread newThread(Runnable r) {
-                nr++;
-                return new Thread(r, "expo-mtServiceIO-" + nr);
-            }
-        };
         mtServiceTick = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), tf);
-        mtServiceIO = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), io);
+        mtVirtualService = Executors.newVirtualThreadPerTaskExecutor();
 
         addDimension(ExpoShared.DIMENSION_OVERWORLD, new ServerDimensionOverworld(ExpoShared.DIMENSION_OVERWORLD, true));
         addDimension(ExpoShared.DIMENSION_CAVE, new ServerDimensionCave(ExpoShared.DIMENSION_CAVE, false));
@@ -153,7 +145,7 @@ public class ServerWorld {
 
     public void cancelAll() {
         mtServiceTick.shutdown();
-        mtServiceIO.shutdown();
+        mtVirtualService.shutdown();
         executorService.shutdown();
     }
 

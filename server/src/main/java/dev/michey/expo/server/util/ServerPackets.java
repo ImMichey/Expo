@@ -60,7 +60,7 @@ public class ServerPackets {
     }
 
     public static void p2EntityCreate(ServerEntity entity, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             p2EntityCreate(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, entity.health, receiver);
         });
     }
@@ -74,7 +74,7 @@ public class ServerPackets {
 
     /** Sends the P4_EntityDelete packet via TCP protocol. */
     public static void p4EntityDelete(int entityId, EntityRemovalReason reason, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P4_EntityDelete p = new P4_EntityDelete();
             p.entityId = entityId;
             p.reason = reason;
@@ -84,7 +84,7 @@ public class ServerPackets {
 
     /** Sends the P6_EntityPosition packet via UDP protocol. */
     public static void p6EntityPosition(int entityId, float xPos, float yPos, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P6_EntityPosition p = new P6_EntityPosition();
             p.entityId = entityId;
             p.xPos = xPos;
@@ -102,7 +102,7 @@ public class ServerPackets {
 
     /** Sends the P8_EntityDeleteStack packet via TCP protocol. */
     public static void p8EntityDeleteStack(int[] entityList, EntityRemovalReason[] reasons, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P8_EntityDeleteStack p = new P8_EntityDeleteStack();
             p.entityList = entityList;
             p.reasons = reasons;
@@ -112,7 +112,7 @@ public class ServerPackets {
 
     /** Sends the P9_PlayerCreate packet via TCP protocol. */
     public static void p9PlayerCreate(int entityId, String dimensionName, float serverPosX, float serverPosY, int direction, String username, boolean player, int[] equippedItemIds, float armRotation, float health, float hunger, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P9_PlayerCreate p = new P9_PlayerCreate();
             p.entityType = ServerEntityType.PLAYER;
             p.entityId = entityId;
@@ -143,7 +143,7 @@ public class ServerPackets {
 
     /** Sends the P11_ChunkData packet via TCP protocol. */
     public static void p11ChunkData(ServerChunk chunk, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P11_ChunkData p = new P11_ChunkData();
             p.chunkX = chunk.chunkX;
             p.chunkY = chunk.chunkY;
@@ -175,7 +175,7 @@ public class ServerPackets {
 
     /** Sends the P12_PlayerDirection packet via UDP protocol. */
     public static void p12PlayerDirection(int entityId, int direction, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P12_PlayerDirection p = new P12_PlayerDirection();
             p.entityId = entityId;
             p.direction = direction;
@@ -185,7 +185,7 @@ public class ServerPackets {
 
     /** Sends the P13_EntityMove packet via UDP protocol. */
     public static void p13EntityMove(int entityId, int xDir, int yDir, boolean sprinting, float xPos, float yPos, float distance, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P13_EntityMove p = new P13_EntityMove();
             p.entityId = entityId;
             p.xDir = xDir;
@@ -269,7 +269,7 @@ public class ServerPackets {
 
     /** Sends the P22_PlayerArmDirection packet via UDP protocol. */
     public static void p22PlayerArmDirection(int entityId, float rotation, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P22_PlayerArmDirection p = new P22_PlayerArmDirection();
             p.entityId = entityId;
             p.rotation = rotation;
@@ -344,7 +344,7 @@ public class ServerPackets {
     }
 
     public static void p29EntityCreateAdvanced(ServerEntity entity, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             int tileEntityId = entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1;
             p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, tileEntityId, entity.health, entity.getPacketPayload(), receiver);
         });
@@ -368,7 +368,7 @@ public class ServerPackets {
 
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
     public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P32_ChunkDataSingle p = new P32_ChunkDataSingle();
             p.chunkX = chunkX;
             p.chunkY = chunkY;
@@ -443,7 +443,7 @@ public class ServerPackets {
 
     /** Sends the P43_EntityDeleteAdvanced packet via TCP protocol. */
     public static void p43EntityDeleteAdvanced(int entityId, EntityRemovalReason reason, float damage, float newHealth, int damageSourceEntityId, PacketReceiver receiver) {
-        ServerWorld.get().mtServiceTick.execute(() -> {
+        ServerWorld.get().mtVirtualService.execute(() -> {
             P43_EntityDeleteAdvanced p = new P43_EntityDeleteAdvanced();
             p.entityId = entityId;
             p.reason = reason;

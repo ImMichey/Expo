@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.*;
@@ -469,7 +470,6 @@ public class ServerChunk {
         // log(chunkKey + " ACTIVE, re-adding " + inactiveEntities.size() + " entities");
 
         for(ServerEntity wasInactive : inactiveEntities) {
-            wasInactive.trackedVisibility = false;
             dimension.getEntityManager().addEntitySafely(wasInactive);
         }
 
@@ -508,25 +508,24 @@ public class ServerChunk {
     }
 
     /** Called when the chunk has been inactive before and is now commanded to save. */
-    public void onSave(boolean shutdown) {
+    public void onSave(ExecutorService saveWith, boolean shutdown) {
         //log(chunkKey + " SAVE, saving " + inactiveEntities.size() + " entities");
         String worldName = ExpoServerBase.get().getWorldSaveHandler().getWorldName();
         if(worldName.startsWith("dev-world-")) return;
 
         Path path = getChunkFile().toPath();
-
-        if(shutdown) {
-            new Thread(() -> _onSave(path)).start();
-        } else {
-            ServerWorld.get().mtServiceIO.execute(() -> _onSave(path));
-        }
+        saveWith.execute(() -> _onSave(path, shutdown));
     }
 
-    private void _onSave(Path path) {
-        for(ServerTile tile : tiles) {
-            dimension.getChunkHandler().removeNoiseCache(tile.tileX, tile.tileY);
-            dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
+    private void _onSave(Path path, boolean shutdown) {
+        if(!shutdown) {
+            // Free up memory
+            for(ServerTile tile : tiles) {
+                dimension.getChunkHandler().removeNoiseCache(tile.tileX, tile.tileY);
+                dimension.getChunkHandler().removeTile(tile.tileX, tile.tileY);
+            }
         }
+
         save(path);
     }
 

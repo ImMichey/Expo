@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
@@ -179,6 +180,9 @@ public class ClientEntityManager {
 
                 if(entity == null) {
                     // ExpoLogger.log("Entity removal clash: " + pair.key + " (not existing)");
+                    if(pair.key < 0) {
+                        operationIterator.remove();
+                    }
                     continue;
                 } else {
                     entity.removalReason = pair.value;
@@ -224,6 +228,8 @@ public class ClientEntityManager {
 
         long ee = System.nanoTime();
 
+        ClientUtils.log("AO Lists: " + greenlitAmbientOcclusionList.size() + ", " + ambientOcclusionUpdateSet.size() + ", " + ClientChunkGrid.get().getAllChunks().size(), Input.Keys.X);
+
         for(ClientChunk chunk : greenlitAmbientOcclusionList) {
             chunk.generateAmbientOcclusion(false);
         }
@@ -234,7 +240,7 @@ public class ClientEntityManager {
             }
         }
 
-        for(ClientChunk chunk : ClientChunkGrid.get().getAllClientChunks()) {
+        for(ClientChunk chunk : ClientChunkGrid.get().getAllChunks()) {
             chunk.completeAO();
         }
 

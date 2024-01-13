@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-sourceCompatibility = 18
+sourceCompatibility = 21
 mainClassName = 'dev.michey.expo.server.ServerLauncher'
 eclipse.project.name = appName + '-server'
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets_shared').path ]

@@ -23,7 +23,7 @@ public class ClientChunkGrid {
 
     private static ClientChunkGrid INSTANCE;
 
-    public final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
+    private final ConcurrentHashMap<String, ClientChunk> clientChunkMap;
     public final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     public final ConcurrentLinkedQueue<P11_ChunkData> queuedChunkDataList;
 
@@ -58,7 +58,7 @@ public class ClientChunkGrid {
         INSTANCE = this;
     }
 
-    public Collection<ClientChunk> getAllClientChunks() {
+    public Collection<ClientChunk> getAllChunks() {
         return clientChunkMap.values();
     }
 
@@ -133,6 +133,7 @@ public class ClientChunkGrid {
     }
 
     /** Returns the BiomeType at tile position X & Y. */
+    /*
     public BiomeType getBiome(int x, int y) {
         return getBiomeData(x, y).key;
     }
@@ -152,6 +153,7 @@ public class ClientChunkGrid {
 
         return pair;
     }
+    */
 
     private float normalized(Noise noise, int x, int y) {
         return (noise.getConfiguredNoise(x, y) + 1) * 0.5f;

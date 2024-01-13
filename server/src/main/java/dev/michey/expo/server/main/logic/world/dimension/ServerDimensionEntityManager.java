@@ -22,7 +22,7 @@ public class ServerDimensionEntityManager {
 
     /** Storage maps */
     private final TreeMap<Integer, ServerEntity> idEntityMap;
-    private final HashMap<ServerEntityType, LinkedList<ServerEntity>> typeEntityListMap;
+    private final HashMap<ServerEntityType, ArrayList<ServerEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<EntityOperation> entityOperationQueue;
     private final HashMap<Integer, ServerEntity> damageableEntityMap;
     private final HashMap<Integer, List<ServerItem>> mergeItemMap;
@@ -41,13 +41,12 @@ public class ServerDimensionEntityManager {
         justSwitchedChunksEntityList = new ArrayList<>(256);
 
         for(ServerEntityType type : ServerEntityType.values()) {
-            typeEntityListMap.put(type, new LinkedList<>());
+            typeEntityListMap.put(type, new ArrayList<>());
         }
     }
 
     /** Main tick method. */
     public void tickEntities(float delta) {
-        //ExpoLogger.log("Ent size: " + idEntityMap.size() + ", opQueu: " + entityOperationQueue.size());
         justAddedEntityList.clear();
         justRemovedEntityList.clear();
         justSwitchedChunksEntityList.clear();
@@ -64,35 +63,10 @@ public class ServerDimensionEntityManager {
             }
         }
 
-        for(ServerEntity entity : getAllEntities()) {
-            entity.tick(delta);
+        for(ServerEntityType type : getExistingEntityTypes()) {
+            if(type.EMPTY_LOGIC) continue;
 
-            if(!entity.staticPosition) {
-                entity.changedChunk = false;
-                int chunkX = ExpoShared.posToChunk(entity.posX);
-                int chunkY = ExpoShared.posToChunk(entity.posY);
-
-                if(entity.forceChunkChange || entity.chunkX != chunkX || entity.chunkY != chunkY) {
-                    entity.forceChunkChange = false;
-                    entity.chunkX = chunkX;
-                    entity.chunkY = chunkY;
-                    entity.changedChunk = true;
-                    entity.onChunkChanged();
-                    justSwitchedChunksEntityList.add(entity);
-                }
-            }
-        }
-
-        /*
-        for(ServerEntityType type : ServerEntityType.values()) {
-            var map = typeEntityListMap.get(type);
-            if(map.isEmpty()) continue;
-
-            for(ServerEntity entity : map) {
-                if(!TEST_MAP.containsKey(entity.getEntityType())) {
-                    TEST_MAP.put(entity.getEntityType(), 0L);
-                }
-                long a = System.nanoTime();
+            for(ServerEntity entity : getEntitiesOf(type)) {
                 entity.tick(delta);
 
                 if(!entity.staticPosition) {
@@ -106,18 +80,11 @@ public class ServerDimensionEntityManager {
                         entity.chunkY = chunkY;
                         entity.changedChunk = true;
                         entity.onChunkChanged();
+                        justSwitchedChunksEntityList.add(entity);
                     }
                 }
-
-                long b = System.nanoTime();
-                TEST_MAP.put(type, TEST_MAP.get(type) + (b - a));
             }
         }
-
-        for(ServerEntityType set : TEST_MAP.keySet()) {
-            ExpoLogger.log("\t" + set.name() + " -> " + TEST_MAP.get(set));
-        }
-        */
 
         runItemMerge(delta);
     }
@@ -289,14 +256,14 @@ public class ServerDimensionEntityManager {
     }
 
     /** Returns all entities of the same type in the current dimension. */
-    public LinkedList<ServerEntity> getEntitiesOf(ServerEntityType type) {
+    public ArrayList<ServerEntity> getEntitiesOf(ServerEntityType type) {
         return typeEntityListMap.get(type);
     }
 
     /** Returns all player entities in the current dimension. */
-    public LinkedList<ServerPlayer> getAllPlayers() {
-        LinkedList<ServerEntity> list = getEntitiesOf(ServerEntityType.PLAYER);
-        LinkedList<ServerPlayer> copy = new LinkedList<>();
+    public ArrayList<ServerPlayer> getAllPlayers() {
+        ArrayList<ServerEntity> list = getEntitiesOf(ServerEntityType.PLAYER);
+        ArrayList<ServerPlayer> copy = new ArrayList<>(list.size());
 
         for(ServerEntity e : list) {
             copy.add((ServerPlayer) e);

@@ -12,51 +12,53 @@ import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 
 public enum ServerEntityType {
 
-    PLAYER(0, false),
-    DUMMY(1, false),
-    GRASS(2, true),
-    OAK_TREE(3, true),
-    MUSHROOM_RED(4, false),
-    MUSHROOM_BROWN(5, false),
-    BUSH(6, false),
-    ITEM(7, true),
-    ANCIENT_TREE(8, false),
-    GRAVESTONE(9, true),
-    DANDELION(10, false),
-    POPPY(11, false),
-    BLUEBERRY_BUSH(12, true),
-    WORM(13, false),
-    ROCK(14, true),
-    CRAB(15, true),
-    DYNAMIC_3D_TILE(16, true),
-    WHEAT_PLANT(17, false),
-    SUNFLOWER(18, true),
-    FIREFLY(19, false),
-    MUSHROOM_GLOWING(20, false),
-    LILYPAD(21, true),
-    ZOMBIE(22, false),
-    MAGGOT(23, false),
-    FENCE_STICK(24, true),
-    CROP_WHEAT(25, true),
-    BOULDER(26, true),
-    CRATE(27, true),
-    OAK_TREE_SAPLING(28, false),
-    CATTAIL(29, true),
-    CHICKEN(30, true),
-    SIGN(31, true),
-    CAMPFIRE(32, true),
-    WOODFOLK(33, false),
-    ALOE_VERA(34, false),
-    TORCH(35, false),
-    SLIME(36, false),
+    PLAYER(0, false, false),
+    DUMMY(1, false, false),
+    GRASS(2, true, true),
+    OAK_TREE(3, true, false),
+    MUSHROOM_RED(4, false, true),
+    MUSHROOM_BROWN(5, false, true),
+    BUSH(6, false, true),
+    ITEM(7, true, false),
+    ANCIENT_TREE(8, false, true),
+    GRAVESTONE(9, true, true),
+    DANDELION(10, false, true),
+    POPPY(11, false, true),
+    BLUEBERRY_BUSH(12, true, false),
+    WORM(13, false, false),
+    ROCK(14, true, true),
+    CRAB(15, true, false),
+    DYNAMIC_3D_TILE(16, true, true),
+    WHEAT_PLANT(17, false, false),
+    SUNFLOWER(18, true, true),
+    FIREFLY(19, false, false),
+    MUSHROOM_GLOWING(20, false, true),
+    LILYPAD(21, true, true),
+    ZOMBIE(22, false, false),
+    MAGGOT(23, false, false),
+    FENCE_STICK(24, true, true),
+    CROP_WHEAT(25, true, false),
+    BOULDER(26, true, true),
+    CRATE(27, true, true),
+    OAK_TREE_SAPLING(28, false, false),
+    CATTAIL(29, true, true),
+    CHICKEN(30, true, false),
+    SIGN(31, true, true),
+    CAMPFIRE(32, true, false),
+    WOODFOLK(33, false, false),
+    ALOE_VERA(34, false, true),
+    TORCH(35, false, true),
+    SLIME(36, false, false),
     ;
 
     public final int ENTITY_ID;
     public final boolean ADVANCED_PAYLOAD;
+    public final boolean EMPTY_LOGIC;
 
-    ServerEntityType(int ENTITY_ID, boolean ADVANCED_PAYLOAD) {
+    ServerEntityType(int ENTITY_ID, boolean ADVANCED_PAYLOAD, boolean EMPTY_LOGIC) {
         this.ENTITY_ID = ENTITY_ID;
         this.ADVANCED_PAYLOAD = ADVANCED_PAYLOAD;
+        this.EMPTY_LOGIC = EMPTY_LOGIC;
     }
 
     public static ServerEntity typeToEntity(int id) {

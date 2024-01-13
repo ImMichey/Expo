@@ -23,6 +23,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.inventory.PlayerInventory;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
+import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.font.GradientFont;
@@ -190,10 +191,15 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     /** Player reach */
     public float playerReachCenterX, playerReachCenterY;
 
+    /** Client-side physics */
+    private ClientPhysicsBody physicsBody;
+
     @Override
     public void onCreation() {
         visibleToRenderEngine = true; // player objects are always drawn by default, there is no visibility check
         drawReflection = true;
+
+        physicsBody = new ClientPhysicsBody(this, -3, 0, 6, 6);
 
         if(player) {
             selector = new ClientSelector();
@@ -265,7 +271,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void onDeletion() {
-
+        physicsBody.dispose();
     }
 
     public void playPunchAnimation(int direction, float duration, boolean sound) {
@@ -473,7 +479,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             // World enter animation
             if(!finishedWorldEnterAnimation) {
                 if(getUI().loadingScreen) {
-                    int loadedChunks = ClientChunkGrid.get().getAllClientChunks().size();
+                    int loadedChunks = ClientChunkGrid.get().getAllChunks().size();
                     int requiredChunks = ExpoShared.PLAYER_CHUNK_VIEW_RANGE_X * ExpoShared.PLAYER_CHUNK_VIEW_RANGE_Y;
                     int entitiesInQueue = ClientEntityManager.get().getEntitiesInAdditionQueue().size();
 

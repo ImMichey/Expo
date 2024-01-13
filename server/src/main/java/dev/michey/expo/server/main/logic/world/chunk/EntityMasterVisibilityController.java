@@ -4,7 +4,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public class EntityMasterVisibilityController {
 
@@ -16,7 +16,7 @@ public class EntityMasterVisibilityController {
 
     public void tick() {
         var m = dimension.getEntityManager();
-        LinkedList<ServerPlayer> playerList = m.getAllPlayers();
+        List<ServerPlayer> playerList = m.getAllPlayers();
 
         for(ServerPlayer player : playerList) {
             player.entityVisibilityController.cacheChunkBounds();

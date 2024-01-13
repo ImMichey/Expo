@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -145,8 +147,10 @@ public class WorldSaveFile {
             e.printStackTrace();
         }
 
-        for(ServerDimension dimension : world.getDimensions()) {
-            dimension.getChunkHandler().saveAllChunks();
+        try(ExecutorService shutdownService = Executors.newVirtualThreadPerTaskExecutor()) {
+            for(ServerDimension dimension : world.getDimensions()) {
+                dimension.getChunkHandler().saveAllChunks(shutdownService);
+            }
         }
     }
 

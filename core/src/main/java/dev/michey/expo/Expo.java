@@ -412,19 +412,27 @@ public class Expo implements ApplicationListener {
 		File autoExecFile = new File(ExpoLogger.getLocalPath() + File.separator + "autoExec.txt");
 
 		if(autoExecFile.exists()) {
-			log("autoExec.txt found, attempting to execute...");
+			log("autoExec.txt found, attempting to execute with 50ms delay...");
 
-			try {
-				for(String line : Files.readAllLines(autoExecFile.toPath())) {
-					log("[autoExec] " + line);
-					if(line.isEmpty()) continue;
-					if(line.startsWith("#")) continue;
-					GameConsole.get().addConsoleMessage(new ConsoleMessage(line, true));
+			Gdx.app.postRunnable(() -> {
+                try {
+                    Thread.sleep(50L);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+				try {
+					for(String line : Files.readAllLines(autoExecFile.toPath())) {
+						log("[autoExec] " + line);
+						if(line.isEmpty()) continue;
+						if(line.startsWith("#")) continue;
+						GameConsole.get().addConsoleMessage(new ConsoleMessage(line, true));
+					}
+				} catch (IOException e) {
+					log("Failed to read autoExec.txt, ignoring...");
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				log("Failed to read autoExec.txt, ignoring...");
-				e.printStackTrace();
-			}
+            });
 		} else {
 			log("No autoExec.txt found, ignoring...");
 		}

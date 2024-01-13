@@ -46,10 +46,14 @@ public class EntitySpawnManager {
     }
 
     public void tick(float delta) {
+        List<ServerPlayer> playerList = dimension.getEntityManager().getAllPlayers();
+
         for(EntitySpawner es : spawnerList) {
             float post = nextSpawnMap.get(es) - delta;
 
             if(post <= 0) {
+                if(playerList.isEmpty()) continue;
+
                 // Run algorithm
                 nextSpawnMap.put(es, post + es.spawnTimer);
                 entitiesPerChunkMap.clear();
@@ -177,7 +181,7 @@ public class EntitySpawnManager {
     }
 
     private void captureEntitySnapshot(EntitySpawner es) {
-        LinkedList<ServerEntity> existing = dimension.getEntityManager().getEntitiesOf(es.spawnType);
+        List<ServerEntity> existing = dimension.getEntityManager().getEntitiesOf(es.spawnType);
         Collection<Pair<ServerChunk, Long>> chunks = dimension.getChunkHandler().getActiveChunks();
 
         for(Pair<ServerChunk, Long> chunkKey : chunks) {
@@ -196,7 +200,7 @@ public class EntitySpawnManager {
         }
 
         if(es.entityCapPerPlayer != -1) {
-            LinkedList<ServerPlayer> players = dimension.getEntityManager().getAllPlayers();
+            List<ServerPlayer> players = dimension.getEntityManager().getAllPlayers();
 
             for(Pair<ServerChunk, Long> chunkKey : chunks) {
                 ServerChunk chunk = chunkKey.key;

@@ -32,7 +32,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.security.AccessControlException;
 import java.util.*;
 
 import static com.esotericsoftware.minlog.Log.*;
@@ -44,11 +43,8 @@ import static com.esotericsoftware.minlog.Log.*;
  */
 public class Client extends Connection implements EndPoint {
     static {
-        try {
-            // Needed for NIO selectors on Android 2.2.
-            System.setProperty("java.net.preferIPv6Addresses", "false");
-        } catch (AccessControlException ignored) {
-        }
+        // Needed for NIO selectors on Android 2.2.
+        System.setProperty("java.net.preferIPv6Addresses", "false");
     }
 
     public static final int DEFAULT_WRITE_BUFFER_SIZE = 8192;
