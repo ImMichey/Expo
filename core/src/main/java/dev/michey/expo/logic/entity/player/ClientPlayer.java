@@ -1481,6 +1481,12 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     }
 
     @Override
+    public void applyEntityUpdatePayload(Object[] payload) {
+        playerSpeed = (float) payload[0];
+        noclip = (boolean) payload[1];
+    }
+
+    @Override
     public void renderAO(RenderContext rc) {
         drawAO50(rc, 0.4f, 0.4f, 0, 0);
     }

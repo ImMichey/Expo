@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.log.ExpoLogger.logerr;
 
 public class ExpoServerDedicated extends ExpoServerBase implements ApplicationListener {
 
@@ -43,7 +44,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
         if(config.isWhitelistEnabled()) {
             whitelist = new ServerWhitelist();
             if(!whitelist.load()) {
-                log("Failed to load ServerWhitelist, aborting application.");
+                logerr("Failed to load ServerWhitelist, aborting application.");
                 System.exit(0);
             }
         }
@@ -67,7 +68,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
             log("Attempting to bind server on port " + config.getServerPort());
             kryoServer.bind(config.getServerPort(), config.getServerPort());
         } catch (IOException e) {
-            log("Failed to bind server on port " + config.getServerPort());
+            logerr("Failed to bind server on port " + config.getServerPort());
             e.printStackTrace();
             return false;
         }
@@ -94,7 +95,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
 
         connectionHandler.startPingUpdateScheduler();
 
-        log("Dedicated Server ready");
+        log(ExpoShared.GREEN_BRIGHT + "Dedicated Server ready" + ExpoShared.RESET);
         return true;
     }
 

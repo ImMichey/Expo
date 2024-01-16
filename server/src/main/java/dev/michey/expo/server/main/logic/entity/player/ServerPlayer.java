@@ -190,6 +190,11 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     @Override
+    public Object[] getPacketPayload() {
+        return new Object[] {playerSpeed, noclip};
+    }
+
+    @Override
     public PhysicsMassClassification getPhysicsMassClassification() {
         return PhysicsMassClassification.PLAYER;
     }

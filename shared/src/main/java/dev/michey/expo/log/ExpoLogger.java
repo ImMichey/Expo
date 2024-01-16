@@ -1,5 +1,7 @@
 package dev.michey.expo.log;
 
+import dev.michey.expo.util.ExpoShared;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,6 +18,34 @@ public class ExpoLogger {
     private static final Object LOG_LOCK = new Object();
     public static String LOG_FILE_ABSOLUTE_PATH = "?";
     public static String LOG_FOLDER_ABSOLUTE_PATH = "?";
+
+    public static void logerr(String s) {
+        builder.append('[');
+        builder.append(sdf.format(new Date()));
+        builder.append(']');
+        builder.append(' ');
+        builder.append(ExpoShared.RED_BRIGHT);
+        builder.append(s);
+        builder.append(ExpoShared.RESET);
+        synchronized (LOG_LOCK) {
+            System.out.println(builder);
+        }
+        builder.setLength(0);
+    }
+
+    public static void logwrn(String s) {
+        builder.append('[');
+        builder.append(sdf.format(new Date()));
+        builder.append(']');
+        builder.append(' ');
+        builder.append(ExpoShared.YELLOW_BRIGHT);
+        builder.append(s);
+        builder.append(ExpoShared.RESET);
+        synchronized (LOG_LOCK) {
+            System.out.println(builder);
+        }
+        builder.setLength(0);
+    }
 
     public static void log(String s) {
         builder.append('[');

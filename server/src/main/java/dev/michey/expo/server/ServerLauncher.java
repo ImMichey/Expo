@@ -12,7 +12,7 @@ import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.server.util.ExpoHardware;
 import dev.michey.expo.util.ExpoShared;
 
-import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.log.ExpoLogger.*;
 
 /** Launches the server application. */
 public class ServerLauncher {
@@ -28,25 +28,25 @@ public class ServerLauncher {
 		ExpoServerConfiguration fileConfig = new ExpoServerConfiguration();
 
 		if(!fileConfig.loadContents()) {
-			log("Failed to load ExpoServerConfiguration, aborting application.");
+			logerr("Failed to load ExpoServerConfiguration, aborting application.");
 			System.exit(0);
 		}
 
 		ExpoShared.TRACK_PERFORMANCE = fileConfig.isTrackPerformance();
 
 		if(fileConfig.isAuthPlayersEnabled() && fileConfig.getSteamWebApiKey().isEmpty()) {
-			log("Error: Your server has steam authentication enabled, however your Steam Web API key is empty/invalid.");
+			logerr("Error: Your server has steam authentication enabled, however your Steam Web API key is empty/invalid.");
 			System.exit(0);
 		}
 
 		if(!fileConfig.isAuthPlayersEnabled()) {
 			log("");
-			log("===================================== WARNING =====================================");
+			logwrn("===================================== WARNING =====================================");
 			log("");
-			log(" Your server does not authenticate player connections, it is recommended to enable");
-			log(" the whitelist or to set a password that is required to join the server.");
+			logwrn(" Your server does not authenticate player connections, it is recommended to enable");
+			logwrn(" the whitelist or to set a password that is required to join the server.");
 			log("");
-			log("===================================== WARNING =====================================");
+			logwrn("===================================== WARNING =====================================");
 			log("");
 		}
 

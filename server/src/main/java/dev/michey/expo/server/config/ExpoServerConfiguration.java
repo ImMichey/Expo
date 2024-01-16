@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.log.ExpoLogger.logwrn;
 
 public class ExpoServerConfiguration {
 
@@ -114,7 +115,15 @@ public class ExpoServerConfiguration {
 
             log("Reading keys from config file");
             for(String key : fileAsJson.keySet()) {
-                log("\t-> " + key + ": " + fileAsJson.get(key));
+                Object value = fileAsJson.get(key);
+
+                if(key.equals("steamWebApiKey")) {
+                    String apiKey = String.valueOf(value);
+                    value = apiKey.substring(0, apiKey.length() - 16) + "****************";
+                }
+
+                log("\t-> " + key + ": " + value);
+
                 switch(key) {
                     case "serverName" -> serverName = fileAsJson.getString("serverName");
                     case "consoleInput" -> consoleInput = fileAsJson.getBoolean("consoleInput");
@@ -141,20 +150,20 @@ public class ExpoServerConfiguration {
                 // VIEW DISTANCE CHECK
                 if(maxPlayerViewDistanceX < 3) {
                     maxPlayerViewDistanceX = 3;
-                    log("Setting maxPlayerViewDistanceX to '3' as it's the required minimum view distance.");
+                    logwrn("Setting maxPlayerViewDistanceX to '3' as it's the required minimum view distance.");
                 }
                 if(maxPlayerViewDistanceX % 2 == 0) {
                     maxPlayerViewDistanceX++;
-                    log("Setting maxPlayerViewDistanceX to '" + maxPlayerViewDistanceX + "' as the parsed number was not an odd number.");
+                    logwrn("Setting maxPlayerViewDistanceX to '" + maxPlayerViewDistanceX + "' as the parsed number was not an odd number.");
                 }
 
                 if(maxPlayerViewDistanceY < 3) {
                     maxPlayerViewDistanceY = 3;
-                    log("Setting maxPlayerViewDistanceY to '3' as it's the required minimum view distance.");
+                    logwrn("Setting maxPlayerViewDistanceY to '3' as it's the required minimum view distance.");
                 }
                 if(maxPlayerViewDistanceY % 2 == 0) {
                     maxPlayerViewDistanceY++;
-                    log("Setting maxPlayerViewDistanceY to '" + maxPlayerViewDistanceY + "' as the parsed number was not an odd number.");
+                    logwrn("Setting maxPlayerViewDistanceY to '" + maxPlayerViewDistanceY + "' as the parsed number was not an odd number.");
                 }
             }
 

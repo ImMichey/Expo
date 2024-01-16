@@ -6,6 +6,7 @@ import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
+import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
@@ -17,6 +18,8 @@ public class ClientCrate extends ClientEntity implements SelectableEntity, Refle
     private TextureRegion selectionTexture;
     private float[] interactionPointArray;
 
+    private ClientPhysicsBody body;
+
     @Override
     public void onCreation() {
         disableTextureCentering = true;
@@ -25,6 +28,8 @@ public class ClientCrate extends ClientEntity implements SelectableEntity, Refle
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray(2);
+
+        body = new ClientPhysicsBody(this, -1, 0, 16, 10);
     }
 
     @Override
@@ -35,7 +40,7 @@ public class ClientCrate extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public void onDeletion() {
-
+        body.dispose();
     }
 
     @Override

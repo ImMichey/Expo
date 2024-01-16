@@ -70,7 +70,7 @@ public class CommandNoise extends AbstractConsoleCommand {
 
         try {
             if(!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                ExpoLogger.log("Failed to finish task in 60 seconds.");
+                ExpoLogger.logerr("Failed to finish task in 60 seconds.");
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
