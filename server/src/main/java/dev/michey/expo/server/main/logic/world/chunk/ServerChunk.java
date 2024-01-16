@@ -517,7 +517,7 @@ public class ServerChunk {
         saveWith.execute(() -> _onSave(path, shutdown));
     }
 
-    private void _onSave(Path path, boolean shutdown) {
+    protected void _onSave(Path path, boolean shutdown) {
         if(!shutdown) {
             // Free up memory
             for(ServerTile tile : tiles) {
@@ -723,7 +723,7 @@ public class ServerChunk {
         return "ServerChunk [" + chunkX + "," + chunkY + "]";
     }
 
-    private File getChunkFile() {
+    public File getChunkFile() {
         String path = ExpoServerBase.get().getWorldSaveHandler().getPathDimensionSpecificFolder(dimension.getDimensionName());
         return new File(path + File.separator + chunkX + "," + chunkY);
     }

@@ -130,21 +130,6 @@ public class ExpoClientPacketReader {
         } else if(o instanceof P13_EntityMove p) {
             ClientEntity entity = entityFromId(p.entityId);
             if(entity != null) {
-                /*
-                if(entity.getEntityType() == ClientEntityType.PLAYER) {
-                    long idNow = RenderContext.get().frameId;
-                    float deltaNow = RenderContext.get().deltaTotal;
-                    Vector2 posNow = new Vector2(entity.serverPosX, entity.serverPosY);
-
-                    if(deltaNow - lastDelta >= 0.05f) {
-                        ExpoLogger.log("Ids: " + lastId + "->" + idNow + ", Deltas: " + lastDelta + "->" + deltaNow + ", Pos: " + posNow.cpy().sub(lastPos).toString() + " .. " + posNow);
-                    }
-
-                    lastId = idNow;
-                    lastDelta = deltaNow;
-                    lastPos = posNow;
-                }
-                */
                 entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir, p.sprinting, p.distance);
             }
         } else if(o instanceof P14_WorldUpdate p) {

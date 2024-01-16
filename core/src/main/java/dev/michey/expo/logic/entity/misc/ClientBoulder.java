@@ -6,6 +6,7 @@ import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
+import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.SquishAnimator2D;
 import dev.michey.expo.render.camera.CameraShake;
@@ -14,6 +15,8 @@ import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
+import static dev.michey.expo.server.main.logic.entity.misc.ServerBoulder.ROCK_BODIES;
+
 public class ClientBoulder extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private int variant;
@@ -21,6 +24,8 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
     private TextureRegion shadowMask;
     private float[] interactionPointArray;
     private TextureRegion selectionTexture;
+
+    private ClientPhysicsBody physicsBody;
 
     private final SquishAnimator2D squishAnimator2D = new SquishAnimator2D(0.2f, 1.5f, 1.5f);
 
@@ -38,6 +43,9 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray(2);
+
+        float[] b = ROCK_BODIES[variant - 1];
+        physicsBody = new ClientPhysicsBody(this, b[0], b[1], b[2], b[3]);
     }
 
     @Override
@@ -58,6 +66,8 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
         if(removalReason == EntityRemovalReason.DEATH) {
             playEntitySound("stone_break");
         }
+
+        physicsBody.dispose();
     }
 
     @Override

@@ -128,4 +128,28 @@ public class PacketReceiver {
         }
     }
 
+    public static PacketReceiver whoCanSeeExcept(ServerEntity entity, ServerPlayer except) {
+        if(ExpoServerBase.get().isLocalServer()) {
+            return null;
+        } else {
+            List<Connection> list = new LinkedList<>();
+            List<ServerEntity> playerList = entity.getDimension().getEntityManager().getEntitiesOf(ServerEntityType.PLAYER);
+
+            for(ServerEntity se : playerList) {
+                ServerPlayer player = (ServerPlayer) se;
+                if(player.entityId == except.entityId) continue;
+
+                if(entity.entityId == player.entityId || player.entityVisibilityController.isAlreadyVisible(entity.entityId)) {
+                    list.add(player.playerConnection.getKryoConnection());
+                }
+            }
+
+            if(!list.isEmpty()) {
+                return new PacketReceiver(false, null, null, list);
+            } else {
+                return null;
+            }
+        }
+    }
+
 }

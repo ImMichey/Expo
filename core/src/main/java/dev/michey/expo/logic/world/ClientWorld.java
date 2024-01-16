@@ -114,6 +114,7 @@ public class ClientWorld {
             }
 
         };
+        clientPhysicsWorld.setTileMode(false);
     }
 
     /** Ticking the game world. */

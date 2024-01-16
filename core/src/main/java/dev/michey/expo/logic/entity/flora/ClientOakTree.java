@@ -10,6 +10,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
+import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
@@ -23,12 +24,16 @@ import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleEmitter;
 
+import static dev.michey.expo.server.main.logic.entity.flora.ServerOakTree.TREE_BODIES;
+
 public class ClientOakTree extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private ContactAnimator contactAnimator;
     private FoliageAnimator foliageAnimator;
     private ParticleEmitter leafParticleEmitter;
     public final SquishAnimator2D squishAnimator2D = new SquishAnimator2D(0.2f, 1.5f, 1.5f);
+
+    private ClientPhysicsBody physicsBody;
 
     private int trunkVariant;
     private boolean cut;
@@ -211,6 +216,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
         updateDepth(4);
 
+        float[] b = TREE_BODIES[trunkVariant - 1];
+        physicsBody = new ClientPhysicsBody(this, b[0], b[1], b[2], b[3]);
+
         if(!cut && !emptyCrown) {
             contactAnimator = new ContactAnimator(this);
             contactAnimator.small = false;
@@ -276,7 +284,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void onDeletion() {
-
+        physicsBody.dispose();
     }
 
     @Override

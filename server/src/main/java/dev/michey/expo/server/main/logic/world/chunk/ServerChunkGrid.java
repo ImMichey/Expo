@@ -12,7 +12,9 @@ import make.some.noise.Noise;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static dev.michey.expo.log.ExpoLogger.log;
@@ -479,15 +481,15 @@ public class ServerChunkGrid {
         log("Inactive/Active chunks: " + inactiveChunkMap.size() + "/" + activeChunkMap.size());
 
         log("=== Active chunks ===");
-        for(String active : activeChunkMap.keySet()) {
-            long ts = activeChunkMap.get(active).value;
-            log(active + " ts: " + ts + " (" + (ts - System.currentTimeMillis()) + ")");
+        for(var set : activeChunkMap.entrySet()) {
+            long ts = set.getValue().value;
+            log(set.getKey() + " ts: " + ts + " (" + (ts - System.currentTimeMillis()) + ")");
         }
 
         log("=== Inactive chunks ===");
-        for(String inactive : inactiveChunkMap.keySet()) {
-            long ts = inactiveChunkMap.get(inactive).value;
-            log(inactive + " ts: " + ts + " (" + (ts - System.currentTimeMillis()) + ")");
+        for(var set : inactiveChunkMap.entrySet()) {
+            long ts = set.getValue().value;
+            log(set.getKey() + " ts: " + ts + " (" + (ts - System.currentTimeMillis()) + ")");
         }
     }
 

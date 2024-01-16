@@ -112,6 +112,11 @@ public class ExpoServerPacketReader {
                 sp.viewingInventory.removeInventoryViewer(sp);
                 sp.viewingInventory = null;
             }
+        } else if(packet instanceof P48_ClientPlayerPosition p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            sp.consumePosition(p);
         }
     }
 
@@ -376,6 +381,11 @@ public class ExpoServerPacketReader {
                 player.viewingInventory.removeInventoryViewer(player);
                 player.viewingInventory = null;
             }
+        } else if(o instanceof P48_ClientPlayerPosition p) {
+            ServerPlayer player = connectionToPlayer(connection);
+            if(player == null) return;
+
+            player.consumePosition(p);
         }
     }
 

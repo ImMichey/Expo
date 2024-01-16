@@ -130,6 +130,17 @@ public class ClientPackets {
         tcp(p);
     }
 
+    /** Sends the P48_ClientPlayerPosition packet via UDP protocol. */
+    public static void p48ClientPlayerPosition(int xDir, int yDir, float xPos, float yPos, boolean sprinting) {
+        P48_ClientPlayerPosition p = new P48_ClientPlayerPosition();
+        p.xDir = xDir;
+        p.yDir = yDir;
+        p.xPos = xPos;
+        p.yPos = yPos;
+        p.sprinting = sprinting;
+        udp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

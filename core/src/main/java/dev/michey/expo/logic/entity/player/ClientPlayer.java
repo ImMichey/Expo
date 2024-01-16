@@ -22,6 +22,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.misc.ClientSelector;
 import dev.michey.expo.logic.inventory.PlayerInventory;
+import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.noise.TileLayerType;
@@ -43,6 +44,7 @@ import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
+import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
 import dev.michey.expo.server.util.GenerationUtils;
@@ -67,9 +69,14 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public boolean resetSelector;
 
     /** Player velocity */
-    private int cachedVelocityX;
-    private int cachedVelocityY;
     private boolean cachedSprinting;
+    public float playerSpeed = 64f;
+    public final float sprintMultiplier = 1.6f;
+    public boolean noclip = false;
+    public int clientDirX, clientDirY;              // Set by client
+
+    public float movementPacketCooldown;
+    public boolean queueMovementPacket;
 
     /** Player chunk */
     public int chunkX;
@@ -532,12 +539,56 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 playerInventory.modifySelectedSlot(numberPressed);
             }
 
+            if(xDir != 0 || yDir != 0) {
+                float multiplicator = movementSpeedMultiplicator() * (sprinting ? sprintMultiplier : 1.0f);
+                boolean normalize = xDir != 0 && yDir != 0;
+                float normalizer = 1.0f;
+
+                if(normalize) {
+                    float len = (float) Math.sqrt(xDir * xDir + yDir * yDir);
+                    normalizer = 1 / len;
+                }
+
+                float toMoveX = xDir * delta * playerSpeed * multiplicator * normalizer;
+                float toMoveY = yDir * delta * playerSpeed * multiplicator * normalizer;
+
+                ClientChunk chunk = chunkGrid().getChunk(ExpoShared.posToChunk(clientPosX + toMoveX), ExpoShared.posToChunk(clientPosY + toMoveY));
+
+                if(chunk != null) {
+                    var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : ClientPhysicsBody.clientPlayerFilter);
+
+                    clientPosX = result.goalX - physicsBody.xOffset;
+                    clientPosY = result.goalY - physicsBody.yOffset;
+
+                    if(movementPacketCooldown <= 0) {
+                        ClientPackets.p48ClientPlayerPosition(xDir, yDir, clientPosX, clientPosY, sprinting);
+                        movementPacketCooldown += ((1f / (float) ExpoClientContainer.get().getServerTickRate()) * 0.5f);
+                    } else {
+                        movementPacketCooldown -= delta;
+                        queueMovementPacket = true;
+                    }
+                }
+            } else {
+                if(movementPacketCooldown <= 0 && queueMovementPacket) {
+                    ClientPackets.p48ClientPlayerPosition(xDir, yDir, clientPosX, clientPosY, sprinting);
+                    movementPacketCooldown += ((1f / (float) ExpoClientContainer.get().getServerTickRate()) * 0.5f);
+                    queueMovementPacket = false;
+                } else {
+                    movementPacketCooldown -= delta;
+                }
+            }
+
+            clientDirX = xDir;
+            clientDirY = yDir;
+
+            /*
             if(cachedVelocityX != xDir || cachedVelocityY != yDir || cachedSprinting != sprinting) {
                 cachedVelocityX = xDir;
                 cachedVelocityY = yDir;
                 cachedSprinting = sprinting;
                 ClientPackets.p5PlayerVelocity(xDir, yDir, sprinting);
             }
+            */
 
             // Update local player chunks
             chunkX = ExpoShared.posToChunk(clientPosX);
@@ -708,6 +759,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         if(!player) {
             cachedSprinting = sprinting;
+            physicsBody.moveAbsolute(xPos, yPos, PhysicsBoxFilters.noclipFilter);
         }
     }
 
@@ -1438,6 +1490,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         float x = clientPosX;
         float y = clientPosY;
         super.applyTeleportUpdate(xPos, yPos, reason);
+
+        physicsBody.moveAbsolute(xPos, yPos, PhysicsBoxFilters.noclipFilter);
+
         if(player) {
             updateTexturePositionData();
             RenderContext.get().expoCamera.centerToPlayer(this);
@@ -1564,7 +1619,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public boolean isMoving() {
-        if(player) return cachedVelocityX != 0 || cachedVelocityY != 0;
+        if(player) {
+            return clientDirX != 0 || clientDirY != 0;
+        }
         return super.isMoving();
     }
 

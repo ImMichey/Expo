@@ -6,7 +6,7 @@
         "enableDebugMode": false,
         "enableDebugGL": false,
         "enableDebugImGui": false,
-        "enablePerformanceProfiler": true
+        "enablePerformanceProfiler": false
     },
     "fpsCap": 240,
     "vsync": false,

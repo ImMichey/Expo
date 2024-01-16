@@ -3,7 +3,6 @@ package dev.michey.expo.server.main.logic.entity.player;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.dongbat.jbump.CollisionFilter;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.connection.PlayerConnection;
@@ -28,6 +27,7 @@ import dev.michey.expo.server.main.logic.world.chunk.EntityVisibilityController;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.server.packet.P16_PlayerPunch;
+import dev.michey.expo.server.packet.P48_ClientPlayerPosition;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.ServerUtils;
@@ -54,13 +54,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public final float sprintMultiplier = 1.6f;
     public int xDir = 0;
     public int yDir = 0;
-    public float xVel, yVel;
     public boolean sprinting;
     private boolean dirResetPacket = false;
-
-    private static final float ACCELERATION_DURATION = 0.1f;
-    private float accelerationDelta;
-    private float acceleration;
+    private P48_ClientPlayerPosition nextMovementPacket;
 
     public boolean noclip = false;
     public boolean god = false;
@@ -205,55 +201,35 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     }
 
     @Override
-    public void attemptMove(float x, float y, CollisionFilter filter, int dirX, int dirY) {
-        super.attemptMove(x, y, PhysicsBoxFilters.playerCollisionFilter, dirX, dirY);
-    }
-
-    @Override
     public void tick(float delta) {
         long a = System.nanoTime();
         updateChunks();
         itemCooldown = false;
 
-        /*
-        if(hasSeenChunks.size() < (PLAYER_CHUNK_VIEW_RANGE_X * PLAYER_CHUNK_VIEW_RANGE_Y)) {
-            onChunkChanged();
-        }
-        */
-
         tickKnockback(delta);
 
         if(invincibility > 0) invincibility -= delta;
 
-        if(xDir != 0 || yDir != 0) {
-            float multiplicator = movementSpeedMultiplicator() * (sprinting ? sprintMultiplier : 1.0f);
-            boolean normalize = xDir != 0 && yDir != 0;
-            float normalizer = 1.0f;
+        if(nextMovementPacket != null) {
+            float dstX = nextMovementPacket.xPos;
+            float dstY = nextMovementPacket.yPos;
+            xDir = nextMovementPacket.xDir;
+            yDir = nextMovementPacket.yDir;
+            nextMovementPacket = null;
 
-            if(normalize) {
-                float len = (float) Math.sqrt(xDir * xDir + yDir * yDir);
-                normalizer = 1 / len;
-            }
+            if(getChunkGrid().isActiveChunk(ExpoShared.posToChunk(dstX), ExpoShared.posToChunk(dstY))) {
+                physicsBody.moveAbsolute(dstX, dstY, PhysicsBoxFilters.noclipFilter);
+                posX = dstX;
+                posY = dstY;
 
-            float toMoveX = xDir * delta * playerSpeed * multiplicator * normalizer;
-            float toMoveY = yDir * delta * playerSpeed * multiplicator * normalizer;
-
-            // Hook here and check if chunk exists as it's multithreaded as of 21.09.2023
-            int chunkX = ExpoShared.posToChunk(toMoveX + posX);
-            int chunkY = ExpoShared.posToChunk(toMoveY + posY);
-
-            if(getChunkGrid().isActiveChunk(chunkX, chunkY)) {
-                var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : PhysicsBoxFilters.playerCollisionFilter);
-
-                posX = result.goalX - physicsBody.xOffset;
-                posY = result.goalY - physicsBody.yOffset;
-
-                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
+                ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSeeExcept(this, this));
                 dirResetPacket = true;
             }
         } else if(dirResetPacket) {
+            xDir = 0;
+            yDir = 0;
             dirResetPacket = false;
-            ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, xDir, yDir, sprinting, posX, posY, 0, PacketReceiver.whoCanSeeExcept(this, this));
         }
 
         applyKnockback(velToPos(xDir), velToPos(yDir));
@@ -329,7 +305,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     EntityHitbox hitbox = ((DamageableEntity) se).getEntityHitbox();
 
                     float ox = posX;
-                    float oy = posY + 7f;
+                    float oy = posY;// + 7f;
 
                     if(ServerUtils.rectIsInArc(ox, oy, hitbox.xOffset + se.posX, hitbox.yOffset + se.posY, hitbox.width, hitbox.height, usePunchRange, convertedStartAngle, convertedAngle, usePunchDirection, usePunchSpan)) {
                         // Hit.
@@ -486,6 +462,10 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public boolean onDamage(ServerEntity damageSource, float damage) {
         if(god) return false;
         return super.onDamage(damageSource, damage);
+    }
+
+    public void consumePosition(P48_ClientPlayerPosition p) {
+        nextMovementPacket = p;
     }
 
     private void evaluateNextPunch() {

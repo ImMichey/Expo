@@ -305,6 +305,24 @@ public abstract class ClientEntity {
 
     }
 
+    public float movementSpeedMultiplicator() {
+        boolean deepWater = isInDeepWater();
+        if(deepWater) return 0.3f;
+
+        boolean water = isInWater();
+        if(water) return 0.6f;
+
+        var layers = getCurrentTileLayers();
+        boolean hole = layers[0].emulatingType == TileLayerType.SOIL_HOLE;
+        if(hole) return 0.75f;
+
+        return 1.0f;
+    }
+
+    public boolean isInDeepWater() {
+        return TileLayerType.isDeepWater(getCurrentTileLayers()[2].emulatingType);
+    }
+
     public String getFootstepSound() {
         int chunkX = ExpoShared.posToChunk(clientPosX);
         int chunkY = ExpoShared.posToChunk(clientPosY);

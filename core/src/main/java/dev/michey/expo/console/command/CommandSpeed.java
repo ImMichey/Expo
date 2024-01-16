@@ -2,7 +2,7 @@ package dev.michey.expo.console.command;
 
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
-import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 
 public class CommandSpeed extends AbstractConsoleCommand {
 
@@ -26,8 +26,8 @@ public class CommandSpeed extends AbstractConsoleCommand {
         if(Expo.get().isPlaying()) {
             float amount = parseF(args, 1);
 
-            if(ServerPlayer.getLocalPlayer() != null) {
-                ServerPlayer.getLocalPlayer().playerSpeed = amount;
+            if(ClientPlayer.getLocalPlayer() != null) {
+                ClientPlayer.getLocalPlayer().playerSpeed = amount;
                 success("Set player speed to [CYAN]" + amount);
             }
         } else {

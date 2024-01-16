@@ -9,6 +9,22 @@ public class PhysicsBoxFilters {
 
     public static CollisionFilter noclipFilter = (item, other) -> Response.cross;
 
+    public static CollisionFilter playerKnockbackFilter = (item, other) -> {
+        if(other.userData instanceof PhysicsEntity oe) {
+            if(oe.getPhysicsMassClassification() == PhysicsMassClassification.HEAVY) {
+                return Response.slide;
+            }
+
+            if(oe.getPhysicsMassClassification() == PhysicsMassClassification.PLAYER) {
+                return Response.slide;
+            }
+
+            return Response.cross;
+        }
+
+        return Response.slide;
+    };
+
     public static CollisionFilter playerCollisionFilter = (item, other) -> {
         if(other.userData instanceof PhysicsEntity oe) {
             PhysicsMassClassification otherClassification = oe.getPhysicsMassClassification();
@@ -32,20 +48,16 @@ public class PhysicsBoxFilters {
             if(other.userData instanceof PhysicsEntity oe) {
                 PhysicsMassClassification otherClassification = oe.getPhysicsMassClassification();
 
+                if(otherClassification == PhysicsMassClassification.PLAYER) {
+                    return Response.cross;
+                }
+
                 if(otherClassification == PhysicsMassClassification.MEDIUM && classification == PhysicsMassClassification.MEDIUM) {
                     return Response.slide;
                 }
 
                 if(otherClassification == PhysicsMassClassification.WALL) {
                     return Response.slide;
-                }
-
-                if(otherClassification == PhysicsMassClassification.PLAYER && pe.getPhysicsMassClassification() == PhysicsMassClassification.MEDIUM) {
-                    return Response.slide;
-                }
-
-                if(otherClassification == PhysicsMassClassification.PLAYER || otherClassification == PhysicsMassClassification.ITEM) {
-                    return null;
                 }
 
                 if(otherClassification == PhysicsMassClassification.LIGHT) {

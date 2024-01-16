@@ -10,6 +10,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
+import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.SquishAnimatorAdvanced2D;
@@ -38,6 +39,8 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     private ClientEntity[] cachedNeighbours;
 
+    private ClientPhysicsBody physicsBody;
+
     @Override
     public void onCreation() {
         disableTextureCentering = true;
@@ -51,6 +54,8 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
         ao = tr("entity_wall_ao");
         createTexture();
+
+        checkForBoundingBox();
     }
 
     private void createTexture() {
@@ -86,6 +91,19 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     public void onDeletion() {
         if(removalReason == EntityRemovalReason.DEATH) {
             playEntitySound("stone_break");
+        }
+
+        if(physicsBody != null) {
+            physicsBody.dispose();
+            physicsBody = null;
+        }
+    }
+
+    public void checkForBoundingBox() {
+        if(physicsBody == null) {
+            if(ServerDynamic3DTile.hasBoundingBox(layerIds, emulatingType)) {
+                physicsBody = new ClientPhysicsBody(this, 0, 0, 16, 16);
+            }
         }
     }
 
@@ -198,7 +216,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        if(ServerDynamic3DTile.hasBoundingBox(layerIds, emulatingType)) {
+        if(physicsBody != null) {
             Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX - squishAnimator2D.squishX1, finalTextureStartY + squishAnimator2D.squishY1);
             float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(created, shadow);
             boolean draw = rc.verticesInBounds(vertices);
@@ -230,6 +248,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     @Override
     public void applyEntityUpdatePayload(Object[] payload) {
         parsePayload(payload);
+        checkForBoundingBox();
     }
 
     private void parsePayload(Object[] payload) {

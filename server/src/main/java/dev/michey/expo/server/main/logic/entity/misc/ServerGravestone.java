@@ -15,11 +15,6 @@ public class ServerGravestone extends ServerEntity {
     }
 
     @Override
-    public void onDie() {
-
-    }
-
-    @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.GRAVESTONE;
     }

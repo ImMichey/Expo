@@ -65,6 +65,7 @@ public abstract class ServerDimension {
             }
 
         };
+        physicsWorld.setTileMode(false);
 
         boolean rain = MathUtils.random() < 0.25f;
 

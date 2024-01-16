@@ -2,7 +2,7 @@ package dev.michey.expo.console.command;
 
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
-import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 
 public class CommandNoclip extends AbstractConsoleCommand {
 
@@ -24,8 +24,8 @@ public class CommandNoclip extends AbstractConsoleCommand {
     @Override
     public void executeCommand(String[] args) throws CommandSyntaxException {
         if(Expo.get().isPlaying()) {
-            if(ServerPlayer.getLocalPlayer() != null) {
-                ServerPlayer.getLocalPlayer().noclip = !ServerPlayer.getLocalPlayer().noclip;
+            if(ClientPlayer.getLocalPlayer() != null) {
+                ClientPlayer.getLocalPlayer().noclip = !ClientPlayer.getLocalPlayer().noclip;
             }
         } else {
             error("You are not ingame.");

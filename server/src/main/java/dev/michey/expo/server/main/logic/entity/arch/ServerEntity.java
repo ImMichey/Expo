@@ -3,7 +3,6 @@ package dev.michey.expo.server.main.logic.entity.arch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.dongbat.jbump.CollisionFilter;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.fs.world.entity.SavableEntity;
@@ -308,12 +307,6 @@ public abstract class ServerEntity {
         int tileX = ExpoShared.posToTile(posX);
         int tileY = ExpoShared.posToTile(posY);
         ServerTile t = getChunkGrid().getTile(tileX, tileY);
-        if(t == null) {
-            ExpoLogger.log("NULL " + tileX + " " + tileY + " ( " + posX + "," + posY + ")");
-        }
-        if(t.dynamicTileParts == null) {
-            ExpoLogger.log("DYNAMIC PARTS NULL " + t.tileX + "," + t.tileY + ", " + posX + "," + posY);
-        }
         boolean hole = t.dynamicTileParts[0].emulatingType == TileLayerType.SOIL_HOLE;
         if(hole) return 0.75f;
 
@@ -398,7 +391,7 @@ public abstract class ServerEntity {
         }
 
         if(moveByX != 0 || moveByY != 0) {
-            attemptMove(moveByX, moveByY, PhysicsBoxFilters.generalFilter, dirX, dirY);
+            attemptMove(moveByX, moveByY, PhysicsBoxFilters.playerKnockbackFilter, dirX, dirY);
         }
     }
 
