@@ -450,6 +450,7 @@ public class Expo implements ApplicationListener {
 			for(ItemRender ir : map.heldRender) update(ir);
 			for(ItemRender ir : map.uiRender) update(ir);
 			if(map.armorRender != null) for(ItemRender ir : map.armorRender) update(ir);
+			if(map.thrownRender != null) for(ItemRender ir : map.thrownRender) update(ir);
 		}
 	}
 

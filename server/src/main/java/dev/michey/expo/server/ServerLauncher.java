@@ -17,7 +17,11 @@ import static dev.michey.expo.log.ExpoLogger.*;
 /** Launches the server application. */
 public class ServerLauncher {
 
+	public static long START_TIMESTAMP;
+
 	public static void main(String[] args) {
+		START_TIMESTAMP = System.currentTimeMillis();
+
 		// Enable logging to file + console for debugging
 		ExpoLogger.enableDualLogging("serverlogs");
 		overrideKryoLogger();

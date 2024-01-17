@@ -10,5 +10,6 @@ public enum EntityRemovalReason {
     UNSPECIFIED,    // Unspecified
     CAUGHT,
     COMMAND,
+    EXPLOSION,
 
 }

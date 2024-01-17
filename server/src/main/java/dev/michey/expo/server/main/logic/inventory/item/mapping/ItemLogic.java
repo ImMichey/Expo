@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.inventory.item.mapping;
 
 import dev.michey.expo.server.main.logic.inventory.item.FoodData;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
+import dev.michey.expo.server.main.logic.inventory.item.ThrowData;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
@@ -14,6 +15,7 @@ public class ItemLogic {
     public ToolType toolType; // can be null
     public FoodData foodData; // can be null
     public PlaceData placeData; // can be null
+    public ThrowData throwData; // can be null;
 
     public float range;
     public float attackSpeed;
@@ -72,6 +74,10 @@ public class ItemLogic {
 
         if(object.has("placeData")) {
             placeData = new PlaceData(object.getJSONObject("placeData"));
+        }
+
+        if(object.has("throwData")) {
+            throwData = new ThrowData(object.getJSONObject("throwData"));
         }
 
         if(object.has("attackAngleSpan")) {

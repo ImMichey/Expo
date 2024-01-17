@@ -42,12 +42,14 @@ public class ItemMapper {
             ItemRender[] uiRender;
             ItemRender[] heldRender;
             ItemRender[] armorRender;
+            ItemRender[] thrownRender;
 
             if(!client) {
                 // it's a dedicated server with no client presence, skip ItemRender
                 uiRender = null;
                 heldRender = null;
                 armorRender = null;
+                thrownRender = null;
             } else {
                 JSONObject renderData = entry.getJSONObject("render");
 
@@ -56,18 +58,26 @@ public class ItemMapper {
                     uiRender = ir;
                     heldRender = ir;
                     armorRender = ir;
+                    thrownRender = ir;
                 } else {
                     uiRender = convertToRenderArray(renderData.get("ui"));
                     heldRender = convertToRenderArray(renderData.get("held"));
+
                     if(renderData.has("armor")) {
                         armorRender = convertToRenderArray(renderData.get("armor"));
                     } else {
                         armorRender = null;
                     }
+
+                    if(renderData.has("thrown")) {
+                        thrownRender = convertToRenderArray(renderData.get("thrown"));
+                    } else {
+                        thrownRender = null;
+                    }
                 }
             }
 
-            ItemMapping mapping = new ItemMapping(identifier, id, category, displayName, displayNameColor, uiRender, heldRender, armorRender, logic);
+            ItemMapping mapping = new ItemMapping(identifier, id, category, displayName, displayNameColor, uiRender, heldRender, armorRender, thrownRender, logic);
             itemMappings.put(identifier, mapping);
             itemMappingsId.put(id, mapping);
 
@@ -93,6 +103,16 @@ public class ItemMapper {
             }
             if(armorRender != null) {
                 for(ItemRender ir : armorRender) {
+                    if(ir.animationFrames > 0) {
+                        dynamicAnimationList.add(ir);
+                    }
+                    if(ir.particleEmitter != null) {
+                        dynamicParticleEmitterList.add(ir);
+                    }
+                }
+            }
+            if(thrownRender != null) {
+                for(ItemRender ir : thrownRender) {
                     if(ir.animationFrames > 0) {
                         dynamicAnimationList.add(ir);
                     }

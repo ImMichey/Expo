@@ -18,6 +18,7 @@ public class ServerCrab extends ServerEntity implements DamageableEntity, Physic
     public ServerCrab() {
         variant = 1;
         health = getMetadata().getMaxHealth();
+        resetInvincibility();
     }
 
     @Override
@@ -84,11 +85,6 @@ public class ServerCrab extends ServerEntity implements DamageableEntity, Physic
     @Override
     public EntityPhysicsBox getPhysicsBox() {
         return physicsBody;
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

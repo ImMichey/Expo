@@ -33,13 +33,15 @@ public class PhysicsBoxFilters {
                 return null;
             }
 
-            if(otherClassification == PhysicsMassClassification.LIGHT) {
+            if(otherClassification == PhysicsMassClassification.LIGHT || otherClassification == PhysicsMassClassification.THROWN) {
                 return null;
             }
         }
 
         return Response.slide;
     };
+
+    public static CollisionFilter thrownFilter = (item, other) -> Response.cross;
 
     public static CollisionFilter generalFilter = (item, other) -> {
         if(item.userData instanceof PhysicsEntity pe) {
@@ -48,7 +50,7 @@ public class PhysicsBoxFilters {
             if(other.userData instanceof PhysicsEntity oe) {
                 PhysicsMassClassification otherClassification = oe.getPhysicsMassClassification();
 
-                if(otherClassification == PhysicsMassClassification.PLAYER) {
+                if(otherClassification == PhysicsMassClassification.PLAYER || otherClassification == PhysicsMassClassification.THROWN) {
                     return Response.cross;
                 }
 

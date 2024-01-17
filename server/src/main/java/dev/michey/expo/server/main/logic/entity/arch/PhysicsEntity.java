@@ -6,8 +6,6 @@ public interface PhysicsEntity {
 
     EntityPhysicsBox getPhysicsBox();
 
-    void onMoved();
-
     PhysicsMassClassification getPhysicsMassClassification();
 
 }

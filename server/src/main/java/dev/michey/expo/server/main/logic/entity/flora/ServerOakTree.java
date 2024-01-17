@@ -12,6 +12,7 @@ import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.server.util.SpawnItem;
+import dev.michey.expo.util.EntityRemovalReason;
 import org.json.JSONObject;
 
 public class ServerOakTree extends ServerEntity implements PhysicsEntity {
@@ -213,7 +214,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
             if(health <= 0) {
                 damagePacket = getEntityType() == ServerEntityType.PLAYER;
-                killEntityWithAdvancedPacket(damage, health, damageSource.entityId);
+                killEntityWithAdvancedPacket(damage, health, damageSource.entityId, EntityRemovalReason.DEATH);
             }
 
             if(damagePacket) {
@@ -245,11 +246,6 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     @Override
     public EntityPhysicsBox getPhysicsBox() {
         return physicsBody;
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

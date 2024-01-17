@@ -622,8 +622,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 ClientPackets.p22PlayerArmDirection(currentRotation);
             }
 
-            //boolean canSendPunchPacket = (punchEnd - now) < 0 && (clientPunchEnd - now) < 0;
-
             if(timeSinceLastSend >= PLAYER_ARM_MOVEMENT_SEND_RATE) {
                 boolean containerClosed = getUI().currentContainer == null;
                 boolean holdingLeft = IngameInput.get().leftPressed() && ExpoClientContainer.get().getPlayerUI().hoveredSlot == null;
@@ -645,14 +643,16 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
 
             if(IngameInput.get().rightJustPressed()) {
-                if(selector.canDoAction()) {
-                    selector.playPulseAnimation();
-                    ClientPackets.p34PlayerPlace(selector.toChunkX, selector.toChunkY, selector.tileGridX, selector.tileGridY, selector.toTileArray,
-                            selector.worldX, selector.worldY);
-                } else {
-                    if(ClientEntityManager.get().selectedEntity != null) {
-                        ClientPackets.p39PlayerInteractEntity();
+                if(holdingItemId != -1) {
+                    ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
+
+                    if(mapping.logic.throwData != null) {
+                        ClientPackets.p49PlayerThrowEntity(RenderContext.get().mouseWorldX, RenderContext.get().mouseWorldY);
+                    } else {
+                        handleRightClickNonItem();
                     }
+                } else {
+                    handleRightClickNonItem();
                 }
             }
         } else {
@@ -751,6 +751,18 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         lastPlayerWalkIndex = playerWalkIndex;
+    }
+
+    private void handleRightClickNonItem() {
+        if(selector.canDoAction()) {
+            selector.playPulseAnimation();
+            ClientPackets.p34PlayerPlace(selector.toChunkX, selector.toChunkY, selector.tileGridX, selector.tileGridY, selector.toTileArray,
+                    selector.worldX, selector.worldY);
+        } else {
+            if(ClientEntityManager.get().selectedEntity != null) {
+                ClientPackets.p39PlayerInteractEntity();
+            }
+        }
     }
 
     @Override
@@ -1497,7 +1509,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         float y = clientPosY;
         super.applyTeleportUpdate(xPos, yPos, reason);
 
-        physicsBody.moveAbsolute(xPos, yPos, PhysicsBoxFilters.noclipFilter);
+        physicsBody.teleport(xPos, yPos);
 
         if(player) {
             updateTexturePositionData();

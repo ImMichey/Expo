@@ -34,7 +34,7 @@ public class ExpoShared {
     public static int PLAYER_CHUNK_VIEW_RANGE_DIR_X = (PLAYER_CHUNK_VIEW_RANGE_X - 1) / 2; // (9 - 1) / 2 = 4
     public static int PLAYER_CHUNK_VIEW_RANGE_DIR_Y = (PLAYER_CHUNK_VIEW_RANGE_Y - 1) / 2; // (7 - 1) / 2 = 3
 
-    public static final float PLAYER_AUDIO_RANGE = PLAYER_CHUNK_VIEW_RANGE_DIR_X * 0.5f * CHUNK_SIZE;
+    public static final float PLAYER_AUDIO_RANGE = 2f * CHUNK_SIZE;
 
     public static final int PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT = 36;
     public static final int PLAYER_INVENTORY_SLOTS = PLAYER_INVENTORY_NO_ARMOR_SLOT_AMOUNT + 5;

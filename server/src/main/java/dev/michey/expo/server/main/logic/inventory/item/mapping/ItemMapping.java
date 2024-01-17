@@ -13,9 +13,10 @@ public class ItemMapping {
     public ItemRender[] uiRender;
     public ItemRender[] heldRender;
     public ItemRender[] armorRender;
+    public ItemRender[] thrownRender;
     public ItemLogic logic;
 
-    public ItemMapping(String identifier, int id, ItemCategory category, String displayName, String displayNameColor, ItemRender[] uiRender, ItemRender[] heldRender, ItemRender[] armorRender, ItemLogic logic) {
+    public ItemMapping(String identifier, int id, ItemCategory category, String displayName, String displayNameColor, ItemRender[] uiRender, ItemRender[] heldRender, ItemRender[] armorRender, ItemRender[] thrownRender, ItemLogic logic) {
         this.identifier = identifier;
         this.id = id;
         this.category = category;
@@ -24,6 +25,7 @@ public class ItemMapping {
         this.uiRender = uiRender;
         this.heldRender = heldRender;
         this.armorRender = armorRender;
+        this.thrownRender = thrownRender;
         this.logic = logic;
     }
 

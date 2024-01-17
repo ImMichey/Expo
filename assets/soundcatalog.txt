@@ -20,6 +20,9 @@ step_mud_2.wav
 step_mud_3.wav
 step_mud_4.wav
 
+#explosion;true;0.9-1.1;SFX;1.0
+explosion_1.wav
+
 #step_dirt;true;0.9-1.1;SFX;1.0
 step_dirt_1.wav
 step_dirt_2.wav

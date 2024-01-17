@@ -14,7 +14,6 @@ public class ServerSlime extends ServerEntity implements DamageableEntity, Physi
 
     public ServerSlime() {
         health = getMetadata().getMaxHealth();
-        invincibility = 0.0f;
         persistentEntity = false;
     }
 
@@ -51,11 +50,6 @@ public class ServerSlime extends ServerEntity implements DamageableEntity, Physi
         tickKnockback(delta);
         brain.tickBrain(delta);
         applyKnockback(brain);
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

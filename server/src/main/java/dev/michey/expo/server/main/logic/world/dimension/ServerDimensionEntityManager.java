@@ -7,8 +7,12 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.EntityRemovalReason;
@@ -20,6 +24,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ServerDimensionEntityManager {
 
+    /** Parent */
+    private final ServerDimension dimension;
+
     /** Storage maps */
     private final TreeMap<Integer, ServerEntity> idEntityMap;
     private final HashMap<ServerEntityType, ArrayList<ServerEntity>> typeEntityListMap;
@@ -30,7 +37,8 @@ public class ServerDimensionEntityManager {
     private final ArrayList<ServerEntity> justRemovedEntityList;
     private final ArrayList<ServerEntity> justSwitchedChunksEntityList;
 
-    public ServerDimensionEntityManager() {
+    public ServerDimensionEntityManager(ServerDimension dimension) {
+        this.dimension = dimension;
         idEntityMap = new TreeMap<>();
         typeEntityListMap = new HashMap<>();
         damageableEntityMap = new HashMap<>();
@@ -198,6 +206,22 @@ public class ServerDimensionEntityManager {
                 }
             }
         }
+    }
+
+    public void spawnItemSingle(float originX, float originY, float originOffsetRadius, String itemName, float moveToRadius) {
+        Vector2 position = GenerationUtils.circularRandom(moveToRadius);
+        Vector2 offset = GenerationUtils.circularRandom(originOffsetRadius);
+
+        ServerItem item = new ServerItem();
+
+        ItemMapping r = ItemMapper.get().getMapping(itemName);
+        item.itemContainer = new ServerInventoryItem(r.id, 1);
+        item.posX = originX + offset.x;
+        item.posY = originY + offset.y;
+        item.dstX = position.x;
+        item.dstY = position.y;
+
+        ServerWorld.get().registerServerEntity(dimension.dimensionName, item);
     }
 
     private Pair<ServerItem, Float> findClosestItem(ServerItem sourceItem, List<ServerItem> categoryItems) {

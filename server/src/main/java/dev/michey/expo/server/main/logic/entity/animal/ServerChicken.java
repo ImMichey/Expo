@@ -19,6 +19,7 @@ public class ServerChicken extends ServerEntity implements DamageableEntity, Phy
     public ServerChicken() {
         health = getMetadata().getMaxHealth();
         variant = 2;
+        resetInvincibility();
     }
 
     @Override
@@ -60,11 +61,6 @@ public class ServerChicken extends ServerEntity implements DamageableEntity, Phy
         tickKnockback(delta);
         brain.tickBrain(delta);
         applyKnockback(brain);
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

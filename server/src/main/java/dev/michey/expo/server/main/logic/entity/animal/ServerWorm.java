@@ -17,6 +17,7 @@ public class ServerWorm extends ServerEntity implements DamageableEntity, Physic
 
     public ServerWorm() {
         health = getMetadata().getMaxHealth();
+        resetInvincibility();
     }
 
     @Override
@@ -52,11 +53,6 @@ public class ServerWorm extends ServerEntity implements DamageableEntity, Physic
         tickKnockback(delta);
         brain.tickBrain(delta);
         applyKnockback(brain);
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

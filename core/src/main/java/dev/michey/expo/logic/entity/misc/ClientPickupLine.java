@@ -99,9 +99,7 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         displayText = amount + "x " + mapping.displayName;
 
         if(physicsBody != null) {
-            var response = physicsBody.moveAbsolute(clientPosX, clientPosY, ClientPhysicsBody.pickupCollisionFilter);
-            clientPosX = response.goalX - physicsBody.xOffset;
-            clientPosY = response.goalY - physicsBody.yOffset;
+            physicsBody.teleport(clientPosX, clientPosY);
         }
     }
 

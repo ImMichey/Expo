@@ -14,7 +14,6 @@ public class ServerWoodfolk extends ServerEntity implements DamageableEntity, Ph
 
     public ServerWoodfolk() {
         health = getMetadata().getMaxHealth();
-        invincibility = 0.0f;
     }
 
     @Override
@@ -45,11 +44,6 @@ public class ServerWoodfolk extends ServerEntity implements DamageableEntity, Ph
         tickKnockback(delta);
         brain.tickBrain(delta);
         applyKnockback(brain);
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

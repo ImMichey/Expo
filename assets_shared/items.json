@@ -1459,6 +1459,76 @@
                     "previewTexture": "entity_lilypad_1"
                 }
             }
+        },
+        {
+            "identifier": "item_bomb",
+            "id": 53,
+            "category": "CONSUMABLE",
+            "displayName": "Bomb",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_bomb"
+                },
+                "held": {
+                    "texture": "item_bomb",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                },
+                "thrown": {
+                    "texture": "item_bomb"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "throwData": {
+                    "maxThrowDistance": 256,
+                    "minThrowDuration": 0.5,
+                    "maxThrowDuration": 0.6,
+                    "explosionRadius": 144,
+                    "explosionDamage": 150,
+                    "knockbackStrength": 32.0,
+                    "knockbackDuration": 0.25
+                }
+            }
+        },
+        {
+            "identifier": "item_nuke",
+            "id": 54,
+            "category": "CONSUMABLE",
+            "displayName": "Nuke",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_bomb"
+                },
+                "held": {
+                    "texture": "item_bomb",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                },
+                "thrown": {
+                    "texture": "item_bomb"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "throwData": {
+                    "maxThrowDistance": 512,
+                    "minThrowDuration": 0.5,
+                    "maxThrowDuration": 0.6,
+                    "explosionRadius": 512,
+                    "explosionDamage": 300,
+                    "knockbackStrength": 64.0,
+                    "knockbackDuration": 0.25
+                }
+            }
         }
     ]
 }

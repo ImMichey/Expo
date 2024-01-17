@@ -113,7 +113,8 @@ public class ExpoServerRegistry {
                 P45_Auth_Req.class,
                 P46_EntityConstruct.class,
                 P47_ItemConsume.class,
-                P48_ClientPlayerPosition.class
+                P48_ClientPlayerPosition.class,
+                P49_PlayerEntityThrow.class
         );
     }
 

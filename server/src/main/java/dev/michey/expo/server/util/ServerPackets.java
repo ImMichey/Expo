@@ -20,31 +20,37 @@ import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.EntityRemovalReason;
 import dev.michey.expo.util.ExpoShared;
 
+import java.util.concurrent.RejectedExecutionException;
+
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
 public class ServerPackets {
 
     /** Sends the P1_Auth_Rsp packet via TCP protocol. */
     public static void p1AuthResponse(boolean authSuccessful, String authMessage, int serverTps, int worldSeed, WorldGenSettings genSettings, PacketReceiver receiver) {
-        P1_Auth_Rsp p = new P1_Auth_Rsp();
-        p.authSuccessful = authSuccessful;
-        p.authMessage = authMessage;
-        p.serverTps = serverTps;
-        p.worldSeed = worldSeed;
-        if(genSettings != null) {
-            p.noiseSettings = genSettings.getNoiseSettings();
-            p.biomeDefinitionList = genSettings.getBiomeDefinitionList();
-        }
-        tcp(p, receiver);
+        mt(() -> {
+            P1_Auth_Rsp p = new P1_Auth_Rsp();
+            p.authSuccessful = authSuccessful;
+            p.authMessage = authMessage;
+            p.serverTps = serverTps;
+            p.worldSeed = worldSeed;
+            if(genSettings != null) {
+                p.noiseSettings = genSettings.getNoiseSettings();
+                p.biomeDefinitionList = genSettings.getBiomeDefinitionList();
+            }
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P44_Connect_Rsp packet via TCP protocol. */
     public static void p44ConnectResponse(boolean credentialsSuccessful, boolean requiresSteamTicket, String message, PacketReceiver receiver) {
-        P44_Connect_Rsp p = new P44_Connect_Rsp();
-        p.credentialsSuccessful = credentialsSuccessful;
-        p.requiresSteamTicket = requiresSteamTicket;
-        p.message = message;
-        tcp(p, receiver);
+        mt(() -> {
+            P44_Connect_Rsp p = new P44_Connect_Rsp();
+            p.credentialsSuccessful = credentialsSuccessful;
+            p.requiresSteamTicket = requiresSteamTicket;
+            p.message = message;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P2_EntityCreate packet via TCP protocol. */
@@ -60,21 +66,21 @@ public class ServerPackets {
     }
 
     public static void p2EntityCreate(ServerEntity entity, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
-            p2EntityCreate(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, entity.health, receiver);
-        });
+        mt(() -> p2EntityCreate(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1, entity.health, receiver));
     }
 
     /** Sends the P3_PlayerJoin packet via TCP protocol. */
     public static void p3PlayerJoin(String username, PacketReceiver receiver) {
-        P3_PlayerJoin p = new P3_PlayerJoin();
-        p.username = username;
-        tcp(p, receiver);
+        mt(() -> {
+            P3_PlayerJoin p = new P3_PlayerJoin();
+            p.username = username;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P4_EntityDelete packet via TCP protocol. */
     public static void p4EntityDelete(int entityId, EntityRemovalReason reason, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P4_EntityDelete p = new P4_EntityDelete();
             p.entityId = entityId;
             p.reason = reason;
@@ -84,7 +90,7 @@ public class ServerPackets {
 
     /** Sends the P6_EntityPosition packet via UDP protocol. */
     public static void p6EntityPosition(int entityId, float xPos, float yPos, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P6_EntityPosition p = new P6_EntityPosition();
             p.entityId = entityId;
             p.xPos = xPos;
@@ -93,16 +99,9 @@ public class ServerPackets {
         });
     }
 
-    /** Sends the P7_ChunkSnapshot packet via UDP protocol. */
-    public static void p7ChunkSnapshot(int[] activeChunks, PacketReceiver receiver) {
-        P7_ChunkSnapshot p = new P7_ChunkSnapshot();
-        p.activeChunks = activeChunks;
-        udp(p, receiver);
-    }
-
     /** Sends the P8_EntityDeleteStack packet via TCP protocol. */
     public static void p8EntityDeleteStack(int[] entityList, EntityRemovalReason[] reasons, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P8_EntityDeleteStack p = new P8_EntityDeleteStack();
             p.entityList = entityList;
             p.reasons = reasons;
@@ -112,7 +111,7 @@ public class ServerPackets {
 
     /** Sends the P9_PlayerCreate packet via TCP protocol. */
     public static void p9PlayerCreate(int entityId, String dimensionName, float serverPosX, float serverPosY, int direction, String username, boolean player, int[] equippedItemIds, float armRotation, float health, float hunger, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P9_PlayerCreate p = new P9_PlayerCreate();
             p.entityType = ServerEntityType.PLAYER;
             p.entityId = entityId;
@@ -136,14 +135,16 @@ public class ServerPackets {
 
     /** Sends the P10_PlayerQuit packet via TCP protocol. */
     public static void p10PlayerQuit(String username, PacketReceiver receiver) {
-        P10_PlayerQuit p = new P10_PlayerQuit();
-        p.username = username;
-        tcp(p, receiver);
+        mt(() -> {
+            P10_PlayerQuit p = new P10_PlayerQuit();
+            p.username = username;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P11_ChunkData packet via TCP protocol. */
     public static void p11ChunkData(ServerChunk chunk, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P11_ChunkData p = new P11_ChunkData();
             p.chunkX = chunk.chunkX;
             p.chunkY = chunk.chunkY;
@@ -175,7 +176,7 @@ public class ServerPackets {
 
     /** Sends the P12_PlayerDirection packet via UDP protocol. */
     public static void p12PlayerDirection(int entityId, int direction, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P12_PlayerDirection p = new P12_PlayerDirection();
             p.entityId = entityId;
             p.direction = direction;
@@ -185,7 +186,7 @@ public class ServerPackets {
 
     /** Sends the P13_EntityMove packet via UDP protocol. */
     public static void p13EntityMove(int entityId, int xDir, int yDir, boolean sprinting, float xPos, float yPos, float distance, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P13_EntityMove p = new P13_EntityMove();
             p.entityId = entityId;
             p.xDir = xDir;
@@ -204,72 +205,89 @@ public class ServerPackets {
 
     /** Sends the P14_WorldUpdate packet via TCP protocol. */
     public static void p14WorldUpdate(float worldTime, int worldWeather, float weatherStrength, PacketReceiver receiver) {
-        P14_WorldUpdate p = new P14_WorldUpdate();
-        p.worldTime = worldTime;
-        p.worldWeather = worldWeather;
-        p.weatherStrength = weatherStrength;
-        tcp(p, receiver);
+        mt(() -> {
+            P14_WorldUpdate p = new P14_WorldUpdate();
+            p.worldTime = worldTime;
+            p.worldWeather = worldWeather;
+            p.weatherStrength = weatherStrength;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P15_PingList packet via TCP protocol. */
     public static void p15PingList(PacketReceiver receiver) {
-        var map = PlayerConnectionHandler.get().connections();
-        int size = map.size();
-        P15_PingList p = new P15_PingList();
-        p.username = new String[size];
-        p.ping = new int[size];
+        mt(() -> {
+            var map = PlayerConnectionHandler.get().connections();
+            int size = map.size();
+            P15_PingList p = new P15_PingList();
+            p.username = new String[size];
+            p.ping = new int[size];
 
-        int index = 0;
+            int index = 0;
 
-        for(PlayerConnection con : map) {
-            p.username[index] = con.player.username;
-            p.ping[index] = con.getKryoConnection().getReturnTripTime();
-            index++;
-        }
+            for(PlayerConnection con : map) {
+                p.username[index] = con.player.username;
+                p.ping[index] = con.getKryoConnection().getReturnTripTime();
+                index++;
+            }
 
-        udp(p, receiver);
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P17_PlayerPunchData packet via UDP protocol. */
     public static void p17PlayerPunchData(int entityId, float punchAngleStart, float punchAngleEnd, float punchDuration, PacketReceiver receiver) {
-        P17_PlayerPunchData p = new P17_PlayerPunchData();
-        p.entityId = entityId;
-        p.punchAngleStart = punchAngleStart;
-        p.punchAngleEnd = punchAngleEnd;
-        p.punchDuration = punchDuration;
-        udp(p, receiver);
+        mt(() -> {
+            P17_PlayerPunchData p = new P17_PlayerPunchData();
+            p.entityId = entityId;
+            p.punchAngleStart = punchAngleStart;
+            p.punchAngleEnd = punchAngleEnd;
+            p.punchDuration = punchDuration;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P19_ContainerUpdate packet via TCP protocol. */
     public static void p19ContainerUpdate(int containerId, int[] updatedSlots, ServerInventoryItem[] updatedItems, PacketReceiver receiver) {
-        P19_ContainerUpdate p = new P19_ContainerUpdate();
-        p.containerId = containerId;
-        p.updatedSlots = updatedSlots;
-        p.updatedItems = updatedItems;
-        tcp(p, receiver);
+        mt(() -> {
+            P19_ContainerUpdate p = new P19_ContainerUpdate();
+            p.containerId = containerId;
+            p.updatedSlots = updatedSlots;
+            p.updatedItems = updatedItems;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P19_PlayerInventoryUpdate packet via TCP protocol. */
     public static void p19ContainerUpdate(ServerPlayer player, PacketReceiver receiver) {
-        ServerPlayerInventory inv = player.playerInventory;
-        int[] updatedSlots = new int[inv.slots.length];
-        for(int i = 0; i < updatedSlots.length; i++) updatedSlots[i] = i;
-        ServerInventoryItem[] updated = new ServerInventoryItem[inv.slots.length];
-        for(int i = 0; i < updated.length; i++) updated[i] = inv.slots[i].item;
-        p19ContainerUpdate(ExpoShared.CONTAINER_ID_PLAYER, updatedSlots, updated, receiver);
+        mt(() -> {
+            ServerPlayerInventory inv = player.playerInventory;
+            int[] updatedSlots = new int[inv.slots.length];
+            for(int i = 0; i < updatedSlots.length; i++) updatedSlots[i] = i;
+            ServerInventoryItem[] updated = new ServerInventoryItem[inv.slots.length];
+            for(int i = 0; i < updated.length; i++) updated[i] = inv.slots[i].item;
+
+            P19_ContainerUpdate p = new P19_ContainerUpdate();
+            p.containerId = ExpoShared.CONTAINER_ID_PLAYER;
+            p.updatedSlots = updatedSlots;
+            p.updatedItems = updated;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P21_PlayerGearUpdate packet via UDP protocol. */
     public static void p21PlayerGearUpdate(int entityId, int[] heldItemIds, PacketReceiver receiver) {
-        P21_PlayerGearUpdate p = new P21_PlayerGearUpdate();
-        p.entityId = entityId;
-        p.heldItemIds = heldItemIds;
-        udp(p, receiver);
+        mt(() -> {
+            P21_PlayerGearUpdate p = new P21_PlayerGearUpdate();
+            p.entityId = entityId;
+            p.heldItemIds = heldItemIds;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P22_PlayerArmDirection packet via UDP protocol. */
     public static void p22PlayerArmDirection(int entityId, float rotation, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P22_PlayerArmDirection p = new P22_PlayerArmDirection();
             p.entityId = entityId;
             p.rotation = rotation;
@@ -279,55 +297,67 @@ public class ServerPackets {
 
     /** Sends the P23_PlayerLifeUpdate packet via UDP protocol. */
     public static void p23PlayerLifeUpdate(float health, float hunger, PacketReceiver receiver) {
-        P23_PlayerLifeUpdate p = new P23_PlayerLifeUpdate();
-        p.health = health;
-        p.hunger = hunger;
-        udp(p, receiver);
+        mt(() -> {
+            P23_PlayerLifeUpdate p = new P23_PlayerLifeUpdate();
+            p.health = health;
+            p.hunger = hunger;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P24_PositionalSound packet via UDP protocol. */
     public static void p24PositionalSound(String soundName, float worldX, float worldY, float maxSoundRange, PacketReceiver receiver) {
-        P24_PositionalSound p = new P24_PositionalSound();
-        p.soundName = soundName;
-        p.worldX = worldX;
-        p.worldY = worldY;
-        p.maxSoundRange = maxSoundRange;
-        udp(p, receiver);
+        mt(() -> {
+            P24_PositionalSound p = new P24_PositionalSound();
+            p.soundName = soundName;
+            p.worldX = worldX;
+            p.worldY = worldY;
+            p.maxSoundRange = maxSoundRange;
+            udp(p, receiver);
+        });
     }
 
     public static void p24PositionalSound(String soundName, ServerEntity entity) {
-        P24_PositionalSound p = new P24_PositionalSound();
-        p.soundName = soundName;
-        p.worldX = entity.posX;
-        p.worldY = entity.posY;
-        p.maxSoundRange = ExpoShared.PLAYER_AUDIO_RANGE;
-        udp(p, PacketReceiver.whoCanSee(entity));
+        mt(() -> {
+            P24_PositionalSound p = new P24_PositionalSound();
+            p.soundName = soundName;
+            p.worldX = entity.posX;
+            p.worldY = entity.posY;
+            p.maxSoundRange = ExpoShared.PLAYER_AUDIO_RANGE;
+            udp(p, PacketReceiver.whoCanSee(entity));
+        });
     }
 
     /** Sends the P25_ChatMessage packet via TCP protocol. */
     public static void p25ChatMessage(String sender, String message, PacketReceiver receiver) {
-        P25_ChatMessage p = new P25_ChatMessage();
-        p.sender = sender;
-        p.message = message;
-        tcp(p, receiver);
+        mt(() -> {
+            P25_ChatMessage p = new P25_ChatMessage();
+            p.sender = sender;
+            p.message = message;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P26_EntityDamage packet via UDP protocol. */
     public static void p26EntityDamage(int entityId, float damage, float newHealth, int damageSourceEntityId, PacketReceiver receiver) {
-        P26_EntityDamage p = new P26_EntityDamage();
-        p.entityId = entityId;
-        p.damage = damage;
-        p.newHealth = newHealth;
-        p.damageSourceEntityId = damageSourceEntityId;
-        udp(p, receiver);
+        mt(() -> {
+            P26_EntityDamage p = new P26_EntityDamage();
+            p.entityId = entityId;
+            p.damage = damage;
+            p.newHealth = newHealth;
+            p.damageSourceEntityId = damageSourceEntityId;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P28_PlayerFoodParticle packet via UDP protocol. */
     public static void p28PlayerFoodParticle(int entityId, int itemId, PacketReceiver receiver) {
-        P28_PlayerFoodParticle p = new P28_PlayerFoodParticle();
-        p.entityId = entityId;
-        p.itemId = itemId;
-        udp(p, receiver);
+        mt(() -> {
+            P28_PlayerFoodParticle p = new P28_PlayerFoodParticle();
+            p.entityId = entityId;
+            p.itemId = itemId;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P29_EntityCreateAdvanced packet via TCP protocol. */
@@ -344,7 +374,7 @@ public class ServerPackets {
     }
 
     public static void p29EntityCreateAdvanced(ServerEntity entity, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             int tileEntityId = entity.tileEntity ? (entity.tileY * ROW_TILES + entity.tileX) : -1;
             p29EntityCreateAdvanced(entity.getEntityType(), entity.entityId, entity.posX, entity.posY, tileEntityId, entity.health, entity.getPacketPayload(), receiver);
         });
@@ -352,23 +382,27 @@ public class ServerPackets {
 
     /** Sends the P30_EntityDataUpdate packet via UDP protocol. */
     public static void p30EntityDataUpdate(int entityId, Object[] payload, PacketReceiver receiver) {
-        P30_EntityDataUpdate p = new P30_EntityDataUpdate();
-        p.entityId = entityId;
-        p.payload = payload;
-        udp(p, receiver);
+        mt(() -> {
+            P30_EntityDataUpdate p = new P30_EntityDataUpdate();
+            p.entityId = entityId;
+            p.payload = payload;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P30_EntityDataUpdate packet via UDP protocol. */
     public static void p30EntityDataUpdate(ServerEntity entity) {
-        P30_EntityDataUpdate p = new P30_EntityDataUpdate();
-        p.entityId = entity.entityId;
-        p.payload = entity.getPacketPayload();
-        udp(p, PacketReceiver.whoCanSee(entity));
+        mt(() -> {
+            P30_EntityDataUpdate p = new P30_EntityDataUpdate();
+            p.entityId = entity.entityId;
+            p.payload = entity.getPacketPayload();
+            udp(p, PacketReceiver.whoCanSee(entity));
+        });
     }
 
     /** Sends the P32_ChunkDataSingle packet via UDP protocol. */
     public static void p32ChunkDataSingle(int chunkX, int chunkY, int layer, int tileArray, DynamicTilePart dynamicTile, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P32_ChunkDataSingle p = new P32_ChunkDataSingle();
             p.chunkX = chunkX;
             p.chunkY = chunkY;
@@ -385,65 +419,79 @@ public class ServerPackets {
 
     /** Sends the P33_TileDig packet via UDP protocol. */
     public static void p33TileDig(int tileX, int tileY, int particleColorId, PacketReceiver receiver) {
-        P33_TileDig p = new P33_TileDig();
-        p.tileX = tileX;
-        p.tileY = tileY;
-        p.particleColorId = particleColorId;
-        udp(p, receiver);
+        mt(() -> {
+            P33_TileDig p = new P33_TileDig();
+            p.tileX = tileX;
+            p.tileY = tileY;
+            p.particleColorId = particleColorId;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P36_PlayerReceiveItem packet via UDP protocol. */
     public static void p36PlayerReceiveItem(int[] ids, int[] amounts, PacketReceiver receiver) {
-        P36_PlayerReceiveItem p = new P36_PlayerReceiveItem();
-        p.itemIds = ids;
-        p.itemAmounts = amounts;
-        udp(p, receiver);
+        mt(() -> {
+            P36_PlayerReceiveItem p = new P36_PlayerReceiveItem();
+            p.itemIds = ids;
+            p.itemAmounts = amounts;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P37_EntityTeleport packet via UDP protocol. */
     public static void p37EntityTeleport(int entityId, float x, float y, TeleportReason teleportReason, PacketReceiver receiver) {
-        P37_EntityTeleport p = new P37_EntityTeleport();
-        p.entityId = entityId;
-        p.x = x;
-        p.y = y;
-        p.teleportReason = teleportReason;
-        udp(p, receiver);
+        mt(() -> {
+            P37_EntityTeleport p = new P37_EntityTeleport();
+            p.entityId = entityId;
+            p.x = x;
+            p.y = y;
+            p.teleportReason = teleportReason;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P38_PlayerAnimation packet via UDP protocol. */
     public static void p38PlayerAnimation(int entityId, int animationId, PacketReceiver receiver) {
-        P38_PlayerAnimation p = new P38_PlayerAnimation();
-        p.entityId = entityId;
-        p.animationId = animationId;
-        udp(p, receiver);
+        mt(() -> {
+            P38_PlayerAnimation p = new P38_PlayerAnimation();
+            p.entityId = entityId;
+            p.animationId = animationId;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P40_InventoryView packet via TCP protocol. */
     public static void p40InventoryView(ServerInventory inventory, PacketReceiver receiver) {
-        P40_InventoryView p = new P40_InventoryView();
-        p.type = inventory.getType();
-        p.containerId = inventory.getContainerId();
-        p.viewSlots = inventory.slots;
-        tcp(p, receiver);
+        mt(() -> {
+            P40_InventoryView p = new P40_InventoryView();
+            p.type = inventory.getType();
+            p.containerId = inventory.getContainerId();
+            p.viewSlots = inventory.slots;
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P41_InventoryViewQuit packet via TCP protocol. */
     public static void p41InventoryViewQuit(PacketReceiver receiver) {
-        P41_InventoryViewQuit p = new P41_InventoryViewQuit();
-        tcp(p, receiver);
+        mt(() -> {
+            P41_InventoryViewQuit p = new P41_InventoryViewQuit();
+            tcp(p, receiver);
+        });
     }
 
     /** Sends the P42_EntityAnimation packet via UDP protocol. */
     public static void p42EntityAnimation(int entityId, int animationId, PacketReceiver receiver) {
-        P42_EntityAnimation p = new P42_EntityAnimation();
-        p.entityId = entityId;
-        p.animationId = animationId;
-        udp(p, receiver);
+        mt(() -> {
+            P42_EntityAnimation p = new P42_EntityAnimation();
+            p.entityId = entityId;
+            p.animationId = animationId;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P43_EntityDeleteAdvanced packet via TCP protocol. */
     public static void p43EntityDeleteAdvanced(int entityId, EntityRemovalReason reason, float damage, float newHealth, int damageSourceEntityId, PacketReceiver receiver) {
-        ServerWorld.get().mtVirtualService.execute(() -> {
+        mt(() -> {
             P43_EntityDeleteAdvanced p = new P43_EntityDeleteAdvanced();
             p.entityId = entityId;
             p.reason = reason;
@@ -456,22 +504,26 @@ public class ServerPackets {
 
     /** Sends the P46_EntityConstruct packet via UDP protocol. */
     public static void p46EntityConstruct(int itemId, int tileX, int tileY, float worldX, float worldY, PacketReceiver receiver) {
-        P46_EntityConstruct p = new P46_EntityConstruct();
-        p.itemId = itemId;
-        p.tileX = tileX;
-        p.tileY = tileY;
-        p.worldX = worldX;
-        p.worldY = worldY;
-        udp(p, receiver);
+        mt(() -> {
+            P46_EntityConstruct p = new P46_EntityConstruct();
+            p.itemId = itemId;
+            p.tileX = tileX;
+            p.tileY = tileY;
+            p.worldX = worldX;
+            p.worldY = worldY;
+            udp(p, receiver);
+        });
     }
 
     /** Sends the P47_ItemConsume packet via UDP protocol. */
     public static void p47ItemConsume(int entityId, int itemId, float duration, PacketReceiver receiver) {
-        P47_ItemConsume p = new P47_ItemConsume();
-        p.entityId = entityId;
-        p.itemId = itemId;
-        p.duration = duration;
-        udp(p, receiver);
+        mt(() -> {
+            P47_ItemConsume p = new P47_ItemConsume();
+            p.entityId = entityId;
+            p.itemId = itemId;
+            p.duration = duration;
+            udp(p, receiver);
+        });
     }
 
     /** Helper methods below. */
@@ -529,6 +581,12 @@ public class ServerPackets {
         } else {
             receiver.receiverSingle.sendTCP(p);
         }
+    }
+
+    private static void mt(Runnable run) {
+        try {
+            ServerWorld.get().mtVirtualService.execute(run);
+        } catch (RejectedExecutionException ignored) { }
     }
 
 }

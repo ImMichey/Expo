@@ -117,6 +117,43 @@ public class ParticleSheet {
                     .spawn();
         }
 
+        public static void spawnExplosionParticles(ClientEntity entity) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(64, 96)
+                    .scale(1.5f, 2.2f)
+                    .lifetime(0.7f, 1.2f)
+                    .color(ParticleColorMap.of(14))
+                    .position(entity.finalTextureCenterX, entity.clientPosY)
+                    .velocity(-96, 96, 4, 112)
+                    .fadeoutLifetime(0.5f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .depth(entity.depth)
+                    .spawn();
+        }
+
+        public static void spawnThrownDustParticles(ClientEntity entity, float heightOffset) {
+            if(!GameSettings.get().enableParticles) return;
+            float calculatedOffset = Math.max(entity.textureWidth - 8, 2);
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(8, 12)
+                    .scale(0.6f, 1.0f)
+                    .lifetime(0.4f, 1.0f)
+                    .color(ParticleColorMap.of(15))
+                    .position(entity.finalTextureCenterX - calculatedOffset * 0.5f, entity.clientPosY + heightOffset)
+                    .velocity(-32, 32, 4, 40)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeoutLifetime(0.8f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .offset(calculatedOffset, 0)
+                    .depth(entity.depth)
+                    .spawn();
+        }
+
         public static void spawnDustHitParticles(ClientEntity entity) {
             if(!GameSettings.get().enableParticles) return;
             float calculatedOffset = Math.max(entity.textureWidth - 8, 2);

@@ -1,11 +1,13 @@
 package dev.michey.expo.server.command;
 
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.server.main.arch.AbstractServerCommand;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.util.ExpoShared;
 
 public class ServerCommandSpawn extends AbstractServerCommand {
@@ -22,7 +24,7 @@ public class ServerCommandSpawn extends AbstractServerCommand {
 
     @Override
     public String getCommandSyntax() {
-        return "/spawn <typeId/typeName> [<x> <y>] [static]";
+        return "/spawn <typeId/typeName> [<x> <y>] [spreadDst]";
     }
 
     @Override
@@ -59,53 +61,34 @@ public class ServerCommandSpawn extends AbstractServerCommand {
         }
 
         float x = 0, y = 0;
-        boolean ix = false, iy = false;
 
-        if(ServerPlayer.getLocalPlayer() != null) {
-            spawned.posX = ServerPlayer.getLocalPlayer().posX;
-            spawned.posY = ServerPlayer.getLocalPlayer().posY;
-        } else if(player != null) {
-            spawned.posX = player.posX;
-            spawned.posY = player.posY;
+        ServerPlayer usePlayer = ServerPlayer.getLocalPlayer() == null ? player : ServerPlayer.getLocalPlayer();
+
+        if(usePlayer != null) {
+            x = usePlayer.posX;
+            y = usePlayer.posY;
         }
 
         if(args.length >= 3) {
-            if(args[2].startsWith("~") && ServerPlayer.getLocalPlayer() != null) {
+            if(args[2].startsWith("~") && usePlayer != null) {
                 if(args[2].equals("~")) {
-                    x = ServerPlayer.getLocalPlayer().posX;
+                    x = usePlayer.posX;
                 } else {
-                    x = parseF(args[2].substring(1), 2) + ServerPlayer.getLocalPlayer().posX;
+                    x = parseF(args[2].substring(1), 2) + usePlayer.posX;
                 }
             } else {
                 x = parseF(args, 2);
             }
-            ix = true;
         }
         if(args.length >= 4) {
-            if(args[3].startsWith("~") && ServerPlayer.getLocalPlayer() != null) {
+            if(args[3].startsWith("~") && usePlayer != null) {
                 if(args[3].equals("~")) {
-                    y = ServerPlayer.getLocalPlayer().posY;
+                    y = usePlayer.posY;
                 } else {
-                    y = parseF(args[3].substring(1), 3) + ServerPlayer.getLocalPlayer().posY;
+                    y = parseF(args[3].substring(1), 3) + usePlayer.posY;
                 }
             } else {
                 y = parseF(args, 3);
-            }
-            iy = true;
-        }
-
-        if(!ix) {
-            if(ServerPlayer.getLocalPlayer() != null) {
-                x = ServerPlayer.getLocalPlayer().posX;
-            } else if(player != null) {
-                x = player.posX;
-            }
-        }
-        if(!iy) {
-            if(ServerPlayer.getLocalPlayer() != null) {
-                y = ServerPlayer.getLocalPlayer().posY;
-            } else if(player != null) {
-                y = player.posY;
             }
         }
 
@@ -113,15 +96,14 @@ public class ServerCommandSpawn extends AbstractServerCommand {
         spawned.posY = y;
 
         if(args.length == 5) {
-            boolean staticEntity = parseB(args, 4);
-
-            if(staticEntity) {
-                spawned.setStaticEntity();
-            }
+            float spreadDst = parseF(args, 4);
+            Vector2 spread = GenerationUtils.circularRandom(spreadDst);
+            spawned.posX += spread.x;
+            spawned.posY += spread.y;
         }
 
         ServerWorld.get().registerServerEntity(ExpoShared.DIMENSION_OVERWORLD, spawned);
-        if(!ignoreLogging) sendToSender("Spawned entity " + spawned.getEntityType() + " at position " + spawned.posX + ", " + spawned.posY + (spawned.staticPosition ? " as static entity" : ""), player);
+        if(!ignoreLogging) sendToSender("Spawned entity " + spawned.getEntityType() + " at position " + spawned.posX + ", " + spawned.posY, player);
     }
 
     private boolean forbiddenSpawn(int id) {

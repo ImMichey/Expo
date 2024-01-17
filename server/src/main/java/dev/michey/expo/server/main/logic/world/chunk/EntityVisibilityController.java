@@ -76,7 +76,9 @@ public class EntityVisibilityController {
 
         if(player.changedChunk) {
             for(int ent : visibleEntities) {
-                if(!canSee(player.getDimension().getEntityManager().getEntityById(ent))) {
+                ServerEntity entity = player.getDimension().getEntityManager().getEntityById(ent);
+
+                if(entity == null || !canSee(entity)) {
                     removePacket[position++] = ent;
                 }
             }

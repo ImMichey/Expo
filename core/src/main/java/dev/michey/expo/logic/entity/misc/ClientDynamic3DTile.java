@@ -110,7 +110,12 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     @Override
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         playEntitySound("stone_hit");
-        squishAnimator2D.reset();
+
+        ClientEntity ce = entityManager().getEntityById(damageSourceEntityId);
+
+        if(ce != null && ce.getEntityType() != ClientEntityType.THROWN_ENTITY) {
+            squishAnimator2D.reset();
+        }
 
         if(newHealth <= 0) {
             if(selected) {

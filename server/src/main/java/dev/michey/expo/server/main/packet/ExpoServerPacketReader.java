@@ -117,6 +117,11 @@ public class ExpoServerPacketReader {
             if(sp == null) return;
 
             sp.consumePosition(p);
+        } else if(packet instanceof P49_PlayerEntityThrow p) {
+            ServerPlayer sp = ServerPlayer.getLocalPlayer();
+            if(sp == null) return;
+
+            sp.throwEntity(p.dstX, p.dstY);
         }
     }
 
@@ -386,6 +391,11 @@ public class ExpoServerPacketReader {
             if(player == null) return;
 
             player.consumePosition(p);
+        } else if(o instanceof P49_PlayerEntityThrow p) {
+            ServerPlayer player = connectionToPlayer(connection);
+            if(player == null) return;
+
+            player.throwEntity(p.dstX, p.dstY);
         }
     }
 

@@ -26,6 +26,7 @@ public class ClientParticleHit extends ClientParticle {
     @Override
     public void render(RenderContext rc, float delta) {
         rc.useArrayBatch();
+        rc.useRegularArrayShader();
         rc.arraySpriteBatch.setColor(r, g, b, useAlpha);
 
         float w = particleTexture.getRegionWidth() * scaleX;

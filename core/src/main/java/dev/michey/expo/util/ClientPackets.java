@@ -141,6 +141,14 @@ public class ClientPackets {
         udp(p);
     }
 
+    /** Sends the P49_PlayerThrowEntity packet via TCP protocol. */
+    public static void p49PlayerThrowEntity(float dstX, float dstY) {
+        P49_PlayerEntityThrow p = new P49_PlayerEntityThrow();
+        p.dstX = dstX;
+        p.dstY = dstY;
+        tcp(p);
+    }
+
     /** Helper methods */
     private static void tcp(Packet p) {
         ExpoClientContainer.get().sendPacketTcp(p);

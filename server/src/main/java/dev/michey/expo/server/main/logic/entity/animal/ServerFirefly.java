@@ -29,6 +29,7 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
     public ServerFirefly() {
         health = 20.0f;
         persistentEntity = false;
+        resetInvincibility();
     }
 
     @Override
@@ -91,11 +92,6 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
         tickKnockback(delta);
         brain.tickBrain(delta);
         applyKnockback(brain);
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

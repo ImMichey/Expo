@@ -89,11 +89,6 @@ public class ServerCampfire extends ServerEntity implements PhysicsEntity {
     }
 
     @Override
-    public void onMoved() {
-
-    }
-
-    @Override
     public PhysicsMassClassification getPhysicsMassClassification() {
         return PhysicsMassClassification.HEAVY;
     }

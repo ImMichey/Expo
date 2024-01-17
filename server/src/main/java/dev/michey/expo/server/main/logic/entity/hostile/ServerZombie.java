@@ -14,7 +14,6 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
 
     public ServerZombie() {
         health = getMetadata().getMaxHealth();
-        invincibility = 0.0f;
         persistentEntity = false;
     }
 
@@ -46,11 +45,6 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
         tickKnockback(delta);
         brain.tickBrain(delta);
         applyKnockback(brain);
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

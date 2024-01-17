@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
+import dev.michey.expo.server.ServerLauncher;
 import dev.michey.expo.server.config.ExpoServerConfiguration;
 import dev.michey.expo.server.connection.PlayerConnectionHandler;
 import dev.michey.expo.server.fs.whitelist.ServerWhitelist;
@@ -95,7 +96,7 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
 
         connectionHandler.startPingUpdateScheduler();
 
-        log(ExpoShared.GREEN_BRIGHT + "Dedicated Server ready" + ExpoShared.RESET);
+        log(ExpoShared.GREEN_BRIGHT + "Dedicated Server ready (" + (System.currentTimeMillis() - ServerLauncher.START_TIMESTAMP) + "ms" + ")" + ExpoShared.RESET);
         return true;
     }
 

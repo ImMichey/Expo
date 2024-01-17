@@ -20,7 +20,6 @@ import static dev.michey.expo.render.RenderContext.TRANS_100_PACKED;
 public class ClientItem extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
     public static final float DEFAULT_SCALE = 0.875f;
-    public static final float SCALE_DURATION = 0.25f;
 
     public int itemId;
     public int itemAmount;
@@ -69,17 +68,6 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
         }
 
         lifetime += delta;
-
-        /*
-        if(lifetime <= SCALE_DURATION) {
-            float norm = Math.abs(lifetime / SCALE_DURATION - 1);
-            currentScaleX = DEFAULT_SCALE + 0.625f * norm;
-            currentScaleY = DEFAULT_SCALE + 0.625f * norm;
-        } else {
-            currentScaleX = DEFAULT_SCALE;
-            currentScaleY = DEFAULT_SCALE;
-        }
-        */
 
         if(lifetime <= 0.05f) {
             useAlpha = lifetime / 0.05f;

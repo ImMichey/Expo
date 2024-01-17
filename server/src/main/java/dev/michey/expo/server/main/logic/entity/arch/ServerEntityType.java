@@ -49,6 +49,7 @@ public enum ServerEntityType {
     ALOE_VERA(34, false, true),
     TORCH(35, false, true),
     SLIME(36, false, false),
+    THROWN_ENTITY(37, true, false),
     ;
 
     public final int ENTITY_ID;
@@ -100,6 +101,7 @@ public enum ServerEntityType {
             case 34 -> new ServerAloeVera();
             case 35 -> new ServerTorch();
             case 36 -> new ServerSlime();
+            case 37 -> new ServerThrownEntity();
             default -> null;
         };
     }
@@ -143,6 +145,7 @@ public enum ServerEntityType {
             case "ALOE", "ALOE_VERA", "ALOEVERA", "VERA" -> new ServerAloeVera();
             case "TORCH" -> new ServerTorch();
             case "SLIME" -> new ServerSlime();
+            case "THROWN", "THROWNENTITY", "THROWN_ENTITY" -> new ServerThrownEntity();
             default -> null;
         };
     }

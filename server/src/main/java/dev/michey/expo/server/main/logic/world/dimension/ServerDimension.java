@@ -50,7 +50,7 @@ public abstract class ServerDimension {
     public ServerDimension(String dimensionName, boolean mainDimension) {
         this.dimensionName = dimensionName;
         this.mainDimension = mainDimension;
-        entityManager = new ServerDimensionEntityManager();
+        entityManager = new ServerDimensionEntityManager(this);
         chunkHandler = new ServerChunkGrid(this);
         visibilityController = new EntityMasterVisibilityController(this);
         entitySpawnManager = new EntitySpawnManager(this, EntitySpawnDatabase.get().getFor(dimensionName));

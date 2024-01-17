@@ -57,7 +57,7 @@ public abstract class ServerEntity {
     public ToolType[] damageableWith = null;
 
     /** Knockback fields */
-    public float invincibility = 0.75f;
+    public float invincibility;
     public List<KnockbackCalculation> knockbackCalculations;
     public List<KnockbackCalculation> removeKnockback;
 
@@ -82,6 +82,10 @@ public abstract class ServerEntity {
 
     public void onChunkChanged() {
 
+    }
+
+    public void resetInvincibility() {
+        invincibility = 0.75f;
     }
 
     public boolean onDamage(ServerEntity damageSource, float damage) {
@@ -334,6 +338,10 @@ public abstract class ServerEntity {
     }
 
     public boolean applyDamageWithPacket(ServerEntity damageSource, float damage) {
+        return applyDamageWithPacket(damageSource, damage, EntityRemovalReason.DEATH);
+    }
+
+    public boolean applyDamageWithPacket(ServerEntity damageSource, float damage, EntityRemovalReason reason) {
         boolean applied = onDamage(damageSource, damage);
 
         if(applied) {
@@ -342,7 +350,7 @@ public abstract class ServerEntity {
 
             if(health <= 0) {
                 damagePacket = getEntityType() == ServerEntityType.PLAYER;
-                killEntityWithAdvancedPacket(damage, health, damageSource.entityId);
+                killEntityWithAdvancedPacket(damage, health, damageSource.entityId, reason);
             }
 
             if(damagePacket) {
@@ -358,6 +366,8 @@ public abstract class ServerEntity {
     }
 
     public void addKnockback(float knockbackStrength, float knockbackDuration, Vector2 knockbackDirection) {
+        if(staticPosition) return;
+
         if(knockbackCalculations == null) {
             knockbackCalculations = new LinkedList<>();
             removeKnockback = new LinkedList<>();
@@ -369,8 +379,11 @@ public abstract class ServerEntity {
     public void tickKnockback(float delta) {
         if(knockbackCalculations == null) return;
 
+        KnockbackCalculation lastRemoved = null;
+
         for(KnockbackCalculation kc : removeKnockback) {
             knockbackCalculations.remove(kc);
+            lastRemoved = kc;
         }
         removeKnockback.clear();
 
@@ -379,19 +392,9 @@ public abstract class ServerEntity {
                 removeKnockback.add(k);
             }
         }
-    }
 
-    public void applyKnockback(int dirX, int dirY) {
-        if(knockbackCalculations == null) return;
-        float moveByX = 0, moveByY = 0;
-
-        for(KnockbackCalculation kc : knockbackCalculations) {
-            moveByX += kc.applyKnockbackX;
-            moveByY += kc.applyKnockbackY;
-        }
-
-        if(moveByX != 0 || moveByY != 0) {
-            attemptMove(moveByX, moveByY, PhysicsBoxFilters.playerKnockbackFilter, dirX, dirY);
+        if(knockbackCalculations.isEmpty() && lastRemoved != null) {
+            ServerPackets.p13EntityMove(entityId, velToPos(lastRemoved.applyKnockbackX), velToPos(lastRemoved.applyKnockbackY), posX, posY, 0, PacketReceiver.whoCanSee(this));
         }
     }
 
@@ -425,7 +428,7 @@ public abstract class ServerEntity {
         killEntityWithPacket(EntityRemovalReason.DEATH);
     }
 
-    public void killEntityWithAdvancedPacket(float damage, float newHealth, int damageSourceEntityId) {
+    public void killEntityWithAdvancedPacket(float damage, float newHealth, int damageSourceEntityId, EntityRemovalReason reason) {
         // Detach from internal tile entity structure if existing
         if(tileEntity) detachFromTile(getChunkGrid().getChunkSafe(chunkX, chunkY));
 
@@ -433,7 +436,7 @@ public abstract class ServerEntity {
 
         if(getEntityType() != ServerEntityType.PLAYER) {
             getDimension().getEntityManager().removeEntitySafely(this);
-            ServerPackets.p43EntityDeleteAdvanced(entityId, EntityRemovalReason.DEATH, damage, newHealth, damageSourceEntityId, PacketReceiver.whoCanSee(this));
+            ServerPackets.p43EntityDeleteAdvanced(entityId, reason, damage, newHealth, damageSourceEntityId, PacketReceiver.whoCanSee(this));
             // untrack entity
             for(ServerPlayer player : getDimension().getEntityManager().getAllPlayers()) {
                 player.entityVisibilityController.removeTrackedEntity(entityId);

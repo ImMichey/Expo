@@ -10,5 +10,6 @@ public enum PhysicsMassClassification {
     PLAYER,
     ITEM,
     WALL,
+    THROWN,
 
 }

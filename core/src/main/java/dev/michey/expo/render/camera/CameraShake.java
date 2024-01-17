@@ -41,7 +41,7 @@ public class CameraShake {
 
             if(position != null && ClientPlayer.getLocalPlayer() != null) {
                 float dst = position.dst(ClientPlayer.getLocalPlayer().clientPosX, ClientPlayer.getLocalPlayer().clientPosY);
-                float mr = ExpoShared.PLAYER_AUDIO_RANGE * 2;
+                float mr = ExpoShared.PLAYER_AUDIO_RANGE;
 
                 if(dst > mr) {
                     multiplier = 0.0f;

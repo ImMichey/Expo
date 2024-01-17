@@ -118,8 +118,9 @@ public class AudioEngine {
 
     /** Kills a specific sound. **/
     public void killSound(long id) {
-        soundData.get(id).sound.stop(id);
-        soundData.get(id).dead = true;
+        TrackedSoundData tsd = soundData.get(id);
+        tsd.sound.stop(id);
+        tsd.dead = true;
     }
 
     /** The SoundEngine tick method. **/

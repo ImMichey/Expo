@@ -53,7 +53,7 @@ public class ClientPhysicsBody extends BBox {
 
     public static CollisionFilter pickupCollisionFilter = (item, other) -> {
         if(other.userData instanceof ClientPickupLine) {
-            return Response.slide;
+            return Response.touch;
         }
 
         return Response.cross;

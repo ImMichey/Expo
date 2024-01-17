@@ -67,6 +67,7 @@ public class ServerItem extends ServerEntity implements PhysicsEntity {
         originX = posX;
         originY = posY;
         physicsBody = new EntityPhysicsBox(this, -2, 0, 4, 4);
+        health = 1f; // For bombs
     }
 
     @Override
@@ -106,11 +107,6 @@ public class ServerItem extends ServerEntity implements PhysicsEntity {
     @Override
     public EntityPhysicsBox getPhysicsBox() {
         return physicsBody;
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

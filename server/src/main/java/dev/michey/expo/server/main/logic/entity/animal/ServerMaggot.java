@@ -17,6 +17,7 @@ public class ServerMaggot extends ServerEntity implements DamageableEntity, Phys
 
     public ServerMaggot() {
         health = getMetadata().getMaxHealth();
+        resetInvincibility();
     }
 
     @Override
@@ -52,11 +53,6 @@ public class ServerMaggot extends ServerEntity implements DamageableEntity, Phys
         tickKnockback(delta);
         brain.tickBrain(delta);
         applyKnockback(brain);
-    }
-
-    @Override
-    public void onMoved() {
-
     }
 
     @Override

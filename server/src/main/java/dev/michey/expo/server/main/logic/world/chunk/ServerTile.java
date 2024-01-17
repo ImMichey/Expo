@@ -1,17 +1,25 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
+import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
+import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
+import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
+import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
@@ -410,8 +418,111 @@ public class ServerTile {
         return new int[] {tis, tid};
     }
 
-    public boolean dig(int layer, float damage) {
+    private boolean dig(int layer, float damage) {
         return dynamicTileParts[layer].hit(damage);
+    }
+
+    public boolean performDigOperation(float damage, ServerInventoryItem item) {
+        int digLayer = selectDigLayer();
+        if(digLayer == -1) return false;
+
+        int pColor = toParticleColorId();
+        boolean dugUp = dig(digLayer, damage);
+
+        { // Play dig up sound.
+            String sound = TileLayerType.typeToHitSound(dynamicTileParts[digLayer].emulatingType);
+            playTileSound(sound);
+        }
+
+        ServerDimension dim = chunk.getDimension();
+
+        if(dugUp) {
+            {
+                if(digLayer == 0 && (biome == BiomeType.PLAINS || biome == BiomeType.FOREST || biome == BiomeType.DENSE_FOREST)) {
+                    if(MathUtils.random() <= 0.1f) {
+                        ServerWorm worm = new ServerWorm();
+                        worm.posX = ExpoShared.tileToPos(tileX) + 8f;
+                        worm.posY = ExpoShared.tileToPos(tileY) + 4f;
+                        ServerWorld.get().registerServerEntity(dim.getDimensionName(), worm);
+                        ServerPackets.p24PositionalSound("pop", worm.posX, worm.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(dim, chunk.chunkX, chunk.chunkY));
+                    }
+                }
+
+                // Drop layer as item.
+                String identifier = TileLayerType.typeToItemDrop(dynamicTileParts[digLayer].emulatingType);
+
+                if(identifier != null) {
+                    chunk.getDimension().getEntityManager().spawnItemSingle(ExpoShared.tileToPos(tileX) + 8.0f, ExpoShared.tileToPos(tileY) + 8.0f, 2.0f, identifier, 3.0f);
+                }
+            }
+
+            List<String> affectedChunks = new LinkedList<>();
+            affectedChunks.add(chunk.getChunkKey());
+
+            { // Update tile data
+                if(digLayer == 0 && dynamicTileParts[digLayer].emulatingType == TileLayerType.SOIL) {
+                    if(item != null && item.itemMetadata.toolType == ToolType.SCYTHE) {
+                        updateLayer0(TileLayerType.SOIL_FARMLAND);
+                    } else {
+                        updateLayer0(TileLayerType.SOIL_HOLE);
+                    }
+
+                    ServerPackets.p32ChunkDataSingle(this, 0);
+
+                    for(ServerTile neighbour : getNeighbouringTiles()) {
+                        if(neighbour.updateLayer0Adjacent(false)) {
+                            ServerPackets.p32ChunkDataSingle(neighbour, 0);
+                            if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
+                        }
+                    }
+                } else if(digLayer == 1) {
+                    updateLayer1(TileLayerType.EMPTY);
+                    ServerPackets.p32ChunkDataSingle(this, 1);
+
+                    for(ServerTile neighbour : getNeighbouringTiles()) {
+                        if(neighbour.updateLayer1Adjacent(false)) {
+                            ServerPackets.p32ChunkDataSingle(neighbour, 1);
+                            if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
+                        }
+                    }
+                }
+
+            }
+
+            long now = System.currentTimeMillis();
+
+            for(String affectedChunkKey : affectedChunks) {
+                // Update tile timestamp
+                ServerChunk sv = dim.getChunkHandler().getActiveChunk(affectedChunkKey);
+                sv.lastTileUpdate = now;
+
+                for(ServerPlayer player : dim.getEntityManager().getAllPlayers()) {
+                    if(player.canSeeChunk(affectedChunkKey)) {
+                        player.hasSeenChunks.put(sv, now);
+                    }
+                }
+            }
+        }
+
+        { // Dig packet.
+            ServerPackets.p33TileDig(tileX, tileY, pColor, PacketReceiver.whoCanSee(dim, chunk.chunkX, chunk.chunkY));
+        }
+
+        return true;
+    }
+
+    public int selectDigLayer() {
+        TileLayerType t2 = dynamicTileParts[2].emulatingType;
+        if(TileLayerType.isWater(t2)) return -1;
+
+        TileLayerType t1 = dynamicTileParts[1].emulatingType;
+        if(t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST) return 1;
+        if(t1 == TileLayerType.SAND) return 1;
+
+        TileLayerType t0 = dynamicTileParts[0].emulatingType;
+        if(t0 == TileLayerType.SOIL) return 0;
+
+        return -1;
     }
 
     public void playTileSound(String sound) {
