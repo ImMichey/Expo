@@ -11,12 +11,14 @@ import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ExpoShared;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ExpoClient {
 
     /** Kryo layer */
     private Client kryoClient;
     private ExpoClientPacketReader packetReader;
+    public ConcurrentLinkedQueue<Packet> drainAfterInitQueue;
 
     /** Packet tracking */
     public int bytesInTcp;
@@ -47,6 +49,7 @@ public class ExpoClient {
             }
 
         };
+        ExpoServerRegistry.registerPackets(kryoClient.getKryo());
         kryoClient.start();
 
         try {
@@ -56,14 +59,22 @@ public class ExpoClient {
         }
 
         lastBytesUpdate = System.currentTimeMillis();
-        ExpoServerRegistry.registerPackets(kryoClient.getKryo());
         packetReader = new ExpoClientPacketReader();
         kryoClient.addListener(new Listener() {
 
             @Override
             public void received(Connection connection, Object object) {
                 if(object instanceof Packet p) {
-                    ExpoClientContainer.get().getPacketEvaluator().queuePacket(p);
+                    ExpoClientContainer ecc = ExpoClientContainer.get();
+
+                    if(ecc == null) {
+                        // This is a workaround for localhost servers as their response time is 0ms and ExpoClientContainer might not be initialized yet.
+                        drainAfterInitQueue = new ConcurrentLinkedQueue<>();
+                        drainAfterInitQueue.add(p);
+                        return;
+                    }
+
+                    ecc.getPacketEvaluator().queuePacket(p);
                 }
             }
 

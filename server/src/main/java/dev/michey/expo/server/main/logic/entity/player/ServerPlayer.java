@@ -776,6 +776,14 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     int y = tileArray / ROW_TILES;
                     createdTileEntity.posX = ExpoShared.tileToPos(tile.tileX) + p.placeAlignmentOffsetX;
                     createdTileEntity.posY = ExpoShared.tileToPos(tile.tileY) + p.placeAlignmentOffsetY;
+
+                    if(p.staticFlag) {
+                        createdTileEntity.setStaticEntity();
+                    } else {
+                        createdTileEntity.chunkX = ExpoShared.posToChunk(createdTileEntity.posX);
+                        createdTileEntity.chunkY = ExpoShared.posToChunk(createdTileEntity.posY);
+                    }
+
                     ServerWorld.get().registerServerEntity(entityDimension, createdTileEntity);
                     createdTileEntity.attachToTile(chunk, x, y);
 
@@ -790,6 +798,14 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 ServerEntity placedEntity = ServerEntityType.typeToEntity(p.entityType);
                 placedEntity.posX = mouseWorldX + p.placeAlignmentOffsetX;
                 placedEntity.posY = mouseWorldY + p.placeAlignmentOffsetY;
+
+                if(p.staticFlag) {
+                    placedEntity.setStaticEntity();
+                } else {
+                    placedEntity.chunkX = ExpoShared.posToChunk(placedEntity.posX);
+                    placedEntity.chunkY = ExpoShared.posToChunk(placedEntity.posY);
+                }
+
                 ServerWorld.get().registerServerEntity(entityDimension, placedEntity);
 
                 ServerPackets.p46EntityConstruct(item.itemId, tile.tileX, tile.tileY, mouseWorldX + p.placeAlignmentOffsetX, mouseWorldY + p.placeAlignmentOffsetY, PacketReceiver.whoCanSee(tile));

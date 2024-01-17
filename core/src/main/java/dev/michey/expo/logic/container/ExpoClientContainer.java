@@ -37,7 +37,7 @@ public class ExpoClientContainer {
 
     /** Dedicated server communication */
     private ExpoClient client;
-    private String loadingMessage = "def";
+    private String loadingMessage = "Initializing...";
 
     /** The game world */
     private ClientWorld clientWorld;
@@ -77,6 +77,16 @@ public class ExpoClientContainer {
         playerOnlineList = new ConcurrentHashMap<>();
         packetReader = new ExpoClientPacketReader();
         packetEvaluator = new ExpoClientPacketEvaluator(packetReader);
+
+        if(client != null && client.drainAfterInitQueue != null) {
+            while(!client.drainAfterInitQueue.isEmpty()) {
+                var packet = client.drainAfterInitQueue.poll();
+                packetReader.handlePacket(packet, false);
+            }
+
+            client.drainAfterInitQueue = null;
+        }
+
         INSTANCE = this;
     }
 
@@ -96,8 +106,6 @@ public class ExpoClientContainer {
         }
     }
 
-    private int inTraffic = 0;
-    private int outTraffic = 0;
     private String inOutString = "";
 
     public void render() {
@@ -112,8 +120,8 @@ public class ExpoClientContainer {
             if(now - client.lastBytesUpdate >= 1000) {
                 client.lastBytesUpdate = now;
 
-                inTraffic = client.bytesInTcp + client.bytesInUdp;
-                outTraffic = client.bytesOutTcp + client.bytesOutUdp;
+                int inTraffic = client.bytesInTcp + client.bytesInUdp;
+                int outTraffic = client.bytesOutTcp + client.bytesOutUdp;
 
                 client.bytesInTcp = 0;
                 client.bytesInUdp = 0;
@@ -201,13 +209,6 @@ public class ExpoClientContainer {
 
         clientWorld.renderWorld();
         packetEvaluator.handlePackets();
-
-        /*
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F9) && DEV_MODE && ExpoServerContainer.get() != null) {
-            GameConsole.get().addConsoleMessage(new ConsoleMessage("/quit", true));
-            GameConsole.get().addConsoleMessage(new ConsoleMessage("/world dev-world-" + System.currentTimeMillis(), true));
-        }
-        */
     }
 
     public String readableFileSize(long size) {

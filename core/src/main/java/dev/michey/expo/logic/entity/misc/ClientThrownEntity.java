@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Bezier;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
@@ -9,6 +10,7 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 
@@ -106,7 +108,12 @@ public class ClientThrownEntity extends ClientEntity implements ReflectableEntit
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
+        Affine2 shadow = ShadowUtils.createSimpleShadowAffineInternalOffset(finalTextureStartX, finalTextureStartY, 0, heightOffset);
+        float[] vertices = rc.arraySpriteBatch.obtainShadowVertices(ir[0].useTextureRegion, shadow);
 
+        if(rc.verticesInBounds(vertices)) {
+            rc.arraySpriteBatch.drawGradient(ir[0].useTextureRegion, ir[0].useWidth, ir[0].useHeight, shadow);
+        }
     }
 
     @Override

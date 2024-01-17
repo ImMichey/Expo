@@ -60,9 +60,9 @@ public class ExpoServerDedicated extends ExpoServerBase implements ApplicationLi
     public boolean startServer() {
         log("Starting Kryo Server instance, buffer sizes: " + config.getWriteBufferSize() + " & " + config.getObjectBufferSize());
         kryoServer = new Server(config.getWriteBufferSize(), config.getObjectBufferSize());
+        ExpoServerRegistry.registerPackets(kryoServer.getKryo());
         kryoServer.start();
 
-        ExpoServerRegistry.registerPackets(kryoServer.getKryo());
         kryoServer.addListener((ExpoPacketEvaluatorDedicated) packetEvaluator);
 
         try {

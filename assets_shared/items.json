@@ -501,7 +501,8 @@
                     "floorRequirement": "FOREST",
                     "placeAlignmentOffsetX": 8,
                     "previewOffsetX": 2,
-                    "sound": "plant"
+                    "sound": "plant",
+                    "static": true
                 }
             }
         },
@@ -617,7 +618,8 @@
                     "type": "ENTITY",
                     "entityType": "MUSHROOM_GLOWING",
                     "previewTexture": "entity_mushroom_glowing",
-                    "sound": "plant"
+                    "sound": "plant",
+                    "static": true
                 }
             }
         },
@@ -699,7 +701,8 @@
                     "entityType": "CROP_WHEAT",
                     "placeAlignmentOffsetX": 8,
                     "placeAlignmentOffsetY": 3,
-                    "floorRequirement": "SOIL_FARMLAND"
+                    "floorRequirement": "SOIL_FARMLAND",
+                    "static": true
                 }
             }
         },
@@ -782,7 +785,8 @@
                     "alignment": "TILE",
                     "type": "ENTITY",
                     "entityType": "FENCE_STICK",
-                    "previewTexture": "entity_fence_stick_1"
+                    "previewTexture": "entity_fence_stick_1",
+                    "static": true
                 }
             }
         },
@@ -858,7 +862,8 @@
                     "alignment": "TILE",
                     "type": "FLOOR_2",
                     "floorType": "OAK_PLANK_WALL",
-                    "previewTexture": "t267,tile_oakplankwall_elevation_2"
+                    "previewTexture": "t267,tile_oakplankwall_elevation_2",
+                    "static": true
                 }
             }
         },
@@ -888,7 +893,8 @@
                     "type": "ENTITY",
                     "entityType": "CRATE",
                     "previewTexture": "entity_crate",
-                    "placeAlignmentOffsetX": 1
+                    "placeAlignmentOffsetX": 1,
+                    "static": true
                 }
             }
         },
@@ -1052,7 +1058,8 @@
                     "type": "ENTITY",
                     "entityType": "TORCH",
                     "previewTexture": "entity_torch",
-                    "placeAlignmentOffsetX": 8.0
+                    "placeAlignmentOffsetX": 8.0,
+                    "static": true
                 }
             }
         },
@@ -1076,7 +1083,8 @@
                     "alignment": "TILE",
                     "type": "FLOOR_2",
                     "floorType": "ROCK_WALL",
-                    "previewTexture": "t157,tile_rock_elevation_2"
+                    "previewTexture": "t157,tile_rock_elevation_2",
+                    "static": true
                 }
             }
         },
@@ -1100,7 +1108,8 @@
                     "alignment": "TILE",
                     "type": "FLOOR_2",
                     "floorType": "DIRT_WALL",
-                    "previewTexture": "t223,tile_dirt_elevation_2"
+                    "previewTexture": "t223,tile_dirt_elevation_2",
+                    "static": true
                 }
             }
         },
@@ -1222,7 +1231,8 @@
                     "type": "ENTITY",
                     "entityType": "SIGN",
                     "previewTexture": "entity_sign",
-                    "placeAlignmentOffsetX": 8
+                    "placeAlignmentOffsetX": 8,
+                    "static": true
                 }
             }
         },
@@ -1321,7 +1331,8 @@
                     "type": "ENTITY",
                     "entityType": "CAMPFIRE",
                     "previewTexture": "entity_campfire",
-                    "placeAlignmentOffsetX": 8.0
+                    "placeAlignmentOffsetX": 8.0,
+                    "static": true
                 }
             }
         },
@@ -1424,7 +1435,8 @@
                     "entityType": "CROP_WHEAT",
                     "placeAlignmentOffsetX": 8,
                     "placeAlignmentOffsetY": 3,
-                    "floorRequirement": "SOIL_FARMLAND"
+                    "floorRequirement": "SOIL_FARMLAND",
+                    "static": true
                 }
             }
         },
@@ -1456,7 +1468,8 @@
                     "placeAlignmentOffsetX": 0,
                     "placeAlignmentOffsetY": 4,
                     "floorRequirement": "WATER_OVERLAY",
-                    "previewTexture": "entity_lilypad_1"
+                    "previewTexture": "entity_lilypad_1",
+                    "static": true
                 }
             }
         },
@@ -1485,11 +1498,11 @@
             "logic": {
                 "toolType": "ITEM",
                 "throwData": {
-                    "maxThrowDistance": 256,
+                    "maxThrowDistance": 320,
                     "minThrowDuration": 0.5,
                     "maxThrowDuration": 0.6,
-                    "explosionRadius": 144,
-                    "explosionDamage": 150,
+                    "explosionRadius": 180,
+                    "explosionDamage": 175,
                     "knockbackStrength": 32.0,
                     "knockbackDuration": 0.25
                 }
@@ -1499,8 +1512,8 @@
             "identifier": "item_nuke",
             "id": 54,
             "category": "CONSUMABLE",
-            "displayName": "Nuke",
-            "displayNameColor": "#ffffff",
+            "displayName": "Nuke terrible fortune",
+            "displayNameColor": "#ff0000",
             "render": {
                 "ui": {
                     "texture": "item_bomb"

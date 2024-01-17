@@ -3,6 +3,7 @@ package dev.michey.expo.console.command;
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.localserver.ExpoServerLocal;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.screen.GameScreen;
 import dev.michey.expo.server.main.logic.world.gen.WorldGen;
 import dev.michey.expo.util.ClientPackets;
@@ -42,10 +43,13 @@ public class CommandWorld extends AbstractConsoleCommand {
             }
 
             success("Starting a single-player game session with world name [CYAN]" + name + " and seed " + seed);
+            long a = System.currentTimeMillis();
+
             new WorldGen();
             ExpoServerLocal localServer = new ExpoServerLocal(name, seed);
 
             if(localServer.startServer()) {
+                ExpoLogger.log("Started local server in " + (System.currentTimeMillis() - a) + "ms");
                 Expo.get().switchToNewScreen(new GameScreen(localServer));
                 ClientPackets.p0ConnectReq(null);
             }

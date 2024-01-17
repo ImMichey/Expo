@@ -15,6 +15,7 @@ public class PlaceData {
     public float previewOffsetX, previewOffsetY;
     public TileLayerType floorRequirement;
     public String sound;
+    public boolean staticFlag;
 
     public PlaceData(JSONObject o) {
         alignment = PlaceAlignment.valueOf(o.getString("alignment"));
@@ -29,6 +30,7 @@ public class PlaceData {
         if(o.has("previewOffsetY")) previewOffsetY = o.getFloat("previewOffsetY");
         if(o.has("floorRequirement")) floorRequirement = TileLayerType.valueOf(o.getString("floorRequirement"));
         if(o.has("sound")) sound = o.getString("sound");
+        if(o.has("static")) staticFlag = o.getBoolean("static");
     }
 
 }

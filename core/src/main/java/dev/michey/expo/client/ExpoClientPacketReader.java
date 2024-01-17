@@ -35,7 +35,7 @@ import static dev.michey.expo.util.ExpoShared.*;
 
 public class ExpoClientPacketReader {
 
-    protected void handlePacket(Packet o, boolean local) {
+    public void handlePacket(Packet o, boolean local) {
         if(o instanceof P44_Connect_Rsp p) {
             if(p.credentialsSuccessful) {
                 ExpoClientContainer.get().setLoadingMessage("Connected to server, attempting authentication...");
