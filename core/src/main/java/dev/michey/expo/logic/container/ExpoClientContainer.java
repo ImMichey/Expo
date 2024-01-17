@@ -78,6 +78,8 @@ public class ExpoClientContainer {
         packetReader = new ExpoClientPacketReader();
         packetEvaluator = new ExpoClientPacketEvaluator(packetReader);
 
+        INSTANCE = this;
+
         if(client != null && client.drainAfterInitQueue != null) {
             while(!client.drainAfterInitQueue.isEmpty()) {
                 var packet = client.drainAfterInitQueue.poll();
@@ -86,8 +88,6 @@ public class ExpoClientContainer {
 
             client.drainAfterInitQueue = null;
         }
-
-        INSTANCE = this;
     }
 
     public void sendPacketTcp(Packet packet) {
