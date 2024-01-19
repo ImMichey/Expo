@@ -33,9 +33,9 @@ public class ClientEntityManager {
     private static ClientEntityManager INSTANCE;
 
     /** Storage maps */
-    private final LinkedList<ClientEntity> depthEntityList;
+    private final ArrayList<ClientEntity> depthEntityList;
     private final TreeMap<Integer, ClientEntity> idEntityMap;
-    private final HashMap<ClientEntityType, LinkedList<ClientEntity>> typeEntityListMap;
+    private final HashMap<ClientEntityType, ArrayList<ClientEntity>> typeEntityListMap;
     private final ConcurrentLinkedQueue<Pair<Integer, EntityRemovalReason>> removalQueue;
     private final ConcurrentLinkedQueue<ClientEntity> additionQueueSv;
     private final ConcurrentLinkedQueue<ClientEntity> additionQueueCl;
@@ -62,7 +62,7 @@ public class ClientEntityManager {
     public float pulseThickness;
 
     public ClientEntityManager() {
-        depthEntityList = new LinkedList<>();
+        depthEntityList = new ArrayList<>(4096);
         idEntityMap = new TreeMap<>();
         typeEntityListMap = new HashMap<>();
         removalQueue = new ConcurrentLinkedQueue<>();
@@ -72,7 +72,7 @@ public class ClientEntityManager {
         greenlitAmbientOcclusionList = new LinkedList<>();
 
         for(ClientEntityType type : ClientEntityType.values()) {
-            typeEntityListMap.put(type, new LinkedList<>());
+            typeEntityListMap.put(type, new ArrayList<>(128));
         }
 
         listOfEntities = new LinkedList<>();
@@ -194,7 +194,7 @@ public class ClientEntityManager {
 
                 boolean poll = true;
 
-                if(entity.removalFade > 0 && entity.removalReason != EntityRemovalReason.DEATH && entity.removalReason != EntityRemovalReason.CAUGHT) {
+                if(entity.removalFade > 0 && !entity.removalReason.isKillReason() && entity.removalReason != EntityRemovalReason.CAUGHT) {
                     entity.removalFade -= delta;
                     poll = entity.removalFade <= 0;
                 }
@@ -212,7 +212,7 @@ public class ClientEntityManager {
                         ClientChunk chunk = ClientChunkGrid.get().getChunk(chunkX, chunkY);
                         chunk.detachTileEntity(entity.tileEntityTileArray);
 
-                        if(chunk.visibleLogic && (chunk.ranAmbientOcclusion || chunk.getInitializationTileCount() == 0)) {
+                        if(chunk.visibleLogic/* && (chunk.ranAmbientOcclusion || chunk.getInitializationTileCount() == 0)*/) { // This fixes the explosion AO
                             ambientOcclusionUpdateSet.add(new Pair<>(chunk, entity.tileEntityTileArray));
                         }
                     }
@@ -443,8 +443,20 @@ public class ClientEntityManager {
         rc.arraySpriteBatch.setBlendFunction(GL30.GL_ONE, GL30.GL_ONE);
         Gdx.gl30.glBlendEquation(GL30.GL_MAX);
 
-        for(ClientEntity entity : depthEntityList) {
-            entity.renderShadow(rc, delta);
+        long a = System.nanoTime();
+
+        for(Map.Entry<ClientEntityType, ArrayList<ClientEntity>> entrySet : typeEntityListMap.entrySet()) {
+            if(!entrySet.getKey().ENTITY_SHADOWS) continue;
+            if(entrySet.getValue().isEmpty()) continue;
+
+            for(ClientEntity ent : entrySet.getValue()) {
+                ent.renderShadow(rc, delta);
+            }
+        }
+
+        long b = System.nanoTime();
+        if(ExpoShared.TRACK_PERFORMANCE) {
+            ServerUtils.recordPerformanceMetric("rsh", new String[] {"total"}, new long[] {a, b});
         }
 
         rc.arraySpriteBatch.setBlendFunction(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
@@ -487,7 +499,7 @@ public class ClientEntityManager {
         return additionQueueCl;
     }
 
-    public List<ClientEntity> getEntitiesByType(ClientEntityType type) {
+    public ArrayList<ClientEntity> getEntitiesByType(ClientEntityType type) {
         return typeEntityListMap.get(type);
     }
 
@@ -657,7 +669,7 @@ public class ClientEntityManager {
         return new Object[] {directMouseContact, distanceMouseEntity};
     }
 
-    public LinkedList<ClientEntity> getDepthEntityList() {
+    public ArrayList<ClientEntity> getDepthEntityList() {
         return depthEntityList;
     }
 

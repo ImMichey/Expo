@@ -25,15 +25,20 @@ public class ClientParticleHit extends ClientParticle {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        rc.useArrayBatch();
-        rc.useRegularArrayShader();
-        rc.arraySpriteBatch.setColor(r, g, b, useAlpha);
+        updateTexturePositionData();
+        visibleToRenderEngine = rc.inDrawBounds(this);
 
-        float w = particleTexture.getRegionWidth() * scaleX;
-        float h = particleTexture.getRegionHeight() * scaleY;
+        if(visibleToRenderEngine) {
+            rc.useArrayBatch();
+            rc.useRegularArrayShader();
+            rc.arraySpriteBatch.setColor(r, g, b, useAlpha);
 
-        rc.arraySpriteBatch.draw(particleTexture, clientPosX - w * 0.5f, clientPosY - h * 0.5f, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
-        rc.arraySpriteBatch.setColor(Color.WHITE);
+            float w = particleTexture.getRegionWidth() * scaleX;
+            float h = particleTexture.getRegionHeight() * scaleY;
+
+            rc.arraySpriteBatch.draw(particleTexture, clientPosX - w * 0.5f, clientPosY - h * 0.5f, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
+        }
     }
 
     @Override

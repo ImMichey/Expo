@@ -57,6 +57,32 @@ public class ParticleSheet {
 
     public static class Common {
 
+        // This is manual due to texture passing
+        public static void spawnGoreParticles(TextureRegion base, float x, float y) {
+            if(!GameSettings.get().enableParticles) return;
+
+            float bw = base.getRegionWidth();
+            float bh = base.getRegionHeight();
+            float total = bw * bh;
+            int min = (int) (total * 0.07f);
+            int max = (int) (total * 0.09f);
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_GORE)
+                    .amount(min, max)
+                    .scale(2.0f, 2.5f)
+                    .lifetime(0.5f, 0.6f)
+                    .position(x, y)
+                    .velocityDirectional(160, 220)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeoutLifetime(0.95f)
+                    .texture(base)
+                    .randomRotation()
+                    .scaleDown()
+                    .rotateWithVelocity()
+                    .depth(y)
+                    .spawn();
+        }
+
         public static void spawnDustConstructFloorParticles(float x, float y) {
             if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
@@ -121,14 +147,16 @@ public class ParticleSheet {
             if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(64, 96)
-                    .scale(1.5f, 2.2f)
+                    .scale(2.5f, 3.0f)
                     .lifetime(0.7f, 1.2f)
                     .color(ParticleColorMap.of(14))
                     .position(entity.finalTextureCenterX, entity.clientPosY)
-                    .velocity(-96, 96, 4, 112)
+                    //.velocity(-96, 96, 4, 112)
+                    .velocityDirectional(8, 120)
                     .fadeoutLifetime(0.5f)
                     .randomRotation()
                     .rotateWithVelocity()
+                    .scaleDown()
                     .textureRange(15, 15)
                     .depth(entity.depth)
                     .spawn();

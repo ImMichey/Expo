@@ -1,6 +1,7 @@
 package dev.michey.expo.util;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -23,17 +24,20 @@ public class ParticleBuilder {
     private Color[] colors;
     private float velocityMinX, velocityMaxX;
     private float velocityMinY, velocityMaxY;
-    private float velocityDirectional;
+    private float velocityDirectionalMin, velocityDirectionalMax;
+    private boolean velocityRange;
     private Interpolation velocityCurve;
     private float fadeout;
     private float fadein;
     private float fadeoutPercentage;
     private int textureMin, textureMax;
+    private TextureRegion baseTexture;
     private float startPosX, startPosY;
     private float offsetX, offsetY;
     private float followOffsetX, followOffsetY;
     private boolean randomRotation;
     private boolean rotateWithVelocity;
+    private boolean scaleDown;
     private boolean decreaseSpeed;
     private ClientEntity followEntity;
     private float depth = Float.MAX_VALUE;
@@ -65,6 +69,11 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder texture(TextureRegion texture) {
+        this.baseTexture = texture;
+        return this;
+    }
+
     public ParticleBuilder fadeoutLifetime(float percentage) {
         this.fadeoutPercentage = percentage;
         return this;
@@ -88,6 +97,15 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder velocityBetween(float vxMin, float vxMax, float velocityMinY, float velocityMaxY) {
+        this.velocityMinX = vxMin;
+        this.velocityMaxX = vxMax;
+        this.velocityRange = true;
+        this.velocityMinY = velocityMinY;
+        this.velocityMaxY = velocityMaxY;
+        return this;
+    }
+
     public ParticleBuilder velocity(float velocityMinX, float velocityMaxX, float velocityMinY, float velocityMaxY) {
         this.velocityMinX = velocityMinX;
         this.velocityMaxX = velocityMaxX;
@@ -101,22 +119,9 @@ public class ParticleBuilder {
         return this;
     }
 
-    public ParticleBuilder velocityDirectional(float max) {
-        this.velocityDirectional = max;
-        return this;
-    }
-
-    public ParticleBuilder velocityNormalized(float max) {
-        float x = MathUtils.cosDeg(MathUtils.random(360f));
-        float y = MathUtils.sinDeg(MathUtils.random(360f));
-        Vector2 vv = new Vector2(x, y).nor().scl(max);
-
-        this.velocityMinX = -vv.x;
-        this.velocityMaxX = vv.x;
-
-        this.velocityMinY = -vv.y;
-        this.velocityMaxY = vv.y;
-
+    public ParticleBuilder velocityDirectional(float min, float max) {
+        this.velocityDirectionalMin = min;
+        this.velocityDirectionalMax = max;
         return this;
     }
 
@@ -158,6 +163,11 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder scaleDown() {
+        scaleDown = true;
+        return this;
+    }
+
     public ParticleBuilder decreaseSpeed() {
         decreaseSpeed = true;
         return this;
@@ -190,6 +200,10 @@ public class ParticleBuilder {
         for(int i = 0; i < spawn; i++) {
             ClientParticle p = (ClientParticle) ClientEntityType.typeToClientEntity(type.ENTITY_ID);
 
+            if(baseTexture != null) {
+                p.particleTexture = baseTexture;
+            }
+
             float scale = MathUtils.random(scaleMin, scaleMax);
             p.setParticleScale(scale, scale);
 
@@ -203,15 +217,22 @@ public class ParticleBuilder {
             float velocityX;
             float velocityY;
 
-            if(velocityDirectional > 0) {
-                float angle = MathUtils.random(360f);
+            if(velocityDirectionalMin > 0) {
+                float angle = MathUtils.randomBoolean() ? MathUtils.random(0f, 90f) : -MathUtils.random(180f, 270f);
+
                 float x = MathUtils.cosDeg(angle);
                 float y = MathUtils.sinDeg(angle);
-                Vector2 vec = new Vector2(x, y).nor().scl(velocityDirectional);
+
+                Vector2 vec = new Vector2(x, y).nor().scl(MathUtils.random(velocityDirectionalMin, velocityDirectionalMax));
                 velocityX = vec.x;
                 velocityY = vec.y;
             } else {
-                velocityX = MathUtils.random(velocityMinX, velocityMaxX);
+                if(velocityRange) {
+                    float sign = MathUtils.randomBoolean() ? 1 : -1;
+                    velocityX = MathUtils.random(velocityMinX, velocityMaxX) * sign;
+                } else {
+                    velocityX = MathUtils.random(velocityMinX, velocityMaxX);
+                }
                 velocityY = MathUtils.random(velocityMinY, velocityMaxY);
             }
 
@@ -235,6 +256,7 @@ public class ParticleBuilder {
             if(rotateWithVelocity) p.setParticleConstantRotation((Math.abs(p.pvx) + Math.abs(p.pvy)) * 0.5f / 24f * 360f);
             if(dynamicDepth) p.setParticleDynamicDepth();
             if(decreaseSpeed) p.setDecreaseSpeed();
+            if(scaleDown) p.setScaleDown();
             if(followEntity != null) {
                 p.setFollowEntity(followEntity);
                 p.setFollowOffset(followOffsetX, followOffsetY);

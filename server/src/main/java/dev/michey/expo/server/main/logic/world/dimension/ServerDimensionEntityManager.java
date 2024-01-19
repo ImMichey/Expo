@@ -208,6 +208,19 @@ public class ServerDimensionEntityManager {
         }
     }
 
+    public void spawnItemSingleDst(float originX, float originY, String itemName, float dstX, float dstY) {
+        ServerItem item = new ServerItem();
+
+        ItemMapping r = ItemMapper.get().getMapping(itemName);
+        item.itemContainer = new ServerInventoryItem(r.id, 1);
+        item.posX = originX;
+        item.posY = originY;
+        item.dstX = dstX;
+        item.dstY = dstY;
+
+        ServerWorld.get().registerServerEntity(dimension.dimensionName, item);
+    }
+
     public void spawnItemSingle(float originX, float originY, float originOffsetRadius, String itemName, float moveToRadius) {
         Vector2 position = GenerationUtils.circularRandom(moveToRadius);
         Vector2 offset = GenerationUtils.circularRandom(originOffsetRadius);

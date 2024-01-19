@@ -82,7 +82,7 @@ public class MenuButton extends MenuComponent {
         r.hudBatch.draw(baseButton[1], x + tlw, y + blh + h, w, tlh);
         r.hudBatch.draw(baseButton[2], x + tlw + w, y + blh + h, tlw, tlh);
 
-        BitmapFont useFont = r.m5x7_border_use;
+        BitmapFont useFont = r.m5x7_border_all[1];
         if(drawText) {
             r.globalGlyph.setText(useFont, text);
             useFont.draw(r.hudBatch, text, x + blw + padding + (group.getPropertyAsInt("buttonWidth") - r.globalGlyph.width) * 0.5f,

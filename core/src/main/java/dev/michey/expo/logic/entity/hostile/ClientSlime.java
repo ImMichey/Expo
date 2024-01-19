@@ -12,7 +12,6 @@ import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientSlime extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
@@ -28,6 +27,7 @@ public class ClientSlime extends ClientEntity implements ReflectableEntity, Ambi
         animationHandler.setPuddleData(new ExpoAnimationHandler.PuddleData[] {
                 new ExpoAnimationHandler.PuddleData("walk", 19, true, 0, 0),
         });
+        animationHandler.getActiveAnimation().randomOffset();
     }
 
     @Override
@@ -51,8 +51,9 @@ public class ClientSlime extends ClientEntity implements ReflectableEntity, Ambi
 
     @Override
     public void onDeletion() {
-        if(removalReason == EntityRemovalReason.DEATH) {
+        if(removalReason.isKillReason()) {
             playEntitySound("bloody_squish");
+            ParticleSheet.Common.spawnGoreParticles(animationHandler.getActiveFrame(), clientPosX, clientPosY);
         }
     }
 
@@ -61,7 +62,7 @@ public class ClientSlime extends ClientEntity implements ReflectableEntity, Ambi
         setBlink();
         ParticleSheet.Common.spawnBloodParticlesSlime(this);
         spawnHealthBar(damage);
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnDamageIndicator(damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override

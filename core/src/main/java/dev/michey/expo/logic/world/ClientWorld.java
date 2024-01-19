@@ -439,10 +439,12 @@ public class ClientWorld {
         }
 
         {
-            r.waterEntityFbo.begin();
+            if(GameSettings.get().waterReflections) {
+                r.waterEntityFbo.begin();
                 transparentScreen();
                 renderEntityReflections();
-            r.waterEntityFbo.end();
+                r.waterEntityFbo.end();
+            }
 
             // Draw water tiles, reflections and shadows to waterTilesFbo.
             r.waterTilesFbo.begin();
@@ -599,7 +601,7 @@ public class ClientWorld {
 
                         try {
                             for(var o : world.getRects()) {
-                                r.chunkRenderer.rect(o.x, o.y, o.w, o.h);
+                                //r.chunkRenderer.rect(o.x, o.y, o.w, o.h);
                             }
                         } catch (ConcurrentModificationException e) {
                             // ignore it because it happens due to different tick rates between client->localserver
@@ -1308,13 +1310,13 @@ public class ClientWorld {
         rc.arraySpriteBatch.setColor(Color.WHITE);
         rc.arraySpriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         rc.arraySpriteBatch.end();
-        rc.batch.begin();
     }
 
     private void renderWaterTiles() {
         if(ClientPlayer.getLocalPlayer() == null) return;
         RenderContext rc = RenderContext.get();
 
+        rc.batch.begin();
         rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
         rc.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 

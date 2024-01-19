@@ -23,6 +23,8 @@ public abstract class ClientParticle extends ClientEntity {
     public boolean dynamicDepth;
     public float startDepth;
     public boolean decreaseSpeed;
+    public boolean scaleDown;
+    public float baseScaleX, baseScaleY;
     public ClientEntity followEntity;
     public float followOffsetX, followOffsetY;
 
@@ -65,6 +67,12 @@ public abstract class ClientParticle extends ClientEntity {
                 useAlpha = (lifetime / fadeOutDuration);
                 if(useAlpha < 0) useAlpha = 0;
             }
+        }
+
+        if(scaleDown) {
+            float d = lifetime / lifetimeStatic;
+            scaleX = baseScaleX * d;
+            scaleY = baseScaleY * d;
         }
 
         if(decreaseSpeed) {
@@ -176,6 +184,12 @@ public abstract class ClientParticle extends ClientEntity {
 
     public void setDecreaseSpeed() {
         decreaseSpeed = true;
+    }
+
+    public void setScaleDown() {
+        scaleDown = true;
+        baseScaleX = scaleX;
+        baseScaleY = scaleY;
     }
 
     public void setFollowEntity(ClientEntity followEntity) {

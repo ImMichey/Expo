@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.world.chunk;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
@@ -18,8 +19,7 @@ import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 
@@ -422,12 +422,14 @@ public class ServerTile {
         return dynamicTileParts[layer].hit(damage);
     }
 
-    public boolean performDigOperation(float damage, ServerInventoryItem item) {
+    public boolean performDigOperation(float damage, ServerInventoryItem item, boolean sendUpdatePacket, boolean recursiveLayerDamage, float damageSourceX, float damageSourceY) {
         int digLayer = selectDigLayer();
         if(digLayer == -1) return false;
 
         int pColor = toParticleColorId();
         boolean dugUp = dig(digLayer, damage);
+        float afterDamageHealth = Math.abs(dynamicTileParts[digLayer].tileHealth);
+        boolean applyRecursive = false;
 
         { // Play dig up sound.
             String sound = TileLayerType.typeToHitSound(dynamicTileParts[digLayer].emulatingType);
@@ -452,11 +454,26 @@ public class ServerTile {
                 String identifier = TileLayerType.typeToItemDrop(dynamicTileParts[digLayer].emulatingType);
 
                 if(identifier != null) {
-                    chunk.getDimension().getEntityManager().spawnItemSingle(ExpoShared.tileToPos(tileX) + 8.0f, ExpoShared.tileToPos(tileY) + 8.0f, 2.0f, identifier, 3.0f);
+                    float bx = ExpoShared.tileToPos(tileX) + 8.0f + MathUtils.random(3.0f);
+                    float by = ExpoShared.tileToPos(tileY) + 8.0f + MathUtils.random(3.0f);
+
+                    float dstX;
+                    float dstY;
+
+                    if(damageSourceX != 0 || damageSourceY != 0) {
+                        Vector2 temp = new Vector2(bx, by).sub(damageSourceX, damageSourceY).nor().scl(64);
+                        dstX = temp.x;
+                        dstY = temp.y;
+                    } else {
+                        dstX = 0;
+                        dstY = 0;
+                    }
+
+                    chunk.getDimension().getEntityManager().spawnItemSingleDst(bx, by, identifier, dstX, dstY);
                 }
             }
 
-            List<String> affectedChunks = new LinkedList<>();
+            HashSet<String> affectedChunks = new HashSet<>();
             affectedChunks.add(chunk.getChunkKey());
 
             { // Update tile data
@@ -467,23 +484,36 @@ public class ServerTile {
                         updateLayer0(TileLayerType.SOIL_HOLE);
                     }
 
-                    ServerPackets.p32ChunkDataSingle(this, 0);
+                    if(sendUpdatePacket) {
+                        ServerPackets.p32ChunkDataSingle(this, 0);
+                    }
 
                     for(ServerTile neighbour : getNeighbouringTiles()) {
                         if(neighbour.updateLayer0Adjacent(false)) {
-                            ServerPackets.p32ChunkDataSingle(neighbour, 0);
-                            if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
+                            if(sendUpdatePacket) {
+                                ServerPackets.p32ChunkDataSingle(neighbour, 0);
+                            }
+                            affectedChunks.add(neighbour.chunk.getChunkKey());
                         }
                     }
                 } else if(digLayer == 1) {
                     updateLayer1(TileLayerType.EMPTY);
-                    ServerPackets.p32ChunkDataSingle(this, 1);
+
+                    if(sendUpdatePacket) {
+                        ServerPackets.p32ChunkDataSingle(this, 1);
+                    }
 
                     for(ServerTile neighbour : getNeighbouringTiles()) {
                         if(neighbour.updateLayer1Adjacent(false)) {
-                            ServerPackets.p32ChunkDataSingle(neighbour, 1);
-                            if(!affectedChunks.contains(neighbour.chunk.getChunkKey())) affectedChunks.add(neighbour.chunk.getChunkKey());
+                            if(sendUpdatePacket) {
+                                ServerPackets.p32ChunkDataSingle(neighbour, 1);
+                            }
+                            affectedChunks.add(neighbour.chunk.getChunkKey());
                         }
+                    }
+
+                    if(recursiveLayerDamage) {
+                        applyRecursive = true;
                     }
                 }
 
@@ -496,15 +526,21 @@ public class ServerTile {
                 ServerChunk sv = dim.getChunkHandler().getActiveChunk(affectedChunkKey);
                 sv.lastTileUpdate = now;
 
-                for(ServerPlayer player : dim.getEntityManager().getAllPlayers()) {
-                    if(player.canSeeChunk(affectedChunkKey)) {
-                        player.hasSeenChunks.put(sv, now);
+                if(sendUpdatePacket) {
+                    for(ServerPlayer player : dim.getEntityManager().getAllPlayers()) {
+                        if(player.canSeeChunk(affectedChunkKey)) {
+                            player.hasSeenChunks.put(sv, now);
+                        }
                     }
                 }
             }
         }
 
-        { // Dig packet.
+        if(applyRecursive) {
+            performDigOperation(afterDamageHealth, item, sendUpdatePacket, false, damageSourceX, damageSourceY);
+        }
+
+        if(item != null) {
             ServerPackets.p33TileDig(tileX, tileY, pColor, PacketReceiver.whoCanSee(dim, chunk.chunkX, chunk.chunkY));
         }
 

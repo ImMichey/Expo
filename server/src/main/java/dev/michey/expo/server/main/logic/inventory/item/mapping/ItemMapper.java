@@ -26,6 +26,8 @@ public class ItemMapper {
         dynamicParticleEmitterList = new LinkedList<>();
 
         FileHandle fh = reload ? Gdx.files.absolute("C:\\IDEAProjects\\Expo\\assets_shared\\items.json") : Gdx.files.internal("items.json");
+        if(!fh.exists()) return;
+
         JSONArray db = new JSONObject(fh.readString()).getJSONArray("database");
 
         for(int i = 0; i < db.length(); i++) {

@@ -251,12 +251,19 @@ public class AudioEngine {
 
     /** Plays a managed sound of a certain group that dynamically changes its panning and volume depending on the player's distance to the origin. **/
     public TrackedSoundData playSoundGroupManaged(String groupName, Vector2 soundOrigin, float maxAudibleRange, boolean loop, float multiplier) {
+        // Check volume first before playing (and thus overloading OpenAL).
+        float volumeStart = getDynamicSoundVolume(soundOrigin, maxAudibleRange);
+
+        if(volumeStart <= 0 && !loop) {
+            return null;
+        }
+
         TrackedSoundData data = soundGroupMap.get(groupName).playSound(multiplier, loop);
         data.dynamic = true;
         data.worldPosition = soundOrigin;
         data.audibleRange = maxAudibleRange;
-        soundData.put(data.id, data);
         dynamicCalculate(data);
+        soundData.put(data.id, data);
         return data;
     }
 

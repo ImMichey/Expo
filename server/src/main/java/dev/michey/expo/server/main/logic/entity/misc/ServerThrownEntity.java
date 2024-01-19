@@ -8,6 +8,7 @@ import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
@@ -66,13 +67,14 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                     float rawDst = Vector2.dst(posX, posY, se.posX, se.posY);
 
                     if(rawDst <= explosionRadius) {
-                        float relative = 1f - Interpolation.pow3InInverse.apply(rawDst / explosionRadius);
+                        float relative = 1f - Interpolation.exp5Out.apply(rawDst / explosionRadius);
                         float applyDamage = explosionDamage * relative;
 
                         boolean applied = se.applyDamageWithPacket(this, applyDamage, EntityRemovalReason.EXPLOSION);
 
                         if(applied) {
-                            se.addKnockback(knockbackStrength * relative, knockbackDuration * relative,
+                            float normRelative = 0.5f + relative * 0.5f;
+                            se.addKnockback(knockbackStrength * normRelative, knockbackDuration * normRelative,
                                     new Vector2(se.posX, se.posY).sub(posX, posY).nor());
                         }
 
@@ -106,10 +108,10 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                             int digLayer = tile.selectDigLayer();
 
                             if(digLayer != -1) {
-                                float relative = 1f - Interpolation.pow3InInverse.apply(dst / explosionRadius);
+                                float relative = 1f - Interpolation.exp5Out.apply(dst / explosionRadius);
                                 float applyDamage = explosionDamage * relative * 0.5f;
 
-                                tile.performDigOperation(applyDamage, null);
+                                tile.performDigOperation(applyDamage, null, false, true, posX, posY);
                             }
                         }
                     }
@@ -142,8 +144,14 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                 if(c.overlaps && c.other.userData instanceof PhysicsEntity pe) {
                     PhysicsMassClassification m = pe.getPhysicsMassClassification();
 
-                    if(m == PhysicsMassClassification.HEAVY && pe instanceof ServerBoulder) {
-                        continue;
+                    if(m == PhysicsMassClassification.HEAVY) {
+                        if(pe instanceof ServerBoulder) {
+                            continue;
+                        }
+
+                        if(pe instanceof ServerOakTree sot && sot.cut) {
+                            continue;
+                        }
                     }
 
                     if(m == PhysicsMassClassification.HEAVY || m == PhysicsMassClassification.PLAYER || m == PhysicsMassClassification.WALL) {

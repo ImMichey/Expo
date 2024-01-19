@@ -1,6 +1,5 @@
 package dev.michey.expo.logic.world.chunk;
 
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -79,11 +78,7 @@ public class ClientChunk {
     /** Detaches a tile entity from the current chunk and returns the new amount of tile entities within this chunk. */
     public void detachTileEntity(int tileArray) {
         tileEntityCount--;
-        if(tileEntityGrid == null) {
-            ExpoLogger.log("DETACH FAILED " + chunkX + "," + chunkY + " " + tileArray + " new: " + tileEntityCount);
-        } else {
-            tileEntityGrid[tileArray] = -1;
-        }
+        tileEntityGrid[tileArray] = -1;
     }
 
     public ClientChunk(int chunkX, int chunkY, BiomeType[] biomes, DynamicTilePart[][] dynamicTiles, int initializationTileCount) {
@@ -103,30 +98,6 @@ public class ClientChunk {
                 chunkContainsWater = true;
                 break;
             }
-        }
-
-        if(chunkContainsWater) {
-            /*
-            waterDisplacement = new Pair[dynamicTiles.length][];
-
-            for(int i = 0; i < waterDisplacement.length; i++) {
-                var tiles = dynamicTiles[i];
-
-                for(DynamicTilePart tile : tiles) {
-                    int[] ids = tile.layerIds;
-
-                    if(BiomeType.isWater(biomes[i]) && biomes[i] != BiomeType.OCEAN_DEEP && biomes[i] != BiomeType.PUDDLE && ids.length > 1) {
-                        Pair[] array = new Pair[ids.length];
-
-                        for(int a = 0; a < ids.length; a++) {
-                            array[a] = idToDir(ids[a], tile.emulatingType);
-                        }
-
-                        waterDisplacement[i] = array;
-                    }
-                }
-            }
-            */
         }
 
         ambientOcclusion = new float[ROW_TILES * ROW_TILES][];

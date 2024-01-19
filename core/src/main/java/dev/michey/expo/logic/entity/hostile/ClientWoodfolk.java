@@ -48,7 +48,7 @@ public class ClientWoodfolk extends ClientEntity implements ReflectableEntity, A
         setBlink();
         ParticleSheet.Common.spawnBloodParticlesWoodfolk(this);
         spawnHealthBar(damage);
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnDamageIndicator(damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override

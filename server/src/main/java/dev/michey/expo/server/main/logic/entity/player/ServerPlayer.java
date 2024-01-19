@@ -32,8 +32,8 @@ import dev.michey.expo.util.Pair;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ExpoShared.*;
@@ -150,7 +150,12 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         nextHungerDamageTick = 4.0f;
         nextHealthRegenTickDown = 1.0f;
 
-        if(knockbackCalculations != null) knockbackCalculations.clear();
+        if(knockbackCalculations != null) {
+            knockbackCalculations.clear();
+            knockbackCalculations = null;
+            removeKnockback.clear();
+            removeKnockback = null;
+        }
 
         ServerPackets.p23PlayerLifeUpdate(health, hunger, PacketReceiver.player(this));
 
@@ -161,6 +166,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         );
 
         resetInvincibility();
+        nextMovementPacket = null;
 
         // chat message
         ExpoServerBase.get().broadcastMessage("Player " + username + " died.");
@@ -595,6 +601,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public void throwEntity(float dstX, float dstY) {
         ServerInventoryItem item = getCurrentItem();
+        if(item.isEmpty()) return;
         ItemMapping m = ItemMapper.get().getMapping(item.itemId);
         if(m.logic.throwData == null) return; // to combat de-sync server<->client, double check current item
         ThrowData td = m.logic.throwData;
@@ -630,6 +637,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
 
     public void placeAt(int chunkX, int chunkY, int tileArray, float mouseWorldX, float mouseWorldY) {
         ServerInventoryItem item = getCurrentItem();
+        if(item.isEmpty()) return;
         ItemMapping m = ItemMapper.get().getMapping(item.itemId);
         if(m.logic.placeData == null) return; // to combat de-sync server<->client, double check current item
 
@@ -637,7 +645,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         var tile = chunk.tiles[tileArray];
         PlaceData p = m.logic.placeData;
 
-        List<String> affectedChunks = new LinkedList<>();
+        HashSet<String> affectedChunks = new HashSet<>();
         affectedChunks.add(chunk.getChunkKey());
 
         if(p.type == PlaceType.FLOOR_0) {
@@ -655,7 +663,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                         for(ServerTile st : tile.getNeighbouringTiles()) {
                             if(st.updateLayer1Adjacent(false)) {
                                 ServerPackets.p32ChunkDataSingle(st, 1);
-                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                                affectedChunks.add(st.chunk.getChunkKey());
                             }
                         }
                     } else {
@@ -669,15 +677,15 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                         for(ServerTile st : tile.getNeighbouringTiles()) {
                             if(st.updateLayer0Adjacent(false)) {
                                 ServerPackets.p32ChunkDataSingle(st, 0);
-                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                                affectedChunks.add(st.chunk.getChunkKey());
                             }
                             if(st.updateLayer1Adjacent(false)) {
                                 ServerPackets.p32ChunkDataSingle(st, 1);
-                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                                affectedChunks.add(st.chunk.getChunkKey());
                             }
                             if(st.updateLayer2Adjacent(false)) {
                                 ServerPackets.p32ChunkDataSingle(st, 2);
-                                if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                                affectedChunks.add(st.chunk.getChunkKey());
                             }
                         }
                     }
@@ -688,7 +696,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                     for(ServerTile st : tile.getNeighbouringTiles()) {
                         if(st.updateLayer0Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
                             ServerPackets.p32ChunkDataSingle(st, 0);
-                            if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                            affectedChunks.add(st.chunk.getChunkKey());
                         }
                     }
                 }
@@ -713,7 +721,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 for(ServerTile st : tile.getNeighbouringTiles()) {
                     if(st.updateLayer1Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
                         ServerPackets.p32ChunkDataSingle(st, 1);
-                        if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                        affectedChunks.add(st.chunk.getChunkKey());
                     }
                 }
             }
@@ -737,7 +745,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                 for(ServerTile st : tile.getNeighbouringTiles()) {
                     if(st.updateLayer2Adjacent(p.floorType.TILE_LAYER_TYPE.TILE_IS_WALL)) {
                         ServerPackets.p32ChunkDataSingle(st, 2);
-                        if(!affectedChunks.contains(st.chunk.getChunkKey())) affectedChunks.add(st.chunk.getChunkKey());
+                        affectedChunks.add(st.chunk.getChunkKey());
                     }
                 }
             }
@@ -840,7 +848,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         var chunk = getChunkGrid().getChunkSafe(chunkX, chunkY);
         var tile = chunk.tiles[tileArray];
 
-        boolean digResult = tile.performDigOperation(ItemMapper.get().getMapping(item.itemId).logic.harvestDamage, item);
+        boolean digResult = tile.performDigOperation(ItemMapper.get().getMapping(item.itemId).logic.harvestDamage, item, true, false, 0, 0);
 
         if(digResult) {
             useItemDurability(item);

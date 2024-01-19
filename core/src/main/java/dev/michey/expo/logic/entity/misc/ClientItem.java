@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -40,6 +41,8 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
 
     private float bounceDelta;
     private float bounce;
+
+    private float hoverAlpha;
 
     @Override
     public void onCreation() {
@@ -149,25 +152,41 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             }
 
             if(itemAmount > 1 || !ItemMapper.get().getMapping(itemId).logic.isSpecialType()) {
-                String numberAsString = String.valueOf(itemAmount);
-                BitmapFont uf = rc.m6x11_border_all[0];
-                rc.globalGlyph.setText(uf, numberAsString);
-                float fontScale = (currentScaleX + 0.125f) * 0.5f;
-                float fw = rc.globalGlyph.width * fontScale;
+                float mouseDst = Vector2.dst(finalDrawPosX, finalDrawPosY + floatingPos + bounce, rc.mouseWorldX, rc.mouseWorldY);
+                boolean mouseInRange = mouseDst <= 48;
 
-                uf.getData().setScale(fontScale);
-                uf.setColor(1.0f, 1.0f, 1.0f, useAlpha);
+                if(mouseInRange || hoverAlpha > 0) {
+                    if(mouseInRange) {
+                        hoverAlpha += delta * 8.0f;
+                        if(hoverAlpha > 1) hoverAlpha = 1f;
+                    } else {
+                        hoverAlpha -= delta * 8.0f;
+                        if(hoverAlpha < 0) hoverAlpha = 0;
+                    }
 
-                float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
-                float vx = finalTextureStartX;
-                float vy = finalTextureStartY;
-                float ex = (slotW - ir[0].useWidth) * 0.5f * currentScaleX + ir[0].useWidth * currentScaleX + vx - fw - currentScaleX;
-                float y = vy + floatingPos + bounce;
+                    String numberAsString = String.valueOf(itemAmount);
+                    BitmapFont uf = rc.m6x11_border_all[0];
+                    rc.globalGlyph.setText(uf, numberAsString);
+                    float fontScale = (currentScaleX + 0.125f) * 0.5f;
+                    float fw = rc.globalGlyph.width * fontScale;
 
-                uf.draw(rc.arraySpriteBatch, numberAsString, ex, y);
+                    uf.getData().setScale(fontScale);
+                    uf.setColor(1.0f, 1.0f, 1.0f, useAlpha * hoverAlpha);
 
-                uf.setColor(Color.WHITE);
-                uf.getData().setScale(1.0f);
+                    float slotW = ExpoClientContainer.get().getPlayerUI().invSlot.getRegionWidth();
+                    float vx = finalTextureStartX;
+                    float vy = finalTextureStartY;
+                    float ex = (slotW - ir[0].useWidth) * 0.5f * currentScaleX + ir[0].useWidth * currentScaleX + vx - fw - currentScaleX;
+                    float y = vy + floatingPos + bounce;
+
+                    uf.draw(rc.arraySpriteBatch, numberAsString, ex, y);
+
+                    uf.setColor(Color.WHITE);
+                    uf.getData().setScale(1.0f);
+                } else {
+                    hoverAlpha -= delta * 8.0f;
+                    if(hoverAlpha < 0) hoverAlpha = 0;
+                }
             }
 
             rc.arraySpriteBatch.setColor(Color.WHITE);

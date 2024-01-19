@@ -391,6 +391,7 @@ public abstract class ClientEntity {
         return chunkGrid().getChunk(ExpoShared.posToChunk(serverPosX), ExpoShared.posToChunk(serverPosY)).getNeighbouringEntitiesNESW(tileEntityTileArray);
     }
 
+    /*
     public void spawnDamageIndicator(int damage, float posX, float posY, Vector2 dir) {
         ClientDamageIndicator damageIndicator = new ClientDamageIndicator();
         damageIndicator.damageNumber = damage;
@@ -399,8 +400,9 @@ public abstract class ClientEntity {
         damageIndicator.clientPosY = posY;
         ClientEntityManager.get().addClientSideEntity(damageIndicator);
     }
+    */
 
-    public void spawnDamageIndicator(int damage, float posX, float posY, ClientEntity e) {
+    public void spawnDamageIndicator(float damage, float posX, float posY, ClientEntity e) {
         Vector2 dir = e == null ? null : new Vector2(clientPosX, clientPosY).sub(e.clientPosX, e.clientPosY).nor();
 
         ClientDamageIndicator damageIndicator = new ClientDamageIndicator();

@@ -199,7 +199,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     }
 
     @Override
-    public boolean applyDamageWithPacket(ServerEntity damageSource, float damage) {
+    public boolean applyDamageWithPacket(ServerEntity damageSource, float damage, EntityRemovalReason reason) {
         boolean currentCut = cut;
         boolean applied = onDamage(damageSource, damage);
 
@@ -214,7 +214,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
             if(health <= 0) {
                 damagePacket = getEntityType() == ServerEntityType.PLAYER;
-                killEntityWithAdvancedPacket(damage, health, damageSource.entityId, EntityRemovalReason.DEATH);
+                killEntityWithAdvancedPacket(damage, health, damageSource.entityId, reason);
             }
 
             if(damagePacket) {

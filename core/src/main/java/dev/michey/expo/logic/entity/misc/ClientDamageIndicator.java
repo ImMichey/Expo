@@ -13,7 +13,7 @@ import dev.michey.expo.render.visbility.TopVisibilityEntity;
 
 public class ClientDamageIndicator extends ClientEntity implements TopVisibilityEntity {
 
-    public int damageNumber;
+    public float damageNumber;
     public Vector2 moveDir;
     public Color color;
 
@@ -92,7 +92,17 @@ public class ClientDamageIndicator extends ClientEntity implements TopVisibility
         BitmapFont use = rc.damageFont;
 
         use.getData().setScale(scale * 0.4f);
-        String s = String.valueOf(damageNumber);
+
+        float raw = damageNumber;
+
+        String s;
+
+        if(raw < 1) {
+            s = String.valueOf(Math.round(raw * 10d) / 10d);
+        } else {
+            s = String.valueOf((int) raw);
+        }
+
         rc.globalGlyph.setText(use, s);
 
         color.a = alpha;

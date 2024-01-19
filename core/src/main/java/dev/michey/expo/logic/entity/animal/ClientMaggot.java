@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.animal;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -8,7 +9,6 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientMaggot extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
@@ -18,6 +18,7 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity, Amb
         animationHandler = new ExpoAnimationHandler(this);
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_maggot_idle", 3, 0.25f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_maggot_walk", 5, 0.15f));
+        animationHandler.getActiveAnimation().randomOffset();
     }
 
     @Override
@@ -27,8 +28,9 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void onDeletion() {
-        if(removalReason == EntityRemovalReason.DEATH) {
+        if(removalReason.isKillReason()) {
             playEntitySound("bloody_squish");
+            ParticleSheet.Common.spawnGoreParticles(animationHandler.getActiveFrame(), clientPosX, clientPosY);
         }
     }
 
@@ -41,7 +43,7 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity, Amb
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         spawnHealthBar(damage);
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnDamageIndicator(damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override

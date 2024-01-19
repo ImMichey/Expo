@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.animal;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -10,7 +11,6 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.light.ExpoLight;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientFirefly extends ClientEntity {
 
@@ -25,6 +25,7 @@ public class ClientFirefly extends ClientEntity {
         animationHandler = new ExpoAnimationHandler(this);
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_firefly_fly", 4, 0.250f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_firefly_fly", 4, 0.125f));
+        animationHandler.getActiveAnimation().randomOffset();
         removalFade = 0.25f;
         fadeInDelta = 0.25f;
     }
@@ -48,8 +49,9 @@ public class ClientFirefly extends ClientEntity {
     public void onDeletion() {
         fireflyLight.delete();
 
-        if(removalReason == EntityRemovalReason.DEATH) {
+        if(removalReason.isKillReason()) {
             playEntitySound("bloody_squish");
+            ParticleSheet.Common.spawnGoreParticles(animationHandler.getActiveFrame(), clientPosX, finalDrawPosY);
         }
     }
 
@@ -57,7 +59,7 @@ public class ClientFirefly extends ClientEntity {
     public void onDamage(float damage, float newHealth, int damageSourceEntityId) {
         setBlink();
         spawnHealthBar(damage);
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnDamageIndicator(damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override

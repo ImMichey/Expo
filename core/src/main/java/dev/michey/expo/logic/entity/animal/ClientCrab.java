@@ -9,7 +9,6 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientCrab extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
@@ -24,6 +23,10 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
         animationHandler.addAnimation("attack", new ExpoAnimation("entity_crab_variation_" + variant + "_pinch", 8, 0.08f));
         animationHandler.addFootstepOn(new String[] {"walk"}, 4, 10);
         animationHandler.addAnimationSound("attack", "crab_snip", 5, 0.5f);
+        animationHandler.setPuddleData(new ExpoAnimationHandler.PuddleData[] {
+                new ExpoAnimationHandler.PuddleData("walk", 4, false, 0, 0),
+                new ExpoAnimationHandler.PuddleData("walk", 10, false, 0, 0),
+        });
         animationHandler.getActiveAnimation().randomOffset();
 
         updateTextureBounds(animationHandler.getActiveFrame());
@@ -39,7 +42,7 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, -1.5f);
 
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnDamageIndicator(damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
         spawnHealthBar(damage);
     }
 
@@ -53,8 +56,9 @@ public class ClientCrab extends ClientEntity implements ReflectableEntity, Ambie
 
     @Override
     public void onDeletion() {
-        if(removalReason == EntityRemovalReason.DEATH) {
+        if(removalReason.isKillReason()) {
             playEntitySound("bloody_squish");
+            ParticleSheet.Common.spawnGoreParticles(animationHandler.getActiveFrame(), clientPosX, clientPosY);
         }
     }
 

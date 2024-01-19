@@ -9,7 +9,6 @@ import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.animator.ExpoAnimationHandler;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientChicken extends ClientEntity implements ReflectableEntity, AmbientOcclusionEntity {
 
@@ -28,14 +27,16 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
         animationHandler.addAnimation("idle", new ExpoAnimation("entity_chicken_var_" + variant + "_idle", 2, 0.75f));
         animationHandler.addAnimation("walk", new ExpoAnimation("entity_chicken_var_" + variant + "_walk", 8, 0.1f));
         animationHandler.addFootstepOn(new String[] {"walk"}, 3, 7);
+        animationHandler.getActiveAnimation().randomOffset();
 
         updateTextureBounds(animationHandler.getActiveFrame());
     }
 
     @Override
     public void onDeletion() {
-        if(removalReason == EntityRemovalReason.DEATH) {
+        if(removalReason.isKillReason()) {
             playEntitySound("bloody_squish");
+            ParticleSheet.Common.spawnGoreParticles(animationHandler.getActiveFrame(), clientPosX, clientPosY);
         }
     }
 
@@ -50,7 +51,7 @@ public class ClientChicken extends ClientEntity implements ReflectableEntity, Am
         setBlink();
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
         spawnHealthBar(damage);
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnDamageIndicator(damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override

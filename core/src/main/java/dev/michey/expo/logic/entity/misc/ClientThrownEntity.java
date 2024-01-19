@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Bezier;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -45,6 +46,7 @@ public class ClientThrownEntity extends ClientEntity implements ReflectableEntit
             playEntitySound("explosion");
 
             ParticleSheet.Common.spawnExplosionParticles(this);
+            ParticleSheet.Common.spawnGoreParticles(ir[0].useTextureRegion, clientPosX, clientPosY);
         }
     }
 
@@ -86,11 +88,20 @@ public class ClientThrownEntity extends ClientEntity implements ReflectableEntit
             heightOffset = (first.y + (second.y - first.y) * t) * 64;
 
             for(ItemRender r : ir) {
+                // 90 -> 0 -> -90
+                float sign = normPos.x < 0 ? -1 : 1;
+                float rotation = sign * 80f - 160f * Interpolation.slowFast.apply(thrownProgress) * sign;
+
                 rc.arraySpriteBatch.draw(r.useTextureRegion,
                         finalDrawPosX + r.offsetX,
                         finalDrawPosY + r.offsetY + heightOffset,
+                        r.useTextureRegion.getRegionWidth() * 0.5f,
+                        r.useTextureRegion.getRegionHeight() * 0.5f,
                         r.useTextureRegion.getRegionWidth(),
-                        r.useTextureRegion.getRegionHeight());
+                        r.useTextureRegion.getRegionHeight(),
+                        1.0f,
+                        1.0f,
+                        rotation);
             }
         }
     }

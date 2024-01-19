@@ -328,7 +328,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
 
         if(!player) spawnHealthBar(damage);
-        spawnDamageIndicator((int) damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
+        spawnDamageIndicator(damage, clientPosX, clientPosY + textureHeight + 28, entityManager().getEntityById(damageSourceEntityId));
     }
 
     @Override
@@ -555,7 +555,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 ClientChunk chunk = chunkGrid().getChunk(ExpoShared.posToChunk(clientPosX + toMoveX), ExpoShared.posToChunk(clientPosY + toMoveY));
 
                 if(chunk != null) {
-                    var result = physicsBody.move(toMoveX, toMoveY, noclip ? PhysicsBoxFilters.noclipFilter : ClientPhysicsBody.clientPlayerFilter);
+                    var result = physicsBody.moveAbsolute(toMoveX + clientPosX, toMoveY + clientPosY, noclip ? PhysicsBoxFilters.noclipFilter : ClientPhysicsBody.clientPlayerFilter);
 
                     clientPosX = result.goalX - physicsBody.xOffset;
                     clientPosY = result.goalY - physicsBody.yOffset;
@@ -581,15 +581,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             clientDirX = xDir;
             clientDirY = yDir;
 
-            /*
-            if(cachedVelocityX != xDir || cachedVelocityY != yDir || cachedSprinting != sprinting) {
-                cachedVelocityX = xDir;
-                cachedVelocityY = yDir;
-                cachedSprinting = sprinting;
-                ClientPackets.p5PlayerVelocity(xDir, yDir, sprinting);
-            }
-            */
-
             // Update local player chunks
             chunkX = ExpoShared.posToChunk(clientPosX);
             chunkY = ExpoShared.posToChunk(clientPosY);
@@ -602,6 +593,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE) {
                 new ItemMapper(true, true);
                 Expo.get().loadItemMapperTextures();
+
                 if(ClientPlayer.getLocalPlayer() != null && ClientPlayer.getLocalPlayer().holdingItemId != -1) {
                     ClientPlayer.getLocalPlayer().updateHoldingItemSprite(holdingItemId);
                 }
@@ -1089,6 +1081,12 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     }
 
     @Override
+    public float movementSpeedMultiplicator() {
+        if(noclip) return 1.0f;
+        return super.movementSpeedMultiplicator();
+    }
+
+    @Override
     public void renderShadow(RenderContext rc, float delta) {
         if(use_body != null) {
             rc.useRegularArrayShader();
@@ -1509,7 +1507,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         float y = clientPosY;
         super.applyTeleportUpdate(xPos, yPos, reason);
 
-        physicsBody.teleport(xPos, yPos);
+        physicsBody.moveAbsolute(xPos, yPos, PhysicsBoxFilters.noclipFilter);
 
         if(player) {
             updateTexturePositionData();
