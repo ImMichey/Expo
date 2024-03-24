@@ -6,7 +6,7 @@ dependencies {
 	api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion" // required
 	api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
 	api "com.badlogicgames.gdx:gdx:$gdxVersion"
-	api "com.github.czyzby:noise4j:$noise4jVersion"
+	//api "com.github.czyzby:noise4j:$noise4jVersion"
 	api "com.github.tommyettinger:libgdx-utils:$utilsVersion"
 	api "space.earlygrey:shapedrawer:$shapeDrawerVersion"
 	api "com.github.implicit-invocation:jbump:v1.0.2"
