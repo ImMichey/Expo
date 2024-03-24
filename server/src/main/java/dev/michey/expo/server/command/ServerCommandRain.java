@@ -34,7 +34,7 @@ public class ServerCommandRain extends AbstractServerCommand {
         dim.dimensionWeatherStrength = Weather.RAIN.generateWeatherStrength();
 
         // Update.
-        ServerPackets.p14WorldUpdate(dim.dimensionTime, dim.dimensionWeather.WEATHER_ID, dim.dimensionWeatherStrength, PacketReceiver.dimension(dim));
+        ServerPackets.p14WorldUpdate(dim.getDimensionName(), dim.dimensionTime, dim.dimensionWeather.WEATHER_ID, dim.dimensionWeatherStrength, PacketReceiver.dimension(dim));
 
         sendToSender("Set main dimension weather to RAIN", player);
     }

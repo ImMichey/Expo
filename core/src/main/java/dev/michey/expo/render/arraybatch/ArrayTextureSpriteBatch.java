@@ -1447,7 +1447,7 @@ public class ArrayTextureSpriteBatch implements Batch {
         vertices[idx++] = ti;
     }
 
-    public void drawGradientCloud(TextureRegion region, float x, float y, float cStr) {
+    public void drawGradientCloud(TextureRegion region, float x, float y, float cStr, float scaleX, float scaleY) {
         if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before draw.");
 
         float[] vertices = this.vertices;
@@ -1456,8 +1456,8 @@ public class ArrayTextureSpriteBatch implements Batch {
 
         final float ti = activateTexture(region.getTexture());
 
-        final float fx2 = x + region.getRegionWidth();
-        final float fy2 = y + region.getRegionHeight();
+        final float fx2 = x + region.getRegionWidth() * scaleX;
+        final float fy2 = y + region.getRegionHeight() * scaleY;
         final float u = region.getU() * subImageScaleWidth;
         final float v = region.getV2() * subImageScaleHeight;
         final float u2 = region.getU2() * subImageScaleWidth;
@@ -1465,28 +1465,28 @@ public class ArrayTextureSpriteBatch implements Batch {
 
         vertices[idx++] = x;
         vertices[idx++] = y;
-        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, cStr);
+        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, 0.175f * cStr);
         vertices[idx++] = u;
         vertices[idx++] = v;
         vertices[idx++] = ti;
 
         vertices[idx++] = x;
         vertices[idx++] = fy2;
-        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, 0.2f * cStr);
+        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, 0.0175f * cStr);
         vertices[idx++] = u;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = fx2;
         vertices[idx++] = fy2;
-        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, 0.2f * cStr);
+        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, 0.0175f * cStr);
         vertices[idx++] = u2;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = fx2;
         vertices[idx++] = y;
-        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, cStr);
+        vertices[idx++] = Color.toFloatBits(0f, 0f, 0f, 0.175f * cStr);
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = ti;

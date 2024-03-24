@@ -194,7 +194,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             if(un) notifySquish(cachedNeighbours);
 
             boolean hasNeighbourBelow = cachedNeighbours[2] != null && cachedNeighbours[2].getEntityType() == ClientEntityType.DYNAMIC_3D_TILE;
-            float linePxFix = hasNeighbourBelow ? 0.05f : 0f;
+            float linePxFix = hasNeighbourBelow ? 0.1f : 0f;
 
             updateDepth();
             rc.useArrayBatch();

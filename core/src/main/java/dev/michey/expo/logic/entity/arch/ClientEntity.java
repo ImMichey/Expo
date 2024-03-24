@@ -223,6 +223,10 @@ public abstract class ClientEntity {
         updateTextureBounds(region.getRegionWidth(), region.getRegionHeight(), 0, 0);
     }
 
+    public void updateTextureBoundScaled(TextureRegion region, float scaleX, float scaleY) {
+        updateTextureBounds(region.getRegionWidth() * scaleX, region.getRegionHeight() * scaleY, 0, 0);
+    }
+
     public float dstRootX(ClientEntity otherEntity) {
         return Math.abs(finalTextureCenterX - otherEntity.finalTextureCenterX);
     }

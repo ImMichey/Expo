@@ -61,6 +61,7 @@ public class ClientWorld {
     /** Entity handler */
     private final ClientEntityManager clientEntityManager;
     private final ClientChunkGrid clientChunkGrid;
+    public String dimensionName;
 
     /** Client-side physics simulation */
     private final World<ClientEntity> clientPhysicsWorld;
@@ -114,7 +115,6 @@ public class ClientWorld {
             }
 
         };
-        clientPhysicsWorld.setTileMode(false);
     }
 
     /** Ticking the game world. */
@@ -538,7 +538,8 @@ public class ClientWorld {
                     ClientEntityType.SIGN,
                     ClientEntityType.SELECTOR,
                     ClientEntityType.PLAYER,
-                    ClientEntityType.PICKUP_LINE
+                    ClientEntityType.PICKUP_LINE,
+                    ClientEntityType.CLOUD
                     );
 
             if(displayBlur) {

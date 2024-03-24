@@ -471,8 +471,9 @@ public class PlayerUI {
             currentContainer.draw(rc, this);
         } else {
             drawHotbar(rc);
-            playerMinimap.draw(rc);
         }
+
+        playerMinimap.draw(rc);
 
         if(hoveredSlot != null && PlayerInventory.LOCAL_INVENTORY.cursorItem == null) {
             hoveredSlot.onTooltip();

@@ -40,11 +40,11 @@ public class PacketUtils {
             if(container != null) {
                 ClientInventory inv = PlayerUI.get().currentContainer.clientInventory;
 
-                for (int i = 0; i < p.updatedSlots.length; i++) {
+                for(int i = 0; i < p.updatedSlots.length; i++) {
                     int slot = p.updatedSlots[i];
                     ServerInventoryItem item = p.updatedItems[i];
 
-                    if (item.isEmpty()) {
+                    if(item.isEmpty()) {
                         inv.getSlotAt(slot).item = null;
                     } else {
                         inv.getSlotAt(slot).item = ClientInventoryItem.from(item);

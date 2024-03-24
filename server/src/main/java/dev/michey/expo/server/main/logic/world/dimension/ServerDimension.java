@@ -31,7 +31,7 @@ public abstract class ServerDimension {
     protected float dimensionSpawnY = MathUtils.random(128.0f, 384.0f);
 
     /** Dimension data */
-    public float dimensionTime = ExpoTime.worldDurationHours(8);
+    public float dimensionTime = ExpoTime.worldDuration(0, 7, 30);
     public Weather dimensionWeather;
     public float dimensionWeatherDuration;
     public float dimensionWeatherStrength;
@@ -65,9 +65,8 @@ public abstract class ServerDimension {
             }
 
         };
-        physicsWorld.setTileMode(false);
 
-        boolean rain = MathUtils.random() < 0.25f;
+        boolean rain = MathUtils.random() < 0.2f;
 
         if(rain) {
             dimensionWeather = Weather.RAIN;
@@ -115,7 +114,7 @@ public abstract class ServerDimension {
         dimensionWeatherStrength = dimensionWeather.generateWeatherStrength();
 
         // Update.
-        ServerPackets.p14WorldUpdate(dimensionTime, dimensionWeather.WEATHER_ID, dimensionWeatherStrength, PacketReceiver.dimension(this));
+        ServerPackets.p14WorldUpdate(dimensionName, dimensionTime, dimensionWeather.WEATHER_ID, dimensionWeatherStrength, PacketReceiver.dimension(this));
     }
 
     /** This method gets called when the dimension is ready to tick. */

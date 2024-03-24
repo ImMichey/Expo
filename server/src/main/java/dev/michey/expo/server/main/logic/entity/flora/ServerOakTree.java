@@ -6,6 +6,7 @@ import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.entity.misc.ServerBeehive;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
@@ -32,6 +33,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public float fallingEnd;
     public boolean fallingDirectionRight;
     public static float FALLING_ANIMATION_DURATION = 4.25f;
+
+    public ServerBeehive attachedBeehive;
 
     public static final float[][] TREE_BODIES = new float[][] {
         new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
@@ -80,7 +83,17 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
         }/* else if(modifyRandom <= 0.06f) {
             emptyCrown = true;
         }
-        */
+        */ else {
+            if(rnd.random() <= 0.01f) {
+                attachedBeehive = new ServerBeehive();
+                attachedBeehive.posX = posX;
+                attachedBeehive.posY = posY;
+                attachedBeehive.hiveOffsetX = 0;
+                attachedBeehive.hiveOffsetY = 0;
+
+                //ServerWorld.get().registerServerEntity(entityDimension, attachedBeehive);
+            }
+        }
     }
 
     @Override
@@ -169,7 +182,7 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
 
     @Override
     public SavableEntity onSave() {
-        return new SavableEntity(this).pack()
+        SavableEntity se = new SavableEntity(this).pack()
                 .add("tv", trunkVariant)
                 .add("cut", cut)
                 .add("leavesOffset", leavesOffset)
@@ -178,6 +191,12 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                 .optional("fallingDirectionRight", fallingDirectionRight, falling)
                 .add("emptyCrown", emptyCrown)
                 ;
+
+        if(attachedBeehive != null) {
+            se.add("bhid", attachedBeehive.entityId);
+        }
+
+        return se;
     }
 
     @Override

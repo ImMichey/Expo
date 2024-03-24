@@ -400,9 +400,9 @@ public class Expo implements ApplicationListener {
 	}
 
 	private void setCursor() {
-		Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/system/cursor_glove.png"));
-		int xHotspot = 0; // pixmap.getWidth() / 2;
-		int yHotspot = 0; // pixmap.getHeight() / 2;
+		Pixmap pixmap = new Pixmap(Gdx.files.internal("textures/system/cursor_test4.png"));
+		int xHotspot = pixmap.getWidth() / 2;
+		int yHotspot = pixmap.getHeight() / 2;
 		Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
 		Gdx.graphics.setCursor(cursor);
 		pixmap.dispose();

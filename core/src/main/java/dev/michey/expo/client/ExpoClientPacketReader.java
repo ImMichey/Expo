@@ -42,7 +42,7 @@ public class ExpoClientPacketReader {
                 GameConsole.get().addSystemSuccessMessage("Passed initial server connection check: " + p.message);
 
                 if(p.requiresSteamTicket && STEAM_INITIALIZED) {
-                    ClientStatic.STEAM_USER.getAuthTicketForWebApi();
+                    ClientStatic.STEAM_USER.getAuthTicketForWebApi(null);
                 } else {
                     ClientPackets.p45AuthReq(ClientStatic.PLAYER_USERNAME, null);
                 }
@@ -136,10 +136,10 @@ public class ExpoClientPacketReader {
             ClientWorld w = ExpoClientContainer.get().getClientWorld();
             log("Received World update (worldTime/worldWeather/worldStrength): " + p.worldTime + "/" + Weather.idToWeather(p.worldWeather).name() + "/" + p.weatherStrength + " (cl: " + w.worldTime + ")");
 
+            w.dimensionName = p.dimensionName;
             w.worldTime = p.worldTime;
             w.worldWeather = p.worldWeather;
             w.weatherStrength = p.weatherStrength;
-
         } else if(o instanceof P15_PingList p) {
             var map = ExpoClientContainer.get().getPlayerOnlineList();
 

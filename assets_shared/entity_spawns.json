@@ -37,7 +37,7 @@
             "chance": 0.002,
             "timer": 1,
             "playerDistanceMin": 512,
-            "entityCapPerPlayer": 6
+            "entityCapPerPlayer": 3
         }
     ]
 }

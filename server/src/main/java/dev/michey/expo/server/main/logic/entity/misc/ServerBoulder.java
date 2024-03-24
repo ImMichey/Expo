@@ -46,11 +46,10 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
         float ch = rnd.random();
 
-        /*if(ch <= 0.1f) {
-            variant = 1;
+        if(ch <= 0.08f) {
+            variant = 3;
             health = 105.0f;
-        } else
-            */if(ch <= 0.2) {
+        } else if(ch <= 0.22) {
             variant = 2;
             health = 90.0f;
         } else {
@@ -70,6 +69,11 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
             rocksMin = 1;
             rocksMax = 2;
             coal = new SpawnItem("item_coal", 2, 3);
+        } else if(variant == 3) {
+            // Iron.
+            rocksMin = 1;
+            rocksMax = 2;
+            coal = new SpawnItem("item_iron_raw", 2, 3);
         }
 
         SpawnItem flint = null;

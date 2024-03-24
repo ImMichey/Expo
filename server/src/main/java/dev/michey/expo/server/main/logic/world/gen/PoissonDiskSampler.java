@@ -1,5 +1,6 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
 import dev.michey.expo.util.ExpoShared;
 
@@ -110,6 +111,43 @@ public class PoissonDiskSampler
         for(Point p : pointList) {
             p.absoluteX = absoluteX + p.x;
             p.absoluteY = absoluteY + p.y;
+        }
+
+        return pointList;
+    }
+
+    public List<Point> sample() {
+        List<Point> activeList = new LinkedList<>();
+        List<Point> pointList = new LinkedList<>();
+        List<Point>[][] grid = new List[gridWidth][gridHeight];
+
+        for (int i = 0; i < gridWidth; i++)
+        {
+            for (int j = 0; j < gridHeight; j++)
+            {
+                grid[i][j] = new LinkedList<>();
+            }
+        }
+
+        GenerationRandom rnd = new GenerationRandom(MathUtils.random.nextInt(), MathUtils.random.nextInt());
+        addFirstPoint(grid, activeList, pointList, rnd);
+
+        while (!activeList.isEmpty() && (pointList.size() < MAX_POINTS))
+        {
+            int listIndex = rnd.random(activeList.size() - 1);
+
+            Point point = activeList.get(listIndex);
+            boolean found = false;
+
+            for (int k = 0; k < pointsToGenerate; k++)
+            {
+                found |= addNextPoint(grid, activeList, pointList, point, rnd);
+            }
+
+            if (!found)
+            {
+                activeList.remove(listIndex);
+            }
         }
 
         return pointList;

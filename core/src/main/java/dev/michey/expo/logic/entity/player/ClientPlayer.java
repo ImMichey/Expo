@@ -340,6 +340,70 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         float now = RenderContext.get().deltaTotal;
 
         if(player) {
+            // Cloud stuff
+            /*
+            List<ClientEntity> clouds = entityManager().getEntitiesByType(ClientEntityType.CLOUD);
+            int s = clouds.size();
+
+            if(clientViewport[0] != Integer.MAX_VALUE && ExpoClientContainer.get().getClientWorld().dimensionName.equals(DIMENSION_OVERWORLD)) {
+                if(s == 0) {
+                    // Just created player.
+                    float x = ExpoShared.chunkToPos(clientViewport[0]);
+                    float x2 = ExpoShared.chunkToPos(clientViewport[1]);
+                    float y = ExpoShared.chunkToPos(clientViewport[2]);
+                    float y2 = ExpoShared.chunkToPos(clientViewport[3]);
+
+                    List<Point> poisson = new PoissonDiskSampler(x, y, x2, y2, 256).sample();
+
+                    for(Point p : poisson) {
+                        if(MathUtils.random() <= 0.5f) continue;
+
+                        ClientCloud cloud = new ClientCloud();
+                        cloud.clientPosX = p.x;
+                        cloud.clientPosY = p.y;
+                        entityManager().addClientSideEntity(cloud);
+                    }
+                } else if(s < 16) {
+                    // Respawn clouds on demand.
+                    int toSpawn = 16 - s;
+
+                    float x = ExpoShared.chunkToPos(clientViewport[0]);
+                    float x2 = ExpoShared.chunkToPos(clientViewport[1]);
+                    float y = ExpoShared.chunkToPos(clientViewport[2]);
+                    float y2 = ExpoShared.chunkToPos(clientViewport[3]);
+
+                    List<Point> poisson = new PoissonDiskSampler(x, y, x2, y2, 256).sample();
+                    Collections.shuffle(poisson);
+
+                    nextPoint: for(Point p : poisson) {
+                        // Check for collision.
+                        int cloudSize = 50;
+
+                        for(var cloud : clouds) {
+                            boolean overlaps = ExpoShared.overlap(
+                                    new float[] {p.x - cloudSize, p.y - cloudSize, p.x + cloudSize, p.y + cloudSize},
+                                    new float[] {cloud.finalDrawPosX, cloud.finalDrawPosY, cloud.textureWidth, cloud.textureHeight}
+                            );
+
+                            if(overlaps) {
+                                continue nextPoint;
+                            }
+                        }
+
+                        ClientCloud cloud = new ClientCloud();
+                        cloud.clientPosX = p.x;
+                        cloud.clientPosY = p.y;
+                        entityManager().addClientSideEntity(cloud);
+                        toSpawn--;
+
+                        if(toSpawn <= 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+            */
+
             // Selector update
             selector.blockSelection = false;
 
@@ -348,7 +412,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
                 boolean scanTile = false;
                 boolean scanFreely = false;
-
 
                 if(mapping.logic.isSpecialType()) {
                     ToolType tt = mapping.logic.toolType;

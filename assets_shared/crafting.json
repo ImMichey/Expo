@@ -20,6 +20,9 @@
             "recipe_flint_shovel",
             "recipe_flint_scythe",
             "recipe_flint_dagger",
+            "recipe_iron_pickaxe",
+            "recipe_iron_axe",
+            "recipe_iron_shovel",
             "recipe_wood_club",
             "recipe_torch",
             "recipe_insect_net",
@@ -92,6 +95,27 @@
             ]
         },
         {
+            "identifier": "recipe_iron_pickaxe",
+            "output": {
+                "id": 4,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 15,
+                    "amount": 1
+                },
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 55,
+                    "amount": 5
+                }
+            ]
+        },
+        {
             "identifier": "recipe_flint_axe",
             "output": {
                 "id": 3,
@@ -113,6 +137,27 @@
             ]
         },
         {
+            "identifier": "recipe_iron_axe",
+            "output": {
+                "id": 5,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 15,
+                    "amount": 1
+                },
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 55,
+                    "amount": 5
+                }
+            ]
+        },
+        {
             "identifier": "recipe_flint_shovel",
             "output": {
                 "id": 8,
@@ -129,6 +174,27 @@
                 },
                 {
                     "id": 13,
+                    "amount": 3
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_iron_shovel",
+            "output": {
+                "id": 56,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 15,
+                    "amount": 1
+                },
+                {
+                    "id": 0,
+                    "amount": 1
+                },
+                {
+                    "id": 55,
                     "amount": 3
                 }
             ]

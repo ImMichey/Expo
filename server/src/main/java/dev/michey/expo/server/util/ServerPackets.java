@@ -204,9 +204,10 @@ public class ServerPackets {
     }
 
     /** Sends the P14_WorldUpdate packet via TCP protocol. */
-    public static void p14WorldUpdate(float worldTime, int worldWeather, float weatherStrength, PacketReceiver receiver) {
+    public static void p14WorldUpdate(String dimensionName, float worldTime, int worldWeather, float weatherStrength, PacketReceiver receiver) {
         mt(() -> {
             P14_WorldUpdate p = new P14_WorldUpdate();
+            p.dimensionName = dimensionName;
             p.worldTime = worldTime;
             p.worldWeather = worldWeather;
             p.weatherStrength = weatherStrength;

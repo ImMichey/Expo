@@ -2,18 +2,18 @@ package dev.michey.expo.logic.world.chunk;
 
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.localserver.ExpoServerLocal;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
-import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.world.gen.BiomeDefinition;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
-import dev.michey.expo.server.main.logic.world.gen.PostProcessorBiome;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.util.Pair;
 import make.some.noise.Noise;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -34,7 +34,7 @@ public class ClientChunkGrid {
     public WorldGenNoiseSettings noiseSettings;
     public List<BiomeDefinition> biomeDefinitionList;
 
-    private HashMap<String, Pair<BiomeType, Float>> noiseCacheMap;
+    //private HashMap<String, Pair<BiomeType, Float>> noiseCacheMap;
     public LinkedList<Pair<NoisePostProcessor, Noise>> noisePostProcessorMap;
 
     /** Water wave logic */
@@ -51,7 +51,7 @@ public class ClientChunkGrid {
             terrainNoiseHeight = new Noise();
             terrainNoiseTemperature = new Noise();
             terrainNoiseMoisture = new Noise();
-            noiseCacheMap = new HashMap<>();
+            //noiseCacheMap = new HashMap<>();
             noisePostProcessorMap = new LinkedList<>();
         }
 
@@ -78,7 +78,6 @@ public class ClientChunkGrid {
                 Noise noise = new Noise(worldSeed);
                 npp.noiseWrapper.applyTo(noise);
                 noisePostProcessorMap.add(new Pair<>(npp, noise));
-                ExpoLogger.log(npp.noiseWrapper.name + ": " + noise.getSeed());
             }
 
             noiseSettings.postProcessList.sort(Comparator.comparingInt(o -> -o.priority));
@@ -155,6 +154,7 @@ public class ClientChunkGrid {
     }
     */
 
+    /*
     private float normalized(Noise noise, int x, int y) {
         return (noise.getConfiguredNoise(x, y) + 1) * 0.5f;
     }
@@ -197,6 +197,7 @@ public class ClientChunkGrid {
 
         return new Pair<>(BiomeType.VOID, 0f);
     }
+    */
 
     public ClientChunk getChunk(int x, int y) {
         return clientChunkMap.get(x + "," + y);

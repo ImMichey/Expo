@@ -76,4 +76,5 @@ public class ExpoClientSerialization implements Serialization {
     public int getLengthLength() {
         return 4;
     }
+
 }

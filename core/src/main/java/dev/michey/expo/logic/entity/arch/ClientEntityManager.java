@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.entity.arch;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.math.Interpolation;
@@ -227,8 +226,6 @@ public class ClientEntityManager {
         }
 
         long ee = System.nanoTime();
-
-        ClientUtils.log("AO Lists: " + greenlitAmbientOcclusionList.size() + ", " + ambientOcclusionUpdateSet.size() + ", " + ClientChunkGrid.get().getAllChunks().size(), Input.Keys.X);
 
         for(ClientChunk chunk : greenlitAmbientOcclusionList) {
             chunk.generateAmbientOcclusion(false);

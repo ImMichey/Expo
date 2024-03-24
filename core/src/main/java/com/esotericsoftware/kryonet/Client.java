@@ -48,7 +48,7 @@ public class Client extends Connection implements EndPoint {
     }
 
     public static final int DEFAULT_WRITE_BUFFER_SIZE = 8192;
-    public static final int DEFAULT_OBJECT_BUUFER_SIZE = 2048;
+    public static final int DEFAULT_OBJECT_BUFFER_SIZE = 2048;
 
     private final Serialization serialization;
     private Selector selector;
@@ -71,7 +71,7 @@ public class Client extends Connection implements EndPoint {
      * object buffer size of <code>2048</code>.
      */
     public Client() {
-        this(DEFAULT_WRITE_BUFFER_SIZE, DEFAULT_OBJECT_BUUFER_SIZE);
+        this(DEFAULT_WRITE_BUFFER_SIZE, DEFAULT_OBJECT_BUFFER_SIZE);
     }
 
     /**

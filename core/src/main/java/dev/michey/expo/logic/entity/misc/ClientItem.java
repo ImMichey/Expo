@@ -42,7 +42,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
     private float bounceDelta;
     private float bounce;
 
-    private float hoverAlpha;
+    private float hoverAlpha = 1.0f;
 
     @Override
     public void onCreation() {
@@ -160,8 +160,10 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
                         hoverAlpha += delta * 8.0f;
                         if(hoverAlpha > 1) hoverAlpha = 1f;
                     } else {
-                        hoverAlpha -= delta * 8.0f;
-                        if(hoverAlpha < 0) hoverAlpha = 0;
+                        if(lifetime > 1.0f) {
+                            hoverAlpha -= delta * 8.0f;
+                            if(hoverAlpha < 0) hoverAlpha = 0;
+                        }
                     }
 
                     String numberAsString = String.valueOf(itemAmount);

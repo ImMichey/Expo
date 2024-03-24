@@ -1,11 +1,7 @@
 package dev.michey.expo.server.fs.world.entity;
 
-import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
-import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.inventory.InventoryFileLoader;
-import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
 import org.json.JSONObject;
 

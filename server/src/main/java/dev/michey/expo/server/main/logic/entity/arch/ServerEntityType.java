@@ -50,6 +50,7 @@ public enum ServerEntityType {
     TORCH(35, false, true),
     SLIME(36, false, false),
     THROWN_ENTITY(37, true, false),
+    BEEHIVE(38, true, false),
     ;
 
     public final int ENTITY_ID;
@@ -102,6 +103,7 @@ public enum ServerEntityType {
             case 35 -> new ServerTorch();
             case 36 -> new ServerSlime();
             case 37 -> new ServerThrownEntity();
+            case 38 -> new ServerBeehive();
             default -> null;
         };
     }
@@ -146,6 +148,7 @@ public enum ServerEntityType {
             case "TORCH" -> new ServerTorch();
             case "SLIME" -> new ServerSlime();
             case "THROWN", "THROWNENTITY", "THROWN_ENTITY" -> new ServerThrownEntity();
+            case "BEEHIVE", "BEE_HIVE" -> new ServerBeehive();
             default -> null;
         };
     }
