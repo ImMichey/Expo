@@ -36,166 +36,181 @@ import static dev.michey.expo.util.ExpoShared.*;
 public class ExpoClientPacketReader {
 
     public void handlePacket(Packet o, boolean local) {
-        if(o instanceof P44_Connect_Rsp p) {
-            if(p.credentialsSuccessful) {
-                ExpoClientContainer.get().setLoadingMessage("Connected to server, attempting authentication...");
-                GameConsole.get().addSystemSuccessMessage("Passed initial server connection check: " + p.message);
+        switch (o) {
+            case P44_Connect_Rsp p -> {
+                if (p.credentialsSuccessful) {
+                    ExpoClientContainer.get().setLoadingMessage("Connected to server, attempting authentication...");
+                    GameConsole.get().addSystemSuccessMessage("Passed initial server connection check: " + p.message);
 
-                if(p.requiresSteamTicket && STEAM_INITIALIZED) {
-                    ClientStatic.STEAM_USER.getAuthTicketForWebApi(null);
+                    if (p.requiresSteamTicket && STEAM_INITIALIZED) {
+                        ClientStatic.STEAM_USER.getAuthTicketForWebApi(null);
+                    } else {
+                        ClientPackets.p45AuthReq(ClientStatic.PLAYER_USERNAME, null);
+                    }
                 } else {
-                    ClientPackets.p45AuthReq(ClientStatic.PLAYER_USERNAME, null);
+                    ExpoClientContainer.get().setLoadingMessage("Connected to server, error: " + p.message);
+                    GameConsole.get().addSystemErrorMessage("Failed initial server connection check: " + p.message);
+                    Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
+                    Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
                 }
-            } else {
-                ExpoClientContainer.get().setLoadingMessage("Connected to server, error: " + p.message);
-                GameConsole.get().addSystemErrorMessage("Failed initial server connection check: " + p.message);
-                Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
-                Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             }
-        } else if(o instanceof P1_Auth_Rsp p) {
-            if(p.authSuccessful) {
-                ExpoClientContainer.get().setLoadingMessage("Retrieving world data...");
-                GameConsole.get().addSystemSuccessMessage("Successfully joined server: " + p.authMessage + " (" + p.serverTps + " TPS)");
-                if(!local) {
-                    ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
-                    ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDefinitionList, p.worldSeed);
+            case P1_Auth_Rsp p -> {
+                if (p.authSuccessful) {
+                    ExpoClientContainer.get().setLoadingMessage("Retrieving world data...");
+                    GameConsole.get().addSystemSuccessMessage("Successfully joined server: " + p.authMessage + " (" + p.serverTps + " TPS)");
+                    if (!local) {
+                        ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
+                        ExpoClientContainer.get().getClientWorld().getClientChunkGrid().applyGenSettings(p.noiseSettings, p.biomeDefinitionList, p.worldSeed);
 
-                    float pickTps = Math.max(p.serverTps * 0.5f, 60);
-                    PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / pickTps;
+                        float pickTps = Math.max(p.serverTps * 0.5f, 60);
+                        PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / pickTps;
+                    } else {
+                        ExpoShared.PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / (float) p.serverTps;
+                    }
+                    ExpoClientContainer.get().setServerTickRate(p.serverTps);
                 } else {
-                    ExpoShared.PLAYER_ARM_MOVEMENT_SEND_RATE = 1f / (float) p.serverTps;
+                    ExpoClientContainer.get().setLoadingMessage("Failed authentication: " + p.authMessage);
+                    GameConsole.get().addSystemErrorMessage("Failed to auth with server: " + p.authMessage);
+                    Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
+                    Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
                 }
-                ExpoClientContainer.get().setServerTickRate(p.serverTps);
-            } else {
-                ExpoClientContainer.get().setLoadingMessage("Failed authentication: " + p.authMessage);
-                GameConsole.get().addSystemErrorMessage("Failed to auth with server: " + p.authMessage);
-                Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
-                Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             }
-        } else if(o instanceof P3_PlayerJoin p) {
-            ExpoClientContainer.get().notifyPlayerJoin(p.username);
-        } else if(o instanceof P2_EntityCreate p) {
-            // log("Creating Entity object " + p.entityId + " " + p.entityType);
-            ClientEntity entity = ClientEntityManager.get().createFromPacket(p);
-            ClientEntityManager.get().addEntity(entity);
-        } else if(o instanceof P4_EntityDelete p) {
-            ClientEntityManager.get().removeEntity(p.entityId, p.reason);
+            case P3_PlayerJoin p -> ExpoClientContainer.get().notifyPlayerJoin(p.username);
+            case P2_EntityCreate p -> {
+                // log("Creating Entity object " + p.entityId + " " + p.entityType);
+                ClientEntity entity = ClientEntityManager.get().createFromPacket(p);
+                ClientEntityManager.get().addEntity(entity);
+            }
+            case P4_EntityDelete p -> ClientEntityManager.get().removeEntity(p.entityId, p.reason);
+
             //ExpoLogger.log("REMOVING: " + entity.getEntityType().name() + "-> " + p.entityId);
-        } else if(o instanceof P6_EntityPosition p) {
-            ClientEntity entity = entityFromId(p.entityId);
-            if(entity != null) entity.applyPositionUpdate(p.xPos, p.yPos);
-        } else if(o instanceof P7_ChunkSnapshot p) {
-            //ClientChunkGrid.get().updateChunkViewport(p.activeChunks);
-        } else if(o instanceof P8_EntityDeleteStack p) {
-            for(int i = 0; i < p.entityList.length; i++) {
-                ClientEntityManager.get().removeEntity(p.entityList[i], p.reasons[i]);
+            case P6_EntityPosition p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+                if (entity != null) entity.applyPositionUpdate(p.xPos, p.yPos);
             }
-        } else if(o instanceof P9_PlayerCreate p) {
-            //log("Creating Player object " + p.entityId + " " + p.entityType + " " + p.username + " " + p.player);
-
-            ClientPlayer player = new ClientPlayer();
-            player.tileEntityTileArray = -1;
-            player.entityId = p.entityId;
-            player.username = p.username;
-            player.serverPosX = p.serverPosX;
-            player.serverPosY = p.serverPosY;
-            player.clientPosX = player.serverPosX;
-            player.clientPosY = player.serverPosY;
-            player.player = p.player;
-            player.playerDirection = p.direction;
-            applyHeldItemIds(player, p.equippedItemIds);
-            player.serverPunchAngle = p.armRotation;
-            player.lerpedServerPunchAngle = p.armRotation;
-            player.lastLerpedServerPunchAngle = p.armRotation;
-            player.playerHealth = p.health;
-            player.playerHunger = p.hunger;
-
-            ClientEntityManager.get().addEntity(player);
-
-            if(player.player) {
-                ClientPlayer.setLocalPlayer(player);
+            case P7_ChunkSnapshot p -> {
+                //ClientChunkGrid.get().updateChunkViewport(p.activeChunks);
             }
-        } else if(o instanceof P10_PlayerQuit p) {
-            ExpoClientContainer.get().notifyPlayerQuit(p.username);
-        } else if(o instanceof P11_ChunkData p) {
-            //ExpoLogger.log("p11 " + p.chunkX + " " + p.chunkY);
-            ExpoClientContainer.get().getClientWorld().getClientChunkGrid().handleChunkData(p);
-        } else if(o instanceof P12_PlayerDirection p) {
-            ClientEntity entity = entityFromId(p.entityId);
+            case P8_EntityDeleteStack p -> {
+                for (int i = 0; i < p.entityList.length; i++) {
+                    ClientEntityManager.get().removeEntity(p.entityList[i], p.reasons[i]);
+                }
+            }
+            case P9_PlayerCreate p -> {
+                //log("Creating Player object " + p.entityId + " " + p.entityType + " " + p.username + " " + p.player);
 
-            if(entity != null) {
-                ClientPlayer player = (ClientPlayer) entity;
+                ClientPlayer player = new ClientPlayer();
+                player.tileEntityTileArray = -1;
+                player.entityId = p.entityId;
+                player.username = p.username;
+                player.serverPosX = p.serverPosX;
+                player.serverPosY = p.serverPosY;
+                player.clientPosX = player.serverPosX;
+                player.clientPosY = player.serverPosY;
+                player.player = p.player;
                 player.playerDirection = p.direction;
-            }
-        } else if(o instanceof P13_EntityMove p) {
-            ClientEntity entity = entityFromId(p.entityId);
-            if(entity != null) {
-                entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir, p.sprinting, p.distance);
-            }
-        } else if(o instanceof P14_WorldUpdate p) {
-            ClientWorld w = ExpoClientContainer.get().getClientWorld();
-            log("Received World update (worldTime/worldWeather/worldStrength): " + p.worldTime + "/" + Weather.idToWeather(p.worldWeather).name() + "/" + p.weatherStrength + " (cl: " + w.worldTime + ")");
+                applyHeldItemIds(player, p.equippedItemIds);
+                player.serverPunchAngle = p.armRotation;
+                player.lerpedServerPunchAngle = p.armRotation;
+                player.lastLerpedServerPunchAngle = p.armRotation;
+                player.playerHealth = p.health;
+                player.playerHunger = p.hunger;
 
-            w.dimensionName = p.dimensionName;
-            w.worldTime = p.worldTime;
-            w.worldWeather = p.worldWeather;
-            w.weatherStrength = p.weatherStrength;
-        } else if(o instanceof P15_PingList p) {
-            var map = ExpoClientContainer.get().getPlayerOnlineList();
+                ClientEntityManager.get().addEntity(player);
 
-            for(int i = 0; i < p.username.length; i++) {
-                map.put(p.username[i], p.ping[i]);
+                if (player.player) {
+                    ClientPlayer.setLocalPlayer(player);
+                }
             }
-        } else if(o instanceof P17_PlayerPunchData p) {
-            ClientEntity entity = entityFromId(p.entityId);
+            case P10_PlayerQuit p -> ExpoClientContainer.get().notifyPlayerQuit(p.username);
+            case P11_ChunkData p ->
+                //ExpoLogger.log("p11 " + p.chunkX + " " + p.chunkY);
+                    ExpoClientContainer.get().getClientWorld().getClientChunkGrid().handleChunkData(p);
+            case P12_PlayerDirection p -> {
+                ClientEntity entity = entityFromId(p.entityId);
 
-            if(entity != null) {
-                ((ClientPlayer) entity).applyServerPunchData(p);
+                if (entity != null) {
+                    ClientPlayer player = (ClientPlayer) entity;
+                    player.playerDirection = p.direction;
+                }
             }
-        } else if(o instanceof P19_ContainerUpdate p) {
-            if(p.containerId == CONTAINER_ID_PLAYER) {
-                PlayerInventory inv = PlayerInventory.LOCAL_INVENTORY;
+            case P13_EntityMove p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+                if (entity != null) {
+                    entity.applyPositionUpdate(p.xPos, p.yPos, p.xDir, p.yDir, p.sprinting, p.distance);
+                }
+            }
+            case P14_WorldUpdate p -> {
+                ClientWorld w = ExpoClientContainer.get().getClientWorld();
+                log("Received World update (worldTime/worldWeather/worldStrength): " + p.worldTime + "/" + Weather.idToWeather(p.worldWeather).name() + "/" + p.weatherStrength + " (cl: " + w.worldTime + ")");
 
-                if(inv == null) {
-                    ClientPlayer.QUEUED_INVENTORY_PACKET = p;
+                w.dimensionName = p.dimensionName;
+                w.worldTime = p.worldTime;
+                w.worldWeather = p.worldWeather;
+                w.weatherStrength = p.weatherStrength;
+            }
+            case P15_PingList p -> {
+                var map = ExpoClientContainer.get().getPlayerOnlineList();
+
+                for (int i = 0; i < p.username.length; i++) {
+                    map.put(p.username[i], p.ping[i]);
+                }
+            }
+            case P17_PlayerPunchData p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+
+                if (entity != null) {
+                    ((ClientPlayer) entity).applyServerPunchData(p);
+                }
+            }
+            case P19_ContainerUpdate p -> {
+                if (p.containerId == CONTAINER_ID_PLAYER) {
+                    PlayerInventory inv = PlayerInventory.LOCAL_INVENTORY;
+
+                    if (inv == null) {
+                        ClientPlayer.QUEUED_INVENTORY_PACKET = p;
+                    } else {
+                        PacketUtils.readInventoryUpdatePacket(p);
+                    }
                 } else {
                     PacketUtils.readInventoryUpdatePacket(p);
                 }
-            } else {
-                PacketUtils.readInventoryUpdatePacket(p);
             }
-        } else if(o instanceof P21_PlayerGearUpdate p) {
-            ClientEntity entity = entityFromId(p.entityId);
-            ClientPlayer player = ClientPlayer.getLocalPlayer();
+            case P21_PlayerGearUpdate p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+                ClientPlayer player = ClientPlayer.getLocalPlayer();
 
-            if(entity != null) {
-                ClientPlayer c = (ClientPlayer) entity;
-                applyHeldItemIds(c, p.heldItemIds);
-            } else if(player != null && player.entityId == p.entityId) { // xD
-                applyHeldItemIds(player, p.heldItemIds);
+                if (entity != null) {
+                    ClientPlayer c = (ClientPlayer) entity;
+                    applyHeldItemIds(c, p.heldItemIds);
+                } else if (player != null && player.entityId == p.entityId) { // xD
+                    applyHeldItemIds(player, p.heldItemIds);
+                }
             }
-        } else if(o instanceof P22_PlayerArmDirection p) {
-            ClientEntity entity = entityFromId(p.entityId);
+            case P22_PlayerArmDirection p -> {
+                ClientEntity entity = entityFromId(p.entityId);
 
-            if(entity != null) {
-                ((ClientPlayer) entity).applyServerArmData(p.rotation);
+                if (entity != null) {
+                    ((ClientPlayer) entity).applyServerArmData(p.rotation);
+                }
             }
-        } else if(o instanceof P23_PlayerLifeUpdate p) {
-            ClientPlayer player = ClientPlayer.getLocalPlayer();
+            case P23_PlayerLifeUpdate p -> {
+                ClientPlayer player = ClientPlayer.getLocalPlayer();
 
-            if(player != null) {
-                player.applyHealthHunger(p.health, p.hunger);
+                if (player != null) {
+                    player.applyHealthHunger(p.health, p.hunger);
+                }
             }
-        } else if(o instanceof P24_PositionalSound p) {
-            AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false);
-        } else if(o instanceof P25_ChatMessage p) {
-            ExpoClientContainer.get().getPlayerUI().chat.addChatMessage(new ChatMessage(p.message, p.sender, false));
-        } else if(o instanceof P26_EntityDamage p) {
-            ClientEntity entity = entityFromId(p.entityId);
+            case P24_PositionalSound p ->
+                    AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false);
+            case P25_ChatMessage p ->
+                    ExpoClientContainer.get().getPlayerUI().chat.addChatMessage(new ChatMessage(p.message, p.sender, false));
+            case P26_EntityDamage p -> {
+                ClientEntity entity = entityFromId(p.entityId);
 
-            if(entity != null) {
-                entity.serverHealth = p.newHealth;
-                entity.onDamage(p.damage, p.newHealth, p.damageSourceEntityId);
+                if (entity != null) {
+                    entity.serverHealth = p.newHealth;
+                    entity.onDamage(p.damage, p.newHealth, p.damageSourceEntityId);
 
                 /*
                 ClientPlayer player = ClientPlayer.getLocalPlayer();
@@ -203,189 +218,207 @@ public class ExpoClientPacketReader {
                     CameraShake.invoke(2.0f, 0.25f);
                 }
                 */
-            }
-        } else if(o instanceof P28_PlayerFoodParticle p) {
-            ClientEntity entity = entityFromId(p.entityId);
-
-            if(entity != null) {
-                ClientPlayer player = (ClientPlayer) entity;
-                int particles = MathUtils.random(3, 6);
-                TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(player.holdingItemId).heldRender[0].textureRegions[0];
-
-                for(int i = 0; i < particles; i++) {
-                    ClientParticleFood cpf = new ClientParticleFood();
-
-                    float velocityX = (-7.0f + MathUtils.random(30f)) * (player.direction() == 1 ? 1 : -1);
-                    float velocityY = -MathUtils.random(30f, 36f);
-
-                    cpf.depth = player.depth - 0.0001f;
-                    cpf.particleTexture = baseItemFoodTexture;
-                    cpf.setParticleOriginAndVelocity(player.toMouthX(), player.toMouthY(), velocityX, velocityY);
-                    cpf.setParticleLifetime(0.35f);
-                    cpf.setParticleFadeout(0.1f);
-                    float scale = MathUtils.random(0.5f, 0.9f);
-                    cpf.setParticleScale(scale, scale);
-                    cpf.setParticleColor(Color.WHITE);
-                    cpf.setParticleFadein(0.1f);
-                    cpf.setParticleRotation(MathUtils.random(360f));
-                    cpf.setParticleConstantRotation(360f);
-
-                    ClientEntityManager.get().addClientSideEntity(cpf);
                 }
-
-                AudioEngine.get().playSoundGroupManaged("eat", new Vector2(player.toMouthX(), player.toMouthY()), PLAYER_AUDIO_RANGE, false);
             }
-        } else if(o instanceof P29_EntityCreateAdvanced p) {
-            ClientEntity entity = ClientEntityManager.get().createFromPacketAdvanced(p);
-            ClientEntityManager.get().addEntity(entity);
-        } else if(o instanceof P30_EntityDataUpdate p) {
-            ClientEntity entity = entityFromId(p.entityId);
+            case P28_PlayerFoodParticle p -> {
+                ClientEntity entity = entityFromId(p.entityId);
 
-            if(entity != null) {
-                entity.applyEntityUpdatePayload(p.payload);
-            }
-        } else if(o instanceof P32_ChunkDataSingle p) {
-            var grid = ClientChunkGrid.get(); if(grid == null) return;
-            var chunk = grid.getChunk(p.chunkX, p.chunkY); if(chunk == null) return;
+                if (entity != null) {
+                    ClientPlayer player = (ClientPlayer) entity;
+                    int particles = MathUtils.random(3, 6);
+                    TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(player.holdingItemId).heldRender[0].textureRegions[0];
 
-            chunk.updateSingle(p);
-            PlayerUI.get().playerMinimap.incomplete = true;
-        } else if(o instanceof P33_TileDig p) {
-            float x = ExpoShared.tileToPos(p.tileX);
-            float y = ExpoShared.tileToPos(p.tileY);
+                    for (int i = 0; i < particles; i++) {
+                        ClientParticleFood cpf = new ClientParticleFood();
 
-            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
-                    .amount(8, 16)
-                    .scale(0.5f, 0.9f)
-                    .lifetime(0.35f, 0.5f)
-                    .color(ParticleColorMap.of(p.particleColorId))
-                    .position(x + 2, y + 2)
-                    .offset(12, 12)
-                    .velocity(-24, 24, 8, 32)
-                    .fadein(0.10f)
-                    .fadeout(0.10f)
-                    .textureRange(0, 7)
-                    .randomRotation()
-                    .rotateWithVelocity()
-                    .spawn();
-        } else if(o instanceof P36_PlayerReceiveItem p) {
-            ClientPlayer cp = ClientPlayer.getLocalPlayer();
-            if(cp == null) return;
+                        float velocityX = (-7.0f + MathUtils.random(30f)) * (player.direction() == 1 ? 1 : -1);
+                        float velocityY = -MathUtils.random(30f, 36f);
 
-            var all = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PICKUP_LINE);
-            var add = ClientEntityManager.get().getEntityClientAdditionQueue();
+                        cpf.depth = player.depth - 0.0001f;
+                        cpf.particleTexture = baseItemFoodTexture;
+                        cpf.setParticleOriginAndVelocity(player.toMouthX(), player.toMouthY(), velocityX, velocityY);
+                        cpf.setParticleLifetime(0.35f);
+                        cpf.setParticleFadeout(0.1f);
+                        float scale = MathUtils.random(0.5f, 0.9f);
+                        cpf.setParticleScale(scale, scale);
+                        cpf.setParticleColor(Color.WHITE);
+                        cpf.setParticleFadein(0.1f);
+                        cpf.setParticleRotation(MathUtils.random(360f));
+                        cpf.setParticleConstantRotation(360f);
 
-            for(int i = 0; i < p.itemIds.length; i++) {
-                int seekId = p.itemIds[i];
-                ClientPickupLine copyTo = null;
-
-                for(var existing : all) {
-                    ClientPickupLine clientPickupLine = (ClientPickupLine) existing;
-
-                    if(clientPickupLine.id == seekId) {
-                        copyTo = clientPickupLine;
-                        break;
+                        ClientEntityManager.get().addClientSideEntity(cpf);
                     }
-                }
 
-                for(var existing : add) {
-                    if(existing.getEntityType() == ClientEntityType.PICKUP_LINE) {
+                    AudioEngine.get().playSoundGroupManaged("eat", new Vector2(player.toMouthX(), player.toMouthY()), PLAYER_AUDIO_RANGE, false);
+                }
+            }
+            case P29_EntityCreateAdvanced p -> {
+                ClientEntity entity = ClientEntityManager.get().createFromPacketAdvanced(p);
+                ClientEntityManager.get().addEntity(entity);
+            }
+            case P30_EntityDataUpdate p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+
+                if (entity != null) {
+                    entity.applyEntityUpdatePayload(p.payload);
+                }
+            }
+            case P32_ChunkDataSingle p -> {
+                var grid = ClientChunkGrid.get();
+                if (grid == null) return;
+                var chunk = grid.getChunk(p.chunkX, p.chunkY);
+                if (chunk == null) return;
+
+                chunk.updateSingle(p);
+                PlayerUI.get().playerMinimap.incomplete = true;
+            }
+            case P33_TileDig p -> {
+                float x = ExpoShared.tileToPos(p.tileX);
+                float y = ExpoShared.tileToPos(p.tileY);
+
+                new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                        .amount(8, 16)
+                        .scale(0.5f, 0.9f)
+                        .lifetime(0.35f, 0.5f)
+                        .color(ParticleColorMap.of(p.particleColorId))
+                        .position(x + 2, y + 2)
+                        .offset(12, 12)
+                        .velocity(-24, 24, 8, 32)
+                        .fadein(0.10f)
+                        .fadeout(0.10f)
+                        .textureRange(0, 7)
+                        .randomRotation()
+                        .rotateWithVelocity()
+                        .spawn();
+            }
+            case P36_PlayerReceiveItem p -> {
+                ClientPlayer cp = ClientPlayer.getLocalPlayer();
+                if (cp == null) return;
+
+                var all = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PICKUP_LINE);
+                var add = ClientEntityManager.get().getEntityClientAdditionQueue();
+
+                for (int i = 0; i < p.itemIds.length; i++) {
+                    int seekId = p.itemIds[i];
+                    ClientPickupLine copyTo = null;
+
+                    for (var existing : all) {
                         ClientPickupLine clientPickupLine = (ClientPickupLine) existing;
 
-                        if(clientPickupLine.id == seekId) {
+                        if (clientPickupLine.id == seekId) {
                             copyTo = clientPickupLine;
                             break;
                         }
                     }
-                }
 
-                if(copyTo == null) {
-                    ClientPickupLine cpl = new ClientPickupLine();
-                    cpl.id = p.itemIds[i];
-                    cpl.amount = p.itemAmounts[i];
-                    cpl.setMapping();
-                    cpl.reset();
-                    ClientEntityManager.get().addClientSideEntity(cpl);
-                } else {
-                    copyTo.amount += p.itemAmounts[i];
-                    copyTo.reset();
-                }
-            }
-        } else if(o instanceof P37_EntityTeleport p) {
-            ClientEntity entity = entityFromId(p.entityId);
+                    for (var existing : add) {
+                        if (existing.getEntityType() == ClientEntityType.PICKUP_LINE) {
+                            ClientPickupLine clientPickupLine = (ClientPickupLine) existing;
 
-            if(entity != null) {
-                entity.applyTeleportUpdate(p.x, p.y, p.teleportReason);
-            }
-        } else if(o instanceof P38_PlayerAnimation p) {
-            ClientEntity entity = entityFromId(p.entityId);
-
-            if(entity != null) {
-                ClientPlayer player = (ClientPlayer) entity;
-
-                if(p.animationId == PLAYER_ANIMATION_ID_PLACE) {
-                    player.playPunchAnimation(player.playerDirection, 0.3f, false);
-                }
-            }
-        } else if(o instanceof P40_InventoryView p) {
-            ClientPlayer player = ClientPlayer.getLocalPlayer();
-            player.getUI().openContainerView(p.type, p.containerId, p.viewSlots);
-            AudioEngine.get().playSoundGroup("inv_open");
-        } else if(o instanceof P41_InventoryViewQuit) {
-            ClientPlayer player = ClientPlayer.getLocalPlayer();
-            player.getUI().closeInventoryView();
-        } else if(o instanceof P42_EntityAnimation p) {
-            ClientEntity entity = entityFromId(p.entityId);
-            if(entity != null) entity.playEntityAnimation(p.animationId);
-        } else if(o instanceof P43_EntityDeleteAdvanced p) {
-            ClientEntity entity = entityFromId(p.entityId);
-
-            if(entity != null) {
-                entity.serverHealth = p.newHealth;
-                entity.onDamage(p.damage, p.newHealth, p.damageSourceEntityId);
-            }
-
-            ClientEntityManager.get().removeEntity(p.entityId, p.reason);
-        } else if(o instanceof P46_EntityConstruct p) {
-            ItemMapping mapping = ItemMapper.get().getMapping(p.itemId);
-            FloorType ft = mapping.logic.placeData.floorType;
-
-            float twx = ExpoShared.tileToPos(p.tileX);
-            float twy = ExpoShared.tileToPos(p.tileY);
-
-            if(ft != null) {
-                // Placed thing is a floor
-                ParticleSheet.Common.spawnDustConstructFloorParticles(twx, twy);
-            } else {
-                ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX - ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName).getRegionWidth(), p.worldY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
-            }
-
-            String soundName = mapping.logic.placeData.sound != null ? mapping.logic.placeData.sound : "place";
-            AudioEngine.get().playSoundGroupManaged(soundName, new Vector2(p.worldX, p.worldY), PLAYER_AUDIO_RANGE, false);
-        } else if(o instanceof P47_ItemConsume p) {
-            ClientEntity entity = entityFromId(p.entityId);
-
-            if(entity != null) {
-                ClientPlayer player = (ClientPlayer) entity;
-                ItemMapping mapping = ItemMapper.get().getMapping(p.itemId);
-
-                if(mapping.logic.isFood() && ClientPlayer.getLocalPlayer() == player) {
-                    ClientPickupLine cpl = new ClientPickupLine();
-                    cpl.id = p.itemId;
-                    cpl.amount = 1;
-                    cpl.setMapping();
-                    cpl.reset();
-
-                    if(mapping.logic.foodData.hungerRestore > 0) {
-                        cpl.setCustomDisplayText("+" + mapping.logic.foodData.hungerRestore + " Hunger");
-                    } else {
-                        cpl.setCustomDisplayText("+" + mapping.logic.foodData.healthRestore + " Health");
+                            if (clientPickupLine.id == seekId) {
+                                copyTo = clientPickupLine;
+                                break;
+                            }
+                        }
                     }
 
-                    cpl.setCustomDisplayColor(PlayerUI.get().COLOR_GREEN);
-                    ClientEntityManager.get().addClientSideEntity(cpl);
+                    if (copyTo == null) {
+                        ClientPickupLine cpl = new ClientPickupLine();
+                        cpl.id = p.itemIds[i];
+                        cpl.amount = p.itemAmounts[i];
+                        cpl.setMapping();
+                        cpl.reset();
+                        ClientEntityManager.get().addClientSideEntity(cpl);
+                    } else {
+                        copyTo.amount += p.itemAmounts[i];
+                        copyTo.reset();
+                    }
                 }
             }
+            case P37_EntityTeleport p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+
+                if (entity != null) {
+                    entity.applyTeleportUpdate(p.x, p.y, p.teleportReason);
+                }
+            }
+            case P38_PlayerAnimation p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+
+                if (entity != null) {
+                    ClientPlayer player = (ClientPlayer) entity;
+
+                    if (p.animationId == PLAYER_ANIMATION_ID_PLACE) {
+                        player.playPunchAnimation(player.playerDirection, 0.3f, false);
+                    }
+                }
+            }
+            case P40_InventoryView p -> {
+                ClientPlayer player = ClientPlayer.getLocalPlayer();
+                player.getUI().openContainerView(p.type, p.containerId, p.viewSlots);
+                AudioEngine.get().playSoundGroup("inv_open");
+            }
+            case P41_InventoryViewQuit p41InventoryViewQuit -> {
+                ClientPlayer player = ClientPlayer.getLocalPlayer();
+                player.getUI().closeInventoryView();
+            }
+            case P42_EntityAnimation p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+                if (entity != null) entity.playEntityAnimation(p.animationId);
+            }
+            case P43_EntityDeleteAdvanced p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+
+                if (entity != null) {
+                    entity.serverHealth = p.newHealth;
+                    entity.onDamage(p.damage, p.newHealth, p.damageSourceEntityId);
+                }
+
+                ClientEntityManager.get().removeEntity(p.entityId, p.reason);
+            }
+            case P46_EntityConstruct p -> {
+                ItemMapping mapping = ItemMapper.get().getMapping(p.itemId);
+                FloorType ft = mapping.logic.placeData.floorType;
+
+                float twx = ExpoShared.tileToPos(p.tileX);
+                float twy = ExpoShared.tileToPos(p.tileY);
+
+                if (ft != null) {
+                    // Placed thing is a floor
+                    ParticleSheet.Common.spawnDustConstructFloorParticles(twx, twy);
+                } else {
+                    ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX - ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName).getRegionWidth(), p.worldY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
+                }
+
+                String soundName = mapping.logic.placeData.sound != null ? mapping.logic.placeData.sound : "place";
+                AudioEngine.get().playSoundGroupManaged(soundName, new Vector2(p.worldX, p.worldY), PLAYER_AUDIO_RANGE, false);
+            }
+            case P47_ItemConsume p -> {
+                ClientEntity entity = entityFromId(p.entityId);
+
+                if (entity != null) {
+                    ClientPlayer player = (ClientPlayer) entity;
+                    ItemMapping mapping = ItemMapper.get().getMapping(p.itemId);
+
+                    if (mapping.logic.isFood() && ClientPlayer.getLocalPlayer() == player) {
+                        ClientPickupLine cpl = new ClientPickupLine();
+                        cpl.id = p.itemId;
+                        cpl.amount = 1;
+                        cpl.setMapping();
+                        cpl.reset();
+
+                        if (mapping.logic.foodData.hungerRestore > 0) {
+                            cpl.setCustomDisplayText("+" + mapping.logic.foodData.hungerRestore + " Hunger");
+                        } else {
+                            cpl.setCustomDisplayText("+" + mapping.logic.foodData.healthRestore + " Health");
+                        }
+
+                        cpl.setCustomDisplayColor(PlayerUI.get().COLOR_GREEN);
+                        ClientEntityManager.get().addClientSideEntity(cpl);
+                    }
+                }
+            }
+            case null, default -> {}
         }
     }
 
