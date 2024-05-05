@@ -2,6 +2,15 @@
 
 A multiplayer procedural sandbox game created with [libGDX](https://libgdx.com) and [OpenGL](https://opengl.org).
 
+# Important note
+
+The menu GUI is not working yet, so you will have to make use of the ingame console (F1) to connect to a server or to open a singleplayer instance.
+
+To get an overview of possible commands, type `/help` in the console.
+
+Launch a singleplayer world with `/world <name> [seed]`.
+Connect to a multiplayer server with `/connect <ip>`.
+
 ## Used frameworks/libraries
 
 - `libGDX`: https://github.com/libgdx/libgdx
