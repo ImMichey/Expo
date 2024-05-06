@@ -70,6 +70,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     /** Player velocity */
     private boolean cachedSprinting;
+    private boolean localSprinting;
     public float playerSpeed = 64f;
     public final float sprintMultiplier = 1.6f;
     public boolean noclip = false;
@@ -596,6 +597,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 sprinting = defaultSprint;
             }
 
+            localSprinting = sprinting;
+
             int numberPressed = IngameInput.get().pressedNumber();
 
             if(numberPressed != -1) {
@@ -972,7 +975,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         boolean moving = isMoving();
 
         if(moving) {
-            playerWalkDelta += delta * (isSprinting() ? 1.25f : 1.0f);
+            playerWalkDelta += delta * (isSprinting() ? 1.6f : 1.0f);
             float PLAYER_WALK_PER_FRAME_DURATION = 0.1f;
 
             if(playerWalkDelta >= PLAYER_WALK_PER_FRAME_DURATION) {
@@ -1137,9 +1140,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         if(player) {
             // Don't need dynamic volume + panning
-            AudioEngine.get().playSoundGroup(group, cachedSprinting ? 1.0f : 0.75f);
+            AudioEngine.get().playSoundGroup(group, isSprinting() ? 1.0f : 0.75f);
         } else {
-            AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE * (cachedSprinting ? 1.0f : 0.75f), false, cachedSprinting ? 1.0f : 0.75f);
+            AudioEngine.get().playSoundGroupManaged(group, new Vector2(finalTextureCenterX, finalTextureRootY), PLAYER_AUDIO_RANGE * (isSprinting() ? 1.0f : 0.75f), false, isSprinting() ? 1.0f : 0.75f);
         }
     }
 
@@ -1705,6 +1708,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     }
 
     public boolean isSprinting() {
+        if(player) {
+            return localSprinting;
+        }
+
         return cachedSprinting;
     }
 
