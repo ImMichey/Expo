@@ -18,15 +18,15 @@ import java.util.List;
 
 public class SoundGroupDatabase {
 
-    private List<String> qualifiedSoundMap;
-    private HashMap<String, Pair<Sound, Float>> soundMap;
-    private HashMap<String, Float> customVolumeMap;
+    private final List<String> qualifiedSoundMap;
+    private final HashMap<String, Pair<Sound, Float>> soundMap;
+    private final HashMap<String, Float> customVolumeMap;
 
-    private SoundGroupType type;
-    private String groupName;
-    private float minPitch;
-    private float maxPitch;
-    private float volumeMultiplier;
+    private final SoundGroupType type;
+    private final String groupName;
+    private final float minPitch;
+    private final float maxPitch;
+    private final float volumeMultiplier;
 
     private int currentPlayIndex;
 
@@ -68,7 +68,7 @@ public class SoundGroupDatabase {
 
     public TrackedSoundData playSoundSpecific(String soundName, float volumeAbsolute, boolean loop) {
         float pitch = (minPitch == maxPitch) ? minPitch : MathUtils.random(minPitch, maxPitch);
-        float specificVolumeMultiplier = customVolumeMap.containsKey(soundName) ? customVolumeMap.get(soundName) : volumeMultiplier;
+        float specificVolumeMultiplier = customVolumeMap.getOrDefault(soundName, volumeMultiplier);
         float typeVolume = AudioEngine.get().volumeOf(type);
         float volume = volumeAbsolute * typeVolume * specificVolumeMultiplier * AudioEngine.get().getMasterVolume();
 
