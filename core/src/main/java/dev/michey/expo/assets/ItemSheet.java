@@ -72,6 +72,7 @@ public class ItemSheet {
         add("item_iron_raw", 53, 12, 11);
         add("item_iron_shovel", 54, 15, 15);
         add("item_beehive", 55, 11, 13);
+        add("item_sunflower_seeds", 56, 10, 10);
     }
 
     public TextureRegion get(String name) {

@@ -6,6 +6,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
+import dev.michey.expo.server.util.SpawnItem;
 import org.json.JSONObject;
 
 public class ServerSunflower extends ServerEntity {
@@ -16,6 +17,11 @@ public class ServerSunflower extends ServerEntity {
         variant = 1;
         health = 20.0f;
         setDamageableWith(ToolType.SCYTHE, ToolType.FIST);
+    }
+
+    @Override
+    public void onDie() {
+        spawnItemsAround(0, 0, 8, 10, new SpawnItem("item_sunflower_seeds", 1, 2));
     }
 
     @Override

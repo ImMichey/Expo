@@ -1593,6 +1593,30 @@
                 "attackDamage": 12.0,
                 "harvestDamage": 15.0
             }
+        },
+        {
+            "identifier": "item_sunflower_seeds",
+            "id": 57,
+            "category": "MISC",
+            "displayName": "Sunflower Seeds",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_sunflower_seeds"
+                },
+                "held": {
+                    "texture": "item_sunflower_seeds",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 9,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "stackSize": 64,
+                "toolType": "ITEM"
+            }
         }
     ]
 }
