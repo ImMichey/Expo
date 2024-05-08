@@ -21,7 +21,3 @@
 
 [Long Term Fixes]
 * Investigate:
-
-[Ideas]
-* Hinini
-* FrogLib

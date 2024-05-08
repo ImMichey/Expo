@@ -21,6 +21,8 @@ gradle-app.setting
 /noiseCmd/*
 /screenshots/*
 testfile.txt
+autoExec.txt
+notes.txt
 /lwjgl3/out/production/*
 /server/out/production/*
 
