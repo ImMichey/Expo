@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
@@ -60,6 +61,7 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             spawnGhostEntity(itemAmount);
         }
     }
+
     @Override
     public void tick(float delta) {
         if(syncPositionWithServer()) {
@@ -154,9 +156,11 @@ public class ClientItem extends ClientEntity implements ReflectableEntity, Ambie
             if(itemAmount > 1 || !ItemMapper.get().getMapping(itemId).logic.isSpecialType()) {
                 float mouseDst = Vector2.dst(finalDrawPosX, finalDrawPosY + floatingPos + bounce, rc.mouseWorldX, rc.mouseWorldY);
                 boolean mouseInRange = mouseDst <= 48;
+                float playerDst = Vector2.dst(ClientPlayer.getLocalPlayer().clientPosX, ClientPlayer.getLocalPlayer().clientPosY, finalDrawPosX, finalDrawPosY);
+                boolean playerInRange = playerDst <= 48;
 
-                if(mouseInRange || hoverAlpha > 0) {
-                    if(mouseInRange) {
+                if(mouseInRange || playerInRange || hoverAlpha > 0) {
+                    if(mouseInRange || playerInRange) {
                         hoverAlpha += delta * 8.0f;
                         if(hoverAlpha > 1) hoverAlpha = 1f;
                     } else {
