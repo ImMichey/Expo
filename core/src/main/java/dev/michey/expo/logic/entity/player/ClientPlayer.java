@@ -668,6 +668,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 if(UIContainerInventory.PLAYER_INVENTORY_CONTAINER != null) {
                     UIContainerInventory.PLAYER_INVENTORY_CONTAINER.setCraftGroupCategory(UIContainerInventory.PLAYER_INVENTORY_CONTAINER.selectedCraftGroupCategory);
                 }
+
+                // Ingame notification
+                PlayerUI.get().addNotification(5.0f, "Reloaded item mapper");
             }
 
             // Sending arm rotation packet if needed

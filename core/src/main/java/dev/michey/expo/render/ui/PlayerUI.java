@@ -644,6 +644,17 @@ public class PlayerUI {
         }
     }
 
+    public void addNotification(float lifetime, String text) {
+        synchronized (notificationLock) {
+            UINotification notification = new UINotification();
+            notification.icon = ItemMapper.get().getMapping("item_maggot").uiRender[0].useTextureRegion;
+            notification.lifetime = lifetime;
+            notification.sound = "crab_snip";
+            notification.addPiece(text, Color.WHITE);
+            notificationList.add(notification);
+        }
+    }
+
     public void addNotification(TextureRegion icon, float lifetime, String sound, String text) {
         synchronized (notificationLock) {
             UINotification notification = new UINotification();

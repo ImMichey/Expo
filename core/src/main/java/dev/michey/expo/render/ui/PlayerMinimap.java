@@ -323,10 +323,10 @@ public class PlayerMinimap {
                     float drawPlayerHeadY = phy - ((int) (minimapPlayerH * 0.5f));
 
                     r.hudBatch.setShader(r.whiteShaderDefault);
-                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX - 2, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
-                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX + 2, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
-                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY - 2, minimapPlayerW, minimapPlayerH);
-                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY + 2, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX - 1, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX + 1, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY - 1, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY + 1, minimapPlayerW, minimapPlayerH);
                     r.hudBatch.setShader(r.DEFAULT_GLES3_SHADER);
 
                     r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
