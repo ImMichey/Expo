@@ -96,7 +96,8 @@ public class RenderContext {
     public ShaderProgram simplePassthroughShader;
     public ShaderProgram aoShader;
     public ShaderProgram blinkShader;
-    public ShaderProgram whiteShader;
+    public ShaderProgram whiteShaderArray;
+    public ShaderProgram whiteShaderDefault;
     public ShaderProgram buildPreviewShader;
 
     /** Light engine */
@@ -368,7 +369,8 @@ public class RenderContext {
         simplePassthroughShader = compileShader("gl3/simple_passthrough");
         aoShader = compileShader("gl3/ao");
         blinkShader = compileShader("gl3/blink");
-        whiteShader = compileShader("gl3/white");
+        whiteShaderDefault = compileShader("gl3/white");
+        whiteShaderArray = compileShader("gl3/white_array");
         buildPreviewShader = compileShader("gl3/build_preview");
 
         batch.setShader(DEFAULT_GLES3_SHADER);

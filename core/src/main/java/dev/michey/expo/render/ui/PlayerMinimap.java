@@ -318,7 +318,21 @@ public class PlayerMinimap {
                 float phx = startX + 5 * ui.uiScale + dx * ui.uiScale;
                 float phy = startY + 5 * ui.uiScale + dy * ui.uiScale;
 
-                r.hudBatch.draw(minimapPlayer, phx - ((int) (minimapPlayerW * 0.5f)), phy - ((int) (minimapPlayerH * 0.5f)), minimapPlayerW, minimapPlayerH);
+                if(p.player) {
+                    float drawPlayerHeadX = phx - ((int) (minimapPlayerW * 0.5f));
+                    float drawPlayerHeadY = phy - ((int) (minimapPlayerH * 0.5f));
+
+                    r.hudBatch.setShader(r.whiteShaderDefault);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX - 2, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX + 2, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY - 2, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY + 2, minimapPlayerW, minimapPlayerH);
+                    r.hudBatch.setShader(r.DEFAULT_GLES3_SHADER);
+
+                    r.hudBatch.draw(minimapPlayer, drawPlayerHeadX, drawPlayerHeadY, minimapPlayerW, minimapPlayerH);
+                } else {
+                    r.hudBatch.draw(minimapPlayer, phx - ((int) (minimapPlayerW * 0.5f)), phy - ((int) (minimapPlayerH * 0.5f)), minimapPlayerW, minimapPlayerH);
+                }
 
                 ui.glyphLayout.setText(r.m5x7_border_use, p.username);
                 float drawAtX = phx - ui.glyphLayout.width * 0.5f;
