@@ -74,7 +74,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            updateDepth(2);
+            updateDepth(1);
             rc.useArrayBatch();
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
