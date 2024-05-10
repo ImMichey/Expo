@@ -383,11 +383,11 @@ public class ExpoClientPacketReader {
                 float twx = ExpoShared.tileToPos(p.tileX);
                 float twy = ExpoShared.tileToPos(p.tileY);
 
-                if (ft != null) {
+                if(ft != null) {
                     // Placed thing is a floor
                     ParticleSheet.Common.spawnDustConstructFloorParticles(twx, twy);
                 } else {
-                    ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX - ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName).getRegionWidth(), p.worldY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
+                    ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX, p.worldY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
                 }
 
                 String soundName = mapping.logic.placeData.sound != null ? mapping.logic.placeData.sound : "place";

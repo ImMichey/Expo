@@ -104,9 +104,11 @@ public class ParticleSheet {
 
         public static void spawnDustConstructEntityParticles(float x, float y, TextureRegion texture) {
             if(!GameSettings.get().enableParticles) return;
+
             float calculatedOffset = Math.max(texture.getRegionWidth() - 8, 2);
             float offset = (TILE_SIZE - calculatedOffset) * 0.5f;
             int plusParticles = (int) (calculatedOffset / 2);
+
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
                     .amount(4 + plusParticles, 8 + plusParticles)
                     .scale(0.6f, 1.0f)
