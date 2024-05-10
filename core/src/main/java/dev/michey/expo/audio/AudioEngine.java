@@ -2,6 +2,7 @@ package dev.michey.expo.audio;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 
@@ -210,7 +211,14 @@ public class AudioEngine {
 
     /** Plays a managed sound of a certain group with a specific panning and volume. **/
     public TrackedSoundData playSoundGroup(String groupName, float volume) {
-        TrackedSoundData data = soundGroupMap.get(groupName).playSound(volume, false);
+        SoundGroupDatabase sgd = soundGroupMap.get(groupName);
+
+        if(sgd == null) {
+            ExpoLogger.logerr("AudioEngine: Requested to play sound of group '" + groupName + "', but it doesn't exist.");
+            return null;
+        }
+
+        TrackedSoundData data = sgd.playSound(volume, false);
         soundData.put(data.id, data);
         return data;
     }
