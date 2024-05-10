@@ -396,21 +396,21 @@ public class ExpoClientPacketReader {
             case P47_ItemConsume p -> {
                 ClientEntity entity = entityFromId(p.entityId);
 
-                if (entity != null) {
+                if(entity != null) {
                     ClientPlayer player = (ClientPlayer) entity;
                     ItemMapping mapping = ItemMapper.get().getMapping(p.itemId);
 
-                    if (mapping.logic.isFood() && ClientPlayer.getLocalPlayer() == player) {
+                    if(mapping.logic.isFood() && ClientPlayer.getLocalPlayer() == player) {
                         ClientPickupLine cpl = new ClientPickupLine();
                         cpl.id = p.itemId;
                         cpl.amount = 1;
                         cpl.setMapping();
                         cpl.reset();
 
-                        if (mapping.logic.foodData.hungerRestore > 0) {
-                            cpl.setCustomDisplayText("+" + mapping.logic.foodData.hungerRestore + " Hunger");
+                        if(mapping.logic.foodData.hungerRestore > 0) {
+                            cpl.setCustomDisplayText("+" + toDisplayNumber(mapping.logic.foodData.hungerRestore) + " Hunger");
                         } else {
-                            cpl.setCustomDisplayText("+" + mapping.logic.foodData.healthRestore + " Health");
+                            cpl.setCustomDisplayText("+" + toDisplayNumber(mapping.logic.foodData.healthRestore) + " Health");
                         }
 
                         cpl.setCustomDisplayColor(PlayerUI.get().COLOR_GREEN);
@@ -420,6 +420,14 @@ public class ExpoClientPacketReader {
             }
             case null, default -> {}
         }
+    }
+
+    private Object toDisplayNumber(float number) {
+        if(number == ((int) number)) {
+            return (int) number;
+        }
+
+        return number;
     }
 
     private void applyHeldItemIds(ClientPlayer player, int[] ids) {
