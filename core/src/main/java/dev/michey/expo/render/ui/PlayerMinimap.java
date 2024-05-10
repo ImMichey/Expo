@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.Expo;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -19,7 +20,6 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
-import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.ExpoTime;
@@ -339,16 +339,18 @@ public class PlayerMinimap {
                 float drawAtX = phx - ui.glyphLayout.width * 0.5f;
                 float drawAtY = phy + ui.glyphLayout.height + minimapPlayerH;
 
-                if(ServerWorld.get() != null) {
+                if(Expo.get().isMultiplayer()) {
                     drawUsers.put(p, new Pair<>(drawAtX, drawAtY));
                 }
             }
         }
 
-        for(ClientEntity player : players) {
-            ClientPlayer p = (ClientPlayer) player;
-            Pair<Float, Float> data = drawUsers.get(p);
-            r.m5x7_border_use.draw(r.hudBatch, p.username, data.key, data.value);
+        if(Expo.get().isMultiplayer()) {
+            for(ClientEntity player : players) {
+                ClientPlayer p = (ClientPlayer) player;
+                Pair<Float, Float> data = drawUsers.get(p);
+                r.m5x7_border_use.draw(r.hudBatch, p.username, data.key, data.value);
+            }
         }
     }
 
