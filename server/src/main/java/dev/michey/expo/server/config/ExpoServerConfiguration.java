@@ -119,7 +119,14 @@ public class ExpoServerConfiguration {
 
                 if(key.equals("steamWebApiKey")) {
                     String apiKey = String.valueOf(value);
-                    value = apiKey.substring(0, apiKey.length() - 16) + "****************";
+
+                    if(apiKey.length() > 16) {
+                        value = apiKey.substring(0, apiKey.length() - 16) + "****************";
+                    }
+                }
+
+                if(value instanceof String s) {
+                    if(s.isEmpty()) value = "<null>";
                 }
 
                 log("\t-> " + key + ": " + value);
