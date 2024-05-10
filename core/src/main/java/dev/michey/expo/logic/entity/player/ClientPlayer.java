@@ -832,8 +832,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         if(!player) {
             cachedSprinting = sprinting;
-            physicsBody.moveAbsolute(xPos, yPos, PhysicsBoxFilters.noclipFilter);
         }
+
+        physicsBody.moveAbsolute(xPos, yPos, PhysicsBoxFilters.noclipFilter);
     }
 
     @Override
