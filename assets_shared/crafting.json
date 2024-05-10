@@ -30,7 +30,8 @@
             "recipe_bandage"
         ],
         "food": [
-            "recipe_wheat_seeds"
+            "recipe_wheat_seeds",
+            "recipe_sunflower_seeds"
         ]
     },
     "recipes": [
@@ -453,6 +454,19 @@
                 {
                     "id": 15,
                     "amount": 2
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_sunflower_seeds",
+            "output": {
+                "id": 57,
+                "amount": 2
+            },
+            "input": [
+                {
+                    "id": 58,
+                    "amount": 1
                 }
             ]
         }

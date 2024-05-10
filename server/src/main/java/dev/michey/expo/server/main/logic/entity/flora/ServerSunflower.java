@@ -21,7 +21,7 @@ public class ServerSunflower extends ServerEntity {
 
     @Override
     public void onDie() {
-        spawnItemsAround(0, 0, 8, 10, new SpawnItem("item_sunflower_seeds", 1, 2));
+        spawnItemsAround(0, 0, 8, 10, new SpawnItem("item_sunflower", 1, 1));
     }
 
     @Override

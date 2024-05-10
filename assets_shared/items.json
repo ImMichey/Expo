@@ -14,8 +14,8 @@
                     "texture": "item_stick",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -1.5,
-                    "offsetY": 8,
+                    "offsetX": -2,
+                    "offsetY": 6,
                     "rotations": [45, -45]
                 }
             },
@@ -1614,8 +1614,38 @@
                 }
             },
             "logic": {
-                "stackSize": 64,
                 "toolType": "ITEM"
+            }
+        },
+        {
+            "identifier": "item_sunflower",
+            "id": 58,
+            "category": "MISC",
+            "displayName": "Sunflower",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_sunflower"
+                },
+                "held": {
+                    "texture": "item_sunflower",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2.5,
+                    "offsetY": 7.5,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "SUNFLOWER",
+                    "previewTexture": "entity_sunflower_1",
+                    "placeAlignmentOffsetX": 8.0,
+                    "static": true
+                }
             }
         }
     ]
