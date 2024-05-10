@@ -300,6 +300,7 @@ public class PlayerMinimap {
 
         // Player heads + names on minimap
         List<ClientEntity> players = ClientEntityManager.get().getEntitiesByType(ClientEntityType.PLAYER);
+        players.sort(ClientEntityManager.depthSorter); // We sort the player list by depth to make it more coherent with the ingame draw order
         drawUsers.clear();
 
         for(ClientEntity player : players) {
@@ -338,15 +339,16 @@ public class PlayerMinimap {
                 float drawAtX = phx - ui.glyphLayout.width * 0.5f;
                 float drawAtY = phy + ui.glyphLayout.height + minimapPlayerH;
 
-                if(ServerWorld.get() == null) {
+                if(ServerWorld.get() != null) {
                     drawUsers.put(p, new Pair<>(drawAtX, drawAtY));
                 }
             }
         }
 
-        for(Map.Entry<ClientPlayer, Pair<Float, Float>> entrySet : drawUsers.entrySet()) {
-            Pair<Float, Float> pos = drawUsers.get(entrySet.getKey());
-            r.m5x7_border_use.draw(r.hudBatch, entrySet.getKey().username, pos.key, pos.value);
+        for(ClientEntity player : players) {
+            ClientPlayer p = (ClientPlayer) player;
+            Pair<Float, Float> data = drawUsers.get(p);
+            r.m5x7_border_use.draw(r.hudBatch, p.username, data.key, data.value);
         }
     }
 

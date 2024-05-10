@@ -288,7 +288,7 @@ public class ExpoServerPacketReader {
 
                 WorldGenSettings s = ServerWorld.get().getMainDimension().getChunkHandler().getGenSettings();
 
-                if (authorized) {
+                if(authorized) {
                     ServerPackets.p1AuthResponse(true, authorizationMessage, ExpoServerConfiguration.get().getServerTps(),
                             ExpoServerBase.get().getWorldSaveHandler().getWorldSeed(),
                             s,
@@ -298,7 +298,7 @@ public class ExpoServerPacketReader {
                     ServerPackets.p1AuthResponse(false, authorizationMessage, 0, 0, null, PacketReceiver.connection(connection));
                 }
 
-                if (authorized) {
+                if(authorized) {
                     ExpoLogger.log("Authentication for " + connection + " successful: " + authorizationMessage);
                     long finalSteamId = steamId;
 
@@ -314,10 +314,10 @@ public class ExpoServerPacketReader {
                         registerPlayer(psf, sp);
 
                         // Send every existing player as a packet to joined player
-                        for (var con : handler.connections()) {
+                        for(var con : handler.connections()) {
                             ServerPackets.p3PlayerJoin(con.player.username, PacketReceiver.connection(connection));
 
-                            if (pc.getKryoConnection().getID() != con.getKryoConnection().getID()) {
+                            if(pc.getKryoConnection().getID() != con.getKryoConnection().getID()) {
                                 ServerPackets.p3PlayerJoin(p.username, PacketReceiver.connection(con.getKryoConnection()));
                             }
                         }

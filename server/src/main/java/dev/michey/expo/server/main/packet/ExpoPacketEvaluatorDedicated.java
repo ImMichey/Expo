@@ -40,7 +40,10 @@ public class ExpoPacketEvaluatorDedicated extends ExpoPacketEvaluator implements
             ServerPackets.p10PlayerQuit(pc.player.username, PacketReceiver.all());
             ServerPackets.p4EntityDelete(pc.player.entityId, EntityRemovalReason.VISIBILITY, PacketReceiver.whoCanSee(pc.player));
             pc.player.getDimension().getEntityManager().removeEntitySafely(pc.player);
-            pc.player.updateSaveFile();
+
+            if(pc.player.playerSaveFile != null) {
+                pc.player.updateSaveFile();
+            }
 
             var players = ServerWorld.get().getMainDimension().getEntityManager().getAllPlayers();
 

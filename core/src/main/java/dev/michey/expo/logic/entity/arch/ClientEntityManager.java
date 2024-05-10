@@ -517,7 +517,7 @@ public class ClientEntityManager {
             listOfEntitiesSorted.addAll(getEntitiesByType(type));
         }
 
-        listOfEntitiesSorted.sort((o1, o2) -> Float.compare(o1.depth, o2.depth));
+        listOfEntitiesSorted.sort(depthSorter);
         return listOfEntitiesSorted;
     }
 
@@ -582,7 +582,7 @@ public class ClientEntityManager {
     }
 
     // A simple depth comparator
-    private final Comparator<ClientEntity> depthSorter = ((o1, o2) -> Float.compare(o2.depth, o1.depth));
+    public static final Comparator<ClientEntity> depthSorter = ((o1, o2) -> Float.compare(o2.depth, o1.depth));
 
     public int entityCount() {
         return idEntityMap.size();
