@@ -149,7 +149,7 @@ public class InteractableItemSlot extends InteractableUIElement {
                 String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();
 
                 String[] lines = new String[] {
-                        parent.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + item.itemMetadata.durability + "/" + mapping.logic.durability
+                        PlayerUI.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + item.itemMetadata.durability + "/" + mapping.logic.durability
                 };
 
                 parent.drawTooltipColored(mapping.displayName, mapping.color, lines);
@@ -160,17 +160,42 @@ public class InteractableItemSlot extends InteractableUIElement {
 
                 List<String> tooltip = new LinkedList<>();
                 List<TextureRegion> icons = new LinkedList<>();
+                ClientPlayer cp = ClientPlayer.getLocalPlayer();
 
                 if(healthRestore > 0) {
-                    tooltip.add(parent.COLOR_DESCRIPTOR_HEX + "Heals [#" + parent.COLOR_GREEN_HEX + "]" + healthRestore + "% health" + parent.COLOR_DESCRIPTOR_HEX);
+                    String jump;
+
+                    if(cp.playerHealth < 100) {
+                        float startHp = cp.playerHealth;
+                        float endHp = Math.min(startHp + healthRestore, 100);
+
+                        jump = PlayerUI.COLOR_DESCRIPTOR2_HEX + " (" + ExpoShared.toDisplayNumber(startHp) + "% > " + ExpoShared.toDisplayNumber(endHp) + "%)";
+                    } else {
+                        jump = "";
+                    }
+
+                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + "Heals [#" + parent.COLOR_GREEN_HEX + "]" + healthRestore + "% health" + jump + PlayerUI.COLOR_DESCRIPTOR_HEX);
                     icons.add(parent.iconHealthRestore);
                 }
+
                 if(hungerRestore > 0) {
-                    tooltip.add(parent.COLOR_DESCRIPTOR_HEX + "Fills [#" + parent.COLOR_GREEN_HEX + "]" + hungerRestore + "% hunger" + parent.COLOR_DESCRIPTOR_HEX);
+                    String jump;
+
+                    if(cp.playerHunger < 100) {
+                        float startHunger = cp.playerHunger;
+                        float endHunger = Math.min(startHunger + hungerRestore, 100);
+
+                        jump = PlayerUI.COLOR_DESCRIPTOR2_HEX + " (" + ExpoShared.toDisplayNumber(startHunger) + "% > " + ExpoShared.toDisplayNumber(endHunger) + "%)";
+                    } else {
+                        jump = "";
+                    }
+
+                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + "Fills [#" + parent.COLOR_GREEN_HEX + "]" + hungerRestore + "% hunger" + jump + PlayerUI.COLOR_DESCRIPTOR_HEX);
                     icons.add(parent.iconHungerRestore);
                 }
+
                 if(hungerCooldownRestore > 0) {
-                    tooltip.add(parent.COLOR_DESCRIPTOR_HEX + "Sates [#" + parent.COLOR_GREEN_HEX + "]" + hungerCooldownRestore + " second" + (hungerCooldownRestore == 1 ? "" : "s"));
+                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + "Sates [#" + parent.COLOR_GREEN_HEX + "]" + hungerCooldownRestore + " second" + (hungerCooldownRestore == 1 ? "" : "s"));
                     icons.add(parent.iconHungerCooldownRestore);
                 }
 

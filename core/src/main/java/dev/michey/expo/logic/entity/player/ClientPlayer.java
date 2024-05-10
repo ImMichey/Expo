@@ -980,7 +980,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         boolean moving = isMoving();
 
         if(moving) {
-            playerWalkDelta += delta * (isSprinting() ? 1.6f : 1.0f);
+            playerWalkDelta += delta * (isSprinting() ? 1.6f : 1.1f);
             float PLAYER_WALK_PER_FRAME_DURATION = 0.1f;
 
             if(playerWalkDelta >= PLAYER_WALK_PER_FRAME_DURATION) {

@@ -408,9 +408,9 @@ public class ExpoClientPacketReader {
                         cpl.reset();
 
                         if(mapping.logic.foodData.hungerRestore > 0) {
-                            cpl.setCustomDisplayText("+" + toDisplayNumber(mapping.logic.foodData.hungerRestore) + " Hunger");
+                            cpl.setCustomDisplayText("+" + ExpoShared.toDisplayNumber(mapping.logic.foodData.hungerRestore) + " Hunger");
                         } else {
-                            cpl.setCustomDisplayText("+" + toDisplayNumber(mapping.logic.foodData.healthRestore) + " Health");
+                            cpl.setCustomDisplayText("+" + ExpoShared.toDisplayNumber(mapping.logic.foodData.healthRestore) + " Health");
                         }
 
                         cpl.setCustomDisplayColor(PlayerUI.get().COLOR_GREEN);
@@ -420,14 +420,6 @@ public class ExpoClientPacketReader {
             }
             case null, default -> {}
         }
-    }
-
-    private Object toDisplayNumber(float number) {
-        if(number == ((int) number)) {
-            return (int) number;
-        }
-
-        return number;
     }
 
     private void applyHeldItemIds(ClientPlayer player, int[] ids) {

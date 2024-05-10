@@ -285,4 +285,21 @@ public class ExpoShared {
         }).start();
     }
 
+    public static Object toDisplayNumber(float number) {
+        if(number == ((int) number)) {
+            return (int) number;
+        }
+
+        return number;
+    }
+
+    public static Object toDisplayNumber(float number, int roundPlaces) {
+        if(number == ((int) number)) {
+            return (int) number;
+        }
+
+        int asInt = (int) (number * (roundPlaces * 10));
+        return ((float) asInt) / (roundPlaces * 10);
+    }
+
 }
