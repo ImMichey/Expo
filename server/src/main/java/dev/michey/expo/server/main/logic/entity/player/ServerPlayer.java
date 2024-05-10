@@ -760,11 +760,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
             playPlaceSound(p.sound, mouseWorldX, mouseWorldY);
         } else if(p.type == PlaceType.ENTITY) {
             if(p.alignment == PlaceAlignment.TILE) {
-                boolean proceed = true;
-
-                if(chunk.hasTileBasedEntities() && chunk.getTileBasedEntityIdGrid()[tileArray] != -1) {
-                    proceed = false;
-                }
+                boolean proceed = !chunk.hasTileBasedEntities() || chunk.getTileBasedEntityIdGrid()[tileArray] == -1;
 
                 if(p.floorRequirement != null && proceed) {
                     proceed = false;

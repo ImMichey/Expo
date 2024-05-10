@@ -4,6 +4,7 @@
     "serverName": "default-server",
     "writeBufferSize": 1048576,
     "objectBufferSize": 1048576,
+    "trackPerformance": false,
     "serverPort": 25010,
     "consoleInput": true,
     "steamWebApiKey": "",
@@ -12,6 +13,7 @@
     "enableWhitelist": false,
     "saveChunksAfter": 180000,
     "worldName": "default-world",
-    "unloadChunksAfter": 5000,
-    "trackPerformance": false
+    "maxPlayerViewDistanceX": 11,
+    "maxPlayerViewDistanceY": 11,
+    "unloadChunksAfter": 5000
 }

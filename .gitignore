@@ -25,6 +25,7 @@ autoExec.txt
 notes.txt
 /lwjgl3/out/production/*
 /server/out/production/*
+imgui.ini
 
 ## Java:
 *.class

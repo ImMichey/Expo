@@ -35,7 +35,7 @@ public class ClientSunflower extends ClientEntity implements SelectableEntity, R
         updateTextureBounds(sunflowerTexture);
         interactionPointArray = generateInteractionArray(2, 12);
 
-        contactAnimator.MIN_SQUISH = 0.6667f;
+        contactAnimator.MIN_SQUISH = 0.75f;
     }
 
     @Override

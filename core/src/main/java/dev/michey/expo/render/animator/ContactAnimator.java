@@ -18,8 +18,7 @@ public class ContactAnimator {
     public float STRENGTH = 3.5f;
     public float STRENGTH_DECREASE = 0.7f;
     public int STEPS = 5; // step = 0.5f (half radiant)
-    private float useStrength = STRENGTH;
-    public float MIN_SQUISH = 0.3334f;
+    public float MIN_SQUISH = 0.125f;
 
     // Export value
     public float value;
@@ -100,7 +99,7 @@ public class ContactAnimator {
             float full = STEPS * 0.5f;
             float diff = full - contactDelta;
             int decreases = (int) (diff / 0.5f);
-            useStrength = STRENGTH - STRENGTH_DECREASE * decreases;
+            float useStrength = STRENGTH - STRENGTH_DECREASE * decreases;
 
             value = useStrength * contactDir * MathUtils.sin(((STEPS * 0.5f) - contactDelta) * MathUtils.PI2);
         } else {
