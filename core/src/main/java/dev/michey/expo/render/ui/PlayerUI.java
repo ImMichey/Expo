@@ -649,7 +649,7 @@ public class PlayerUI {
             UINotification notification = new UINotification();
             notification.icon = ItemMapper.get().getMapping("item_maggot").uiRender[0].useTextureRegion;
             notification.lifetime = lifetime;
-            notification.sound = "crab_snip";
+            notification.sound = "notification";
             notification.addPiece(text, Color.WHITE);
             notificationList.add(notification);
         }

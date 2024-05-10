@@ -394,7 +394,7 @@ public abstract class ServerEntity {
         }
 
         if(knockbackCalculations.isEmpty() && lastRemoved != null) {
-            ServerPackets.p13EntityMove(entityId, velToPos(lastRemoved.applyKnockbackX), velToPos(lastRemoved.applyKnockbackY), posX, posY, 0, PacketReceiver.whoCanSee(this));
+            ServerPackets.p13EntityMove(entityId, 0, 0, posX, posY, 0, PacketReceiver.whoCanSee(this));
         }
     }
 
