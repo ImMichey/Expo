@@ -15,6 +15,7 @@ import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.audio.TrackedSoundData;
 import dev.michey.expo.client.chat.ExpoClientChat;
+import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.input.IngameInput;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -656,7 +657,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             clientViewport[2] = chunkY - PLAYER_CHUNK_VIEW_RANGE_DIR_Y; // y start
             clientViewport[3] = chunkY + PLAYER_CHUNK_VIEW_RANGE_DIR_Y; // y end
 
-            if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE) {
+            if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE && !ExpoClientChat.get().isFocused() && !GameConsole.get().isVisible()) {
                 new ItemMapper(true, true);
                 Expo.get().loadItemMapperTextures();
 
