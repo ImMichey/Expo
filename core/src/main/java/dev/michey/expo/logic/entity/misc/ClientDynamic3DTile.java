@@ -187,11 +187,10 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         visibleToRenderEngine = rc.inDrawBounds(this);
 
         if(visibleToRenderEngine) {
-            boolean un = squishAnimator2D.isActive();
             squishAnimator2D.calculate(delta);
 
             if(cachedNeighbours == null) cachedNeighbours = getNeighbouringTileEntitiesNESW();
-            if(un) notifySquish(cachedNeighbours);
+            notifySquish();
 
             boolean hasNeighbourBelow = cachedNeighbours[2] != null && cachedNeighbours[2].getEntityType() == ClientEntityType.DYNAMIC_3D_TILE;
             float linePxFix = hasNeighbourBelow ? 0.1f : 0f;
@@ -264,10 +263,8 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
-        boolean un = squishAnimator2D.isActive();
-        ClientEntity[] n = getNeighbouringTileEntitiesNESW();
         squishAnimator2D.calculate(delta);
-        if(un) notifySquish(n);
+        notifySquish();
 
         setSelectionValuesNoOutline();
 
@@ -290,21 +287,43 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         return interactionPointArray;
     }
 
-    private void notifySquish(ClientEntity[] n) {
+    private void notifySquish() {
         // Notify neighbouring tiles.
-        if(n[0] != null && n[0] instanceof ClientDynamic3DTile cd3d) {
-            cd3d.squishAnimator2D.squishY1 = -squishAnimator2D.squishY1;
-            cd3d.squishAnimator2D.squishY2 = -squishAnimator2D.squishY2 * 0.5f;
-        }
-        if(n[1] != null && n[1] instanceof ClientDynamic3DTile cd3d) {
-            cd3d.squishAnimator2D.squishX1 = -squishAnimator2D.squishX1;
-            cd3d.squishAnimator2D.squishX2 = -squishAnimator2D.squishX1;
-        }
-        if(n[2] != null && n[2] instanceof ClientDynamic3DTile cd3d) {
-            cd3d.squishAnimator2D.squishY2 = -squishAnimator2D.squishY1 * 0.5f;
-        }
-        if(n[3] != null && n[3] instanceof ClientDynamic3DTile cd3d) {
-            cd3d.squishAnimator2D.squishX2 = -squishAnimator2D.squishX1;
+        cachedNeighbours = getNeighbouringTileEntitiesNESW();
+        boolean active = squishAnimator2D.isActive();
+
+        if(active) {
+            if(cachedNeighbours[0] != null && cachedNeighbours[0] instanceof ClientDynamic3DTile cd3d) {
+                cd3d.squishAnimator2D.squishY1 = -squishAnimator2D.squishY1;
+                cd3d.squishAnimator2D.squishY2 = -squishAnimator2D.squishY2 * 0.5f;
+            }
+            if(cachedNeighbours[1] != null && cachedNeighbours[1] instanceof ClientDynamic3DTile cd3d) {
+                cd3d.squishAnimator2D.squishX1 = -squishAnimator2D.squishX1;
+                cd3d.squishAnimator2D.squishX2 = -squishAnimator2D.squishX1;
+            }
+            if(cachedNeighbours[2] != null && cachedNeighbours[2] instanceof ClientDynamic3DTile cd3d) {
+                cd3d.squishAnimator2D.squishY2 = -squishAnimator2D.squishY1 * 0.5f;
+            }
+            if(cachedNeighbours[3] != null && cachedNeighbours[3] instanceof ClientDynamic3DTile cd3d) {
+                cd3d.squishAnimator2D.squishX2 = -squishAnimator2D.squishX1;
+            }
+        } else {
+            if(squishAnimator2D.isFinished()) {
+                if(cachedNeighbours[0] != null && cachedNeighbours[0] instanceof ClientDynamic3DTile cd3d) {
+                    cd3d.squishAnimator2D.squishY1 = 0;
+                    cd3d.squishAnimator2D.squishY2 = 0;
+                }
+                if(cachedNeighbours[1] != null && cachedNeighbours[1] instanceof ClientDynamic3DTile cd3d) {
+                    cd3d.squishAnimator2D.squishX1 = 0;
+                    cd3d.squishAnimator2D.squishX2 = 0;
+                }
+                if(cachedNeighbours[2] != null && cachedNeighbours[2] instanceof ClientDynamic3DTile cd3d) {
+                    cd3d.squishAnimator2D.squishY2 = 0;
+                }
+                if(cachedNeighbours[3] != null && cachedNeighbours[3] instanceof ClientDynamic3DTile cd3d) {
+                    cd3d.squishAnimator2D.squishX2 = 0;
+                }
+            }
         }
     }
 

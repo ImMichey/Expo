@@ -42,7 +42,7 @@ void main() {
             }
         }
     } else {
-        c.rgb = mix(c.rgb * u_pulseMin, c.rgb * u_pulseStrength, u_progress);
+        c.rgb = mix(c.rgb * u_pulseMin * 1.2, c.rgb * u_pulseStrength * 1.3, u_progress);
         fragColor = v_color * c;
     }
 }
