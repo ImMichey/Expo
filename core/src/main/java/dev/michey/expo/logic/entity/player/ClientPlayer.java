@@ -616,8 +616,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     normalizer = 1 / len;
                 }
 
-                float toMoveX = xDir * delta * playerSpeed * multiplicator * normalizer;
-                float toMoveY = yDir * delta * playerSpeed * multiplicator * normalizer;
+                float d = RenderContext.get().deltaUnmodified;
+                float toMoveX = xDir * d * playerSpeed * multiplicator * normalizer;
+                float toMoveY = yDir * d * playerSpeed * multiplicator * normalizer;
 
                 ClientChunk chunk = chunkGrid().getChunk(ExpoShared.posToChunk(clientPosX + toMoveX), ExpoShared.posToChunk(clientPosY + toMoveY));
 

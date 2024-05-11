@@ -39,6 +39,7 @@ public class RenderContext {
     /** Frame data */
     public long frameId;
     public float deltaTotal;
+    public float deltaUnmodified;
     public float delta;
     public float deltaMultiplier = 1.0f;
     public float deltaOneSecond;
@@ -382,7 +383,8 @@ public class RenderContext {
     /** Base update method to update all important timers. */
     public void update() {
         frameId++;
-        delta = Gdx.graphics.getDeltaTime() * deltaMultiplier;
+        deltaUnmodified = Gdx.graphics.getDeltaTime();
+        delta = deltaUnmodified * deltaMultiplier;
         deltaTotal += delta;
         deltaOneSecond += delta;
         aspectRatio = Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
