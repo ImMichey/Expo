@@ -42,6 +42,7 @@ public class ParticleBuilder {
     private ClientEntity followEntity;
     private float depth = Float.MAX_VALUE;
     private boolean dynamicDepth;
+    private float buildup;
 
     public ParticleBuilder(ClientEntityType type) {
         this.type = type;
@@ -194,6 +195,11 @@ public class ParticleBuilder {
         return this;
     }
 
+    public ParticleBuilder buildup(float timer) {
+        this.buildup = timer;
+        return this;
+    }
+
     public void spawn() {
         int spawn = MathUtils.random(amountMin, amountMax);
 
@@ -263,6 +269,9 @@ public class ParticleBuilder {
             }
             if(velocityCurve != null) {
                 p.setVelocityCurve(velocityCurve);
+            }
+            if(buildup > 0) {
+                p.setParticleBuildup(buildup);
             }
 
             ClientEntityManager.get().addClientSideEntity(p);

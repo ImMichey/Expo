@@ -27,6 +27,7 @@ public abstract class ClientParticle extends ClientEntity {
     public float baseScaleX, baseScaleY;
     public ClientEntity followEntity;
     public float followOffsetX, followOffsetY;
+    public float buildupStart, buildupDelta;
 
     //private float pox, poy; // Particle origin values
     public float pvx;
@@ -69,8 +70,19 @@ public abstract class ClientParticle extends ClientEntity {
             }
         }
 
-        if(scaleDown) {
-            float d = lifetime / lifetimeStatic;
+        if(buildupStart > 0 && buildupDelta > 0) {
+            buildupDelta -= delta;
+
+            if(buildupDelta <= 0) {
+                buildupDelta = 0;
+            }
+
+            float progress = buildupDelta / buildupStart; // [1 -> 0]
+
+            scaleX = baseScaleX * (1f - progress);
+            scaleY = baseScaleY * (1f - progress);
+        } else if(scaleDown) {
+            float d = (lifetime + buildupStart) / lifetimeStatic;
             scaleX = baseScaleX * d;
             scaleY = baseScaleY * d;
         }
@@ -147,10 +159,17 @@ public abstract class ClientParticle extends ClientEntity {
     public void setParticleScale(float scaleX, float scaleY) {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
+        baseScaleX = scaleX;
+        baseScaleY = scaleY;
     }
 
     public void setParticleColor(Color c) {
         setParticleColor(c.r, c.g, c.b, c.a);
+    }
+
+    public void setParticleBuildup(float buildupTimer) {
+        this.buildupStart = buildupTimer;
+        this.buildupDelta = buildupTimer;
     }
 
     public void setVelocityCurve(Interpolation velocityCurve) {

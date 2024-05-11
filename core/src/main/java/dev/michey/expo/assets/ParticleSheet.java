@@ -80,6 +80,7 @@ public class ParticleSheet {
                     .scaleDown()
                     .rotateWithVelocity()
                     .depth(y)
+                    .buildup(0.15f)
                     .spawn();
         }
 
