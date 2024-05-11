@@ -349,6 +349,7 @@ public class PlayerMinimap {
             for(ClientEntity player : players) {
                 ClientPlayer p = (ClientPlayer) player;
                 Pair<Float, Float> data = drawUsers.get(p);
+                if(data == null) continue; // Requires a null check to prevent a crash when the player moves between visible chunks in the same frame
                 r.m5x7_border_use.draw(r.hudBatch, p.username, data.key, data.value);
             }
         }
