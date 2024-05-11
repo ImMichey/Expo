@@ -58,12 +58,12 @@ public class ParticleSheet {
     public static class Common {
 
         // This is manual due to texture passing
-        public static void spawnGoreParticles(TextureRegion base, float x, float y) {
+        public static void spawnGoreParticles(TextureRegion base, float x, float y, float particleMultiplier) {
             if(!GameSettings.get().enableParticles) return;
 
             float bw = base.getRegionWidth();
             float bh = base.getRegionHeight();
-            float total = bw * bh;
+            float total = bw * bh * particleMultiplier;
             int min = (int) (total * 0.07f);
             int max = (int) (total * 0.09f);
 
@@ -81,6 +81,10 @@ public class ParticleSheet {
                     .rotateWithVelocity()
                     .depth(y)
                     .spawn();
+        }
+
+        public static void spawnGoreParticles(TextureRegion base, float x, float y) {
+            spawnGoreParticles(base, x, y, 1.0f);
         }
 
         public static void spawnDustConstructFloorParticles(float x, float y) {

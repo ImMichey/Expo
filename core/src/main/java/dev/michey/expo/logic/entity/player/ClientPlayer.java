@@ -1574,6 +1574,18 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void applyTeleportUpdate(float xPos, float yPos, TeleportReason reason) {
+        if(reason == TeleportReason.RESPAWN) {
+            ParticleSheet.Common.spawnGoreParticles(use_body, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnGoreParticles(use_armor_chest_backArm, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnGoreParticles(use_armor_chest_frontArm, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnGoreParticles(use_armor_chest_body, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnGoreParticles(use_armor_legs_backLeg, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnGoreParticles(use_armor_legs_frontLeg, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnGoreParticles(use_eyes, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnGoreParticles(hair, clientPosX, clientPosY, 0.6f);
+            ParticleSheet.Common.spawnBloodParticles(this, 0, 0);
+        }
+
         float x = clientPosX;
         float y = clientPosY;
         super.applyTeleportUpdate(xPos, yPos, reason);

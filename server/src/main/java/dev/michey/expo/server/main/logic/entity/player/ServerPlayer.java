@@ -290,7 +290,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
                             if(!used && fist) {
                                 selected.applyDamageWithPacket(this, dmg);
                             }
-                        }  else {
+                        } else {
                             for(ToolType checkFor : selected.damageableWith) {
                                 if(checkFor == ToolType.FIST) {
                                     selected.applyDamageWithPacket(this, dmg);

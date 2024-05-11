@@ -2,6 +2,7 @@ package dev.michey.expo.console.command;
 
 import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
+import dev.michey.expo.server.command.ServerCommandSpawn;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -32,6 +33,11 @@ public class CommandSpawn extends AbstractConsoleCommand {
             return;
         }
 
+        if(Expo.get().isMultiplayer()) {
+            error("Use the ingame chat for this command.");
+            return;
+        }
+
         if(args.length <= 1) {
             error(getCommandSyntax());
             return;
@@ -43,7 +49,7 @@ public class CommandSpawn extends AbstractConsoleCommand {
         if(preResult.value) {
             int typeId = preResult.key;
 
-            if(forbiddenSpawn(typeId)) {
+            if(ServerCommandSpawn.forbiddenSpawn(typeId)) {
                 error("Forbidden entity type id '" + typeId + "'");
                 return;
             }
@@ -55,10 +61,25 @@ public class CommandSpawn extends AbstractConsoleCommand {
                 return;
             }
         } else {
-            spawned = ServerEntityType.nameToEntity(args[1].toUpperCase());
+            String typeName = args[1].toUpperCase();
+
+            try {
+                ServerEntityType.valueOf(typeName);
+            } catch (IllegalArgumentException e) {
+                error("Invalid entity name '" + typeName + "'");
+                return;
+            }
+
+            if(ServerCommandSpawn.forbiddenSpawn(typeName)) {
+                error("Forbidden entity type '" + typeName + "'");
+                return;
+            }
+
+            spawned = ServerEntityType.nameToEntity(typeName);
 
             if(spawned == null) {
-                error("Invalid entity name '" + args[1].toUpperCase() + "'");
+                // This should never happen anymore after code additions of 11.05.2024
+                error("Invalid entity name '" + typeName + "'");
                 return;
             }
         }
@@ -86,13 +107,6 @@ public class CommandSpawn extends AbstractConsoleCommand {
 
         ServerWorld.get().registerServerEntity(ExpoShared.DIMENSION_OVERWORLD, spawned);
         success("Spawned entity " + spawned.getEntityType() + " at position " + spawned.posX + ", " + spawned.posY + (spawned.staticPosition ? " as static entity" : ""));
-    }
-
-    private boolean forbiddenSpawn(int id) {
-        return switch (id) {
-            case 0, 1, 7, 16, 18  -> true;
-            default -> false;
-        };
     }
 
 }

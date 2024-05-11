@@ -52,10 +52,25 @@ public class ServerCommandSpawn extends AbstractServerCommand {
                 return;
             }
         } else {
-            spawned = ServerEntityType.nameToEntity(args[1].toUpperCase());
+            String typeName = args[1].toUpperCase();
+
+            try {
+                ServerEntityType.valueOf(typeName);
+            } catch (IllegalArgumentException e) {
+                if(!ignoreLogging) sendToSender("Invalid entity name '" + typeName + "'", player);
+                return;
+            }
+
+            if(forbiddenSpawn(typeName)) {
+                if(!ignoreLogging) sendToSender("Forbidden entity type '" + typeName + "'", player);
+                return;
+            }
+
+            spawned = ServerEntityType.nameToEntity(typeName);
 
             if(spawned == null) {
-                if(!ignoreLogging) sendToSender("Invalid entity name '" + args[1].toUpperCase() + "'", player);
+                // This should never happen anymore after code additions of 11.05.2024
+                if(!ignoreLogging) sendToSender("Invalid entity name '" + typeName + "'", player);
                 return;
             }
         }
@@ -106,11 +121,15 @@ public class ServerCommandSpawn extends AbstractServerCommand {
         if(!ignoreLogging) sendToSender("Spawned entity " + spawned.getEntityType() + " at position " + spawned.posX + ", " + spawned.posY, player);
     }
 
-    private boolean forbiddenSpawn(int id) {
+    public static boolean forbiddenSpawn(int id) {
         return switch (id) {
-            case 0, 1, 7, 16, 18  -> true;
+            case 0, 1, 7, 16, 18 -> true;
             default -> false;
         };
+    }
+
+    public static boolean forbiddenSpawn(String type) {
+        return forbiddenSpawn(ServerEntityType.valueOf(type).ENTITY_ID);
     }
 
 }

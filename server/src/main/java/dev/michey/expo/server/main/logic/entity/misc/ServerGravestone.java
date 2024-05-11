@@ -12,6 +12,8 @@ public class ServerGravestone extends ServerEntity {
 
     public ServerGravestone() {
         setDamageableWith(ToolType.FIST, ToolType.PICKAXE);
+        invincibility = 0.75f;
+        health = 30.0f;
     }
 
     @Override
