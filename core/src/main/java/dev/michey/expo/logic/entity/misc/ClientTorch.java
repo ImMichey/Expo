@@ -44,7 +44,7 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
         updateTextureBounds(9, 21, -3, 0);
         interactionPointArray = generateInteractionArray();
         updateDepth();
-        torchLight = new ExpoLight(140f, 32, 1.0f, 0.3f, true);
+        torchLight = new ExpoLight(140f, 32, 0.375f, 0.675f, true);
         torchLight.color(0.992f, 0.541f, 0.184f, 1f);
         torchLight.setFlickering(6.0f, 0.15f);
 
