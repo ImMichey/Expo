@@ -450,9 +450,11 @@ public class ClientWorld {
             r.waterTilesFbo.begin();
                 transparentScreen();
                 renderWaterTiles();
-                r.batch.setColor(0.666f, 0.875f, 1.0f, 0.5f);
-                drawFboTexture(r.waterEntityFbo, null);
-                r.batch.setColor(Color.WHITE);
+                if(GameSettings.get().waterReflections) {
+                    r.batch.setColor(0.666f, 0.875f, 1.0f, 0.5f);
+                    drawFboTexture(r.waterEntityFbo, null);
+                    r.batch.setColor(Color.WHITE);
+                }
                 drawShadowFbo(r, r.simplePassthroughShader, r.waterTilesFbo.getColorBufferTexture());
             r.waterTilesFbo.end();
         }
