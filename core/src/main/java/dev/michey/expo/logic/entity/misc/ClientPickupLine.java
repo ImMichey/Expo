@@ -46,7 +46,7 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         float totalW = (rc.globalGlyph.width * 0.5f + GAP + iconW);
         float maxH = Math.max(iconH, rc.globalGlyph.height * 0.5f);
 
-        physicsBody = new ClientPhysicsBody(this, -totalW * 0.5f - 2, -2f, totalW + 4, maxH + 4);
+        physicsBody = new ClientPhysicsBody(this, -totalW * 0.5f - 3, -3f, totalW + 6, maxH + 6);
     }
 
     public void setMapping() {
@@ -148,6 +148,10 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         float iconH = mapping.uiRender[0].useHeight;
         float totalW = (rc.globalGlyph.width * fontScale + GAP + iconW) * scl;
         float maxH = Math.max(iconH, rc.globalGlyph.height * fontScale) * scl;
+
+        rc.arraySpriteBatch.setColor(0.0f, 0.0f, 0.0f, alpha / ALPHA_DURATION * 0.25f);
+        rc.drawSquareRoundedDoubleAb(clientPosX - totalW * 0.5f - 2.5f, clientPosY - 2.5f, totalW + 5f, maxH + 5f);
+
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha / ALPHA_DURATION);
 
         for(ItemRender ir : mapping.uiRender) {

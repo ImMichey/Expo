@@ -714,6 +714,16 @@ public class RenderContext {
         arraySpriteBatch.draw(square, x + 1, y, w - 2, 1);
     }
 
+    public void drawSquareRoundedDoubleAb(float x, float y, float w, float h) {
+        arraySpriteBatch.draw(square, x, y + 2, w, h - 4);
+
+        arraySpriteBatch.draw(square, x + 2, y, w - 4, 1);
+        arraySpriteBatch.draw(square, x + 1, y + 1, w - 2, 1);
+
+        arraySpriteBatch.draw(square, x + 1, y + h - 2, w - 2, 1);
+        arraySpriteBatch.draw(square, x + 2, y + h - 1, w - 4, 1);
+    }
+
     private ShaderProgram compileShader(String key) {
         log("Compiling shader " + key);
         String vertex = Gdx.files.internal("shaders/" + key + ".vsh").readString();
