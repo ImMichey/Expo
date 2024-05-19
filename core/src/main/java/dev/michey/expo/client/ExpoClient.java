@@ -4,10 +4,13 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import dev.michey.expo.Expo;
 import dev.michey.expo.client.serialization.ExpoClientSerialization;
+import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.server.main.packet.ExpoServerRegistry;
 import dev.michey.expo.server.packet.Packet;
+import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.ExpoShared;
 
 import java.io.IOException;
@@ -76,6 +79,13 @@ public class ExpoClient {
 
                     ecc.getPacketEvaluator().queuePacket(p);
                 }
+            }
+
+            @Override
+            public void disconnected(Connection connection) {
+                GameConsole.get().addSystemErrorMessage("Lost connection to dedicated server.");
+                Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
+                Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
             }
 
         });
