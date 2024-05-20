@@ -12,7 +12,10 @@ public class ExpoServerContainer {
 
     /** The game world. */
     private final ServerWorld serverWorld;
+
+    /** Tick data. */
     public float globalDelta;
+    public int serverTickCount;
 
     /** Performance metrics. */
     public long totalTickDuration;
@@ -28,6 +31,7 @@ public class ExpoServerContainer {
 
     /** Base tick method of the game server's logic. */
     public void loop(ExpoServerBase base, float delta) {
+        serverTickCount++;
         long s = System.nanoTime();
 
         base.handlePackets();
