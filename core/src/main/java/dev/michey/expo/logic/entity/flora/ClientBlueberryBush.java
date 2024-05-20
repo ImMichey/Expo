@@ -1,7 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -28,12 +27,14 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
         bushTexture_sel = generateSelectionTexture(bushTexture);
         bushFruits_sel = generateSelectionTexture(bushFruits);
 
+        /*
         if(MathUtils.randomBoolean()) {
             bushTexture.flip(true, false);
             bushFruits.flip(true, false);
             bushTexture_sel.flip(true, false);
             bushFruits_sel.flip(true, false);
         }
+        */
 
         updateTextureBounds(bushTexture);
         interactionPointArray = generateInteractionArray(3);
