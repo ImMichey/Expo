@@ -56,7 +56,6 @@ public enum ClientEntityType {
     TORCH(35, "Torch", ServerEntityType.TORCH, true),
     SLIME(36, "Slime", ServerEntityType.SLIME, true),
     THROWN_ENTITY(37, "ThrownEntity", ServerEntityType.THROWN_ENTITY, true),
-    BEEHIVE(38, "Beehive", ServerEntityType.BEEHIVE, true),
 
     /** Client only */
     SELECTOR(-1, "Selector", null, false),
@@ -140,7 +139,6 @@ public enum ClientEntityType {
             case 35 -> new ClientTorch();
             case 36 -> new ClientSlime();
             case 37 -> new ClientThrownEntity();
-            case 38 -> new ClientBeehive();
             default -> null;
         };
     }

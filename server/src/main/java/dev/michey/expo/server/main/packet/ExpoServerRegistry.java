@@ -63,6 +63,7 @@ public class ExpoServerRegistry {
                 TeleportReason.class,
                 BiomeDefinition.class,
                 ServerOakTree.TreeData.class,
+                ServerOakTree.BeehiveData.class,
 
                 // Packets
                 P0_Connect_Req.class,

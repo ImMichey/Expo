@@ -52,6 +52,10 @@ public class GenerationRandom {
         return values[random.nextInt(values.length)];
     }
 
+    public int sign() {
+        return 1 | random.nextInt() >> 31;
+    }
+
     public boolean randomBoolean() {
         return random.nextBoolean();
     }

@@ -14,6 +14,7 @@ import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
+import dev.michey.expo.render.animator.SimpleShakeAnimator;
 import dev.michey.expo.render.animator.SquishAnimator2D;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
@@ -51,6 +52,16 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     private float resetShadowFadeTimer;
 
     private boolean drawTrunk, drawLeaves;
+
+    private static final float BEEHIVE_SHAKE_SPEED = 7.5f;
+    private static final float BEEHIVE_SHAKE_ROT = 30f;
+    private static final float BEEHIVE_SWING_SPEED = 1.2f;
+    private static final float BEEHIVE_SWING_ROT = 5f;
+    private ServerOakTree.BeehiveData beehiveData;
+    private TextureRegion beehiveTexture;
+    private float beehiveDelta;
+    private int beehiveSign = 1;
+    private SimpleShakeAnimator beehiveShakeAnimator;
 
     /*
      *      [0] = LeavesWidth
@@ -256,6 +267,15 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             playEntitySound("log_cut");
         }
 
+        if(beehiveData != null) {
+            beehiveShakeAnimator.reset(1.0f);
+            ClientEntity sourceEntity = entityManager().getEntityById(damageSourceEntityId);
+
+            if(sourceEntity != null) {
+                beehiveShakeAnimator.contactDir = sourceEntity.serverDirX == 0 ? (sourceEntity.finalTextureCenterX < finalTextureCenterX ? -1 : 1) : (sourceEntity.serverDirX < 0 ? 1 : -1);
+            }
+        }
+
         squishAnimator2D.reset();
         ParticleSheet.Common.spawnTreeHitParticles(this, clientPosX + 1.0f, finalTextureStartY + cutTrunkHeight() * 0.5f);
 
@@ -333,6 +353,20 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 }
             }
         }
+
+        if(beehiveData != null) {
+            beehiveDelta += delta * BEEHIVE_SWING_SPEED * beehiveSign;
+            beehiveShakeAnimator.calculate(delta);
+
+            if(beehiveDelta >= 1 && beehiveSign > 0) {
+                // Negate.
+                beehiveDelta = 1.0f;
+                beehiveSign = -1;
+            } else if(beehiveDelta <= 0 && beehiveSign < 0) {
+                beehiveDelta = 0.0f;
+                beehiveSign = 1;
+            }
+        }
     }
 
     @Override
@@ -349,6 +383,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
         rc.arraySpriteBatch.begin();
+
+        drawBeehive(rc);
 
         if(!cut && !emptyCrown) {
             rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
@@ -381,6 +417,8 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
             rc.arraySpriteBatch.draw(trunk, clientPosX - trunkWidth() * 0.5f - squishAnimator2D.squishX * 0.5f, clientPosY,
                     trunk.getRegionWidth() + squishAnimator2D.squishX, trunk.getRegionHeight() + squishAnimator2D.squishY);
 
+            drawBeehive(rc);
+
             if(!cut && !emptyCrown) {
                 rc.arraySpriteBatch.setColor((1.0f - colorMix), 1.0f, (1.0f - colorMix), playerBehindInterpolated);
                 rc.arraySpriteBatch.drawShiftedVertices(leaves,
@@ -389,6 +427,19 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                         leaves.getRegionWidth() + squishAnimator2D.squishX, leaves.getRegionHeight() + squishAnimator2D.squishY, foliageAnimator.value + contactAnimator.value, 0);
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
+        }
+    }
+
+    private void drawBeehive(RenderContext rc) {
+        if(beehiveData != null) {
+            float bhx = finalDrawPosX + beehiveData.offsetX() - beehiveTexture.getRegionWidth() * 0.5f;
+            float bhy = finalDrawPosY + trunkHeight() - beehiveTexture.getRegionHeight() + leavesOffset + beehiveData.offsetY();
+            float rot = Interpolation.sine.apply(beehiveDelta) * BEEHIVE_SWING_ROT - BEEHIVE_SWING_ROT * 0.5f + beehiveShakeAnimator.value * 10f;
+
+            rc.arraySpriteBatch.draw(beehiveTexture, bhx, bhy,
+                    beehiveTexture.getRegionWidth() * 0.5f, beehiveTexture.getRegionHeight(),
+                    beehiveTexture.getRegionWidth(), beehiveTexture.getRegionHeight(),
+                    1.0f, 1.0f, rot);
         }
     }
 
@@ -518,6 +569,13 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
 
         if(td.falling()) {
             spawnFallingTree(td.fallingRemaining(), td.fallingDirectionRight());
+        }
+
+        if(payload.length > 1) {
+            beehiveData = (ServerOakTree.BeehiveData) payload[1];
+            beehiveTexture = tr("entity_beehive");
+            beehiveDelta = MathUtils.random();
+            beehiveShakeAnimator = new SimpleShakeAnimator();
         }
     }
 

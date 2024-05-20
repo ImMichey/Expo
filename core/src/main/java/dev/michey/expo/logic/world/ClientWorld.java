@@ -401,11 +401,11 @@ public class ClientWorld {
         if(shader != null) {
             shader.bind();
 
-            Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE1);
+            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE1);
             lookupTexture.bind(1);
             shader.setUniformi("u_lookup", 1);
 
-            Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE0);
+            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         }
 
         r.batch.setColor(1.0f, 1.0f, 1.0f, 0.4f * worldSunShadowAlpha);
@@ -535,7 +535,8 @@ public class ClientWorld {
                 r.vignetteShader.setUniformf("u_damageIntensity", blinkDelta != 0 ? Interpolation.smooth2.apply(blinkDelta) : blinkDelta);
             }
 
-            var ote = clientEntityManager.getEntitiesByTypeSorted(ClientEntityType.HEALTH_BAR,
+            var ote = clientEntityManager.getEntitiesByTypeSorted(
+                    ClientEntityType.HEALTH_BAR,
                     ClientEntityType.DAMAGE_INDICATOR,
                     ClientEntityType.SIGN,
                     ClientEntityType.SELECTOR,
@@ -1136,11 +1137,11 @@ public class ClientWorld {
         r.waterShader.bind();
         r.waterShader.setUniformf("u_time", r.waterDelta);
 
-        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE1);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE1);
         r.displacementTexture.bind(1);
         r.waterShader.setUniformi("u_displacement", 1);
 
-        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE0);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 
         r.batch.begin();
         r.batch.setShader(r.waterShader);
@@ -1185,11 +1186,11 @@ public class ClientWorld {
         r.waterShader.bind();
         r.waterShader.setUniformf("u_time", r.waterDelta);
 
-        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE1);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE1);
         r.displacementTexture.bind(1);
         r.waterShader.setUniformi("u_displacement", 1);
 
-        Gdx.gl.glActiveTexture(Gdx.gl.GL_TEXTURE0);
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
 
         r.batch.begin();
         r.batch.setShader(r.waterShader);

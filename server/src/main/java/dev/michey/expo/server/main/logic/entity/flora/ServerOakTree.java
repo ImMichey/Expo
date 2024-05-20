@@ -6,7 +6,7 @@ import dev.michey.expo.server.main.logic.entity.arch.PhysicsEntity;
 import dev.michey.expo.server.main.logic.entity.arch.PhysicsMassClassification;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.misc.ServerBeehive;
+import dev.michey.expo.server.main.logic.entity.extension.TreeBeehive;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
@@ -34,7 +34,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     public boolean fallingDirectionRight;
     public static float FALLING_ANIMATION_DURATION = 4.25f;
 
-    public ServerBeehive attachedBeehive;
+    /** Beehive data */
+    public TreeBeehive beehive;
 
     public static final float[][] TREE_BODIES = new float[][] {
         new float[] {-7.0f, 4.0f, 14.0f, 4.5f},
@@ -84,14 +85,10 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
             emptyCrown = true;
         }
         */ else {
-            if(rnd.random() <= 0.01f) {
-                attachedBeehive = new ServerBeehive();
-                attachedBeehive.posX = posX;
-                attachedBeehive.posY = posY;
-                attachedBeehive.hiveOffsetX = 0;
-                attachedBeehive.hiveOffsetY = 0;
-
-                //ServerWorld.get().registerServerEntity(entityDimension, attachedBeehive);
+            if(rnd.random() <= 0.005f) {
+                beehive = new TreeBeehive();
+                beehive.offsetX = rnd.random(5f, 9f) * rnd.sign();
+                beehive.offsetY = -rnd.random(3f) - 4f;
             }
         }
     }
@@ -192,8 +189,11 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                 .add("emptyCrown", emptyCrown)
                 ;
 
-        if(attachedBeehive != null) {
-            se.add("bhid", attachedBeehive.entityId);
+        if(beehive != null) {
+            JSONObject bhdata = new JSONObject();
+            bhdata.put("x", beehive.offsetX);
+            bhdata.put("y", beehive.offsetY);
+            se.add("bh", bhdata);
         }
 
         return se;
@@ -210,11 +210,24 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
             fallingDirectionRight = saved.getBoolean("fallingDirectionRight");
         }
         emptyCrown = saved.getBoolean("emptyCrown");
+
+        if(saved.has("bh")) {
+            JSONObject bhData = saved.getJSONObject("bh");
+            beehive = new TreeBeehive();
+            beehive.offsetX = bhData.getFloat("x");
+            beehive.offsetY = bhData.getFloat("y");
+        }
     }
 
     @Override
     public Object[] getPacketPayload() {
-        return new Object[] {new TreeData(trunkVariant, cut, emptyCrown, leavesOffset, falling, fallingDirectionRight, fallingEnd)};
+        TreeData td = new TreeData(trunkVariant, cut, emptyCrown, leavesOffset, falling, fallingDirectionRight, fallingEnd);
+
+        if(beehive != null) {
+            return new Object[] {td, beehive.toData()};
+        } else {
+            return new Object[] {td};
+        }
     }
 
     @Override
@@ -273,6 +286,10 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
     }
 
     public record TreeData(int trunkVariant, boolean cut, boolean emptyCrown, float leavesOffset, boolean falling, boolean fallingDirectionRight, float fallingRemaining) {
+
+    }
+
+    public record BeehiveData(float offsetX, float offsetY) {
 
     }
 
