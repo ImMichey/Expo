@@ -302,7 +302,7 @@ public class ExpoClientChat {
                 playerHistoryMap.put(message.sender, new Pair<>(message.message, new Pair<>(displayLength, displayLength)));
             }
 
-            logch(message.message);
+            logch(message.sender + ": " + message.message);
 
             if(message.byUser) {
                 ClientPackets.p25ChatMessage(message.message);
