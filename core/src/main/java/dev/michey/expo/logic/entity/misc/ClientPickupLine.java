@@ -46,7 +46,7 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         float totalW = (rc.globalGlyph.width * 0.5f + GAP + iconW);
         float maxH = Math.max(iconH, rc.globalGlyph.height * 0.5f);
 
-        physicsBody = new ClientPhysicsBody(this, -totalW * 0.5f - 3, -3f, totalW + 6, maxH + 6);
+        physicsBody = new ClientPhysicsBody(this, -totalW * 0.5f - 3 - 5, -3f, totalW + 6 + 10, maxH + 6);
     }
 
     public void setMapping() {
@@ -150,7 +150,14 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         float maxH = Math.max(iconH, rc.globalGlyph.height * fontScale) * scl;
 
         rc.arraySpriteBatch.setColor(0.0f, 0.0f, 0.0f, alpha / ALPHA_DURATION * 0.25f);
-        rc.drawSquareRoundedDoubleAb(clientPosX - totalW * 0.5f - 2.5f, clientPosY - 2.5f, totalW + 5f, maxH + 5f);
+        rc.drawSquareRoundedDoubleAb(clientPosX - totalW * 0.5f - 2.5f - 5f, clientPosY - 2.5f, totalW + 5f + 10f, maxH + 5f);
+
+        rc.arraySpriteBatch.setColor(0f, 0f, 0f, 0.2f * alpha / ALPHA_DURATION);
+
+        for(ItemRender ir : mapping.uiRender) {
+            rc.arraySpriteBatch.draw(ir.useTextureRegion, clientPosX + ir.offsetX * scl - totalW * 0.5f + 1 * scl, clientPosY + ir.offsetY * scl + (maxH - iconH * scl) * 0.5f - 1 * scl,
+                    ir.useTextureRegion.getRegionWidth() * scl, ir.useTextureRegion.getRegionHeight() * scl);
+        }
 
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha / ALPHA_DURATION);
 
