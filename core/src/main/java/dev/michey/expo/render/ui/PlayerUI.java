@@ -145,7 +145,7 @@ public class PlayerUI {
         tabTopRight = new TextureRegion(tab, 5, 0, 4, 4);
         tabBottomLeft = new TextureRegion(tab, 0, 5, 4, 4);
         tabBottomRight = new TextureRegion(tab, 5, 5, 4, 4);
-        playerTabHead = new TextureRegion(tab, 0, 21, 9, 10);
+        playerTabHead = tr("ui_minimap_player");
         tabPingIcon = new TextureRegion(tab, 0, 16, 4, 4);
         tabBorder3x1 = new TextureRegion(tab, 0, 14, 3, 1);
         tabBorder1x3 = new TextureRegion(tab, 0, 10, 1, 3);
