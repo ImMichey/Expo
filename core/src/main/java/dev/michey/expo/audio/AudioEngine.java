@@ -120,6 +120,13 @@ public class AudioEngine {
     /** Kills a specific sound. **/
     public void killSound(long id) {
         TrackedSoundData tsd = soundData.get(id);
+
+        // Fixes rare(?) ambient sound bug, not sure what the cause is
+        if(tsd == null) {
+            ExpoLogger.log("[AudioEngine] Trying to kill sound with id " + id + ", but it's non existent? Skipping.");
+            return;
+        }
+
         tsd.sound.stop(id);
         tsd.dead = true;
     }
