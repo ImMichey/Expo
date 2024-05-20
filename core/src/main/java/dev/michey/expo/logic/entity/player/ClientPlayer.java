@@ -448,7 +448,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 // Scan process
                 float tx = RenderContext.get().mouseWorldGridX;
                 float ty = RenderContext.get().mouseWorldGridY;
-                float range = mapping.logic.range + 8;
+                float range = mapping.logic.range + 20;
                 float pvtAdjustmentX = 0, pvtAdjustmentY = 0;
 
                 if(mapping.logic.placeData != null) {
