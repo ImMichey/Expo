@@ -232,11 +232,13 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             }
         }
 
+        /*
         if(emulatingType == TileLayerType.OAKPLANKWALL && visibleToRenderEngine) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.draw(ao, finalDrawPosX - 2, finalDrawPosY - 2);
         }
+        */
     }
 
     @Override
