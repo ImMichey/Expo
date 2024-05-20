@@ -11,6 +11,7 @@ import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.dimension.EntityOperation;
 import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.*;
+import dev.michey.expo.server.util.EntityMetadata;
 import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
@@ -194,7 +195,11 @@ public class ServerChunk {
         for(EntityOperation operation : dimension.getEntityManager().getEntityOperationQueue()) {
             if(operation.add) {
                 if(operation.payload.chunkX >= acceptChunkXMin && operation.payload.chunkX <= acceptChunkXMax && operation.payload.chunkY >= acceptChunkYMin && operation.payload.chunkY <= acceptChunkYMax) {
-                    addToList(EntityMetadataMapper.get().getFor(operation.payload.getEntityType()).getPopulationBbox(), operation.payload, existingEntityDimensionMap);
+                    EntityMetadata meta = EntityMetadataMapper.get().getFor(operation.payload.getEntityType());
+
+                    if(meta != null) {
+                        addToList(meta.getPopulationBbox(), operation.payload, existingEntityDimensionMap);
+                    }
                 }
             }
         }
