@@ -1,8 +1,12 @@
 package dev.michey.expo.logic.entity.misc;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
@@ -16,6 +20,7 @@ import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.util.ExpoShared;
 
 import static dev.michey.expo.util.ExpoShared.ROW_TILES;
@@ -52,6 +57,10 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
     public int toChunkX, toChunkY;
     public int toTileArray;
     public String text;
+
+    /** Thrown entity curve */
+    public Vector2[] thrownEntityCurve;
+    public boolean invalidCurve = true;
 
     @Override
     public void onCreation() {
@@ -211,6 +220,51 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
 
     @Override
     public void renderTop(RenderContext rc, float delta) {
+        ClientPlayer cp = ClientPlayer.getLocalPlayer();
+
+        if(cp.holdingItemId != -1) {
+            ItemMapping mapping = ItemMapper.get().getMapping(cp.holdingItemId);
+
+            if(mapping.thrownRender != null) {
+                if(invalidCurve) {
+                    invalidCurve = false;
+
+                    Vector2 start = new Vector2(cp.playerReachCenterX, cp.playerReachCenterY);
+                    Vector2 dst = new Vector2(rc.mouseWorldX, rc.mouseWorldY);
+                    float clDst = Vector2.dst(start.x, start.y, dst.x, dst.y);
+                    float mtd = mapping.logic.throwData.maxThrowDistance;
+
+                    if(clDst > mtd) {
+                        dst = new Vector2(dst).sub(start).nor().scl(mtd).add(start);
+                    }
+
+                    thrownEntityCurve = ServerUtils.toSmoothCurve(start, dst, 128, 64);
+                }
+
+                rc.arraySpriteBatch.end();
+                rc.chunkRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                Gdx.gl.glEnable(GL20.GL_BLEND);
+                Gdx.gl.glBlendFuncSeparate(
+                        GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA,
+                        GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA
+                );
+
+                for(int i = 0; i < thrownEntityCurve.length - 1; i++) {
+                    Vector2 a = thrownEntityCurve[i];
+                    Vector2 b = thrownEntityCurve[i + 1];
+
+                    float alpha = (float) i / thrownEntityCurve.length * 1.25f;
+
+                    rc.chunkRenderer.setColor(1.0f, 1.0f, 1.0f, alpha);
+                    rc.chunkRenderer.rectLine(a, b, 1.5f);
+                }
+
+                rc.chunkRenderer.setColor(Color.WHITE);
+                rc.chunkRenderer.end();
+                rc.arraySpriteBatch.begin();
+            }
+        }
+
         if(currentlyVisible) {
             depth = worldY;
 

@@ -436,6 +436,10 @@ public class RenderContext {
 
             if(p != null) {
                 mousePlayerAngle = GenerationUtils.angleBetween360(p.playerReachCenterX, p.playerReachCenterY, mouseWorldX, mouseWorldY);
+
+                if(p.selector != null) {
+                    p.selector.invalidCurve = true;
+                }
             }
         }
 

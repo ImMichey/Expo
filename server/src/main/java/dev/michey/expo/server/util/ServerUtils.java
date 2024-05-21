@@ -1,5 +1,7 @@
 package dev.michey.expo.server.util;
 
+import com.badlogic.gdx.math.Bezier;
+import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.arch.ExpoServerDedicated;
@@ -133,6 +135,29 @@ public class ServerUtils {
         if(percentage < 80) return ExpoShared.YELLOW;
         if(percentage < 100) return ExpoShared.RED_BRIGHT;
         return ExpoShared.RED;
+    }
+
+    private final static Vector2[] BASE_CURVE = new Vector2[] {
+            new Vector2(0, 0),
+            new Vector2(0, 1f),
+            new Vector2(1f, 0)
+    };
+
+    public static Vector2[] toSmoothCurve(Vector2 start, Vector2 end, int precision, float curveHeight) {
+        var bezier = new Bezier<>(BASE_CURVE);
+        Vector2[] pathCache = new Vector2[precision];
+
+        for(int i = 0; i < precision; i++) {
+            pathCache[i] = new Vector2();
+            float x = i / (float) precision;
+            Vector2 out = bezier.valueAt(pathCache[i], x);
+
+            float progressX = (end.x - start.x) * x;
+            float progressY = (end.y - start.y) * x;
+            pathCache[i].add(start.x + progressX, start.y + progressY + out.y * curveHeight);
+        }
+
+        return pathCache;
     }
 
 }
