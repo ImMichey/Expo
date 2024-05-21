@@ -26,6 +26,11 @@ public class CommandOpenlog extends AbstractConsoleCommand {
 
     @Override
     public void executeCommand(String[] args) throws CommandSyntaxException {
+        if(ExpoLogger.LOG_FILE_ABSOLUTE_PATH.equals("?")) {
+            error("Logging is disabled (file name is ?).");
+            return;
+        }
+
         success("Opening... " + ExpoLogger.LOG_FILE_ABSOLUTE_PATH);
 
         try {
