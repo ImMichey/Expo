@@ -443,12 +443,12 @@ public class ExpoServerPacketReader {
 
     private void doInventoryInteraction(ServerPlayer player, P18_PlayerInventoryInteraction p, PacketReceiver receiver) {
         if(p.containerId == ExpoShared.CONTAINER_ID_PLAYER || p.containerId == ExpoShared.CONTAINER_ID_VOID) {
-            var change = player.playerInventory.performPlayerAction(p.actionType, p.slotId);
+            var change = player.playerInventory.performPlayerAction(p.actionType, p.slotId, p.shift);
             convertInventoryChangeResultToPacket(change, receiver);
         } else {
             if(player.viewingInventory != null) {
                 if(player.viewingInventory.getContainerId() == p.containerId) {
-                    var change = player.viewingInventory.performPlayerAction(player, p.actionType, p.slotId);
+                    var change = player.viewingInventory.performPlayerAction(player, p.actionType, p.slotId, p.shift);
                     convertInventoryChangeResultToPacket(change, receiver);
                 }
             }

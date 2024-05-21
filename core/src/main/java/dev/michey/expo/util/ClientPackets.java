@@ -48,11 +48,12 @@ public class ClientPackets {
     }
 
     /** Sends the P18_PlayerInventoryInteraction packet via UDP protocol. */
-    public static void p18PlayerInventoryInteraction(int actionType, int containerId, int slotId) {
+    public static void p18PlayerInventoryInteraction(int actionType, int containerId, int slotId, boolean shift) {
         P18_PlayerInventoryInteraction p = new P18_PlayerInventoryInteraction();
         p.actionType = actionType;
         p.containerId = containerId;
         p.slotId = slotId;
+        p.shift = shift;
         udp(p);
     }
 

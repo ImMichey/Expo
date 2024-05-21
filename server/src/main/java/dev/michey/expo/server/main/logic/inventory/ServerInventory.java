@@ -2,7 +2,7 @@ package dev.michey.expo.server.main.logic.inventory;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.misc.ServerItem;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -67,7 +67,7 @@ public class ServerInventory {
         viewerList.remove(player.entityId);
     }
 
-    public InventoryChangeResult performPlayerAction(ServerPlayer player, int actionType, int slotId) {
+    public InventoryChangeResult performPlayerAction(ServerPlayer player, int actionType, int slotId, boolean shift) {
         InventoryChangeResult result = new InventoryChangeResult();
         int[] oldIds = player.getEquippedItemIds();
 
@@ -106,13 +106,30 @@ public class ServerInventory {
                         result.addChange(getContainerId(), slotId, slots[slotId].item);
                         result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
                     } else {
-                        player.playerInventory.playerCursorItem = slots[slotId].item;
+                        if(shift && !slots[slotId].item.isEmpty()) {
+                            ServerInventoryItem existing = slots[slotId].item;
+                            InventoryAddItemResult transferResult = player.playerInventory.addItem(existing);
 
-                        ServerInventoryItem replaceWith = new ServerInventoryItem();
-                        slots[slotId].item = replaceWith;
+                            if(transferResult.changeResult.changePresent) {
+                                if(transferResult.fullTransfer) {
+                                    existing.setEmpty();
+                                    transferResult.changeResult.addChange(getContainerId(), slotId, existing);
+                                } else {
+                                    existing.itemAmount = transferResult.remainingAmount;
+                                    transferResult.changeResult.addChange(getContainerId(), slotId, existing);
+                                }
 
-                        result.addChange(getContainerId(), slotId, replaceWith);
-                        result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                                ExpoServerBase.get().getPacketReader().convertInventoryChangeResultToPacket(transferResult.changeResult, PacketReceiver.player(player));
+                            }
+                        } else {
+                            player.playerInventory.playerCursorItem = slots[slotId].item;
+
+                            ServerInventoryItem replaceWith = new ServerInventoryItem();
+                            slots[slotId].item = replaceWith;
+
+                            result.addChange(getContainerId(), slotId, replaceWith);
+                            result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, player.playerInventory.playerCursorItem);
+                        }
                     }
                 }
             } else {
@@ -226,7 +243,7 @@ public class ServerInventory {
             for(var slot : slots) {
                 if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
                 if(slot.item.isEmpty()) {
-                    slot.item = item;
+                    slot.item = new ServerInventoryItem().clone(item);
                     result.changeResult.addChange(getContainerId(), slot.slotIndex, slot.item);
                     result.fullTransfer = true;
                     result.remainingAmount = 0;
@@ -281,8 +298,7 @@ public class ServerInventory {
 
             if(!canFillGaps && firstEmptySlot != -1) {
                 // Fill in empty slot.
-                slots[firstEmptySlot].item = item;
-                slots[firstEmptySlot].item.itemAmount = remaining;
+                slots[firstEmptySlot].item = new ServerInventoryItem().clone(item, remaining);
                 result.remainingAmount = 0;
                 result.fullTransfer = true;
                 result.changeResult.addChange(getContainerId(), firstEmptySlot, slots[firstEmptySlot].item);
@@ -408,6 +424,16 @@ public class ServerInventory {
 
     private void notifyViewers(int[] updatedSlots, ServerInventoryItem[] updated) {
         for(int viewer : viewerList) {
+            ServerEntity viewerEntity = inventoryOwner.getDimension().getEntityManager().getEntityById(viewer);
+            if(viewerEntity == null) continue;
+            ServerPlayer player = (ServerPlayer) viewerEntity;
+            ServerPackets.p19ContainerUpdate(containerId, updatedSlots, updated, PacketReceiver.player(player));
+        }
+    }
+
+    private void notifyViewersExcept(int exceptPlayerId, int[] updatedSlots, ServerInventoryItem[] updated) {
+        for(int viewer : viewerList) {
+            if(exceptPlayerId == viewer) continue;
             ServerEntity viewerEntity = inventoryOwner.getDimension().getEntityManager().getEntityById(viewer);
             if(viewerEntity == null) continue;
             ServerPlayer player = (ServerPlayer) viewerEntity;

@@ -1,5 +1,7 @@
 package dev.michey.expo.render.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
@@ -28,12 +30,12 @@ public class InteractableItemSlot extends InteractableUIElement {
 
     @Override
     public void onLeftClick() {
-        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, containerId, inventorySlotId);
+        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, containerId, inventorySlotId, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
     }
 
     @Override
     public void onRightClick() {
-        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, containerId, inventorySlotId);
+        ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, containerId, inventorySlotId, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
     }
 
     public void drawContents(ClientInventorySlot slot) {

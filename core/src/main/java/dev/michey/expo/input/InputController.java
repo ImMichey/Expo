@@ -35,7 +35,7 @@ public class InputController {
 
         if(ui.hoveredSlot == null) {
             // Clicked while having no slot selected
-            ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, ExpoShared.CONTAINER_ID_VOID, ExpoShared.PLAYER_INVENTORY_SLOT_VOID);
+            ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_LEFT, ExpoShared.CONTAINER_ID_VOID, ExpoShared.PLAYER_INVENTORY_SLOT_VOID, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         } else {
             // Clicked on a slot
             AudioEngine.get().playSoundGroup(ui.hoveredSlot.getLeftClickSoundName());
@@ -53,7 +53,7 @@ public class InputController {
 
         if(ui.hoveredSlot == null) {
             // Clicked while having no slot selected
-            ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, ExpoShared.CONTAINER_ID_VOID, ExpoShared.PLAYER_INVENTORY_SLOT_VOID);
+            ClientPackets.p18PlayerInventoryInteraction(ExpoShared.PLAYER_INVENTORY_ACTION_RIGHT, ExpoShared.CONTAINER_ID_VOID, ExpoShared.PLAYER_INVENTORY_SLOT_VOID, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         } else {
             ui.hoveredSlot.onRightClick();
             AudioEngine.get().playSoundGroup("click");
