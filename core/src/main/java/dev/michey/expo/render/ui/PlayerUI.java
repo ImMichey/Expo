@@ -709,7 +709,6 @@ public class PlayerUI {
         }
     }
 
-    // TODO: #1
     public void drawCursor(ClientInventoryItem item) {
         ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
         RenderContext rc = RenderContext.get();
@@ -718,6 +717,41 @@ public class PlayerUI {
             rc.drawItemTexturesWithNumber(mapping.uiRender, rc.mouseX, rc.mouseY, 0, 0, item.itemAmount);
         } else {
             rc.drawItemTextures(mapping.uiRender, rc.mouseX, rc.mouseY, 0, 0);
+        }
+
+        if(mapping.logic.durability != -1) {
+            // Has durability.
+            boolean drawDurability = mapping.logic.durability > item.itemMetadata.durability;
+
+            if(drawDurability) {
+                float percentage = (float) item.itemMetadata.durability / mapping.logic.durability;
+                int space = 5;
+                int thickness = 1;
+                float yOffset = 4 * uiScale;
+                float fullW = slotW - space * uiScale * 2;
+
+                int dbx = (int) (rc.mouseX - slotW * 0.5f + space * uiScale);
+                int dby = (int) (rc.mouseY - slotH * 0.5f + yOffset);
+
+                rc.hudBatch.setColor(26f / 255f, 16f / 255f, 16f / 255f, 1.0f);
+                rc.hudBatch.draw(whiteSquare, dbx - 1, dby, fullW + 2, thickness * uiScale);
+                rc.hudBatch.draw(whiteSquare, dbx, dby - 1, fullW, thickness * uiScale + 2);
+                rc.hudBatch.setColor(39f / 255f, 24f / 255f, 24f / 255f, 1.0f);
+                rc.hudBatch.draw(whiteSquare, dbx, dby, fullW, thickness * uiScale);
+
+                if(percentage > 0.66f) {
+                    rc.hudBatch.setColor(35f / 255f, 187f / 255f, 67f / 255f, 1f);
+                } else if(percentage > 0.33f) {
+                    rc.hudBatch.setColor(230f / 255f, 230f / 255f, 21f / 255f, 1f);
+                } else {
+                    rc.hudBatch.setColor(238f / 255f, 26f / 255f, 26f / 255f, 1f);
+                }
+
+                float percToPx = fullW * percentage;
+                rc.hudBatch.draw(whiteSquare, dbx, dby, percToPx, thickness * uiScale);
+
+                rc.hudBatch.setColor(Color.WHITE);
+            }
         }
     }
 
