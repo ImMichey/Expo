@@ -8,6 +8,7 @@ import dev.michey.expo.audio.TrackedSoundData;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
+import dev.michey.expo.logic.world.clientphysics.ClientPhysicsBody;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ExpoAnimation;
 import dev.michey.expo.render.light.ExpoLight;
@@ -30,6 +31,8 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
     private ParticleEmitter campfireSmokeEmitter;
     private ExpoLight campfireLight;
     private TrackedSoundData campfireSound;
+
+    private ClientPhysicsBody physicsBody;
 
     public ClientCampfire() {
         fireAnimation = new ExpoAnimation("largeflame", 18, 0.05f);
@@ -59,6 +62,8 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
                         .offset(5, 4)
                         .depth(depth + 0.001f), 0, 0.1f, 0.1f);
         campfireSmokeEmitter.setLinkedEntity(this);
+
+        physicsBody = new ClientPhysicsBody(this, -12f, 3, 24, 9);
     }
 
     private void constructLight() {
@@ -91,6 +96,8 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
 
     @Override
     public void onDeletion() {
+        physicsBody.dispose();
+
         if(campfireLight != null) {
             campfireLight.delete();
 
