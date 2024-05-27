@@ -618,7 +618,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         float totalThrowDuration = td.minThrowDuration + (td.maxThrowDuration - td.minThrowDuration) * Vector2.dst(origin.x, origin.y, dst.x, dst.y) / td.maxThrowDistance;
 
         ServerThrownEntity ste = new ServerThrownEntity();
-        ste.thrownItemId = item.itemId;
+        ste.setThrownData(item.itemId);
         ste.thrownSpeed = 1f / totalThrowDuration;
         ste.originPos = origin;
         ste.dstPos = dst;

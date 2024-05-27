@@ -11,6 +11,7 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.flora.ServerOakTree;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.world.bbox.EntityPhysicsBox;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
@@ -26,7 +27,9 @@ import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
 
 public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
 
-    public int thrownItemId;
+    private int thrownItemId;
+    private ItemMapping thrownItemMapping;
+
     public Vector2 originPos;
     public Vector2 dstPos;
     private Vector2 normPos;
@@ -35,6 +38,9 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
 
     private EntityPhysicsBox body;
     public int ignoreThrowerId;
+    private int collidedWithEntityId = -1;
+    private float prevPosX, prevPosY;
+    private float prevPosDelta;
 
     public float explosionRadius;
     public float explosionDamage;
@@ -44,7 +50,16 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
     @Override
     public void onCreation() {
         normPos = dstPos.cpy().sub(originPos);
-        body = new EntityPhysicsBox(this, 0, 0, 3, 3);
+
+        float[] projectileBox = thrownItemMapping.logic.throwData.projectileBox;
+        body = new EntityPhysicsBox(this, 0, 0, projectileBox[0], projectileBox[1]);
+        prevPosX = posX;
+        prevPosY = posY;
+    }
+
+    public void setThrownData(int thrownItemId) {
+        this.thrownItemId = thrownItemId;
+        thrownItemMapping = ItemMapper.get().getMapping(this.thrownItemId);
     }
 
     @Override
@@ -56,26 +71,56 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
     public void onDeletion() {
         body.dispose();
 
-        if(thrownItemId == ItemMapper.get().getMapping("item_bomb").id || thrownItemId == ItemMapper.get().getMapping("item_nuke").id) {
+        if(collidedWithEntityId > -1) {
+            // Collided with a single entity.
+            ServerEntity collided = getDimension().getEntityManager().getEntityById(collidedWithEntityId);
+
+            if(collided.invincibility <= 0) {
+                boolean applied = collided.applyDamageWithPacket(this, thrownItemMapping.logic.throwData.impactDamage, EntityRemovalReason.DEATH);
+
+                if(applied) {
+                    collided.addKnockback(knockbackStrength, knockbackDuration, new Vector2(collided.posX, collided.posY).sub(prevPosX, prevPosY).nor());
+                }
+
+                if(collided instanceof ServerPlayer player) {
+                    ServerPackets.p23PlayerLifeUpdate(player.health, player.hunger, PacketReceiver.player(player));
+                }
+            }
+        }
+
+        // Apply explosion to surrounding tiles.
+        if(thrownItemMapping.logic.throwData.hasExplosion()) {
             Collection<ServerEntity> check = getDimension().getEntityManager().getAllEntities();
+            boolean impactExplosion = thrownItemMapping.logic.throwData.isImpactExplosion();
 
             for(ServerEntity se : check) {
                 if(se.entityId == entityId) continue;
                 if(se.invincibility > 0) continue;
+                if(se.entityId == collidedWithEntityId) continue;
+                if(se.entityId == ignoreThrowerId && impactExplosion) continue;
+                if(se instanceof ServerItem && impactExplosion) continue;
 
                 if(se.health > 0) {
                     float rawDst = Vector2.dst(posX, posY, se.posX, se.posY);
 
                     if(rawDst <= explosionRadius) {
-                        float relative = 1f - Interpolation.exp5Out.apply(rawDst / explosionRadius);
-                        float applyDamage = explosionDamage * relative;
+                        if(impactExplosion) {
+                            boolean applied = se.applyDamageWithPacket(this, thrownItemMapping.logic.throwData.explosionDamage, EntityRemovalReason.EXPLOSION);
 
-                        boolean applied = se.applyDamageWithPacket(this, applyDamage, EntityRemovalReason.EXPLOSION);
+                            if(applied) {
+                                se.addKnockback(knockbackStrength, knockbackDuration, new Vector2(se.posX, se.posY).sub(prevPosX, prevPosY).nor());
+                            }
+                        } else {
+                            float relative = 1f - Interpolation.exp5Out.apply(rawDst / explosionRadius);
+                            float applyDamage = explosionDamage * relative;
 
-                        if(applied) {
-                            float normRelative = 0.5f + relative * 0.5f;
-                            se.addKnockback(knockbackStrength * normRelative, knockbackDuration * normRelative,
-                                    new Vector2(se.posX, se.posY).sub(posX, posY).nor());
+                            boolean applied = se.applyDamageWithPacket(this, applyDamage, EntityRemovalReason.EXPLOSION);
+
+                            if(applied) {
+                                float normRelative = 0.5f + relative * 0.5f;
+                                se.addKnockback(knockbackStrength * normRelative, knockbackDuration * normRelative,
+                                        new Vector2(se.posX, se.posY).sub(prevPosX, prevPosY).nor());
+                            }
                         }
 
                         // Player packet
@@ -85,6 +130,8 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                     }
                 }
             }
+
+            if(impactExplosion) return;
 
             float halfRadius = explosionRadius * 0.5f;  // 128 * 0.5f = 64
             float startWorldX = posX - halfRadius;      // 100 - 64 = 36
@@ -120,8 +167,18 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
         }
     }
 
+    private final static float THROW_CUTOFF = 0.925f;
+
     @Override
     public void tick(float delta) {
+        prevPosDelta += delta;
+
+        if(prevPosDelta > 0.1f) {
+            prevPosDelta -= 0.1f;
+            prevPosX = posX;
+            prevPosY = posY;
+        }
+
         thrownProgress += delta * thrownSpeed;
 
         if(thrownProgress > 1) {
@@ -145,13 +202,20 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                     PhysicsMassClassification m = pe.getPhysicsMassClassification();
 
                     if(m == PhysicsMassClassification.HEAVY) {
-                        if(pe instanceof ServerBoulder) {
+                        if(pe instanceof ServerBoulder && thrownProgress < THROW_CUTOFF) {
                             continue;
                         }
 
-                        if(pe instanceof ServerOakTree sot && sot.cut) {
+                        if(pe instanceof ServerOakTree sot && sot.cut && thrownProgress < THROW_CUTOFF) {
                             continue;
                         }
+                    }
+
+                    if((m == PhysicsMassClassification.LIGHT || m == PhysicsMassClassification.MEDIUM_PLAYER_PASSABLE || m == PhysicsMassClassification.MEDIUM)
+                            && c.other.userData instanceof ServerEntity se && thrownProgress >= THROW_CUTOFF) {
+                        killEntityWithPacket();
+                        collidedWithEntityId = se.entityId;
+                        continue;
                     }
 
                     if(m == PhysicsMassClassification.HEAVY || m == PhysicsMassClassification.PLAYER || m == PhysicsMassClassification.WALL) {
@@ -163,6 +227,7 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
 
                         if(!isThrower) {
                             killEntityWithPacket();
+                            collidedWithEntityId = ((ServerEntity) c.other.userData).entityId;
                             break;
                         }
                     }
@@ -178,7 +243,7 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
 
     @Override
     public void onLoad(JSONObject saved) {
-        thrownItemId = saved.getInt("thrownItemId");
+        setThrownData(saved.getInt("thrownItemId"));
         originPos = new Vector2(saved.getFloat("ox"), saved.getFloat("oy"));
         dstPos = new Vector2(saved.getFloat("dx"), saved.getFloat("dy"));
         thrownProgress = saved.getFloat("dt");

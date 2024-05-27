@@ -8,11 +8,13 @@ import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.camera.CameraShake;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 
 public class ClientThrownEntity extends ClientEntity implements ReflectableEntity {
@@ -39,14 +41,28 @@ public class ClientThrownEntity extends ClientEntity implements ReflectableEntit
 
     @Override
     public void onDeletion() {
+        ItemMapping mapping = ItemMapper.get().getMapping(thrownItemId);
         ParticleSheet.Common.spawnThrownDustParticles(this, heightOffset);
 
-        if(thrownItemId == ItemMapper.get().getMapping("item_bomb").id || thrownItemId == ItemMapper.get().getMapping("item_nuke").id) { // Bomb
-            CameraShake.invoke(5.0f, 0.6f, new Vector2(clientPosX, clientPosY));
-            playEntitySound("explosion");
+        if(mapping.logic.isThrowable()) {
+            if(mapping.logic.throwData.hasExplosion() && !mapping.logic.throwData.isImpactExplosion()) {
+                CameraShake.invoke(5.0f, 0.6f, new Vector2(clientPosX, clientPosY));
+                playEntitySound("explosion");
 
-            ParticleSheet.Common.spawnExplosionParticles(this);
-            ParticleSheet.Common.spawnGoreParticles(ir[0].useTextureRegion, clientPosX, clientPosY);
+                ParticleSheet.Common.spawnExplosionParticles(this);
+                ParticleSheet.Common.spawnGoreParticles(ir[0].useTextureRegion, clientPosX, clientPosY);
+            }
+
+            if(mapping.logic.throwData.hasImpact()) {
+                // Check for water.
+                if(TileLayerType.isWater(getCurrentTileLayer())) {
+                    playEntitySound("step_water");
+                    spawnPuddle(false);
+                } else {
+                    playEntitySound("bonk");
+                    ParticleSheet.Common.spawnGoreParticles(ir[0].useTextureRegion, clientPosX, clientPosY);
+                }
+            }
         }
     }
 

@@ -141,4 +141,8 @@ public class ItemLogic {
         return placeData != null;
     }
 
+    public boolean isThrowable() {
+        return throwData != null;
+    }
+
 }

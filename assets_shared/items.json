@@ -1498,6 +1498,7 @@
             "logic": {
                 "toolType": "ITEM",
                 "throwData": {
+                    "projectileBox": [3, 3],
                     "maxThrowDistance": 320,
                     "minThrowDuration": 0.5,
                     "maxThrowDuration": 0.6,
@@ -1533,6 +1534,7 @@
             "logic": {
                 "toolType": "ITEM",
                 "throwData": {
+                    "projectileBox": [3, 3],
                     "maxThrowDistance": 512,
                     "minThrowDuration": 0.5,
                     "maxThrowDuration": 0.6,
@@ -1645,6 +1647,43 @@
                     "previewTexture": "entity_sunflower_1",
                     "placeAlignmentOffsetX": 8.0,
                     "static": true
+                }
+            }
+        },
+        {
+            "identifier": "item_throwable_rock",
+            "id": 59,
+            "category": "CONSUMABLE",
+            "displayName": "Throwable Rock",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_throwable_rock"
+                },
+                "held": {
+                    "texture": "item_throwable_rock",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": 1,
+                    "offsetY": 3,
+                    "rotations": [0, -90]
+                },
+                "thrown": {
+                    "texture": "item_throwable_rock"
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "throwData": {
+                    "projectileBox": [3, 3],
+                    "maxThrowDistance": 256,
+                    "minThrowDuration": 0.4,
+                    "maxThrowDuration": 0.6,
+                    "impactDamage": 10.0,
+                    "knockbackStrength": 8.0,
+                    "knockbackDuration": 0.2,
+                    "explosionRadius": 16,
+                    "explosionDamage": 10.0
                 }
             }
         }
