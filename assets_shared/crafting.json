@@ -27,7 +27,8 @@
             "recipe_torch",
             "recipe_insect_net",
             "recipe_wood_mask",
-            "recipe_bandage"
+            "recipe_bandage",
+            "recipe_throwable_rock"
         ],
         "food": [
             "recipe_wheat_seeds",
@@ -466,6 +467,19 @@
             "input": [
                 {
                     "id": 58,
+                    "amount": 1
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_throwable_rock",
+            "output": {
+                "id": 59,
+                "amount": 2
+            },
+            "input": [
+                {
+                    "id": 16,
                     "amount": 1
                 }
             ]
