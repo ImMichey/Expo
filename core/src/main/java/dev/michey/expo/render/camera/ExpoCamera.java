@@ -124,6 +124,8 @@ public class ExpoCamera {
         }
         camera.zoom = ClientStatic.DEFAULT_CAMERA_ZOOM;
         currentZoomLevelIndex = baseZoomLevelIndex;
+
+        RenderContext.get().zoomNotify = true;
     }
 
     public void cycleZoom() {
