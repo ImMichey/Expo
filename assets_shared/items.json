@@ -1682,7 +1682,7 @@
                     "impactDamage": 10.0,
                     "knockbackStrength": 8.0,
                     "knockbackDuration": 0.2,
-                    "explosionRadius": 16,
+                    "explosionRadius": 8,
                     "explosionDamage": 10.0
                 }
             }
