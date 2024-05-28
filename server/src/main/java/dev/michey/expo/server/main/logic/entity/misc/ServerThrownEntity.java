@@ -76,14 +76,20 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
             ServerEntity collided = getDimension().getEntityManager().getEntityById(collidedWithEntityId);
 
             if(collided.invincibility <= 0) {
-                boolean applied = collided.applyDamageWithPacket(this, thrownItemMapping.logic.throwData.impactDamage, EntityRemovalReason.DEATH);
+                if(collided instanceof PhysicsEntity pe) {
+                    PhysicsMassClassification pmc = pe.getPhysicsMassClassification();
 
-                if(applied) {
-                    collided.addKnockback(knockbackStrength, knockbackDuration, new Vector2(collided.posX, collided.posY).sub(prevPosX, prevPosY).nor());
-                }
+                    if(!(pmc == PhysicsMassClassification.WALL || pmc == PhysicsMassClassification.HEAVY || pmc == PhysicsMassClassification.ITEM)) {
+                        boolean applied = collided.applyDamageWithPacket(this, thrownItemMapping.logic.throwData.impactDamage, EntityRemovalReason.DEATH);
 
-                if(collided instanceof ServerPlayer player) {
-                    ServerPackets.p23PlayerLifeUpdate(player.health, player.hunger, PacketReceiver.player(player));
+                        if(applied) {
+                            collided.addKnockback(knockbackStrength, knockbackDuration, new Vector2(collided.posX, collided.posY).sub(prevPosX, prevPosY).nor());
+                        }
+
+                        if(collided instanceof ServerPlayer player) {
+                            ServerPackets.p23PlayerLifeUpdate(player.health, player.hunger, PacketReceiver.player(player));
+                        }
+                    }
                 }
             }
         }
@@ -96,9 +102,19 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
             for(ServerEntity se : check) {
                 if(se.entityId == entityId) continue;
                 if(se.invincibility > 0) continue;
+
                 if(se.entityId == collidedWithEntityId) continue;
                 if(se.entityId == ignoreThrowerId && impactExplosion) continue;
-                if(se instanceof ServerItem && impactExplosion) continue;
+
+                if(impactExplosion) {
+                    if(se instanceof PhysicsEntity pe) {
+                        PhysicsMassClassification pmc = pe.getPhysicsMassClassification();
+
+                        if(pmc == PhysicsMassClassification.WALL || pmc == PhysicsMassClassification.HEAVY || pmc == PhysicsMassClassification.ITEM) {
+                            continue;
+                        }
+                    }
+                }
 
                 if(se.health > 0) {
                     float rawDst = Vector2.dst(posX, posY, se.posX, se.posY);
