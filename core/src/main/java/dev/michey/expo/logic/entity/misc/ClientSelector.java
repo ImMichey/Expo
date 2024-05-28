@@ -253,7 +253,11 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                     Vector2 a = thrownEntityCurve[i];
                     Vector2 b = thrownEntityCurve[i + 1];
 
-                    float alpha = (float) i / thrownEntityCurve.length * 1.25f;
+                    if(i % 10 == 0 || i % 10 == 1) {
+                        continue;
+                    }
+
+                    float alpha = ((float) i) / thrownEntityCurve.length * 1.25f;
 
                     rc.chunkRenderer.setColor(1.0f, 1.0f, 1.0f, alpha);
                     rc.chunkRenderer.rectLine(a, b, 1.5f);
