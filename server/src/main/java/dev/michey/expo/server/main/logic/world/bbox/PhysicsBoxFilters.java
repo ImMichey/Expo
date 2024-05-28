@@ -62,7 +62,7 @@ public class PhysicsBoxFilters {
                     return Response.slide;
                 }
 
-                if(otherClassification == PhysicsMassClassification.LIGHT) {
+                if(otherClassification == PhysicsMassClassification.LIGHT || otherClassification == PhysicsMassClassification.ITEM) {
                     return null;
                 }
             }
