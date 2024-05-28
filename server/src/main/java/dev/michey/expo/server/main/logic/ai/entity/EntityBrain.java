@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.ai.entity;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.server.main.logic.ai.AIConstants;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.entity.misc.ServerThrownEntity;
 import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 
@@ -56,7 +57,12 @@ public class EntityBrain {
 
         if(flee != null) {
             BrainModuleFlee fleeModule = (BrainModuleFlee) flee;
-            fleeModule.setMetadata(attackerEntity.entityId, attackDamage);
+            // Do thrown entity check here
+            if(attackerEntity instanceof ServerThrownEntity ste) {
+                fleeModule.setMetadata(ste.ignoreThrowerId, attackDamage);
+            } else {
+                fleeModule.setMetadata(attackerEntity.entityId, attackDamage);
+            }
             setActiveModule(fleeModule);
         }
     }
