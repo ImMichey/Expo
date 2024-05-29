@@ -30,6 +30,8 @@ public abstract class UIContainer {
     public static UIContainer fromType(InventoryViewType type, int containerId, ServerInventorySlot[] slots) {
         if(type == InventoryViewType.CRATE) {
             return new UIContainerCrate(containerId, slots);
+        } else if(type == InventoryViewType.CHEST) {
+            return new UIContainerChest(containerId, slots);
         }
 
         return null;

@@ -1,6 +1,7 @@
 package dev.michey.expo.server.main.logic.entity.arch;
 
 import dev.michey.expo.server.main.logic.entity.animal.*;
+import dev.michey.expo.server.main.logic.entity.container.ServerChest;
 import dev.michey.expo.server.main.logic.entity.container.ServerCrate;
 import dev.michey.expo.server.main.logic.entity.crop.ServerCropWheat;
 import dev.michey.expo.server.main.logic.entity.flora.*;
@@ -50,6 +51,7 @@ public enum ServerEntityType {
     TORCH(35, false, true),
     SLIME(36, false, false),
     THROWN_ENTITY(37, true, false),
+    CHEST(38, true, true),
     ;
 
     public final int ENTITY_ID;
@@ -102,6 +104,7 @@ public enum ServerEntityType {
             case 35 -> new ServerTorch();
             case 36 -> new ServerSlime();
             case 37 -> new ServerThrownEntity();
+            case 38 -> new ServerChest();
             default -> null;
         };
     }
@@ -146,6 +149,7 @@ public enum ServerEntityType {
             case "TORCH" -> new ServerTorch();
             case "SLIME" -> new ServerSlime();
             case "THROWN", "THROWNENTITY", "THROWN_ENTITY" -> new ServerThrownEntity();
+            case "CHEST" -> new ServerChest();
             default -> null;
         };
     }

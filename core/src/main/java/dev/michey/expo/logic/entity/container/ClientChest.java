@@ -12,7 +12,7 @@ import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 
-public class ClientCrate extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
+public class ClientChest extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private TextureRegion texture;
     private TextureRegion shadowMask;
@@ -24,7 +24,7 @@ public class ClientCrate extends ClientEntity implements SelectableEntity, Refle
     @Override
     public void onCreation() {
         disableTextureCentering = true;
-        texture = tr("entity_crate");
+        texture = tr("entity_chest");
         shadowMask = texture;
         selectionTexture = generateSelectionTexture(texture);
         updateTextureBounds(texture);
@@ -76,7 +76,7 @@ public class ClientCrate extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public ClientEntityType getEntityType() {
-        return ClientEntityType.CRATE;
+        return ClientEntityType.CHEST;
     }
 
     @Override

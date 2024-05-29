@@ -6,6 +6,7 @@
             "recipe_fence_stick",
             "recipe_oak_wood_floor",
             "recipe_crate",
+            "recipe_chest",
             "recipe_sand_floor",
             "recipe_dirt_floor",
             "recipe_oak_wood_wall",
@@ -481,6 +482,19 @@
                 {
                     "id": 16,
                     "amount": 1
+                }
+            ]
+        },
+        {
+            "identifier": "recipe_chest",
+            "output": {
+                "id": 60,
+                "amount": 1
+            },
+            "input": [
+                {
+                    "id": 21,
+                    "amount": 12
                 }
             ]
         }

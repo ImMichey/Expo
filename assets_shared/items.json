@@ -893,7 +893,7 @@
                     "type": "ENTITY",
                     "entityType": "CRATE",
                     "previewTexture": "entity_crate",
-                    "placeAlignmentOffsetX": 1,
+                    "placeAlignmentOffsetX": 0,
                     "static": true
                 }
             }
@@ -1684,6 +1684,37 @@
                     "knockbackDuration": 0.2,
                     "explosionRadius": 8,
                     "explosionDamage": 10.0
+                }
+            }
+        },
+        {
+            "identifier": "item_chest",
+            "id": 60,
+            "category": "BUILDING",
+            "displayName": "Chest",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_chest"
+                },
+                "held": {
+                    "texture": "item_chest",
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": 0,
+                    "offsetY": 4,
+                    "rotations": [0, -90]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "CHEST",
+                    "previewTexture": "entity_chest",
+                    "placeAlignmentOffsetX": 0,
+                    "static": true
                 }
             }
         }

@@ -14,18 +14,18 @@ import dev.michey.expo.server.util.ServerPackets;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class ServerCrate extends ServerEntity {
+public class ServerChest extends ServerEntity {
 
     public EntityPhysicsBox physicsBody;
 
-    public ServerInventory crateInventory;
+    public ServerInventory chestInventory;
 
-    public ServerCrate() {
+    public ServerChest() {
         health = 50.0f;
         setDamageableWith(ToolType.FIST, ToolType.AXE);
 
-        crateInventory = new ServerInventory(InventoryViewType.CRATE, 9, ContainerRegistry.get().getNewUniqueContainerId());
-        crateInventory.setOwner(this);
+        chestInventory = new ServerInventory(InventoryViewType.CHEST, 9, ContainerRegistry.get().getNewUniqueContainerId());
+        chestInventory.setOwner(this);
     }
 
     @Override
@@ -35,15 +35,15 @@ public class ServerCrate extends ServerEntity {
 
     @Override
     public void onInteraction(ServerPlayer player) {
-        crateInventory.addInventoryViewer(player);
-        ServerPackets.p40InventoryView(crateInventory, PacketReceiver.player(player));
+        chestInventory.addInventoryViewer(player);
+        ServerPackets.p40InventoryView(chestInventory, PacketReceiver.player(player));
     }
 
     @Override
     public void onDie() {
-        crateInventory.kickViewers();
-        crateInventory.dropAllItems(7, 0, 8, 12);
-        spawnItemSingle(posX + 8, posY + 2, 0, "item_crate", 8);
+        chestInventory.kickViewers();
+        chestInventory.dropAllItems(7, 0, 8, 12);
+        spawnItemSingle(posX + 8, posY + 2, 0, "item_chest", 8);
     }
 
     @Override
@@ -53,18 +53,18 @@ public class ServerCrate extends ServerEntity {
 
     @Override
     public ServerEntityType getEntityType() {
-        return ServerEntityType.CRATE;
+        return ServerEntityType.CHEST;
     }
 
     @Override
     public void onLoad(JSONObject saved) {
-        InventoryFileLoader.loadFromStorage(crateInventory, (JSONArray) saved.get("inventory"));
+        InventoryFileLoader.loadFromStorage(chestInventory, (JSONArray) saved.get("inventory"));
     }
 
     @Override
     public SavableEntity onSave() {
         return new SavableEntity(this).pack()
-                .add("inventory", InventoryFileLoader.toStorageObject(crateInventory))
+                .add("inventory", InventoryFileLoader.toStorageObject(chestInventory))
                 ;
     }
 
