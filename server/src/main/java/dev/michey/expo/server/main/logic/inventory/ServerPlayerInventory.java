@@ -182,7 +182,7 @@ public class ServerPlayerInventory extends ServerInventory {
                         result.addChange(ExpoShared.CONTAINER_ID_PLAYER, slotId, slots[slotId].item);
                         result.addChange(ExpoShared.CONTAINER_ID_PLAYER, ExpoShared.PLAYER_INVENTORY_SLOT_CURSOR, playerCursorItem);
                     } else {
-                        if(shift && getOwner().viewingInventory != null && !slots[slotId].item.isEmpty()) {
+                        if(shift && getOwner().viewingInventory != null && getOwner().viewingInventory != this && !slots[slotId].item.isEmpty()) {
                             ServerInventoryItem existing = slots[slotId].item;
                             InventoryAddItemResult transferResult = getOwner().viewingInventory.addItem(existing);
 
