@@ -422,7 +422,7 @@ public class ServerInventory {
         notifyViewers(updatedSlots, updated);
     }
 
-    private void notifyViewers(int[] updatedSlots, ServerInventoryItem[] updated) {
+    public void notifyViewers(int[] updatedSlots, ServerInventoryItem[] updated) {
         for(int viewer : viewerList) {
             ServerEntity viewerEntity = inventoryOwner.getDimension().getEntityManager().getEntityById(viewer);
             if(viewerEntity == null) continue;

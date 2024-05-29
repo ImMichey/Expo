@@ -128,6 +128,9 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public void onDie() {
         playerInventory.dropAllItems(0, 4, 32, 32);
         playerInventory.clear();
+        // Fix: Clear cursor too
+        playerInventory.playerCursorItem = null;
+        playerInventory.notifyViewers(new int[] {PLAYER_INVENTORY_SLOT_CURSOR}, new ServerInventoryItem[] {null});
 
         // update held item
         heldItemPacket(PacketReceiver.whoCanSee(this));

@@ -45,6 +45,46 @@ public class ServerPlayerInventory extends ServerInventory {
         setOwner(player);
     }
 
+    @Override
+    public void dropAllItems(float offsetX, float offsetY, float radiusMin, float radiusMax) {
+        int dropItems = 0;
+
+        for(var slot : slots) {
+            if(!slot.item.isEmpty()) {
+                dropItems++;
+            }
+        }
+
+        if(!playerCursorItem.isEmpty()) {
+            dropItems++;
+        }
+
+        Vector2[] positions = GenerationUtils.positions(dropItems, radiusMin, radiusMax);
+        int i = 0;
+
+        for(var slot : slots) {
+            if(!slot.item.isEmpty()) {
+                createDrop(slot.item, offsetX, offsetY, positions[i]);
+                i++;
+            }
+        }
+
+        if(!playerCursorItem.isEmpty()) {
+            createDrop(playerCursorItem, offsetX, offsetY, positions[positions.length - 1]);
+        }
+    }
+
+    private void createDrop(ServerInventoryItem item, float offsetX, float offsetY, Vector2 pos) {
+        ServerItem drop = new ServerItem();
+        drop.itemContainer = new ServerInventoryItem().clone(item);
+        item.setEmpty();
+        drop.posX = getOwner().posX + offsetX;
+        drop.posY = getOwner().posY + offsetY;
+        drop.dstX = pos.x;
+        drop.dstY = pos.y;
+        ServerWorld.get().registerServerEntity(getOwner().entityDimension, drop);
+    }
+
     public ServerItem spawnServerItem(ServerInventoryItem container) {
         // Spawn item entity
         ServerItem item = new ServerItem();
