@@ -526,6 +526,7 @@ public class ServerTile {
             for(String affectedChunkKey : affectedChunks) {
                 // Update tile timestamp
                 ServerChunk sv = dim.getChunkHandler().getActiveChunk(affectedChunkKey);
+                if(sv == null) continue;
                 sv.lastTileUpdate = now;
 
                 if(sendUpdatePacket) {
