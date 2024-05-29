@@ -226,6 +226,12 @@ public class AudioEngine {
         }
 
         TrackedSoundData data = sgd.playSound(volume, false);
+
+        if(data.id == -1) {
+            ExpoLogger.logerr("AudioEngine: Tried to play sound of group '" + groupName + "', but the engine returned an invalid sound handle (" + data.id + ")");
+            return null;
+        }
+
         soundData.put(data.id, data);
         return data;
     }

@@ -69,6 +69,8 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
         ServerTile[] neighbours = tile.getNeighbouringTiles();
 
         for(ServerTile neighbour : neighbours) {
+            if(neighbour == null) continue;
+
             if(neighbour.chunk.hasTileBasedEntities()) {
                 int entityId = neighbour.chunk.getTileBasedEntityIdGrid()[neighbour.tileArray];
 

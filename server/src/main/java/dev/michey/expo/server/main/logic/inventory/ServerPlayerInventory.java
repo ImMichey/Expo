@@ -55,7 +55,7 @@ public class ServerPlayerInventory extends ServerInventory {
             }
         }
 
-        if(!playerCursorItem.isEmpty()) {
+        if(playerCursorItem != null && !playerCursorItem.isEmpty()) {
             dropItems++;
         }
 
@@ -69,7 +69,7 @@ public class ServerPlayerInventory extends ServerInventory {
             }
         }
 
-        if(!playerCursorItem.isEmpty()) {
+        if(playerCursorItem != null && !playerCursorItem.isEmpty()) {
             createDrop(playerCursorItem, offsetX, offsetY, positions[positions.length - 1]);
         }
     }

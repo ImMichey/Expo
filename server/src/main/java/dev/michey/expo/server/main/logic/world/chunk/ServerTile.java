@@ -489,6 +489,7 @@ public class ServerTile {
                     }
 
                     for(ServerTile neighbour : getNeighbouringTiles()) {
+                        if(neighbour == null) continue;
                         if(neighbour.updateLayer0Adjacent(false)) {
                             if(sendUpdatePacket) {
                                 ServerPackets.p32ChunkDataSingle(neighbour, 0);
@@ -504,6 +505,7 @@ public class ServerTile {
                     }
 
                     for(ServerTile neighbour : getNeighbouringTiles()) {
+                        if(neighbour == null) continue;
                         if(neighbour.updateLayer1Adjacent(false)) {
                             if(sendUpdatePacket) {
                                 ServerPackets.p32ChunkDataSingle(neighbour, 1);
