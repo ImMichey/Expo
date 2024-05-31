@@ -42,6 +42,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ArmorRender;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
@@ -93,6 +94,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     private float playerWalkDelta;
     private int playerWalkIndex;
+    private int playerIdleIndex;
     private int lastPlayerWalkIndex;
 
     public int playerDirection = 1; // 0 = Left, 1 = Right
@@ -173,7 +175,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     public HashMap<Integer, TrackedSoundData> itemSoundMap = null;
 
     public int holdingArmorHeadId = -1;
-    public ItemRender[] holdingHeadRender;
+    public ArmorRender holdingHeadRender;
     public int holdingArmorChestId = -1;
     public ItemRender[] holdingChestRender;
     public int holdingArmorGlovesId = -1;
@@ -221,35 +223,35 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         { // Player textures v3
-            idle_body = tra("player_idle_body", 2);
-            idle_eyes = tra("player_idle_eyes", 2);
-            idle_backArm = tra("player_idle_backarm", 2);
-            idle_frontArm = tra("player_idle_frontarm", 2);
-            idle_backLeg = tra("player_idle_backleg", 2);
-            idle_frontLeg = tra("player_idle_frontleg", 2);
+            idle_body = tra("player_idle_body", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_eyes = tra("player_idle_eyes", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_backArm = tra("player_idle_backarm", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_frontArm = tra("player_idle_frontarm", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_backLeg = tra("player_idle_backleg", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_frontLeg = tra("player_idle_frontleg", FRAMES_PLAYER_ANIMATION_IDLE);
 
-            walk_body = tra("player_walk_body", 8);
-            walk_eyes = tra("player_walk_eyes", 8);
-            walk_backArm = tra("player_walk_backarm", 8);
-            walk_frontArm = tra("player_walk_frontarm", 8);
-            walk_backLeg = tra("player_walk_backleg", 8);
-            walk_frontLeg = tra("player_walk_frontleg", 8);
+            walk_body = tra("player_walk_body", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_eyes = tra("player_walk_eyes", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_backArm = tra("player_walk_backarm", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_frontArm = tra("player_walk_frontarm", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_backLeg = tra("player_walk_backleg", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_frontLeg = tra("player_walk_frontleg", FRAMES_PLAYER_ANIMATION_WALK);
 
             blink = trn("player_blink");
             backArm = trn("player_arm_back");
             hair = trn("player_hair_var1");
 
-            idle_armor_legs_frontLeg = tra("armor_legs_var1_idle_frontleg", 2);
-            idle_armor_legs_backLeg = tra("armor_legs_var1_idle_backleg", 2);
-            walk_armor_legs_frontLeg = tra("armor_legs_var1_walk_frontleg", 8);
-            walk_armor_legs_backLeg = tra("armor_legs_var1_walk_backleg", 8);
+            idle_armor_legs_frontLeg = tra("armor_legs_var1_idle_frontleg", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_armor_legs_backLeg = tra("armor_legs_var1_idle_backleg", FRAMES_PLAYER_ANIMATION_IDLE);
+            walk_armor_legs_frontLeg = tra("armor_legs_var1_walk_frontleg", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_armor_legs_backLeg = tra("armor_legs_var1_walk_backleg", FRAMES_PLAYER_ANIMATION_WALK);
 
-            idle_armor_chest_body = tra("armor_chest_var1_idle_body", 2);
-            idle_armor_chest_frontArm = tra("armor_chest_var1_idle_frontarm", 2);
-            idle_armor_chest_backArm = tra("armor_chest_var1_idle_backarm", 2);
-            walk_armor_chest_body = tra("armor_chest_var1_walk_body", 8);
-            walk_armor_chest_frontArm = tra("armor_chest_var1_walk_frontarm", 8);
-            walk_armor_chest_backArm = tra("armor_chest_var1_walk_backarm", 8);
+            idle_armor_chest_body = tra("armor_chest_var1_idle_body", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_armor_chest_frontArm = tra("armor_chest_var1_idle_frontarm", FRAMES_PLAYER_ANIMATION_IDLE);
+            idle_armor_chest_backArm = tra("armor_chest_var1_idle_backarm", FRAMES_PLAYER_ANIMATION_IDLE);
+            walk_armor_chest_body = tra("armor_chest_var1_walk_body", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_armor_chest_frontArm = tra("armor_chest_var1_walk_frontarm", FRAMES_PLAYER_ANIMATION_WALK);
+            walk_armor_chest_backArm = tra("armor_chest_var1_walk_backarm", FRAMES_PLAYER_ANIMATION_WALK);
 
             backArm_armor_chest = trn("armor_chest_var1_backarm");
         }
@@ -957,7 +959,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             if(flipX) {
                 flipped = !flipped;
 
-                if(holdingHeadRender != null) for(ItemRender ir : holdingHeadRender) ir.flip();
+                if(holdingHeadRender != null) holdingHeadRender.flip();
                 if(holdingChestRender != null) for(ItemRender ir : holdingChestRender) ir.flip();
                 if(holdingGlovesRender != null) for(ItemRender ir : holdingGlovesRender) ir.flip();
                 if(holdingLegsRender != null) for(ItemRender ir : holdingLegsRender) ir.flip();
@@ -979,6 +981,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
         // Draw player
         boolean moving = isMoving();
+        playerIdleIndex = playerBreatheDelta < 0 ? 1 : 0;
 
         if(moving) {
             playerWalkDelta += delta * (isSprinting() ? 1.6f : 1.1f);
@@ -1016,7 +1019,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 motionOffset = 0;
             }
         } else {
-            int playerIdleIndex = playerBreatheDelta < 0 ? 1 : 0;
             use_body = idle_body[playerIdleIndex];
             use_eyes = idle_eyes[playerIdleIndex];
             use_frontArm = idle_frontArm[playerIdleIndex];
@@ -1084,14 +1086,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             rc.arraySpriteBatch.draw(use_frontArm, finalDrawPosX, finalDrawPosY);
             rc.arraySpriteBatch.draw(use_armor_chest_frontArm, finalDrawPosX, finalDrawPosY);
 
-            if(holdingArmorHeadId != -1) {
-                int dir = punchAnimation ? punchDirection : playerDirection;
-
-                for(ItemRender ir : holdingHeadRender) {
-                    rc.arraySpriteBatch.draw(ir.useTextureRegion, finalDrawPosX + (dir == 1 ? 0 : -1) + ir.offsetX, finalDrawPosY + 13 + ir.offsetY);
-                }
-            }
-
             drawHeldItem(rc, true);
         }
 
@@ -1114,7 +1108,18 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         { // Draw player hair
-            rc.arraySpriteBatch.draw(hair, finalDrawPosX + (direction() == 1 ? 1 : 0), finalDrawPosY + motionOffset + 20);
+            if(drawHair()) {
+                rc.arraySpriteBatch.draw(hair, finalDrawPosX + (direction() == 1 ? 1 : 0), finalDrawPosY + motionOffset + 20);
+            }
+
+            if(holdingArmorHeadId != -1) {
+                int dir = punchAnimation ? punchDirection : playerDirection;
+
+                TextureRegion[] pickFrom = isMoving() ? holdingHeadRender.walkFrames : holdingHeadRender.idleFrames;
+                int index = isMoving() ? playerWalkIndex : playerIdleIndex;
+
+                rc.arraySpriteBatch.draw(pickFrom[index], finalDrawPosX + (dir == 1 ? 0 : -1) + holdingHeadRender.offsetX, finalDrawPosY + holdingHeadRender.offsetY);
+            }
         }
 
         rc.useRegularArrayShader();
@@ -1173,18 +1178,20 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
             { // Armor shadow
                 if(holdingArmorHeadId != -1) {
-                    for(ItemRender ir : holdingHeadRender) {
-                        float t = 0f;
-                        float b = 1f - n * 21f;
 
-                        float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
-                        float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
+                    float t = 0f;
+                    float b = 1f - n * 21f;
 
-                        int dir = punchAnimation ? punchDirection : playerDirection;
-                        Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, dir == 1 ? 0 : -1, 13);
-                        rc.arraySpriteBatch.drawGradientCustomColor(ir.useTextureRegion,
-                                ir.useTextureRegion.getRegionWidth(), ir.useTextureRegion.getRegionHeight(), shadowBase, topColor, bottomColor);
-                    }
+                    float topColor = new Color(0f, 0f, 0f, t).toFloatBits();
+                    float bottomColor = new Color(0f, 0f, 0f, b).toFloatBits();
+
+                    int dir = punchAnimation ? punchDirection : playerDirection;
+
+                    TextureRegion[] pickFrom = isMoving() ? holdingHeadRender.walkFrames : holdingHeadRender.idleFrames;
+                    int index = isMoving() ? playerWalkIndex : playerIdleIndex;
+
+                    Affine2 shadowBase = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, (dir == 1 ? 0 : -1) + holdingHeadRender.offsetX, holdingHeadRender.offsetY);
+                    rc.arraySpriteBatch.drawGradientCustomColor(pickFrom[index], pickFrom[index].getRegionWidth(), pickFrom[index].getRegionHeight(), shadowBase, topColor, bottomColor);
                 }
             }
 
@@ -1287,9 +1294,11 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 rc.arraySpriteBatch.drawGradient(use_backLeg, use_backLeg.getRegionWidth(), use_backLeg.getRegionHeight(), shadowLeftArm);
                 rc.arraySpriteBatch.drawGradient(use_frontLeg, use_frontLeg.getRegionWidth(), use_frontLeg.getRegionHeight(), shadowLeftArm);
 
-                Affine2 hairAffine = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, (direction() == 1 ? 1 : 0), motionOffset + 20);
-                float hairBottomColor = new Color(0f, 0f, 0f, 1f - n * (motionOffset + 20)).toFloatBits();
-                rc.arraySpriteBatch.drawGradientCustomColor(hair, hair.getRegionWidth(), hair.getRegionHeight(), hairAffine, 0f, hairBottomColor);
+                if(drawHair()) {
+                    Affine2 hairAffine = ShadowUtils.createSimpleShadowAffineInternalOffset(finalDrawPosX, finalDrawPosY, (direction() == 1 ? 1 : 0), motionOffset + 20);
+                    float hairBottomColor = new Color(0f, 0f, 0f, 1f - n * (motionOffset + 20)).toFloatBits();
+                    rc.arraySpriteBatch.drawGradientCustomColor(hair, hair.getRegionWidth(), hair.getRegionHeight(), hairAffine, 0f, hairBottomColor);
+                }
             }
 
             { // Right arm
@@ -1570,7 +1579,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.4f, 0.4f, 0, 0);
+        drawAO33(rc, 0.45f, 0.55f, 0, 0);
     }
 
     @Override
@@ -1731,6 +1740,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         return cachedSprinting;
+    }
+
+    public boolean drawHair() {
+        return holdingArmorHeadId == -1 || !holdingHeadRender.hideLayerBelow;
     }
 
     @Override

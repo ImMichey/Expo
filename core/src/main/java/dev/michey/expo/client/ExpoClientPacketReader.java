@@ -24,7 +24,6 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.FloorType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
-import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.packet.*;
 import dev.michey.expo.util.*;
 import dev.michey.expo.weather.Weather;
@@ -436,6 +435,18 @@ public class ExpoClientPacketReader {
         player.holdingArmorFeetId = ids[5];
 
         if(player.holdingArmorHeadId != -1) {
+            player.holdingHeadRender = ItemMapper.get().getMapping(player.holdingArmorHeadId).armorRender.copy();
+            Expo.get().updateArmor(player.holdingHeadRender);
+
+            if(player.playerDirection == 0) {
+                player.holdingHeadRender.flip();
+            }
+        }
+
+        /*
+        if(player.holdingArmorHeadId != -1) {
+            if(player.playerDirection == 0) player.holdingHeadRender
+
             player.holdingHeadRender = ItemMapper.get().getMapping(player.holdingArmorHeadId).armorRender;
             if(player.playerDirection == 0) for(ItemRender ir : player.holdingHeadRender) ir.flip();
         }
@@ -459,6 +470,7 @@ public class ExpoClientPacketReader {
             player.holdingFeetRender = ItemMapper.get().getMapping(player.holdingArmorFeetId).armorRender;
             if(player.playerDirection == 0) for(ItemRender ir : player.holdingFeetRender) ir.flip();
         }
+        */
     }
 
     private ClientEntity entityFromId(int entityId) {

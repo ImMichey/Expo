@@ -7,6 +7,7 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.entity.container.ServerChest;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
@@ -447,6 +448,16 @@ public class ServerTile {
                         worm.posY = ExpoShared.tileToPos(tileY) + 4f;
                         ServerWorld.get().registerServerEntity(dim.getDimensionName(), worm);
                         ServerPackets.p24PositionalSound("pop", worm.posX, worm.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(dim, chunk.chunkX, chunk.chunkY));
+                    }
+                } else if(digLayer == 1 && dynamicTileParts[digLayer].emulatingType == TileLayerType.SAND && biome == BiomeType.BEACH) {
+                    if(MathUtils.random() <= 0.01f) {
+                        ServerChest chest = new ServerChest();
+                        chest.chestInventory.fillRandom();
+                        chest.posX = ExpoShared.tileToPos(tileX);
+                        chest.posY = ExpoShared.tileToPos(tileY);
+                        chest.setStaticEntity();
+                        ServerWorld.get().registerServerEntity(dim.getDimensionName(), chest);
+                        ServerPackets.p24PositionalSound("pop", chest.posX, chest.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(dim, chunk.chunkX, chunk.chunkY));
                     }
                 }
 

@@ -173,13 +173,6 @@
                     "offsetX": 0,
                     "offsetY": 0,
                     "rotations": [-90.0, 0.0]
-                },
-                "armor": {
-                    "texture": "item_leaf_helmet",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0
                 }
             },
             "logic": {
@@ -750,13 +743,6 @@
                     "offsetX": 0,
                     "offsetY": 0,
                     "rotations": [-90.0, 0.0]
-                },
-                "armor": {
-                    "texture": "item_wood_mask",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 1,
-                    "offsetY": -3
                 }
             },
             "logic": {
@@ -1716,6 +1702,40 @@
                     "placeAlignmentOffsetX": 0,
                     "static": true
                 }
+            }
+        },
+        {
+            "identifier": "item_magnet_helmet",
+            "id": 61,
+            "category": "ARMOR",
+            "displayName": "Magnet Helmet",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_magnet_helmet"
+                },
+                "held": {
+                    "texture": "item_magnet_helmet",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "offsetX": 0,
+                    "offsetY": 0,
+                    "rotations": [-90.0, 0.0]
+                },
+                "armor": {
+                    "texture_idle": "armor_magnet_helmet_idle",
+                    "texture_walk": "armor_magnet_helmet_walk",
+                    "scaleX": 1.0,
+                    "scaleY": 1.0,
+                    "offsetX": 1,
+                    "offsetY": 21,
+                    "hideLayerBelow": true
+                }
+            },
+            "logic": {
+                "stackSize": 1,
+                "durability": 100,
+                "toolType": "HELMET"
             }
         }
     ]

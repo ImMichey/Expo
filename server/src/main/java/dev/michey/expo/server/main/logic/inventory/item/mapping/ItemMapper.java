@@ -6,7 +6,10 @@ import dev.michey.expo.util.ExpoShared;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 
@@ -43,15 +46,15 @@ public class ItemMapper {
             ItemLogic logic = new ItemLogic(entry.getJSONObject("logic"));
             ItemRender[] uiRender;
             ItemRender[] heldRender;
-            ItemRender[] armorRender;
             ItemRender[] thrownRender;
+            ArmorRender armorRender;
 
             if(!client) {
                 // it's a dedicated server with no client presence, skip ItemRender
                 uiRender = null;
                 heldRender = null;
-                armorRender = null;
                 thrownRender = null;
+                armorRender = null;
             } else {
                 JSONObject renderData = entry.getJSONObject("render");
 
@@ -59,14 +62,14 @@ public class ItemMapper {
                     ItemRender[] ir = convertToRenderArray(renderData.get("universal"));
                     uiRender = ir;
                     heldRender = ir;
-                    armorRender = ir;
                     thrownRender = ir;
+                    armorRender = null;
                 } else {
                     uiRender = convertToRenderArray(renderData.get("ui"));
                     heldRender = convertToRenderArray(renderData.get("held"));
 
                     if(renderData.has("armor")) {
-                        armorRender = convertToRenderArray(renderData.get("armor"));
+                        armorRender = new ArmorRender(renderData.getJSONObject("armor"));
                     } else {
                         armorRender = null;
                     }
@@ -95,16 +98,6 @@ public class ItemMapper {
             }
             if(heldRender != null) {
                 for(ItemRender ir : heldRender) {
-                    if(ir.animationFrames > 0) {
-                        dynamicAnimationList.add(ir);
-                    }
-                    if(ir.particleEmitter != null) {
-                        dynamicParticleEmitterList.add(ir);
-                    }
-                }
-            }
-            if(armorRender != null) {
-                for(ItemRender ir : armorRender) {
                     if(ir.animationFrames > 0) {
                         dynamicAnimationList.add(ir);
                     }

@@ -12,11 +12,11 @@ public class ItemMapping {
     public Color color;
     public ItemRender[] uiRender;
     public ItemRender[] heldRender;
-    public ItemRender[] armorRender;
     public ItemRender[] thrownRender;
+    public ArmorRender armorRender;
     public ItemLogic logic;
 
-    public ItemMapping(String identifier, int id, ItemCategory category, String displayName, String displayNameColor, ItemRender[] uiRender, ItemRender[] heldRender, ItemRender[] armorRender, ItemRender[] thrownRender, ItemLogic logic) {
+    public ItemMapping(String identifier, int id, ItemCategory category, String displayName, String displayNameColor, ItemRender[] uiRender, ItemRender[] heldRender, ArmorRender armorRender, ItemRender[] thrownRender, ItemLogic logic) {
         this.identifier = identifier;
         this.id = id;
         this.category = category;

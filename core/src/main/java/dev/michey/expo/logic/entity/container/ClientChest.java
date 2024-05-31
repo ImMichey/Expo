@@ -102,7 +102,7 @@ public class ClientChest extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.5f, 0.6f, 8, 1);
+        drawAO100(rc, 0.375f, 0.45f, 8, 2);
     }
 
 }

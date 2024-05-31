@@ -40,7 +40,7 @@ public enum ServerEntityType {
     FENCE_STICK(24, true, true),
     CROP_WHEAT(25, true, false),
     BOULDER(26, true, true),
-    CRATE(27, true, true),
+    CRATE(27, false, true),
     OAK_TREE_SAPLING(28, false, false),
     CATTAIL(29, true, true),
     CHICKEN(30, true, false),
@@ -51,7 +51,7 @@ public enum ServerEntityType {
     TORCH(35, false, true),
     SLIME(36, false, false),
     THROWN_ENTITY(37, true, false),
-    CHEST(38, true, true),
+    CHEST(38, false, true),
     ;
 
     public final int ENTITY_ID;

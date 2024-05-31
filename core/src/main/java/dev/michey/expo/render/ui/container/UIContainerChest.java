@@ -26,7 +26,7 @@ public class UIContainerChest extends UIContainer {
         super(InventoryViewType.CHEST, containerId);
         convertServerItemsToInventory(slots);
 
-        crateBackground = tr("ui_crate_bg");
+        crateBackground = tr("ui_chest_bg");
         TextureRegion crateTitle = tr("ui_crate_title");
         crateTitleLeft = new TextureRegion(crateTitle, 0, 0, 5, 16);
         crateTitleFiller = new TextureRegion(crateTitle, 6, 0, 1, 16);
@@ -34,7 +34,7 @@ public class UIContainerChest extends UIContainer {
         crateSlot = tr("ui_crate_slot");
         crateSlotS = tr("ui_crate_slotS");
 
-        interactableItemSlots = new InteractableItemSlot[9];
+        interactableItemSlots = new InteractableItemSlot[27];
         for(int i = 0; i < interactableItemSlots.length; i++) {
             interactableItemSlots[i] = new InteractableItemSlot(containerId, i, crateSlotS, crateSlot) {
 
@@ -160,7 +160,10 @@ public class UIContainerChest extends UIContainer {
         float slotH = crateSlot.getRegionHeight() * ui.uiScale;
 
         for(int i = 0; i < interactableItemSlots.length; i++) {
-            interactableItemSlots[i].update(baseSlotX + i * (slotW + 1 * ui.uiScale), baseSlotY, slotW, slotH, ui.uiScale, 0);
+            int x = i % 9;
+            int y = i / 9;
+            interactableItemSlots[i].update(baseSlotX + x * (slotW + 1 * ui.uiScale), baseSlotY +
+                    (29 * ui.uiScale * 2) - y * 29 * ui.uiScale, slotW, slotH, ui.uiScale, 0);
         }
     }
 

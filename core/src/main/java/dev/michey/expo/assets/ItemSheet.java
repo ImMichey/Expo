@@ -76,6 +76,7 @@ public class ItemSheet {
         add("item_sunflower", 57, 14, 18);
         add("item_throwable_rock", 58, 8, 7);
         add("item_chest", 59, 16, 16);
+        add("item_magnet_helmet", 60, 11, 7);
     }
 
     public TextureRegion get(String name) {

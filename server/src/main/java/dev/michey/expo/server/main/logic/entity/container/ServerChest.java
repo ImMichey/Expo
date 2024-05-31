@@ -24,7 +24,7 @@ public class ServerChest extends ServerEntity {
         health = 50.0f;
         setDamageableWith(ToolType.FIST, ToolType.AXE);
 
-        chestInventory = new ServerInventory(InventoryViewType.CHEST, 9, ContainerRegistry.get().getNewUniqueContainerId());
+        chestInventory = new ServerInventory(InventoryViewType.CHEST, 27, ContainerRegistry.get().getNewUniqueContainerId());
         chestInventory.setOwner(this);
     }
 

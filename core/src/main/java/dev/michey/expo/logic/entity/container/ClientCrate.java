@@ -102,7 +102,7 @@ public class ClientCrate extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.5f, 0.6f, 8, 1);
+        drawAO100(rc, 0.45f, 0.5f, 8, 2);
     }
 
 }

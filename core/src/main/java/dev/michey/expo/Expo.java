@@ -29,6 +29,7 @@ import dev.michey.expo.screen.AbstractScreen;
 import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.server.ServerLauncher;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ArmorRender;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
@@ -54,6 +55,8 @@ import java.util.HashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
 import static dev.michey.expo.util.ClientStatic.*;
+import static dev.michey.expo.util.ExpoShared.FRAMES_PLAYER_ANIMATION_IDLE;
+import static dev.michey.expo.util.ExpoShared.FRAMES_PLAYER_ANIMATION_WALK;
 
 public class Expo implements ApplicationListener {
 
@@ -444,13 +447,24 @@ public class Expo implements ApplicationListener {
 	}
 
 	public void loadItemMapperTextures() {
-		// load item render
 		for(ItemMapping map : ItemMapper.get().getItemMappings()) {
 			map.color = Color.valueOf(map.displayNameColor);
 			for(ItemRender ir : map.heldRender) update(ir);
 			for(ItemRender ir : map.uiRender) update(ir);
-			if(map.armorRender != null) for(ItemRender ir : map.armorRender) update(ir);
 			if(map.thrownRender != null) for(ItemRender ir : map.thrownRender) update(ir);
+		}
+	}
+
+	public void updateArmor(ArmorRender ar) {
+		ar.idleFrames = new TextureRegion[FRAMES_PLAYER_ANIMATION_IDLE];
+		ar.walkFrames = new TextureRegion[FRAMES_PLAYER_ANIMATION_WALK];
+
+		for(int i = 0; i < ar.idleFrames.length; i++) {
+			ar.idleFrames[i] = ExpoAssets.get().textureRegionFresh(ar.textureIdle + "_" + (i + 1));
+		}
+
+		for(int i = 0; i < ar.walkFrames.length; i++) {
+			ar.walkFrames[i] = ExpoAssets.get().textureRegionFresh(ar.textureWalk + "_" + (i + 1));
 		}
 	}
 

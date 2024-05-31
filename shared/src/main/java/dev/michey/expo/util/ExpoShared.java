@@ -25,6 +25,10 @@ public class ExpoShared {
     public static final String DIMENSION_OVERWORLD = "overworld";
     public static final String DIMENSION_CAVE = "cave";
 
+    /** Animation constants */
+    public static final int FRAMES_PLAYER_ANIMATION_IDLE = 2;
+    public static final int FRAMES_PLAYER_ANIMATION_WALK = 8;
+
     /** Game mechanic constants */
     public static final int CHUNK_SIZE = 256;
     public static final int TILE_SIZE = 16;

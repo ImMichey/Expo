@@ -110,7 +110,7 @@ public class ServerDimensionEntityManager {
             }
 
             // ################################################################################### PLAYER HOOK START
-            ServerPlayer closestPlayer = getClosestPlayer(item, 20.0f);
+            ServerPlayer closestPlayer = getClosestPlayer(item, 10.0f);
 
             if(closestPlayer != null) {
                 if(closestPlayer.itemCooldown) {
@@ -142,6 +142,48 @@ public class ServerDimensionEntityManager {
                 continue;
             }
             // ################################################################################### PLAYER HOOK END
+
+            // ################################################################################### PLAYER NEAR START
+            List<ServerPlayer> allPlayers = getAllPlayers();
+            float minDst = Float.MAX_VALUE;
+            float useMaxDst = 0;
+
+            for(ServerPlayer player : allPlayers) {
+                float dst = Vector2.dst(player.posX, player.posY, item.posX, item.posY);
+                float maxDst = 32;
+
+                var helmet = player.playerInventory.slots[ExpoShared.PLAYER_INVENTORY_SLOT_HEAD].item;
+
+                if(!helmet.isEmpty() && helmet.itemId == ItemMapper.get().getMapping("item_magnet_helmet").id) {
+                    maxDst = 128;
+                }
+
+                if(dst <= maxDst) {
+                    if(closestPlayer == null || dst < minDst) {
+                        closestPlayer = player;
+                        minDst = dst;
+                        useMaxDst = maxDst;
+                    }
+                }
+            }
+
+            if(closestPlayer != null) {
+                // Approximation distance.
+                Vector2 v = new Vector2(closestPlayer.posX, closestPlayer.posY).sub(item.posX, item.posY).nor();
+                float minNearSpeed = 1.0f;
+                float mergeSpeed = minNearSpeed + Math.abs(Vector2.dst(closestPlayer.posX, closestPlayer.posY, item.posX, item.posY) - useMaxDst) * 3f;
+
+                var result = item.physicsBody.move(v.x * delta * mergeSpeed, v.y * delta * mergeSpeed, PhysicsBoxFilters.playerCollisionFilter);
+
+                item.posX = result.goalX - item.physicsBody.xOffset;
+                item.posY = result.goalY - item.physicsBody.yOffset;
+
+                ServerPackets.p6EntityPosition(item.entityId, item.posX, item.posY, PacketReceiver.whoCanSee(item));
+
+                continue;
+            }
+
+            // ################################################################################### PLAYER NEAR END
 
             int itemId = item.itemContainer.itemId;
             int maxStackSize = ItemMapper.get().getMapping(item.itemContainer.itemId).logic.maxStackSize;
