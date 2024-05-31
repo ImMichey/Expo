@@ -1347,7 +1347,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             BitmapFont use = rc.pickupFont;
             use.getData().setScale(0.5f);
             rc.globalGlyph.setText(use, username);
-            GradientFont.drawGradient(use, rc.arraySpriteBatch, username, clientPosX - rc.globalGlyph.width * 0.5f - (flipped ? 1 : 0), clientPosY + 32 + rc.globalGlyph.height);
+
+            int helmetAdjustment = holdingArmorHeadId == -1 ? 0 : 2;
+
+            GradientFont.drawGradient(use, rc.arraySpriteBatch, username, clientPosX - rc.globalGlyph.width * 0.5f - (flipped ? 1 : 0), clientPosY + 32 + helmetAdjustment + rc.globalGlyph.height);
             use.getData().setScale(1.0f);
         }
     }
