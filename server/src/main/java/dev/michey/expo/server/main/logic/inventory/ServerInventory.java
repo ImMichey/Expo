@@ -231,6 +231,23 @@ public class ServerInventory {
         return result;
     }
 
+    public boolean hasAnySpace(ServerInventoryItem item) {
+        ItemMapping mapping = ItemMapper.get().getMapping(item.itemId);
+
+        for(var slot : slots) {
+            if(slot.slotIndex >= ExpoShared.PLAYER_INVENTORY_SLOT_HEAD) break;
+            if(slot.item.isEmpty()) return true;
+
+            if(slot.item.itemId == mapping.id) {
+                int maxStackSize = mapping.logic.maxStackSize;
+
+                if(slot.item.itemAmount < maxStackSize) return true;
+            }
+        }
+
+        return false;
+    }
+
     public InventoryAddItemResult addItem(ServerInventoryItem item) {
         InventoryAddItemResult result = new InventoryAddItemResult();
         result.changeResult = new InventoryChangeResult();

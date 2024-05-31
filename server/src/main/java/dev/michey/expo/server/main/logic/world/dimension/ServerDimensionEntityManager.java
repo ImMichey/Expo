@@ -160,9 +160,12 @@ public class ServerDimensionEntityManager {
 
                 if(dst <= maxDst) {
                     if(closestPlayer == null || dst < minDst) {
-                        closestPlayer = player;
-                        minDst = dst;
-                        useMaxDst = maxDst;
+                        // Do inventory space check so the items don't follow the player around infinitely
+                        if(player.playerInventory.hasAnySpace(item.itemContainer)) {
+                            closestPlayer = player;
+                            minDst = dst;
+                            useMaxDst = maxDst;
+                        }
                     }
                 }
             }
