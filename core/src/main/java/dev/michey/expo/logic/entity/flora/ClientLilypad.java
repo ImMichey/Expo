@@ -103,7 +103,7 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY + animationSine, texture.getRegionWidth(), texture.getRegionHeight() * -1);
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY + animationSine + 6, texture.getRegionWidth(), texture.getRegionHeight() * -1);
     }
 
     @Override

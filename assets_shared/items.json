@@ -1737,6 +1737,68 @@
                 "durability": 100,
                 "toolType": "HELMET"
             }
+        },
+        {
+            "identifier": "item_tulip_red",
+            "id": 62,
+            "category": "MISC",
+            "displayName": "Red Tulip",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_tulip_red"
+                },
+                "held": {
+                    "texture": "item_tulip_red",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2.5,
+                    "offsetY": 7.5,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "TULIP",
+                    "previewTexture": "entity_tulip_3",
+                    "placeAlignmentOffsetX": 8.0,
+                    "static": true
+                }
+            }
+        },
+        {
+            "identifier": "item_tulip_orange",
+            "id": 63,
+            "category": "MISC",
+            "displayName": "Orange Tulip",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_tulip_orange"
+                },
+                "held": {
+                    "texture": "item_tulip_orange",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -2.5,
+                    "offsetY": 7.5,
+                    "rotations": [45, -45]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM",
+                "placeData": {
+                    "alignment": "TILE",
+                    "type": "ENTITY",
+                    "entityType": "TULIP",
+                    "previewTexture": "entity_tulip_5",
+                    "placeAlignmentOffsetX": 8.0,
+                    "static": true
+                }
+            }
         }
     ]
 }

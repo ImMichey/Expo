@@ -464,6 +464,10 @@ public abstract class ServerEntity {
         damageableWith = types;
     }
 
+    public void onPlace(ServerInventoryItem item) {
+
+    }
+
     public void applyDamageToArea(float[] damageAreaVertices, float damage, float knockbackStrength, float knockbackDuration, boolean useEntityOriginX, boolean useEntityOriginY) {
         // Apply damage to proximity entities
         Collection<ServerEntity> check = getDimension().getEntityManager().getAllDamageableEntities();

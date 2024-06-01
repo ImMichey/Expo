@@ -58,6 +58,7 @@ public enum ClientEntityType {
     SLIME(36, "Slime", ServerEntityType.SLIME, true),
     THROWN_ENTITY(37, "ThrownEntity", ServerEntityType.THROWN_ENTITY, true),
     CHEST(38, "Chest", ServerEntityType.CHEST, true),
+    TULIP(39, "Tulip", ServerEntityType.TULIP, true),
 
     /** Client only */
     SELECTOR(-1, "Selector", null, false),
@@ -142,6 +143,7 @@ public enum ClientEntityType {
             case 36 -> new ClientSlime();
             case 37 -> new ClientThrownEntity();
             case 38 -> new ClientChest();
+            case 39 -> new ClientTulip();
             default -> null;
         };
     }

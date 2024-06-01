@@ -741,6 +741,38 @@
                     }
                 },
                 {
+                    "biome": "PLAINS",
+                    "type": "TULIP",
+                    "static": true,
+                    "chance": 0.0012,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [5, 32],
+                        "spreadChance": 1.0,
+                        "spreadDis": [16.0, 24.0],
+                        "spreadType": ["TULIP"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0],
+                        "spreadUseNextTarget": true
+                    }
+                },
+                {
+                    "biome": "DENSE_FOREST",
+                    "type": "TULIP",
+                    "static": true,
+                    "chance": 0.003,
+                    "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
+                    "spreadData": {
+                        "spread": [2, 7],
+                        "spreadChance": 0.5,
+                        "spreadDis": [14.0, 24.0],
+                        "spreadType": ["TULIP"],
+                        "spreadStatic": true,
+                        "spreadOffsets": [0.0, 0.0],
+                        "spreadUseNextTarget": true
+                    }
+                },
+                {
                     "biome": ["BEACH", "RIVER", "RIVER_DEEP"],
                     "type": "CRAB",
                     "static": false,

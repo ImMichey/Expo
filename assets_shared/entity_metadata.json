@@ -210,5 +210,8 @@
         "name.DIRT": "Dirt Wall",
         "name.ROCK": "Rock Wall",
         "name.OAKPLANKWALL": "Oak Plank Wall"
+    },
+    "TULIP": {
+        "bbox.population": [-5.0, 0, 10.0, 7.0]
     }
 }
