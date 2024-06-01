@@ -247,15 +247,17 @@ public class ServerChunk {
                                                     registerMap.add(generatedEntity);
 
                                                     if(populator.spreadData != null) {
-                                                        if(!populator.spreadData.spreadIgnoreOriginBounds) {
+                                                        SpreadData sd = populator.pickSpreadData(rnd);
+
+                                                        if(!sd.spreadIgnoreOriginBounds) {
                                                             addToList(check.value, generatedEntity, existingEntityDimensionMap);
                                                         }
 
-                                                        if(rnd.randomD() < populator.spreadData.spreadChance) {
-                                                            doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
+                                                        if(rnd.randomD() < sd.spreadChance) {
+                                                            doSpread(sd, rnd, registerMap, t, existingEntityDimensionMap, proposedX, proposedY, entry, wx, wy);
                                                         }
 
-                                                        if(populator.spreadData.spreadIgnoreOriginBounds) {
+                                                        if(sd.spreadIgnoreOriginBounds) {
                                                             addToList(check.value, generatedEntity, existingEntityDimensionMap);
                                                         }
                                                     } else {
@@ -301,8 +303,12 @@ public class ServerChunk {
 
                                 registerMap.add(generatedEntity);
 
-                                if(populator.spreadData != null && rnd.randomD() < populator.spreadData.spreadChance) {
-                                    doSpread(populator.spreadData, rnd, registerMap, t, existingEntityDimensionMap, p.absoluteX, p.absoluteY, entry, wx, wy);
+                                if(populator.spreadData != null) {
+                                    SpreadData sd = populator.pickSpreadData(rnd);
+
+                                    if(rnd.randomD() < sd.spreadChance) {
+                                        doSpread(sd, rnd, registerMap, t, existingEntityDimensionMap, p.absoluteX, p.absoluteY, entry, wx, wy);
+                                    }
                                 }
 
                                 addToList(check.value, generatedEntity, existingEntityDimensionMap);

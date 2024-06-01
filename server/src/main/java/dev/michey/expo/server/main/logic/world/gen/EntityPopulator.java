@@ -1,6 +1,8 @@
 package dev.michey.expo.server.main.logic.world.gen;
 
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
+import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -13,7 +15,7 @@ public class EntityPopulator {
     public double poissonDiskSamplerDistance;
     public int priority;
     public EntityBoundsEntry dimensionBounds = null;
-    public SpreadData spreadData;
+    public SpreadData[] spreadData;
 
     public EntityPopulator(JSONObject singlePopulatorObject) {
         type = ServerEntityType.valueOf(singlePopulatorObject.getString("type"));
@@ -24,9 +26,26 @@ public class EntityPopulator {
 
         // optional
         if(singlePopulatorObject.has("spreadData")) {
-            JSONObject entry = singlePopulatorObject.getJSONObject("spreadData");
-            spreadData = new SpreadData(entry);
+            var object = singlePopulatorObject.get("spreadData");
+
+            if(object instanceof JSONArray ja) {
+                SpreadData[] all = new SpreadData[ja.length()];
+
+                for(int i = 0; i < ja.length(); i++) {
+                    JSONObject iterator = ja.getJSONObject(i);
+                    all[i] = new SpreadData(iterator);
+                }
+
+                spreadData = all;
+            } else {
+                JSONObject entry = singlePopulatorObject.getJSONObject("spreadData");
+                spreadData = new SpreadData[] {new SpreadData(entry)};
+            }
         }
+    }
+
+    public SpreadData pickSpreadData(GenerationRandom gr) {
+        return spreadData[gr.random(0, spreadData.length - 1)];
     }
 
     @Override
@@ -37,7 +56,7 @@ public class EntityPopulator {
                 ", asStaticEntity=" + asStaticEntity +
                 ", poissonDiskSamplerDistance=" + poissonDiskSamplerDistance +
                 ", priority=" + priority +
-                ", spreadData=" + spreadData +
+                ", spreadData=" + Arrays.toString(spreadData) +
                 '}';
     }
 

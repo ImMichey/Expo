@@ -284,15 +284,26 @@
                     "skip": 3,
                     "priority": 100,
                     "skipChunkChance": 0.08,
-                    "spreadData": {
-                        "spread": [1, 5],
-                        "spreadChance": 0.025,
-                        "spreadDis": [16.0, 20.0],
-                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                        "spreadStatic": true,
-                        "spreadOffsets": [0.0, 4.0],
-                        "spreadIgnoreOriginBounds": true
-                    }
+                    "spreadData": [
+                        {
+                            "spread": [1, 5],
+                            "spreadChance": 0.025,
+                            "spreadDis": [16.0, 20.0],
+                            "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                            "spreadStatic": true,
+                            "spreadOffsets": [0.0, 4.0],
+                            "spreadIgnoreOriginBounds": true
+                        },
+                        {
+                            "spread": [2, 6],
+                            "spreadChance": 1.0,
+                            "spreadDis": [10.0, 20.0],
+                            "spreadType": ["GRASS"],
+                            "spreadStatic": true,
+                            "spreadOffsets": [0.0, 0.0],
+                            "spreadIgnoreOriginBounds": true
+                        }
+                    ]
                 },
                 {
                     "biome": "DENSE_FOREST",
@@ -593,14 +604,26 @@
                     "spawnOffsets": [-32.0, 32.0, -32.0, 32.0],
                     "skip": 4,
                     "priority": 100,
-                    "spreadData": {
-                        "spread": [1, 5],
-                        "spreadChance": 0.025,
-                        "spreadDis": [16.0, 20.0],
-                        "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
-                        "spreadStatic": true,
-                        "spreadOffsets": [0.0, 0.0]
-                    }
+                    "spreadData": [
+                        {
+                            "spread": [1, 5],
+                            "spreadChance": 0.025,
+                            "spreadDis": [16.0, 20.0],
+                            "spreadType": ["MUSHROOM_RED", "MUSHROOM_BROWN"],
+                            "spreadStatic": true,
+                            "spreadOffsets": [0.0, 0.0],
+                            "spreadIgnoreOriginBounds": true
+                        },
+                        {
+                            "spread": [2, 6],
+                            "spreadChance": 1.0,
+                            "spreadDis": [10.0, 20.0],
+                            "spreadType": ["GRASS"],
+                            "spreadStatic": true,
+                            "spreadOffsets": [0.0, 0.0],
+                            "spreadIgnoreOriginBounds": true
+                        }
+                    ]
                 },
                 {
                     "biome": "DENSE_FOREST",
