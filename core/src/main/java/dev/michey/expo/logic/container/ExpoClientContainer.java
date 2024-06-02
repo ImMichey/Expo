@@ -19,6 +19,7 @@ import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.packet.Packet;
 import dev.michey.expo.util.ClientStatic;
+import dev.michey.expo.util.ExpoShared;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -191,7 +192,8 @@ public class ExpoClientContainer {
                 float x = ClientPlayer.getLocalPlayer().clientPosX;
                 float y = ClientPlayer.getLocalPlayer().clientPosY;
 
-                String pos = "Pos [" + String.format(Locale.US, "%.2f", x) + " " + String.format(Locale.US, "%.2f", y) + "]";
+                String pos = "Pos [CYAN][" + String.format(Locale.US, "%.2f", x) + " " + String.format(Locale.US, "%.2f", y) + "] [YELLOW][" +
+                        ExpoShared.posToChunk(x) + " " + ExpoShared.posToChunk(y) + "]";
                 playerUI.glyphLayout.setText(useFont, pos);
                 float w3 = playerUI.glyphLayout.width;
                 useFont.draw(r.hudBatch, pos, Gdx.graphics.getWidth() - w3 - spacing, Gdx.graphics.getHeight() - h * 3 - spacing * 4);
