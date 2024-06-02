@@ -14,10 +14,7 @@ public class InventoryFileLoader {
 
         for(int i = 0; i < a; i++) {
             JSONObject slotObject = array.getJSONObject(i);
-            int slot = slotObject.getInt("s");
-            JSONObject item = slotObject.getJSONObject("i");
-
-            loadItemFromStorage(inventory.slots[slot].item, item);
+            loadItemFromStorage(inventory.slots[i].item, slotObject);
         }
     }
 
@@ -26,11 +23,7 @@ public class InventoryFileLoader {
         JSONArray array = new JSONArray();
 
         for(ServerInventorySlot slot : inventory.slots) {
-            array.put(
-                    new JSONObject()
-                            .put("s", slot.slotIndex)
-                            .put("i", itemToStorageObject(slot.item))
-            );
+            array.put(itemToStorageObject(slot.item));
         }
 
         return array;
