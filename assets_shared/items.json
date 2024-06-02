@@ -1632,6 +1632,8 @@
                     "entityType": "SUNFLOWER",
                     "previewTexture": "entity_sunflower_1",
                     "placeAlignmentOffsetX": 8.0,
+                    "placeAlignmentOffsetY": 8.0,
+                    "previewOffsetY": 8.0,
                     "static": true
                 }
             }
@@ -1668,7 +1670,7 @@
                     "impactDamage": 10.0,
                     "knockbackStrength": 8.0,
                     "knockbackDuration": 0.2,
-                    "explosionRadius": 8,
+                    "explosionRadius": 11,
                     "explosionDamage": 10.0
                 }
             }
@@ -1744,6 +1746,7 @@
             "category": "MISC",
             "displayName": "Red Tulip",
             "displayNameColor": "#ffffff",
+            "aliases": ["item_red_tulip"],
             "render": {
                 "ui": {
                     "texture": "item_tulip_red"
@@ -1753,7 +1756,7 @@
                     "scaleX": 1,
                     "scaleY": 1,
                     "offsetX": -2.5,
-                    "offsetY": 7.5,
+                    "offsetY": 6,
                     "rotations": [45, -45]
                 }
             },
@@ -1765,6 +1768,8 @@
                     "entityType": "TULIP",
                     "previewTexture": "entity_tulip_3",
                     "placeAlignmentOffsetX": 8.0,
+                    "placeAlignmentOffsetY": 8.0,
+                    "previewOffsetY": 8.0,
                     "static": true
                 }
             }
@@ -1775,6 +1780,7 @@
             "category": "MISC",
             "displayName": "Orange Tulip",
             "displayNameColor": "#ffffff",
+            "aliases": ["item_orange_tulip"],
             "render": {
                 "ui": {
                     "texture": "item_tulip_orange"
@@ -1784,7 +1790,7 @@
                     "scaleX": 1,
                     "scaleY": 1,
                     "offsetX": -2.5,
-                    "offsetY": 7.5,
+                    "offsetY": 6,
                     "rotations": [45, -45]
                 }
             },
@@ -1796,6 +1802,8 @@
                     "entityType": "TULIP",
                     "previewTexture": "entity_tulip_5",
                     "placeAlignmentOffsetX": 8.0,
+                    "placeAlignmentOffsetY": 8.0,
+                    "previewOffsetY": 8.0,
                     "static": true
                 }
             }
