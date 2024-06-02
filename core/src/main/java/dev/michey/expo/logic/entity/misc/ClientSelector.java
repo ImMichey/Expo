@@ -38,6 +38,7 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
     /** New selector values */
     public SelectorType currentSelectorType = SelectorType.DIG_SHOVEL; // default
     public String currentEntityPlacementTexture;
+    public float entityPlacementOffset;
     public boolean currentlyVisible = false;
     private boolean eligible;
     public boolean blockSelection = false;
@@ -361,7 +362,7 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                 rc.arraySpriteBatch.setColor(Color.WHITE);
             }
 
-            rc.arraySpriteBatch.draw(selector, px, py, sz, sz);
+            rc.arraySpriteBatch.draw(selector, px, py - entityPlacementOffset, sz, sz);
 
             lastTileWorldX = drawPosX;
             lastTileWorldY = drawPosY;

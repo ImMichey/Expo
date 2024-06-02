@@ -150,6 +150,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     private boolean punchSound = true;
     private boolean dontUsePunchSound = false;
     private float lastPunchValue;
+    private float lastThrowDelta;
 
     public float serverPunchAngle;
     public float lerpedServerPunchAngle;
@@ -439,6 +440,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         selector.currentSelectorType = SelectorType.PLACE_ENTITY;
                     }
                     selector.currentEntityPlacementTexture = placeData.previewTextureName;
+                    selector.entityPlacementOffset = placeData.previewOffsetY;
 
                     if(placeData.alignment == PlaceAlignment.TILE) {
                         scanTile = true;
@@ -707,17 +709,38 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                 }
             }
 
-            if(IngameInput.get().rightJustPressed()) {
+            boolean held = IngameInput.get().rightPressed();
+            boolean click = IngameInput.get().rightJustPressed();
+            boolean tm = RenderContext.get().queuedTileMoved;
+
+            if(held || click) {
                 if(holdingItemId != -1) {
+                    // Holding item.
                     ItemMapping mapping = ItemMapper.get().getMapping(holdingItemId);
 
                     if(mapping.logic.throwData != null) {
-                        ClientPackets.p49PlayerThrowEntity(RenderContext.get().mouseWorldX, RenderContext.get().mouseWorldY);
+                        if(click || (RenderContext.get().deltaTotal - lastThrowDelta) >= 0.25f) {
+                            lastThrowDelta = RenderContext.get().deltaTotal;
+                            ClientPackets.p49PlayerThrowEntity(RenderContext.get().mouseWorldX, RenderContext.get().mouseWorldY);
+                        }
                     } else {
-                        handleRightClickNonItem();
+                        if(mapping.logic.placeData != null) {
+                            if(click || tm) {
+                                if(selector.canDoAction() || click) {
+                                    handleRightClickNonItem();
+                                }
+                            }
+                        } else {
+                            if(click) {
+                                handleRightClickNonItem();
+                            }
+                        }
                     }
                 } else {
-                    handleRightClickNonItem();
+                    // Holding no item.
+                    if(click) {
+                        handleRightClickNonItem();
+                    }
                 }
             }
         } else {
@@ -823,6 +846,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             selector.playPulseAnimation();
             ClientPackets.p34PlayerPlace(selector.toChunkX, selector.toChunkY, selector.tileGridX, selector.tileGridY, selector.toTileArray,
                     selector.worldX, selector.worldY);
+            RenderContext.get().queuedTileMoved = false;
         } else {
             if(ClientEntityManager.get().selectedEntity != null) {
                 ClientPackets.p39PlayerInteractEntity();

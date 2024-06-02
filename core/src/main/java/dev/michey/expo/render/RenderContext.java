@@ -67,6 +67,8 @@ public class RenderContext {
     public int mouseTileArray;          // Mouse tile array position. [0 - 255]
     public int mouseDirection;          // Mouse direction in game window. [0 = Left, 1 = Right]
     public boolean mouseMoved;          // If the mouse moved between frames.
+    public boolean tileMoved;           // If the mouse moved between tiles this tick.
+    public boolean queuedTileMoved;
     public int cameraX;
     public int cameraY;
     public double mousePlayerAngle;
@@ -398,6 +400,8 @@ public class RenderContext {
 
         float oldMouseX = mouseX;
         float oldMouseY = mouseY;
+        float oldTileX = mouseTileX;
+        float oldTileY = mouseTileY;
 
         mouseX = Gdx.input.getX();
         mouseY = Math.abs(Gdx.input.getY() - Gdx.graphics.getHeight());
@@ -417,6 +421,9 @@ public class RenderContext {
 
             mouseTileX = ExpoShared.posToTile(mouseWorldX);
             mouseTileY = ExpoShared.posToTile(mouseWorldY);
+
+            tileMoved = (oldTileX != mouseTileX) || (oldTileY != mouseTileY);
+            if(tileMoved) queuedTileMoved = true;
 
             mouseWorldGridX = ExpoShared.tileToPos(mouseTileX);
             mouseWorldGridY = ExpoShared.tileToPos(mouseTileY);
@@ -441,6 +448,8 @@ public class RenderContext {
                     p.selector.invalidCurve = true;
                 }
             }
+        } else {
+            tileMoved = false;
         }
 
         drawStartX = InputUtils.getMouseWorldX(0);

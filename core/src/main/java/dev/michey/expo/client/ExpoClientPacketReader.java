@@ -386,11 +386,11 @@ public class ExpoClientPacketReader {
                     // Placed thing is a floor
                     ParticleSheet.Common.spawnDustConstructFloorParticles(twx, twy);
                 } else {
-                    ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX, p.worldY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
+                    ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX, p.worldY + mapping.logic.placeData.previewOffsetY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
                 }
 
                 String soundName = mapping.logic.placeData.sound != null ? mapping.logic.placeData.sound : "place";
-                AudioEngine.get().playSoundGroupManaged(soundName, new Vector2(p.worldX, p.worldY), PLAYER_AUDIO_RANGE, false);
+                AudioEngine.get().playSoundGroupManaged(soundName, new Vector2(p.worldX, p.worldY + mapping.logic.placeData.previewOffsetY), PLAYER_AUDIO_RANGE, false);
             }
             case P47_ItemConsume p -> {
                 ClientEntity entity = entityFromId(p.entityId);
