@@ -72,14 +72,24 @@ public class ServerCommandGive extends AbstractServerCommand {
 
             if(mapping == null) {
                 if(!stripped.startsWith("item_")) {
-                    stripped = "item_" + stripped;
-                    mapping = ItemMapper.get().getMapping(stripped);
+                    mapping = ItemMapper.get().getMapping("item_" + stripped);
                 }
+            }
+
+            if(mapping == null) {
+                // Try alias here.
+                mapping = ItemMapper.get().getMappingByAlias(stripped);
 
                 if(mapping == null) {
-                    sendToSender("Invalid item name '" + args[1].toLowerCase() + "'", player);
-                    return;
+                    if(!stripped.startsWith("item_")) {
+                        mapping = ItemMapper.get().getMappingByAlias("item_" + stripped);
+                    }
                 }
+            }
+
+            if(mapping == null) {
+                sendToSender("Invalid item name '" + args[1].toLowerCase() + "'", player);
+                return;
             }
 
             ServerInventoryItem item = new ServerInventoryItem(mapping.id, amount);

@@ -7,6 +7,7 @@ public class ItemMapping {
     public String identifier;
     public int id;
     public ItemCategory category;
+    public String[] aliases;
     public String displayName;
     public String displayNameColor;
     public Color color;
@@ -16,10 +17,11 @@ public class ItemMapping {
     public ArmorRender armorRender;
     public ItemLogic logic;
 
-    public ItemMapping(String identifier, int id, ItemCategory category, String displayName, String displayNameColor, ItemRender[] uiRender, ItemRender[] heldRender, ArmorRender armorRender, ItemRender[] thrownRender, ItemLogic logic) {
+    public ItemMapping(String identifier, int id, ItemCategory category, String[] aliases, String displayName, String displayNameColor, ItemRender[] uiRender, ItemRender[] heldRender, ArmorRender armorRender, ItemRender[] thrownRender, ItemLogic logic) {
         this.identifier = identifier;
         this.id = id;
         this.category = category;
+        this.aliases = aliases;
         this.displayName = displayName;
         this.displayNameColor = displayNameColor;
         this.uiRender = uiRender;

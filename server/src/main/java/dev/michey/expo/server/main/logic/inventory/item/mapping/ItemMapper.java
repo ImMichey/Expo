@@ -2,6 +2,7 @@ package dev.michey.expo.server.main.logic.inventory.item.mapping;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import dev.michey.expo.server.util.JsonConverter;
 import dev.michey.expo.util.ExpoShared;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,12 +20,14 @@ public class ItemMapper {
 
     private final HashMap<String, ItemMapping> itemMappings;
     private final HashMap<Integer, ItemMapping> itemMappingsId;
+    private final HashMap<String, ItemMapping> aliasMappings;
     private final List<ItemRender> dynamicAnimationList;
     private final List<ItemRender> dynamicParticleEmitterList;
 
     public ItemMapper(boolean client, boolean reload) {
         itemMappings = new HashMap<>();
         itemMappingsId = new HashMap<>();
+        aliasMappings = new HashMap<>();
         dynamicAnimationList = new LinkedList<>();
         dynamicParticleEmitterList = new LinkedList<>();
 
@@ -40,6 +43,7 @@ public class ItemMapper {
             String identifier = entry.getString("identifier");
             String displayName = entry.getString("displayName");
             String displayNameColor = entry.getString("displayNameColor");
+            String[] aliases = entry.has("aliases") ? JsonConverter.pullStrings(entry.getJSONArray("aliases")) : null;
             ItemCategory category = ItemCategory.valueOf(entry.getString("category"));
             int id = entry.getInt("id");
 
@@ -82,9 +86,15 @@ public class ItemMapper {
                 }
             }
 
-            ItemMapping mapping = new ItemMapping(identifier, id, category, displayName, displayNameColor, uiRender, heldRender, armorRender, thrownRender, logic);
+            ItemMapping mapping = new ItemMapping(identifier, id, category, aliases, displayName, displayNameColor, uiRender, heldRender, armorRender, thrownRender, logic);
             itemMappings.put(identifier, mapping);
             itemMappingsId.put(id, mapping);
+
+            if(aliases != null) {
+                for(String alias : aliases) {
+                    aliasMappings.put(alias, mapping);
+                }
+            }
 
             if(uiRender != null) {
                 for(ItemRender ir : uiRender) {
@@ -162,6 +172,10 @@ public class ItemMapper {
 
     public ItemMapping getMapping(int id) {
         return itemMappingsId.get(id);
+    }
+
+    public ItemMapping getMappingByAlias(String alias) {
+        return aliasMappings.get(alias);
     }
 
     public static ItemMapper get() {
