@@ -1470,9 +1470,9 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                     _y -= (-(v.x * ox) + (v.y * oy * inverse));
 
                     holdingItemSprite.setPosition(_x, _y);
-                    holdingItemSprite.setScale(1, -1);
+                    holdingItemSprite.setScale(ir.scaleX, -ir.scaleY);
                     holdingItemSprite.draw(rc.arraySpriteBatch);
-                    holdingItemSprite.setScale(1, 1);
+                    holdingItemSprite.setScale(ir.scaleX, ir.scaleY);
                 }
             }
         }
