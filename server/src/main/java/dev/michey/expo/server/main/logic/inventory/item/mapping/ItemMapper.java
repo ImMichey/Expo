@@ -128,7 +128,7 @@ public class ItemMapper {
             }
         }
 
-        log("Added " + itemMappings.size() + " item mappings.");
+        log("Added " + itemMappings.size() + " item mappings and " + aliasMappings.size() + " item aliases.");
         INSTANCE = this;
     }
 
