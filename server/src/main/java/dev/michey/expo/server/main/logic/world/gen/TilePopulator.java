@@ -22,6 +22,8 @@ public class TilePopulator {
     public int skip = 1;
     public float skipChunkChance;
     public BorderRequirement borderRequirement = null;
+    public BorderRequirement borderRequirementAny = null;
+    public int borderRequirementAnyCount = 1;
 
     public TilePopulator(JSONObject entry) {
         if(entry.get("biome") instanceof String s) {
@@ -64,6 +66,14 @@ public class TilePopulator {
         if(entry.has("borderRequirement")) {
             borderRequirement = BorderRequirement.valueOf(entry.getString("borderRequirement"));
         }
+
+        if(entry.has("borderRequirementAny")) {
+            borderRequirementAny = BorderRequirement.valueOf(entry.getString("borderRequirementAny"));
+
+            if(entry.has("borderRequirementAnyCount")) {
+                borderRequirementAnyCount = entry.getInt("borderRequirementAnyCount");
+            }
+        }
     }
 
     public SpreadData pickSpreadData(GenerationRandom gr) {
@@ -79,10 +89,11 @@ public class TilePopulator {
                 ", spawnOffsets=" + Arrays.toString(spawnOffsets) +
                 ", asStaticEntity=" + asStaticEntity +
                 ", dimensionBounds=" + dimensionBounds +
-                ", spreadData=" + spreadData +
+                ", spreadData=" + Arrays.toString(spreadData) +
                 ", priority=" + priority +
                 ", skip=" + skip +
                 ", borderRequirement=" + borderRequirement +
+                ", borderRequirementAny=" + borderRequirementAny +
                 '}';
     }
 
