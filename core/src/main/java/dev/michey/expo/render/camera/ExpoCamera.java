@@ -182,15 +182,15 @@ public class ExpoCamera {
     }
 
     private void cameraLerpMouse() {
-        final float LERP_FACTOR = 5f;
-        final float MOUSE_MOVEMENT_STRENGTH = 10f;
+        final float LERP_FACTOR = 7.5f;
+        final float MOUSE_MOVEMENT_STRENGTH = 15f;
         float mouseX = InputUtils.getMouseOnScreenXNegPos() * MOUSE_MOVEMENT_STRENGTH;
         float mouseY = InputUtils.getMouseOnScreenYNegPos() * MOUSE_MOVEMENT_STRENGTH;
 
         if(mousePosition == null) mousePosition = new Vector2(0, 0);
 
         float mouseCameraX = (mouseX - mousePosition.x) * LERP_FACTOR * RenderContext.get().delta;
-        float mouseCameraY = (mouseY - mousePosition.y) * LERP_FACTOR * RenderContext.get().delta * RenderContext.get().aspectRatio;
+        float mouseCameraY = (mouseY - mousePosition.y) * LERP_FACTOR * RenderContext.get().delta / RenderContext.get().aspectRatio;
 
         boolean addX = Math.abs(mouseCameraX) > 0.003f;
         boolean addY = Math.abs(mouseCameraY / RenderContext.get().aspectRatioInverse) > 0.003f;
