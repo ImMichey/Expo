@@ -33,7 +33,7 @@ public enum ClientEntityType {
     POPPY(11, "Poppy", ServerEntityType.POPPY, true),
     BLUEBERRY_BUSH(12, "BlueberryBush", ServerEntityType.BLUEBERRY_BUSH, true),
     WORM(13, "Worm", ServerEntityType.WORM, true),
-    ROCK(14, "Rock", ServerEntityType.ROCK, true),
+    ROCK(14, "Rock", ServerEntityType.ROCK, false),
     CRAB(15, "Crab", ServerEntityType.CRAB, true),
     DYNAMIC_3D_TILE(16, "Dynamic3DTile", ServerEntityType.DYNAMIC_3D_TILE, true),
     WHEAT_PLANT(17, "WheatPlant", ServerEntityType.WHEAT_PLANT, true),
