@@ -119,7 +119,7 @@ public class ClientMushroomGlowing extends ClientEntity implements SelectableEnt
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.225f, 0.35f, 0, 0.5f);
+        drawAO100(rc, 0.225f, 0.35f, 0, 0.5f);
     }
 
 }

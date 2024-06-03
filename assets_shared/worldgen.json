@@ -506,6 +506,16 @@
                     }
                 },
                 {
+                    "biome": ["DENSE_FOREST", "FOREST", "PLAINS"],
+                    "type": "CATTAIL",
+                    "static": true,
+                    "chance": 0.125,
+                    "spawnOffsets": [-4.0, 4.0, -4.0, 4.0],
+                    "borderRequirementAny": "WATER",
+                    "borderRequirementAnyCount": 3,
+                    "priority": 10000
+                },
+                {
                     "biome": "BEACH",
                     "type": "BOULDER",
                     "static": true,

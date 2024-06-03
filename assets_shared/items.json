@@ -178,7 +178,7 @@
             "logic": {
                 "stackSize": 1,
                 "durability": 100,
-                "toolType": "HELMET"
+                "toolType": "ITEM"
             }
         },
         {
@@ -193,8 +193,8 @@
                 },
                 "held": {
                     "texture": "item_grassfiber",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
+                    "scaleX": 1,
+                    "scaleY": 1,
                     "offsetX": -1.0,
                     "offsetY": 5.0,
                     "rotations": [45.0, -45.0]
@@ -748,7 +748,7 @@
             "logic": {
                 "stackSize": 1,
                 "durability": 100,
-                "toolType": "HELMET"
+                "toolType": "ITEM"
             }
         },
         {
@@ -1045,6 +1045,8 @@
                     "entityType": "TORCH",
                     "previewTexture": "entity_torch",
                     "placeAlignmentOffsetX": 8.0,
+                    "placeAlignmentOffsetY": 4.0,
+                    "previewOffsetY": 4.0,
                     "static": true
                 }
             }
@@ -1267,8 +1269,8 @@
                     "texture": "item_flint_dagger",
                     "scaleX": 1,
                     "scaleY": 1,
-                    "offsetX": -2.0,
-                    "offsetY": 6.0,
+                    "offsetX": -2.25,
+                    "offsetY": 5.5,
                     "rotations": [45, -45]
                 }
             },
@@ -1451,8 +1453,9 @@
                     "alignment": "TILE",
                     "type": "ENTITY",
                     "entityType": "LILYPAD",
-                    "placeAlignmentOffsetX": 0,
-                    "placeAlignmentOffsetY": 4,
+                    "placeAlignmentOffsetX": 8.0,
+                    "placeAlignmentOffsetY": 4.0,
+                    "previewOffsetY": 4.0,
                     "floorRequirement": "WATER_OVERLAY",
                     "previewTexture": "entity_lilypad_1",
                     "static": true
@@ -1593,12 +1596,12 @@
                     "texture": "item_sunflower_seeds"
                 },
                 "held": {
-                    "texture": "item_sunflower_seeds",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45, -45]
+                    "texture": "item_sunflower_seeds_held",
+                    "scaleX": 0.75,
+                    "scaleY": 0.75,
+                    "offsetX": -1,
+                    "offsetY": 1,
+                    "rotations": [0, -90]
                 }
             },
             "logic": {

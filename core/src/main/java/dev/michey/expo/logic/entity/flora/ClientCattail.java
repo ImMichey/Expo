@@ -1,10 +1,8 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
-import dev.michey.expo.assets.ExpoAssets;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -14,37 +12,32 @@ import dev.michey.expo.render.animator.ContactAnimator;
 import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientCattail extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
-    private final FoliageAnimator foliageAnimator = new FoliageAnimator(this, 0.8f, 1.7f, 0.02f, 0.03f, 0.035f, 0.05f, 2.0f, 5.0f, 0.5f, 1.5f);
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(this,
+            3.0f, 4.0f, 0.005f, 0.0075f, 0.009f, 0.010f, 2.0f, 5.0f, 0.5f, 1.5f);
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
     private int variant;
-    private Texture grass;
-    private TextureRegion grassShadow;
+    private TextureRegion cattailTexture, cattailTexture_sel;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
-        contactAnimator.MIN_SQUISH = 0.6667f;
-        grass = ExpoAssets.get().texture("foliage/entity_cattail/cattail_" + variant + ".png");
-        grassShadow = tr("cattail_shadow_" + variant);
+        contactAnimator.MIN_SQUISH = 0.75f;
 
-        float w = 0, h = 0;
+        cattailTexture = new TextureRegion(tr("entity_cattail_" + variant));
+        cattailTexture_sel = generateSelectionTexture(cattailTexture);
 
-        if(variant == 1 || variant == 2) {
-            w = 17;
-            h = 25;
-        } else if(variant == 3 || variant == 4) {
-            w = 14;
-            h = 18;
+        if(MathUtils.randomBoolean()) {
+            cattailTexture.flip(true, false);
+            cattailTexture_sel.flip(true, false);
         }
 
-        updateTextureBounds(w, h, 1, 1);
-        interactionPointArray = generateInteractionArray(2, textureHeight - 12);
+        updateTextureBounds(cattailTexture);
+        interactionPointArray = generateInteractionArray(4);
     }
 
     @Override
@@ -53,6 +46,9 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
         contactAnimator.onContact();
 
         ParticleSheet.Common.spawnGrassHitParticles(this);
+        if(newHealth <= 0) {
+            ParticleSheet.Common.spawnDustHitParticles(this);
+        }
     }
 
     @Override
@@ -65,8 +61,11 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
-        foliageAnimator.resetWind();
-        contactAnimator.tick(delta);
+
+        if(visibleToRenderEngine) {
+            foliageAnimator.resetWind();
+            contactAnimator.tick(delta);
+        }
     }
 
     @Override
@@ -77,15 +76,15 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        setSelectionValues(Color.BLACK);
+        setSelectionValues(Color.WHITE);
 
-        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-        rc.arraySpriteBatch.end();
+        rc.arraySpriteBatch.drawShiftedVertices(cattailTexture_sel, finalSelectionDrawPosX, finalSelectionDrawPosY + contactAnimator.squishAdjustment,
+                cattailTexture_sel.getRegionWidth(), cattailTexture_sel.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
     }
 
     @Override
     public void render(RenderContext rc, float delta) {
-        visibleToRenderEngine = rc.inDrawBounds(this);
+        visibleToRenderEngine = rc.inDrawBounds(this, 4);
 
         if(visibleToRenderEngine) {
             foliageAnimator.calculateWindOnDemand();
@@ -94,32 +93,25 @@ public class ClientCattail extends ClientEntity implements SelectableEntity, Ref
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+            rc.arraySpriteBatch.drawShiftedVertices(cattailTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                    cattailTexture.getRegionWidth(), cattailTexture.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
         }
     }
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment + 2, grass.getWidth(), grass.getHeight() * contactAnimator.squish * -1, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
+        rc.arraySpriteBatch.drawShiftedVertices(cattailTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                cattailTexture.getRegionWidth(), cattailTexture.getRegionHeight() * contactAnimator.squish * -1, foliageAnimator.value + contactAnimator.value, 0);
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        foliageAnimator.calculateWindOnDemand();
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(grassShadow, shadow);
-        boolean drawGrass = rc.verticesInBounds(grassVertices);
-
-        if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-        }
+        drawWindShadowIfVisible(cattailTexture, foliageAnimator, contactAnimator);
     }
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAOAuto50(rc);
+        drawAO100(rc, 0.4f, 0.5f, 0, 1);
     }
 
     @Override

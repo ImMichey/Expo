@@ -95,13 +95,13 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
         if(draw) {
             rc.useArrayBatch();
             rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
+            //rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
     }
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.25f, 0.33f, -1, 1.5f);
+        drawAO100(rc, 0.2f, 0.375f, -0.5f, 2f);
     }
 
     @Override

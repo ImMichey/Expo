@@ -6,8 +6,6 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.ToolType;
 import dev.michey.expo.server.main.logic.world.chunk.GenerationRandom;
-import dev.michey.expo.server.main.logic.world.chunk.ServerTile;
-import dev.michey.expo.util.ExpoShared;
 import org.json.JSONObject;
 
 public class ServerCattail extends ServerEntity {
@@ -22,14 +20,15 @@ public class ServerCattail extends ServerEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        variant = rnd.random(1, 2);
+        variant = rnd.random(2, 4);
 
+        /*
         int tx = ExpoShared.posToTile(posX);
         int ty = ExpoShared.posToTile(posY);
 
         posX = ExpoShared.tileToPos(tx) + 8f + rnd.random(-1f, 1f);
         posY = ExpoShared.tileToPos(ty) + 8f + rnd.random(-1f, 1f);
-        setStaticEntity();
+        */
     }
 
     @Override

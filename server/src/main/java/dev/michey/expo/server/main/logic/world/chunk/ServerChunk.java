@@ -237,7 +237,21 @@ public class ServerChunk {
                                             var check = causesCollision(proposedX, proposedY, entry, existingEntityDimensionMap, wx, wy);
 
                                             if(!check.key) {
-                                                if(populator.borderRequirement == null || populator.borderRequirement.meetsRequirements(populator.borderRequirement, tile.getNeighbouringTiles())) {
+                                                boolean borderCheckA = populator.borderRequirement == null; // True = has no requirement
+                                                boolean borderCheckB = populator.borderRequirementAny == null;
+                                                ServerTile[] neighbouringTiles = null;
+
+                                                if(!borderCheckA) {
+                                                    neighbouringTiles = tile.getNeighbouringTiles();
+                                                    borderCheckA = populator.borderRequirement.meetsRequirements(populator.borderRequirement, neighbouringTiles);
+                                                }
+
+                                                if(!borderCheckB) {
+                                                    if(neighbouringTiles == null) neighbouringTiles = tile.getNeighbouringTiles();
+                                                    borderCheckB = populator.borderRequirementAny.meetsRequirementsAny(populator.borderRequirementAny, populator.borderRequirementAnyCount, neighbouringTiles);
+                                                }
+
+                                                if(borderCheckA && borderCheckB) {
                                                     ServerEntity generatedEntity = ServerEntityType.typeToEntity(populator.type);
                                                     generatedEntity.posX = (int) proposedX;
                                                     generatedEntity.posY = (int) proposedY;

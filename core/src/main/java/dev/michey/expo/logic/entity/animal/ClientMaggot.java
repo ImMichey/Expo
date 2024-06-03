@@ -84,7 +84,7 @@ public class ClientMaggot extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.25f, 0.25f, flipped ? 2 : -2, 0.5f);
+        drawAO100(rc, 0.25f, 0.25f, flipped ? 2 : -2, 0.5f);
     }
 
     @Override

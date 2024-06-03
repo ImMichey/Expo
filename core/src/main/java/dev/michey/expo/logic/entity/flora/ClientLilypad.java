@@ -9,9 +9,10 @@ import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
+import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.util.EntityRemovalReason;
 
-public class ClientLilypad extends ClientEntity implements SelectableEntity, ReflectableEntity {
+public class ClientLilypad extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
     private int variant;
     public TextureRegion texture;
@@ -94,6 +95,11 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity, Ref
             rc.useRegularArrayShader();
             rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY + animationSine);
         }
+    }
+
+    @Override
+    public void renderAO(RenderContext rc) {
+        drawAO100(rc, 0.25f, 0.3f, 0, 0.5f);
     }
 
     @Override

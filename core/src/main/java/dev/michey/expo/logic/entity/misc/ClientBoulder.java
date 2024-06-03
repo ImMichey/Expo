@@ -131,7 +131,7 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.4f, 0.4f, 0, 1.5f);
+        drawAO100(rc, 0.35f, 0.4f, 0, 1.5f);
     }
 
     @Override

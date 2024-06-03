@@ -108,7 +108,7 @@ public class ClientSign extends ClientEntity implements SelectableEntity, Reflec
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAOAuto50(rc);
+        drawAOAuto100(rc);
     }
 
     @Override

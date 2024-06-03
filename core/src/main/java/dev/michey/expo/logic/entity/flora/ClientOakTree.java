@@ -518,9 +518,9 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
     @Override
     public void renderAO(RenderContext rc) {
         if(cut && resetShadowFadeTimer <= 0) {
-            drawAO50(rc, 0.5f, 0.75f, 1, 3.5f);
+            drawAO100(rc, 0.5f, 0.75f, 1, 3.5f);
         } else {
-            drawAO50(rc, 1.0f, 1.25f, 1, 3.5f);
+            drawAO100(rc, 1.0f, 1.25f, 1, 3.5f);
         }
     }
 

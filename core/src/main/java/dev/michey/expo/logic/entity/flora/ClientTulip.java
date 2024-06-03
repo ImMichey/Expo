@@ -26,6 +26,7 @@ public class ClientTulip extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public void onCreation() {
+        contactAnimator.MIN_SQUISH = 0.6667f;
         grassTexture = new TextureRegion(tr("entity_tulip_" + variant));
         grassTexture_sel = generateSelectionTexture(grassTexture);
 
@@ -116,7 +117,7 @@ public class ClientTulip extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO50(rc, 0.25f, 0.25f, variant == 1 ? (flipped ? -2 : 2) : 0, 0);
+        drawAO100(rc, 0.25f, 0.3f, variant == 1 ? (flipped ? -2 : 2) : 0, 0.5f);
     }
 
     @Override

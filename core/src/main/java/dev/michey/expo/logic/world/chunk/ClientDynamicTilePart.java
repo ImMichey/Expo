@@ -3,11 +3,9 @@ package dev.michey.expo.logic.world.chunk;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
-import dev.michey.expo.util.Pair;
 
 public class ClientDynamicTilePart {
 
@@ -62,28 +60,6 @@ public class ClientDynamicTilePart {
     }
 
     private static final float[] n = new float[] {0, 0, 0, 0};
-
-    public void drawWater(RenderContext r, Pair[] displacementPairs) {
-        if(texture.length == 1) {
-            if(texture[0] == null) return;
-
-            r.batch.draw(texture[0], x, y, 16, 16);
-        } else {
-            if(displacementPairs == null) {
-                r.batch.draw(texture[0], x, y, 8, 8);
-                r.batch.draw(texture[1], x + 8, y, 8, 8);
-                r.batch.draw(texture[2], x , y + 8, 8, 8);
-                r.batch.draw(texture[3], x + 8, y + 8, 8, 8);
-            } else {
-                float val = ExpoClientContainer.get().getClientWorld().getClientChunkGrid().interpolation;
-
-                r.batch.draw(texture[0], x + val * (int) displacementPairs[0].key, y + val * (int) displacementPairs[0].value, 8, 8);
-                r.batch.draw(texture[1], x + 8 + val * (int) displacementPairs[1].key, y + val * (int) displacementPairs[1].value, 8, 8);
-                r.batch.draw(texture[2], x + val * (int) displacementPairs[2].key, y + 8 + val * (int) displacementPairs[2].value, 8, 8);
-                r.batch.draw(texture[3], x + 8 + val * (int) displacementPairs[3].key, y + 8 + val * (int) displacementPairs[3].value, 8, 8);
-            }
-        }
-    }
 
     public void drawSimple() {
         RenderContext r = RenderContext.get();

@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.flora;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
@@ -68,7 +69,7 @@ public class ClientSunflower extends ClientEntity implements SelectableEntity, R
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
-        setSelectionValues();
+        setSelectionValues(Color.BLACK);
         rc.arraySpriteBatch.drawShiftedVertices(sunflowerTexture_sel, finalSelectionDrawPosX, finalSelectionDrawPosY + contactAnimator.squishAdjustment,
                 sunflowerTexture_sel.getRegionWidth(), sunflowerTexture_sel.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
     }
@@ -107,7 +108,7 @@ public class ClientSunflower extends ClientEntity implements SelectableEntity, R
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAOAuto100(rc);
+        drawAO100(rc, 0.3f, 0.4f, 0, 1);
     }
 
     @Override

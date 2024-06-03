@@ -110,7 +110,7 @@ public class ClientBlueberryBush extends ClientEntity implements SelectableEntit
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.5f, 0.5f, 0, 1.5f);
+        drawAO100(rc, 0.4f, 0.5f, 0, 1.5f);
     }
 
     @Override
