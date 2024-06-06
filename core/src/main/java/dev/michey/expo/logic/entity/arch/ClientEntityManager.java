@@ -116,7 +116,10 @@ public class ClientEntityManager {
 
         long c = System.nanoTime();
 
-        int serverEntityCapAddition = 100, serverEntityCapRemoval = 100;
+        int CALC_CAP_ADD = (int) Math.clamp((additionQueueSv.size() * 0.25f), 25, 250);
+        int CALC_CAP_REM = (int) Math.clamp((removalQueue.size() * 0.25f), 25, 400);        // Removal cap is higher because of client-side entities (such as particles).
+
+        int serverEntityCapAddition = CALC_CAP_ADD, serverEntityCapRemoval = CALC_CAP_REM;
 
         if(!additionQueueSv.isEmpty()) {
             Iterator<ClientEntity> additionIterator = additionQueueSv.iterator();
@@ -381,7 +384,7 @@ public class ClientEntityManager {
         }
 
         pulseProgress = Interpolation.smooth2.apply(pDelta);
-        pulseThickness = 1.0f;
+        pulseThickness = 0.5f;
 
         if(rc.batch.isDrawing()) rc.batch.end();
         if(rc.arraySpriteBatch.isDrawing()) rc.arraySpriteBatch.end();
