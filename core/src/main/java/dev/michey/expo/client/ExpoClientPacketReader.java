@@ -22,6 +22,7 @@ import dev.michey.expo.logic.world.ClientWorld;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.server.main.logic.inventory.item.FloorType;
+import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
 import dev.michey.expo.server.packet.*;
@@ -386,7 +387,13 @@ public class ExpoClientPacketReader {
                     // Placed thing is a floor
                     ParticleSheet.Common.spawnDustConstructFloorParticles(twx, twy);
                 } else {
-                    ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX, p.worldY + mapping.logic.placeData.previewOffsetY, ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName));
+                    TextureRegion tr = ExpoAssets.get().textureRegion(mapping.logic.placeData.previewTextureName);
+
+                    if(mapping.logic.placeData.alignment == PlaceAlignment.UNRESTRICTED) {
+                        ParticleSheet.Common.spawnDustConstructEntityFreeParticles(p.worldX, p.worldY + mapping.logic.placeData.previewOffsetY, tr);
+                    } else {
+                        ParticleSheet.Common.spawnDustConstructEntityParticles(p.worldX, p.worldY + mapping.logic.placeData.previewOffsetY, tr);
+                    }
                 }
 
                 String soundName = mapping.logic.placeData.sound != null ? mapping.logic.placeData.sound : "place";
