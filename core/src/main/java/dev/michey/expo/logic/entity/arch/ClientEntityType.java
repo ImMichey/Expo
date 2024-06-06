@@ -59,6 +59,7 @@ public enum ClientEntityType {
     THROWN_ENTITY(37, "ThrownEntity", ServerEntityType.THROWN_ENTITY, true),
     CHEST(38, "Chest", ServerEntityType.CHEST, true),
     TULIP(39, "Tulip", ServerEntityType.TULIP, true),
+    STARFISH(40, "Starfish", ServerEntityType.STARFISH, false),
 
     /** Client only */
     SELECTOR(-1, "Selector", null, false),
@@ -144,6 +145,7 @@ public enum ClientEntityType {
             case 37 -> new ClientThrownEntity();
             case 38 -> new ClientChest();
             case 39 -> new ClientTulip();
+            case 40 -> new ClientStarfish();
             default -> null;
         };
     }

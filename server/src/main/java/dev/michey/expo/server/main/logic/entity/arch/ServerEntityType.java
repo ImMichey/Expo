@@ -53,6 +53,7 @@ public enum ServerEntityType {
     THROWN_ENTITY(37, true, false),
     CHEST(38, false, true),
     TULIP(39, true, true),
+    STARFISH(40, false, true),
     ;
 
     public final int ENTITY_ID;
@@ -107,6 +108,7 @@ public enum ServerEntityType {
             case 37 -> new ServerThrownEntity();
             case 38 -> new ServerChest();
             case 39 -> new ServerTulip();
+            case 40 -> new ServerStarfish();
             default -> null;
         };
     }
@@ -153,6 +155,7 @@ public enum ServerEntityType {
             case "THROWN", "THROWNENTITY", "THROWN_ENTITY" -> new ServerThrownEntity();
             case "CHEST" -> new ServerChest();
             case "TULIP" -> new ServerTulip();
+            case "STARFISH" -> new ServerStarfish();
             default -> null;
         };
     }
