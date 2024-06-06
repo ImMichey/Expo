@@ -147,7 +147,14 @@ public class ClientPickupLine extends ClientEntity implements TopVisibilityEntit
         float iconW = mapping.uiRender[0].useWidth;
         float iconH = mapping.uiRender[0].useHeight;
         float totalW = (rc.globalGlyph.width * fontScale + GAP + iconW) * scl;
-        float maxH = Math.max(iconH, rc.globalGlyph.height * fontScale) * scl;
+
+        float maxH = iconH;
+
+        if((rc.globalGlyph.height * fontScale) >= maxH) {
+            maxH = (rc.globalGlyph.height + 2) * fontScale;
+        }
+
+        maxH *= scl;
 
         rc.arraySpriteBatch.setColor(0.0f, 0.0f, 0.0f, alpha / ALPHA_DURATION * 0.25f);
         rc.drawSquareRoundedDoubleAb(clientPosX - totalW * 0.5f - 2.5f - 5f, clientPosY - 2.5f, totalW + 5f + 10f, maxH + 5f);
