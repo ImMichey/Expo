@@ -100,7 +100,7 @@ public class TileMergerV2 {
 
         if(elevationTextureName != null) {
             if(rawIds[0] == 0) {
-                ExpoLogger.log("-> " + elevationTextureName + " " + Arrays.toString(layerIds) + " " + layerIds[0]);
+                ExpoLogger.log("-> " + elevationTextureName + " " + Arrays.toString(layerIds) + " " + layerIds[0] + " ... " + key);
                 TextureRegion elevationBase = getFrom(layerIds[0], variation);
                 pixmap.drawPixmap(allTilesPixmap,
                         0, 16,

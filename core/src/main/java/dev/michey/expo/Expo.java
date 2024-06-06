@@ -250,15 +250,26 @@ public class Expo implements ApplicationListener {
 
 						if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
 							int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
-							ExpoLogger.log("Variations for " + newIds[0] + ": " + variations);
+							ExpoLogger.log("(NE) Variations for " + newIds[0] + ": " + variations);
 
 							for(int var = 0; var < variations; var++) {
 								merger.createFreshTile(newIds, null, var, ids);
 							}
 						}
 					} else {
-						for(int ev = 1; ev <= 4; ev++) {
-							merger.createFreshTile(newIds, elevationName + "_" + ev, -1, ids);
+						if(newIds.length == 1 && ExpoAssets.get().getTileSheet().hasVariation(newIds[0])) {
+							int variations = ExpoAssets.get().getTileSheet().getAmountOfVariations(newIds[0]);
+							ExpoLogger.log("(E) Variations for " + newIds[0] + ": " + variations);
+
+							for(int ev = 1; ev <= 4; ev++) {
+								for(int var = 0; var < variations; var++) {
+									merger.createFreshTile(newIds, elevationName + "_" + ev, var, ids);
+								}
+							}
+						} else {
+							for(int ev = 1; ev <= 4; ev++) {
+								merger.createFreshTile(newIds, elevationName + "_" + ev, -1, ids);
+							}
 						}
 					}
 				}

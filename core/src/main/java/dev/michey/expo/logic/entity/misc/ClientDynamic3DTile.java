@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
@@ -83,7 +84,16 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             }
         }
 
-        created = ExpoAssets.get().toTexture(layerIds, elevationName, -1);
+        // Check if the elevation texture has variations.
+        int potentialVariations = ExpoAssets.get().getTileSheet().getAmountOfVariations(layerIds[0]);
+
+        if(potentialVariations == 0) {
+            potentialVariations = -1;
+        } else {
+            potentialVariations = MathUtils.random(0, potentialVariations - 1);
+        }
+
+        created = ExpoAssets.get().toTexture(layerIds, elevationName, potentialVariations);
         createdReflection = new TextureRegion(created, 0, 16, created.getRegionWidth(), created.getRegionHeight() - 16);
     }
 
