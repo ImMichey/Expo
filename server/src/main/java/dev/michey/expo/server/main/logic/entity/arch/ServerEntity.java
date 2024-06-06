@@ -520,7 +520,7 @@ public abstract class ServerEntity {
     }
 
     public String getImpactSound() {
-        return "slap";
+        return null;
     }
 
 }

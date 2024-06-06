@@ -23,6 +23,11 @@ public class ServerChicken extends ServerEntity implements DamageableEntity, Phy
     }
 
     @Override
+    public String getImpactSound() {
+        return "slap";
+    }
+
+    @Override
     public void onCreation() {
         physicsBody = new EntityPhysicsBox(this, -4.5f, 0, 9, 5);
 

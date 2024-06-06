@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.util.Collection;
 
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
 
 public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
@@ -89,6 +90,8 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                         if(collided instanceof ServerPlayer player) {
                             ServerPackets.p23PlayerLifeUpdate(player.health, player.hunger, PacketReceiver.player(player));
                         }
+
+                        ServerPackets.p24PositionalSound(collided.getImpactSound(), collided.posX, collided.posY, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(collided));
                     }
                 }
             }
@@ -126,6 +129,8 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                             if(applied) {
                                 se.addKnockback(knockbackStrength, knockbackDuration, new Vector2(se.posX, se.posY).sub(prevPosX, prevPosY).nor());
                             }
+
+                            ServerPackets.p24PositionalSound(se.getImpactSound(), se.posX, se.posY, PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(se));
                         } else {
                             float relative = 1f - Interpolation.exp5Out.apply(rawDst / explosionRadius);
                             float applyDamage = explosionDamage * relative;

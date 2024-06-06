@@ -7,13 +7,6 @@ foliage/entity_dandelion/entity_dandelion.png
 foliage/entity_poppy/entity_poppy.png
 foliage/entity_aloevera/entity_aloevera.png
 foliage/entity_aloevera/entity_aloevera_sm.png
-foliage/entity_cattail/cattail_variation_1.png
-foliage/entity_cattail/cattail_variation_2.png
-foliage/entity_cattail/cattail_variation_3.png
-foliage/entity_cattail/cattail_1.png
-foliage/entity_cattail/cattail_2.png
-foliage/entity_cattail/cattail_3.png
-foliage/entity_cattail/cattail_4.png
 foliage/oak_tree_sapling.png
 foliage/entity_ancient_tree/entity_ancient_tree_leaves.png
 foliage/entity_birch_tree/birchtreeleaves.png

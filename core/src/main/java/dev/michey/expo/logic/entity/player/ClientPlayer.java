@@ -561,14 +561,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
                     ClientUtils.log("-> " + loadedChunks + "/" + requiredChunks + "/" + entitiesInQueue, Input.Keys.X);
 
-                    if(entitiesInQueue > 0) {
-                        if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-                            for(var x : ClientEntityManager.get().getEntitiesInAdditionQueue()) {
-                                ClientUtils.log(".." + x.getEntityType().name(), Input.Keys.X);
-                            }
-                        }
-                    }
-
                     if(loadedChunks >= requiredChunks && entitiesInQueue == 0) { // entitiesInQueue check might cause issues in the future but for now it's a simple workaround
                         getUI().loadingScreen = false;
                     }
@@ -1606,7 +1598,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.4f, 0.5f, flipped ? -1 : 0, 1);
+        drawAO100(rc, 0.3f, 0.5f, flipped ? -1 : 0, 1);
     }
 
     @Override

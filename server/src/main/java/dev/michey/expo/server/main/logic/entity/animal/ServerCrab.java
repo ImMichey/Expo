@@ -22,6 +22,11 @@ public class ServerCrab extends ServerEntity implements DamageableEntity, Physic
     }
 
     @Override
+    public String getImpactSound() {
+        return "slap";
+    }
+
+    @Override
     public void onCreation() {
         brain = new EntityBrain(this);
         brain.addBrainModule(new BrainModuleIdleHostile());

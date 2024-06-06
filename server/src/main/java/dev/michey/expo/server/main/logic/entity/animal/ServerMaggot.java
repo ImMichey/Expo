@@ -21,6 +21,11 @@ public class ServerMaggot extends ServerEntity implements DamageableEntity, Phys
     }
 
     @Override
+    public String getImpactSound() {
+        return "slap";
+    }
+
+    @Override
     public void onCreation() {
         brain = new EntityBrain(this);
         brain.addBrainModule(new BrainModuleIdle());

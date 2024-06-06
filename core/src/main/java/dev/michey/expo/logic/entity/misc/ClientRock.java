@@ -89,7 +89,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.2f, 0.375f, -0.5f, 2f);
+        drawAO100(rc, 0.225f, 0.375f, -0.5f, 1.5f);
     }
 
     @Override

@@ -29,6 +29,11 @@ public class ServerZombie extends ServerEntity implements DamageableEntity, Phys
     }
 
     @Override
+    public String getImpactSound() {
+        return "slap";
+    }
+
+    @Override
     public void onDie() {
         if(MathUtils.random() <= 0.5f) {
             spawnItemsAround(1, 2, 0, 0, "item_maggot", 8f);

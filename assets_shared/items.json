@@ -157,31 +157,6 @@
             }
         },
         {
-            "identifier": "item_leaf_helmet",
-            "id": 6,
-            "category": "ARMOR",
-            "displayName": "Leaf Head-wear",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_leaf_helmet"
-                },
-                "held": {
-                    "texture": "item_leaf_helmet",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [-90.0, 0.0]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 100,
-                "toolType": "ITEM"
-            }
-        },
-        {
             "identifier": "item_grassfiber",
             "id": 7,
             "category": "MATERIAL",
@@ -724,31 +699,6 @@
                     "hungerRestore": 15.0,
                     "hungerCooldownRestore": 60.0
                 }
-            }
-        },
-        {
-            "identifier": "item_wood_mask",
-            "id": 27,
-            "category": "ARMOR",
-            "displayName": "Wood Mask",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_wood_mask"
-                },
-                "held": {
-                    "texture": "item_wood_mask",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [-90.0, 0.0]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 100,
-                "toolType": "ITEM"
             }
         },
         {
@@ -1809,6 +1759,29 @@
                     "previewOffsetY": 8.0,
                     "static": true
                 }
+            }
+        },
+        {
+            "identifier": "item_starfish",
+            "id": 64,
+            "category": "MATERIAL",
+            "displayName": "Starfish",
+            "displayNameColor": "#ffffff",
+            "render": {
+                "ui": {
+                    "texture": "item_starfish"
+                },
+                "held": {
+                    "texture": "item_starfish",
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "offsetX": -0.5,
+                    "offsetY": 4,
+                    "rotations": [0, -90]
+                }
+            },
+            "logic": {
+                "toolType": "ITEM"
             }
         }
     ]

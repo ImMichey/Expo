@@ -203,7 +203,7 @@ public class RenderContext {
         hudBatch = new SpriteBatch();
         chunkRenderer = new ShapeRenderer();
         expoCamera = new ExpoCamera();
-        arraySpriteBatch = new ArrayTextureSpriteBatch(8191, 2048, 2048, 32, GL30.GL_NEAREST, GL30.GL_NEAREST);
+        arraySpriteBatch = new ArrayTextureSpriteBatch(8191, 4096, 4096, 32, GL30.GL_NEAREST, GL30.GL_NEAREST);
         aoBatch = new SpriteBatch();
         globalGlyph = new GlyphLayout();
 

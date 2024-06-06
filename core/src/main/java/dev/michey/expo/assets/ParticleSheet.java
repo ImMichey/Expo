@@ -107,6 +107,29 @@ public class ParticleSheet {
                     .spawn();
         }
 
+        public static void spawnDustConstructEntityFreeParticles(float x, float y, TextureRegion texture) {
+            if(!GameSettings.get().enableParticles) return;
+
+            float calculatedOffset = Math.max(texture.getRegionWidth() - 8, 2);
+            int plusParticles = (int) (calculatedOffset / 2);
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(4 + plusParticles, 8 + plusParticles)
+                    .scale(0.6f, 1.0f)
+                    .lifetime(0.4f, 1.0f)
+                    .color(ParticleColorMap.of(15))
+                    .position(x, y + 1)
+                    .velocity(-32, 32, 4, 40)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeoutLifetime(0.8f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .offset(calculatedOffset + texture.getRegionWidth() * 0.5f, 2)
+                    .depth(y + 1)
+                    .spawn();
+        }
+
         public static void spawnDustConstructEntityParticles(float x, float y, TextureRegion texture) {
             if(!GameSettings.get().enableParticles) return;
 

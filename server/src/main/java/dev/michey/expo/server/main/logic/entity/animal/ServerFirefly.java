@@ -43,6 +43,11 @@ public class ServerFirefly extends ServerEntity implements DamageableEntity, Phy
     }
 
     @Override
+    public String getImpactSound() {
+        return "slap";
+    }
+
+    @Override
     public void onDeletion() {
         physicsBody.dispose();
     }

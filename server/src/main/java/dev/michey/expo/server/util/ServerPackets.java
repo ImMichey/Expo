@@ -308,6 +308,7 @@ public class ServerPackets {
 
     /** Sends the P24_PositionalSound packet via UDP protocol. */
     public static void p24PositionalSound(String soundName, float worldX, float worldY, float maxSoundRange, PacketReceiver receiver) {
+        if(soundName == null) return; // Easier to put this here.
         mt(() -> {
             P24_PositionalSound p = new P24_PositionalSound();
             p.soundName = soundName;

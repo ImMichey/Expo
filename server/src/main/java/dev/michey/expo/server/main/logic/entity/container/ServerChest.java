@@ -26,6 +26,7 @@ public class ServerChest extends ServerEntity {
 
         chestInventory = new ServerInventory(InventoryViewType.CHEST, 27, ContainerRegistry.get().getNewUniqueContainerId());
         chestInventory.setOwner(this);
+        chestInventory.fillRandom();
     }
 
     @Override

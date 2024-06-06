@@ -516,6 +516,24 @@
                     "priority": 10000
                 },
                 {
+                    "biome": ["RIVER", "LAKE"],
+                    "type": "CATTAIL",
+                    "static": true,
+                    "chance": 0.125,
+                    "spawnOffsets": [-4.0, 4.0, -4.0, 4.0],
+                    "borderRequirementAny": "LAND",
+                    "borderRequirementAnyCount": 3,
+                    "priority": 10000
+                },
+                {
+                    "biome": "BEACH",
+                    "type": "STARFISH",
+                    "static": true,
+                    "chance": 0.0035,
+                    "spawnOffsets": [-4.0, 4.0, -4.0, 4.0],
+                    "skipChunkChance": 0.5
+                },
+                {
                     "biome": "BEACH",
                     "type": "BOULDER",
                     "static": true,
@@ -695,9 +713,9 @@
                     "spawnOffsets": [-2.0, 2.0, -2.0, 2.0],
                     "priority": 50,
                     "spreadData": {
-                        "spread": [8, 48],
+                        "spread": [8, 24],
                         "spreadChance": 1.0,
-                        "spreadDis": [24.0, 96.0],
+                        "spreadDis": [32.0, 96.0],
                         "spreadType": ["SUNFLOWER"],
                         "spreadStatic": true,
                         "spreadOffsets": [0.0, 0.0],

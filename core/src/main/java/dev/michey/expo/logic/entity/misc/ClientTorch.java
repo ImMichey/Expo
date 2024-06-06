@@ -164,7 +164,7 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.4f, 0.4f, 0, 0);
+        drawAO50(rc, 0.2f, 0.3f, 0, 0.5f);
     }
 
 }
