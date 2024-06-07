@@ -226,7 +226,7 @@ public class ExpoClientPacketReader {
                 if (entity != null) {
                     ClientPlayer player = (ClientPlayer) entity;
                     int particles = MathUtils.random(3, 6);
-                    TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(player.holdingItemId).heldRender[0].textureRegions[0];
+                    TextureRegion baseItemFoodTexture = ItemMapper.get().getMapping(p.itemId).heldRender[0].textureRegions[0];
 
                     for (int i = 0; i < particles; i++) {
                         ClientParticleFood cpf = new ClientParticleFood();
