@@ -433,6 +433,8 @@ public class ExpoClientPacketReader {
                 chunk.updateSingle(p);
                 PlayerUI.get().playerMinimap.incomplete = true;
             }
+            case P51_PositionalSoundAdvanced p ->
+                    AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false, p.volumeMultiplier);
             case null, default -> {}
         }
     }

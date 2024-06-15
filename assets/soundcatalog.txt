@@ -117,6 +117,11 @@ harvest_2.wav
 harvest_4.wav
 harvest_5.wav
 
+#water_generic;true;0.9-1.1;SFX;1.0
+water_generic_1.wav
+water_generic_2.wav
+water_generic_3.wav
+
 #harvest_hard;true;0.9-1.1;SFX;1.0
 harvest_hard_2.wav
 harvest_hard_3.wav

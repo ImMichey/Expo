@@ -489,11 +489,14 @@ public class ServerTile {
 
             { // Update tile data
                 if(digLayer == 0 && dynamicTileParts[digLayer].emulatingType == TileLayerType.SOIL) {
+                    boolean neighbouringCheckWaterSpreadFlag = false;
+
                     if(item != null && item.itemMetadata.toolType == ToolType.SCYTHE) {
                         updateLayer0(TileLayerType.SOIL_FARMLAND);
                     } else {
                         updateLayer0(TileLayerType.SOIL_HOLE);
                         chunk.checkWaterSpread = true;
+                        neighbouringCheckWaterSpreadFlag = true;
                     }
 
                     if(sendUpdatePacket) {
@@ -507,6 +510,10 @@ public class ServerTile {
                                 ServerPackets.p32ChunkDataSingle(neighbour, 0);
                             }
                             affectedChunks.add(neighbour.chunk.getChunkKey());
+                        }
+
+                        if(neighbouringCheckWaterSpreadFlag && neighbour.chunk != chunk) {
+                            neighbour.chunk.checkWaterSpread = true;
                         }
                     }
                 } else if(digLayer == 1) {

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.michey.expo.log.ExpoLogger.log;
+import static dev.michey.expo.util.ExpoShared.PLAYER_AUDIO_RANGE;
 
 public class AudioEngine {
 
@@ -290,7 +291,7 @@ public class AudioEngine {
 
     /** Plays a managed sound of a certain group that dynamically changes its panning and volume depending on the player's distance to the origin. **/
     public TrackedSoundData playSoundGroupManaged(String groupName, Vector2 soundOrigin) {
-        return playSoundGroupManaged(groupName, soundOrigin, 256.0f, false);
+        return playSoundGroupManaged(groupName, soundOrigin, PLAYER_AUDIO_RANGE, false);
     }
 
     /** Sets the volume for a certain ambience sound. **/

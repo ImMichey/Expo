@@ -330,6 +330,17 @@ public class ServerPackets {
         });
     }
 
+    public static void p24PositionalSound(String soundName, ServerTile tile) {
+        mt(() -> {
+            P24_PositionalSound p = new P24_PositionalSound();
+            p.soundName = soundName;
+            p.worldX = ExpoShared.tileToPos(tile.tileX) + 8;
+            p.worldY = ExpoShared.tileToPos(tile.tileY) + 8;
+            p.maxSoundRange = ExpoShared.PLAYER_AUDIO_RANGE;
+            udp(p, PacketReceiver.whoCanSee(tile));
+        });
+    }
+
     /** Sends the P25_ChatMessage packet via TCP protocol. */
     public static void p25ChatMessage(String sender, String message, PacketReceiver receiver) {
         mt(() -> {
@@ -542,6 +553,19 @@ public class ServerPackets {
 
     public static void p50TileFullUpdate(ServerTile tile) {
         p50TileFullUpdate(tile.chunk.chunkX, tile.chunk.chunkY, tile.tileArray, tile.dynamicTileParts, PacketReceiver.whoCanSee(tile));
+    }
+
+    /** Sends the P51_PositionalSoundAdvanced packet via UDP protocol. */
+    public static void p51PositionalSoundAdvanced(String soundName, float worldX, float worldY, float maxSoundRange, float volumeMultiplier, PacketReceiver receiver) {
+        mt(() -> {
+            P51_PositionalSoundAdvanced p = new P51_PositionalSoundAdvanced();
+            p.soundName = soundName;
+            p.worldX = worldX;
+            p.worldY = worldY;
+            p.maxSoundRange = maxSoundRange;
+            p.volumeMultiplier = volumeMultiplier;
+            udp(p, receiver);
+        });
     }
 
     /** Helper methods below. */

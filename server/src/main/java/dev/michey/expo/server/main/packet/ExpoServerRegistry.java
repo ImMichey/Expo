@@ -116,7 +116,8 @@ public class ExpoServerRegistry {
                 P47_ItemConsume.class,
                 P48_ClientPlayerPosition.class,
                 P49_PlayerEntityThrow.class,
-                P50_TileFullUpdate.class
+                P50_TileFullUpdate.class,
+                P51_PositionalSoundAdvanced.class
         );
     }
 

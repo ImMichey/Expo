@@ -182,7 +182,7 @@
         "name.trunk": "Oak Tree Trunk"
     },
     "CATTAIL": {
-        "bbox.population": [-8.0, 0, 17.0, 9.0]
+        "bbox.population": [-8.0, -1.0, 17.0, 11.0]
     },
     "CAMPFIRE": {
         "bbox.population": [-5.0, 0, 10.0, 12.0]

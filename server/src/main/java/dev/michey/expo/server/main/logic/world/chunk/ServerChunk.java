@@ -13,6 +13,7 @@ import dev.michey.expo.server.main.logic.world.dimension.ServerDimension;
 import dev.michey.expo.server.main.logic.world.gen.*;
 import dev.michey.expo.server.util.EntityMetadata;
 import dev.michey.expo.server.util.EntityMetadataMapper;
+import dev.michey.expo.server.util.PacketReceiver;
 import dev.michey.expo.server.util.ServerPackets;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
@@ -144,6 +145,8 @@ public class ServerChunk {
                 st.updateLayer1(TileLayerType.SOIL_WATERLOGGED);
                 st.updateLayer2(TileLayerType.WATER_OVERLAY);
                 ServerPackets.p50TileFullUpdate(st);
+                ServerPackets.p51PositionalSoundAdvanced("water_generic",
+                        ExpoShared.tileToPos(st.tileX), ExpoShared.tileToPos(st.tileY), PLAYER_AUDIO_RANGE, 0.4f, PacketReceiver.whoCanSee(st));
 
                 ServerTile[] gnt = st.getNeighbouringTiles();
 
