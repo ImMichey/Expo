@@ -42,7 +42,6 @@ public class ServerChunk {
     private final String chunkKey;
     public final ServerTile[] tiles;
     public long lastTileUpdate;
-    public boolean inactivity;
     public boolean ready;
 
     /** Tile based entities */
@@ -54,6 +53,12 @@ public class ServerChunk {
     /** Inactive chunk properties */
     private List<ServerEntity> inactiveEntities;
     private List<ServerEntity> removeWithoutCachingList;
+
+    /** Water spread logic */
+    public boolean checkWaterSpread;
+    private final ArrayList<WaterSpreadMemory> tickWaterSpreadList;
+    private final HashSet<ServerTile> spreadQueue;
+    private static final long WATER_SPREAD_COOLDOWN = 500L;
 
     public ServerChunk(ServerDimension dimension, int chunkX, int chunkY) {
         this.dimension = dimension;
@@ -76,6 +81,92 @@ public class ServerChunk {
         }
 
         lastTileUpdate = System.currentTimeMillis();
+        tickWaterSpreadList = new ArrayList<>();
+        spreadQueue = new HashSet<>();
+    }
+
+    public void doWaterSpreadCheck() {
+        ArrayList<ServerTile> waterTiles = new ArrayList<>(tiles.length);
+
+        // Grab water candidates
+        for(ServerTile tile : tiles) {
+            TileLayerType t2 = tile.dynamicTileParts[2].emulatingType;
+
+            if(TileLayerType.isWater(t2)) {
+                waterTiles.add(tile);
+            }
+        }
+
+        // Go through each water tile and check for valid neighbours
+        long now = System.currentTimeMillis();
+
+        for(ServerTile wt : waterTiles) {
+            ServerTile[] neighbours = wt.getNeighbouringTilesNESW();
+
+            for(ServerTile n : neighbours) {
+                if(n == null) continue;
+                if(n.dynamicTileParts == null) continue;
+                TileLayerType tlt = n.dynamicTileParts[0].emulatingType;
+
+                if(tlt == TileLayerType.SOIL_HOLE) {
+                    // Can spread to this tile.
+                    tickWaterSpreadList.add(new WaterSpreadMemory(n, WATER_SPREAD_COOLDOWN + now));
+                }
+            }
+        }
+    }
+
+    public void tickWaterSpread() {
+        spreadQueue.clear();
+        long now = System.currentTimeMillis();
+
+        Iterator<WaterSpreadMemory> wsmIterator = tickWaterSpreadList.iterator();
+
+        while(wsmIterator.hasNext()) {
+            WaterSpreadMemory wsm = wsmIterator.next();
+
+            if(wsm.cooldown() > now) {
+                break;
+            }
+
+            ServerTile st = wsm.destinationTile();
+
+            if(st == null) {
+                wsmIterator.remove();
+                continue;
+            }
+
+            // Spread now.
+            wsmIterator.remove();
+
+            if(!TileLayerType.isWater(st.dynamicTileParts[2].emulatingType)) {
+                st.updateLayer0(TileLayerType.SOIL_WATERLOGGED);
+                st.updateLayer1(TileLayerType.SOIL_WATERLOGGED);
+                st.updateLayer2(TileLayerType.WATER_OVERLAY);
+                ServerPackets.p50TileFullUpdate(st);
+
+                ServerTile[] gnt = st.getNeighbouringTiles();
+
+                for(int i = 0; i < gnt.length; i++) {
+                    ServerTile nt = gnt[i];
+                    if(nt == null) continue;
+
+                    nt.updateLayer0Adjacent(false);
+                    nt.updateLayer1Adjacent(false);
+                    nt.updateLayer2Adjacent(false);
+                    ServerPackets.p50TileFullUpdate(nt);
+
+                    // modulo operation here because it should only spread to N, E, S, W and not diagonally
+                    if(i % 2 == 1 && nt.dynamicTileParts[0].emulatingType == TileLayerType.SOIL_HOLE) {
+                        spreadQueue.add(nt);
+                    }
+                }
+            }
+        }
+
+        for(ServerTile toAdd : spreadQueue) {
+            tickWaterSpreadList.add(new WaterSpreadMemory(toAdd, System.currentTimeMillis() + WATER_SPREAD_COOLDOWN));
+        }
     }
 
     public String getChunkKey() {
@@ -168,8 +259,7 @@ public class ServerChunk {
         }
     }
 
-    public void populate(boolean inactive) {
-        inactivity = inactive;
+    public void populate() {
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
 
@@ -415,7 +505,9 @@ public class ServerChunk {
         }
     }
 
-    public void generate(boolean populate, boolean inactive) {
+    public void generate(boolean populate) {
+        checkWaterSpread = true;
+
         int wx = ExpoShared.chunkToPos(chunkX);
         int wy = ExpoShared.chunkToPos(chunkY);
 
@@ -487,7 +579,7 @@ public class ServerChunk {
             }
         }
 
-        if(populate) populate(inactive);
+        if(populate) populate();
     }
 
     /** Called when the chunk has been inactive before and is now marked as active again. */
@@ -592,7 +684,7 @@ public class ServerChunk {
 
         if(loadedString == null) {
             log("Failed to load " + chunkIdentifier() + " from file, regenerating instead");
-            generate(true, false);
+            generate(true);
         } else {
             try {
                 JSONObject object = new JSONObject(loadedString);
@@ -630,7 +722,7 @@ public class ServerChunk {
             } catch (JSONException e) {
                 log("Failed to convert save file of " + chunkIdentifier() + " to json, regenerating instead");
                 e.printStackTrace();
-                generate(true, false);
+                generate(true);
             }
         }
     }

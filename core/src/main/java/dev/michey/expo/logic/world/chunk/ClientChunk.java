@@ -9,6 +9,7 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.server.main.logic.world.chunk.DynamicTilePart;
 import dev.michey.expo.server.packet.P32_ChunkDataSingle;
+import dev.michey.expo.server.packet.P50_TileFullUpdate;
 import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.Pair;
 
@@ -92,15 +93,19 @@ public class ClientChunk {
         chunkDrawEndX = chunkDrawBeginX + CHUNK_SIZE;
         chunkDrawEndY = chunkDrawBeginY + CHUNK_SIZE;
 
-        for(BiomeType t : biomes) {
-            if(BiomeType.isWater(t)) {
+        doContainsWaterCheck();
+
+        ambientOcclusion = new float[ROW_TILES * ROW_TILES][];
+        for(int i = 0; i < ambientOcclusion.length; i++) ambientOcclusion[i] = new float[4];
+    }
+
+    private void doContainsWaterCheck() {
+        for(ClientDynamicTilePart[] dtp : dynamicTiles) {
+            if(TileLayerType.isWater(dtp[2].emulatingType)) {
                 chunkContainsWater = true;
                 break;
             }
         }
-
-        ambientOcclusion = new float[ROW_TILES * ROW_TILES][];
-        for(int i = 0; i < ambientOcclusion.length; i++) ambientOcclusion[i] = new float[4];
     }
 
     public Pair<ClientChunk, Integer> getTileAt(int tileArray, int xIncrement, int yIncrement) {
@@ -378,6 +383,19 @@ public class ClientChunk {
 
     public void updateSingle(P32_ChunkDataSingle p) {
         this.dynamicTiles[p.tileArray][p.layer].updateFrom(p.tile);
+    }
+
+    public void updateSingle(P50_TileFullUpdate p) {
+        for(int i = 0; i < 3; i++) {
+            this.dynamicTiles[p.tileArray][i].updateFrom(p.dynamicTileParts[i]);
+        }
+
+        doContainsWaterCheck();
+
+        if(TileLayerType.isWater(p.dynamicTileParts[2].emulatingType)) {
+            // Queue calculate reflection
+            ClientEntityManager.get().recalculateReflections = true;
+        }
     }
 
     public void update(BiomeType[] biomes, DynamicTilePart[][] individualTileData, int initializationTileCount) {

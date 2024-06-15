@@ -528,6 +528,22 @@ public class ServerPackets {
         });
     }
 
+    /** Sends the P50_TileFullUpdate packet via UDP protocol. */
+    public static void p50TileFullUpdate(int chunkX, int chunkY, int tileArray, DynamicTilePart[] dynamicTileParts, PacketReceiver receiver) {
+        mt(() -> {
+            P50_TileFullUpdate p = new P50_TileFullUpdate();
+            p.chunkX = chunkX;
+            p.chunkY = chunkY;
+            p.tileArray = tileArray;
+            p.dynamicTileParts = dynamicTileParts;
+            udp(p, receiver);
+        });
+    }
+
+    public static void p50TileFullUpdate(ServerTile tile) {
+        p50TileFullUpdate(tile.chunk.chunkX, tile.chunk.chunkY, tile.tileArray, tile.dynamicTileParts, PacketReceiver.whoCanSee(tile));
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

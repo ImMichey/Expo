@@ -153,7 +153,7 @@
         "bbox.population": [-4.0, 0, 8, 7]
     },
     "BLUEBERRY_BUSH": {
-        "bbox.population": [-7.5, 0, 15, 13]
+        "bbox.population": [-8.0, 0, 16, 13]
     },
     "ROCK": {
         "bbox.population": [-5.0, 0, 10, 10]
@@ -165,7 +165,7 @@
         "bbox.population": [-5.0, 0, 10, 8]
     },
     "OAK_TREE": {
-        "bbox.population": [-15.0, -4, 31, 16],
+        "bbox.population": [-15.0, -2, 31, 16],
         "maxHp.var1": 120.0,
         "maxHp.var2": 120.0,
         "maxHp.var3": 150.0,
@@ -182,7 +182,7 @@
         "name.trunk": "Oak Tree Trunk"
     },
     "CATTAIL": {
-        "bbox.population": [-6.0, 0, 12.0, 8.0]
+        "bbox.population": [-8.0, 0, 17.0, 9.0]
     },
     "CAMPFIRE": {
         "bbox.population": [-5.0, 0, 10.0, 12.0]
@@ -191,7 +191,7 @@
         "bbox.population": [-11.0, 0, 22.0, 14.0]
     },
     "BUSH": {
-        "bbox.population": [-8.0, 0, 16, 12],
+        "bbox.population": [-10.0, 0, 20, 12],
         "maxHp": 40.0,
         "name": "Bush"
     },
@@ -212,7 +212,7 @@
         "name.OAKPLANKWALL": "Oak Plank Wall"
     },
     "TULIP": {
-        "bbox.population": [-5.0, 0, 10.0, 7.0]
+        "bbox.population": [-5.0, 0, 10.0, 9.0]
     },
     "STARFISH": {
         "bbox.population": [-8.0, 0, 16.0, 16.0]

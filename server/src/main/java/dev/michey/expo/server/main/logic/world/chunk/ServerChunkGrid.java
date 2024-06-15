@@ -251,6 +251,20 @@ public class ServerChunkGrid {
             }
         }
 
+        // Water spread logic
+        for(Pair<ServerChunk, Long> pair : activeChunkMap.values()) {
+            ServerChunk sc = pair.key;
+
+            if(sc.ready) {
+                if(sc.checkWaterSpread) {
+                    sc.checkWaterSpread = false;
+                    sc.doWaterSpreadCheck();
+                } else {
+                    sc.tickWaterSpread();
+                }
+            }
+        }
+
         long diff = now - lastSaveCheckMillis;
         if(diff < 1000L) return;
         lastSaveCheckMillis = now;
@@ -397,7 +411,7 @@ public class ServerChunkGrid {
             // Start generation task.
             ServerWorld.get().mtServiceTick.execute(() -> {
                 ServerChunk chunk = new ServerChunk(dimension, chunkX, chunkY);
-                chunk.generate(true, false);
+                chunk.generate(true);
                 chunk.ready = true;
                 activeChunkMap.put(hash, new Pair<>(chunk, generateInactiveChunkTimestamp()));
                 generatingChunkMap.remove(hash);
@@ -436,7 +450,7 @@ public class ServerChunkGrid {
             chunk.loadFromFile();
         } else {
             // Generate chunk.
-            chunk.generate(populate, false);
+            chunk.generate(populate);
         }
 
         chunk.ready = true;

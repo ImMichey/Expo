@@ -51,7 +51,8 @@ public class ClientEntityManager {
     /** Selectable entities */
     private final HashMap<ClientEntity, Object[]> selectableEntities;
     public ClientEntity selectedEntity;
-    // Rendering helpers
+
+    /** Rendering helpers */
     private int lastEntityId = -1;
     private float pDelta;
     private float tDelta;
@@ -59,6 +60,9 @@ public class ClientEntityManager {
     private boolean plusT = true;
     public float pulseProgress;
     public float pulseThickness;
+
+    /** Reflection */
+    public boolean recalculateReflections;
 
     public ClientEntityManager() {
         depthEntityList = new ArrayList<>(4096);
@@ -330,6 +334,18 @@ public class ClientEntityManager {
             if(lastEntityId != -1) {
                 lastEntityId = -1;
                 ClientPackets.p27PlayerEntitySelection(-1);
+            }
+        }
+
+        if(recalculateReflections) {
+            recalculateReflections = false;
+
+            for(ClientEntity ent : depthEntityList) {
+                if(ent.drawReflection) continue; // Little cheat optimization
+
+                if(ent instanceof ReflectableEntity) {
+                    ent.calculateReflection();
+                }
             }
         }
 

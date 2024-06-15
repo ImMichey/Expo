@@ -37,7 +37,7 @@ public class CommandNoise extends AbstractConsoleCommand {
     /** Returns the chunk at chunk coordinates X & Y. */
     public ServerChunk getChunk(int chunkX, int chunkY) {
         ServerChunk chunk = new ServerChunk(ServerWorld.get().getDimension("overworld"), chunkX, chunkY);
-        chunk.generate(false, false);
+        chunk.generate(false);
         return chunk;
     }
 

@@ -317,6 +317,9 @@ public class ImGuiExpo {
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer0Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][0].texture));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer1Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][1].texture));
                     coloredBulletText(255f/255f,215f/255f,0f/255f, "Layer2Tex: " + Arrays.toString(chunk.dynamicTiles[r.mouseTileArray][2].texture));
+                    coloredBulletText(205f/255f,215f/255f,0f/255f, "TLT0: " + chunk.dynamicTiles[r.mouseTileArray][0].emulatingType);
+                    coloredBulletText(205f/255f,215f/255f,0f/255f, "TLT1: " + chunk.dynamicTiles[r.mouseTileArray][1].emulatingType);
+                    coloredBulletText(205f/255f,215f/255f,0f/255f, "TLT2: " + chunk.dynamicTiles[r.mouseTileArray][2].emulatingType);
 
                     coloredBulletText(1.0f, 1.0f, 1.0f, "ambientOcclusion " + Arrays.toString(chunk.ambientOcclusion[r.mouseTileArray]));
                     coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (CLIENT) " + (chunk.tileEntityGrid == null ? "EMPTY" : chunk.tileEntityGrid[r.mouseTileArray] + ""));

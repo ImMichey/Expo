@@ -424,6 +424,15 @@ public class ExpoClientPacketReader {
                     }
                 }
             }
+            case P50_TileFullUpdate p -> {
+                var grid = ClientChunkGrid.get();
+                if (grid == null) return;
+                var chunk = grid.getChunk(p.chunkX, p.chunkY);
+                if (chunk == null) return;
+
+                chunk.updateSingle(p);
+                PlayerUI.get().playerMinimap.incomplete = true;
+            }
             case null, default -> {}
         }
     }
