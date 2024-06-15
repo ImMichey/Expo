@@ -6,6 +6,10 @@ import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 
 public class ServerStarfish extends ServerEntity {
 
+    public ServerStarfish() {
+        health = 10.0f;
+    }
+
     @Override
     public ServerEntityType getEntityType() {
         return ServerEntityType.STARFISH;

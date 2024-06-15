@@ -39,8 +39,8 @@ public class ServerRock extends ServerEntity {
 
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
-        //int start = (biome == BiomeType.DESERT || biome == BiomeType.BEACH) ? 4 : 1;
-        variant = rnd.random(1, 3);
+        int start = (biome == BiomeType.DESERT || biome == BiomeType.BEACH) ? 4 : 1;
+        variant = rnd.random(start, start + 1);
         health = 10.0f;
     }
 

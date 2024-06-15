@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.entity.misc;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -19,8 +20,14 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
 
     @Override
     public void onCreation() {
-        texture = tr("entity_rockn_" + variant);
+        texture = new TextureRegion(tr("entity_rockn_" + variant));
         selectionTexture = generateSelectionTexture(texture);
+
+        if(MathUtils.randomBoolean()) {
+            texture.flip(true, false);
+            selectionTexture.flip(true, false);
+        }
+
         updateTextureBounds(texture);
         interactionPointArray = generateInteractionArray(2);
     }
@@ -89,7 +96,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.225f, 0.375f, -0.5f, 1.5f);
+        drawAO100(rc, 0.225f, 0.375f, -0.5f, 2f);
     }
 
     @Override

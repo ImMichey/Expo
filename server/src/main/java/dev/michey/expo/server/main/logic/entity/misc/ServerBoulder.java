@@ -20,7 +20,14 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
 
     public int variant = 1;
 
+    public static final int VARIANT_IRON = 5;
+    public static final int VARIANT_COAL = 3;
+    public static final int VARIANT_REG = 1;
+
     public static final float[][] ROCK_BODIES = new float[][] {
+            new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
+            new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
+            new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
             new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
             new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
             new float[] {-9.0f, 2.0f, 19.0f, 6.0f},
@@ -45,15 +52,16 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
     @Override
     public void onGeneration(boolean spread, BiomeType biome, GenerationRandom rnd) {
         float ch = rnd.random();
+        int add = (biome == BiomeType.DESERT || biome == BiomeType.BEACH) ? 1 : 0;
 
-        if(ch <= 0.08f) {
-            variant = 3;
+        if(ch <= 0.08f) { // Iron
+            variant = VARIANT_IRON + add;
             health = 105.0f;
-        } else if(ch <= 0.22) {
-            variant = 2;
+        } else if(ch <= 0.22) { // Coal
+            variant = VARIANT_COAL + add;
             health = 90.0f;
-        } else {
-            variant = 1;
+        } else { // Regular
+            variant = VARIANT_REG + add;
             health = 75.0f;
         }
     }
@@ -64,12 +72,12 @@ public class ServerBoulder extends ServerEntity implements PhysicsEntity {
         int rocksMin = 3;
         int rocksMax = 4;
 
-        if(variant == 2) {
+        if(variant == VARIANT_COAL || variant == (VARIANT_COAL + 1)) {
             // Coal.
             rocksMin = 1;
             rocksMax = 2;
             coal = new SpawnItem("item_coal", 2, 3);
-        } else if(variant == 3) {
+        } else if(variant == VARIANT_IRON || variant == (VARIANT_IRON + 1)) {
             // Iron.
             rocksMin = 1;
             rocksMax = 2;

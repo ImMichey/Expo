@@ -168,8 +168,8 @@
                 },
                 "held": {
                     "texture": "item_grassfiber",
-                    "scaleX": 1,
-                    "scaleY": 1,
+                    "scaleX": 0.85,
+                    "scaleY": 0.85,
                     "offsetX": -1.0,
                     "offsetY": 5.0,
                     "rotations": [45.0, -45.0]
@@ -383,8 +383,8 @@
                 },
                 "held": {
                     "texture": "item_cord",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
+                    "scaleX": 0.8,
+                    "scaleY": 0.8,
                     "offsetX": 2.5,
                     "offsetY": 2,
                     "rotations": [0, -90]

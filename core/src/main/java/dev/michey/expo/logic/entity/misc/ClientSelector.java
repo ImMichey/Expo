@@ -129,10 +129,11 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
         boolean layer2Wall = t2.TILE_IS_WALL;
         boolean tileEntity = chunk.tileEntityGrid != null && chunk.tileEntityGrid[toTileArray] != -1;
         boolean layer2Water = TileLayerType.isWater(t2);
+        boolean layer1Floor = t1 == TileLayerType.OAK_PLANK;
 
         if(currentSelectorType == SelectorType.DIG_SHOVEL) {
             if(!tileEntity && !layer1Wall && !layer2Wall) {
-                if(layer1Grass || layer1Sand || layer1Plains) {
+                if(layer1Grass || layer1Sand || layer1Plains || layer1Floor) {
                     eligible = true;
                     text = "[LMB] Dig";
                 } else if(layer1Empty && layer0Soil) {

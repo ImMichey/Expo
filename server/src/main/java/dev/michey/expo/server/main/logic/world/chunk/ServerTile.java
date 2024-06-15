@@ -7,7 +7,6 @@ import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.animal.ServerWorm;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
-import dev.michey.expo.server.main.logic.entity.container.ServerChest;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
 import dev.michey.expo.server.main.logic.inventory.item.ServerInventoryItem;
@@ -449,7 +448,7 @@ public class ServerTile {
                         ServerWorld.get().registerServerEntity(dim.getDimensionName(), worm);
                         ServerPackets.p24PositionalSound("pop", worm.posX, worm.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(dim, chunk.chunkX, chunk.chunkY));
                     }
-                } else if(digLayer == 1 && dynamicTileParts[digLayer].emulatingType == TileLayerType.SAND && biome == BiomeType.BEACH) {
+                } /*else if(digLayer == 1 && dynamicTileParts[digLayer].emulatingType == TileLayerType.SAND && biome == BiomeType.BEACH) {
                     if(MathUtils.random() <= 0.01f) {
                         ServerChest chest = new ServerChest();
                         chest.chestInventory.fillRandom();
@@ -460,6 +459,7 @@ public class ServerTile {
                         ServerPackets.p24PositionalSound("pop", chest.posX, chest.posY, ExpoShared.PLAYER_AUDIO_RANGE, PacketReceiver.whoCanSee(dim, chunk.chunkX, chunk.chunkY));
                     }
                 }
+                */
 
                 // Drop layer as item.
                 String identifier = TileLayerType.typeToItemDrop(dynamicTileParts[digLayer].emulatingType);
@@ -493,6 +493,7 @@ public class ServerTile {
                         updateLayer0(TileLayerType.SOIL_FARMLAND);
                     } else {
                         updateLayer0(TileLayerType.SOIL_HOLE);
+                        chunk.checkWaterSpread = true;
                     }
 
                     if(sendUpdatePacket) {
@@ -566,7 +567,7 @@ public class ServerTile {
         if(TileLayerType.isWater(t2)) return -1;
 
         TileLayerType t1 = dynamicTileParts[1].emulatingType;
-        if(t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST) return 1;
+        if(t1 == TileLayerType.GRASS || t1 == TileLayerType.FOREST || t1 == TileLayerType.OAK_PLANK) return 1;
         if(t1 == TileLayerType.SAND) return 1;
 
         TileLayerType t0 = dynamicTileParts[0].emulatingType;

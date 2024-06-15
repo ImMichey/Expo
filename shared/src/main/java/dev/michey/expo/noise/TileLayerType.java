@@ -84,6 +84,7 @@ public enum TileLayerType {
             case SOIL -> "item_dirt";
             case SAND -> "item_sand";
             case FOREST, GRASS -> "item_floor_grass";
+            case OAK_PLANK -> "item_oak_plank_floor";
             default -> null;
         };
     }
@@ -93,6 +94,7 @@ public enum TileLayerType {
             case SAND -> "dig_sand";
             case SOIL -> "step_water";
             case GRASS, FOREST -> "grass_hit";
+            case OAK_PLANK -> "wood_hit";
             default -> null;
         };
     }

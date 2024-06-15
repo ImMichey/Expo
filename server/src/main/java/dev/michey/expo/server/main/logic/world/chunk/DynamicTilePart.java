@@ -28,7 +28,7 @@ public class DynamicTilePart {
         tileHealth = switch (emulatingType) {
             case SOIL -> 30.0f;
             case SAND, DESERT -> 20.0f;
-            case FOREST, GRASS -> 20.0f;
+            case FOREST, GRASS, OAK_PLANK -> 20.0f;
             case ROCK -> 50.0f;
             default -> 0.0f;
         };

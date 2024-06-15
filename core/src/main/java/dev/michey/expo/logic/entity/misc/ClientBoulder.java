@@ -15,7 +15,7 @@ import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
-import static dev.michey.expo.server.main.logic.entity.misc.ServerBoulder.ROCK_BODIES;
+import static dev.michey.expo.server.main.logic.entity.misc.ServerBoulder.*;
 
 public class ClientBoulder extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
@@ -33,11 +33,14 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
     public void onCreation() {
         String texName = "entity_boulder";
 
-        if(variant == 2) {
-            texName += "_coal";
-        } else if(variant == 3) {
-            texName += "_iron";
+        if(variant == VARIANT_COAL || variant == (VARIANT_COAL + 1)) {
+            texName += "_coal_" + (variant - VARIANT_COAL + 1);
+        } else if(variant == VARIANT_IRON || variant == (VARIANT_IRON + 1)) {
+            texName += "_iron_" + (variant - VARIANT_IRON + 1);
+        } else {
+            texName += "_" + (variant - VARIANT_REG + 1);
         }
+
         texture = tr(texName);
         shadowMask = texture;
         selectionTexture = generateSelectionTexture(texture);
@@ -112,7 +115,7 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(texture, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY,
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX - squishAnimator2D.squishX * 0.5f, finalDrawPosY + 2,
                 texture.getRegionWidth() + squishAnimator2D.squishX, (texture.getRegionHeight() + squishAnimator2D.squishY) * -1);
     }
 
@@ -131,7 +134,7 @@ public class ClientBoulder extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.35f, 0.4f, 0, 1.5f);
+        drawAO100(rc, 0.35f, 0.4f, 0, 1.0f);
     }
 
     @Override
