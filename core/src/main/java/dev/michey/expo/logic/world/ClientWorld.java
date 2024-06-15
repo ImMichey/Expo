@@ -32,6 +32,7 @@ import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.world.chunk.ClientChunk;
 import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.logic.world.chunk.ClientDynamicTilePart;
+import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.imgui.DebugPoint;
@@ -98,6 +99,9 @@ public class ClientWorld {
     public float weatherStrength;
     private float spawnRainDelta = 0.1f;
     private float rainAmbienceVolume = 0f;
+
+    /** River ambience */
+    private float updateRiverAmbienceTimer;
 
     public ClientWorld() {
         clientEntityManager = new ClientEntityManager();
@@ -166,12 +170,71 @@ public class ClientWorld {
         float fn = (PlayerUI.get().fadeInDelta / PlayerUI.get().fadeInDuration);
         AudioEngine.get().ambientVolume("ambience_rain", rainAmbienceVolume * fn);
 
+        ClientPlayer cp = ClientPlayer.getLocalPlayer();
+
+        if(cp != null) {
+            if(updateRiverAmbienceTimer <= 0) {
+                updateRiverAmbienceTimer = 0.1f;
+
+                float radius = 256;
+                float startWorldX = cp.clientPosX - radius;
+                float startWorldY = cp.clientPosY - radius;
+
+                int tilesPerRow = (int) (radius * 2 / TILE_SIZE);
+
+                float closestDst = Float.MAX_VALUE;
+                int skipFactor = 3;
+
+                for(int i = 0; i < tilesPerRow; i += skipFactor) {
+                    for(int j = 0; j < tilesPerRow; j += skipFactor) {
+                        float tileWorldX = startWorldX + i * TILE_SIZE;
+                        float tileWorldY = startWorldY + j * TILE_SIZE;
+
+                        int chunkX = ExpoShared.posToChunk(tileWorldX);
+                        int chunkY = ExpoShared.posToChunk(tileWorldY);
+
+                        ClientChunk cc = clientChunkGrid.getChunk(chunkX, chunkY);
+
+                        if(cc != null) {
+                            if(cc.chunkContainsWater) {
+                                int tileArray = getTileArray(tileWorldX, tileWorldY, chunkX, chunkY);
+                                BiomeType bt = cc.biomes[tileArray];
+
+                                if(bt == BiomeType.RIVER || bt == BiomeType.RIVER_DEEP) {
+                                    float dst = Vector2.dst(cp.clientPosX, cp.clientPosY, tileWorldX, tileWorldY);
+
+                                    if(dst <= closestDst) {
+                                        closestDst = dst;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                float finalRiverVolume = closestDst == Float.MAX_VALUE ? 0f : (1.0f - closestDst / radius) * 0.125f;
+                AudioEngine.get().ambientVolume("ambience_river", finalRiverVolume);
+            } else {
+                if(cp.isMoving() || updateRiverAmbienceTimer < 0.1f) {
+                    updateRiverAmbienceTimer -= delta;
+                }
+            }
+        }
+
         long f = System.nanoTime();
 
         if(TRACK_PERFORMANCE) {
             ServerUtils.recordPerformanceMetric("CW", new String[] {"chunk", "ent", "cam", "time", "weather"}, new long[] {a, b, c, d, e, f},
                     Gdx.graphics.getFramesPerSecond());
         }
+    }
+
+    private int getTileArray(float worldX, float worldY, int chunkX, int chunkY) {
+        int stx = ExpoShared.posToTile(ExpoShared.chunkToPos(chunkX));
+        int sty = ExpoShared.posToTile(ExpoShared.chunkToPos(chunkY));
+        int rtx = ExpoShared.posToTile(worldX) - stx;
+        int rty = ExpoShared.posToTile(worldY) - sty;
+        return rty * ROW_TILES + rtx;
     }
 
     private void spawnRain() {

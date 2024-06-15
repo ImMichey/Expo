@@ -146,7 +146,7 @@ public class ServerChunk {
                 st.updateLayer2(TileLayerType.WATER_OVERLAY);
                 ServerPackets.p50TileFullUpdate(st);
                 ServerPackets.p51PositionalSoundAdvanced("water_generic",
-                        ExpoShared.tileToPos(st.tileX), ExpoShared.tileToPos(st.tileY), PLAYER_AUDIO_RANGE, 0.4f, PacketReceiver.whoCanSee(st));
+                        ExpoShared.tileToPos(st.tileX), ExpoShared.tileToPos(st.tileY), PLAYER_AUDIO_RANGE, 0.25f, PacketReceiver.whoCanSee(st));
 
                 ServerTile[] gnt = st.getNeighbouringTiles();
 

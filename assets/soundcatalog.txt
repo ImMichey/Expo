@@ -91,6 +91,9 @@ ambience_night_1.wav
 #ambience_rain;true;1.0-1.0;AMBIENT;1.0
 ambience_rain_1.wav
 
+#ambience_river;true;1.0-1.0;AMBIENT;1.0
+ambience_river_1.wav
+
 #punch;true;0.9-1.1;SFX;1.0
 punch_1.wav
 punch_2.wav
