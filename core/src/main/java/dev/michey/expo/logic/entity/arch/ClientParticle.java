@@ -28,6 +28,7 @@ public abstract class ClientParticle extends ClientEntity {
     public ClientEntity followEntity;
     public float followOffsetX, followOffsetY;
     public float buildupStart, buildupDelta;
+    public float gravity;
 
     //private float pox, poy; // Particle origin values
     public float pvx;
@@ -103,6 +104,10 @@ public abstract class ClientParticle extends ClientEntity {
             pvy = spvy * Math.abs(interpolated - 1f);
         }
 
+        if(gravity != 0) {
+            pvy += gravity * delta;
+        }
+
         float addY = pvy * delta;
 
         if(followEntity != null) {
@@ -165,6 +170,10 @@ public abstract class ClientParticle extends ClientEntity {
 
     public void setParticleColor(Color c) {
         setParticleColor(c.r, c.g, c.b, c.a);
+    }
+
+    public void setGravity(float gravity) {
+        this.gravity = gravity;
     }
 
     public void setParticleBuildup(float buildupTimer) {

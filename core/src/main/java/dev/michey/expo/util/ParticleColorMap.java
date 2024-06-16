@@ -67,6 +67,10 @@ public class ParticleColorMap {
     public static final Color COLOR_PARTICLE_STONE_DUST_2 = Color.valueOf("#908472");
     public static final Color COLOR_PARTICLE_STONE_DUST_3 = Color.valueOf("#cdbca5");
 
+    public static final Color COLOR_PARTICLE_WATER_1 = Color.valueOf("#84b6e0");
+    public static final Color COLOR_PARTICLE_WATER_2 = Color.valueOf("#8dbae0");
+    public static final Color COLOR_PARTICLE_WATER_3 = Color.valueOf("#78acda");
+
     static {
         COLOR_MAP = new HashMap<>();
 
@@ -126,6 +130,10 @@ public class ParticleColorMap {
         colorEntry(16, COLOR_PARTICLE_STONE_DUST_1);
         colorEntry(16, COLOR_PARTICLE_STONE_DUST_2);
         colorEntry(16, COLOR_PARTICLE_STONE_DUST_3);
+
+        colorEntry(17, COLOR_PARTICLE_WATER_1);
+        colorEntry(17, COLOR_PARTICLE_WATER_2);
+        colorEntry(17, COLOR_PARTICLE_WATER_3);
     }
 
     public static List<Color> of(int id) {

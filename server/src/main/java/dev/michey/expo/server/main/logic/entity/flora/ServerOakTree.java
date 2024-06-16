@@ -134,8 +134,8 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                         th = 128;
                     }
                 }
-                float reach = th - 15 + leavesOffset;
 
+                float reach = th - 15 + leavesOffset;
                 float factor = fallingDirectionRight ? 1 : -1;
 
                 float _x1 = posX;
@@ -158,11 +158,11 @@ public class ServerOakTree extends ServerEntity implements PhysicsEntity {
                 if(factor == 1) {
                     // Right side.
                     spawnItemsX = posX + 12.5f;
-                    reachItemsX = th - 12.5f - 8f;
+                    reachItemsX = th - 12.5f - 16f;
                 } else {
                     // Left side.
-                    spawnItemsX = posX - th + 8f;
-                    reachItemsX = th - 12.5f - 8f;
+                    spawnItemsX = posX - th + 12.5f + 16f;
+                    reachItemsX = th - 12.5f - 16f;
                 }
 
                 spawnItemsAlongLine(spawnItemsX, spawnItemsY, reachItemsX, 0, 8.0f,

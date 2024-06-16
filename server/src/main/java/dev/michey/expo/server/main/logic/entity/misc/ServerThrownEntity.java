@@ -106,7 +106,7 @@ public class ServerThrownEntity extends ServerEntity implements PhysicsEntity {
                 if(se.entityId == entityId) continue;
                 if(se.invincibility > 0) continue;
 
-                if(se.entityId == collidedWithEntityId) continue;
+                if(se.entityId == collidedWithEntityId && impactExplosion) continue;
                 if(se.entityId == ignoreThrowerId && impactExplosion) continue;
 
                 if(impactExplosion) {

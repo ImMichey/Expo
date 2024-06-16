@@ -99,7 +99,7 @@ public class ClientLilypad extends ClientEntity implements SelectableEntity, Ref
 
     @Override
     public void renderAO(RenderContext rc) {
-        drawAO100(rc, 0.25f, 0.3f, 0, 0.5f);
+        drawAO100(rc, 0.25f, 0.3f, 0, 0.5f + animationSine);
     }
 
     @Override

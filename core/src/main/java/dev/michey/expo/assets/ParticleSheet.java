@@ -5,15 +5,18 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
+import dev.michey.expo.logic.entity.flora.ClientFallingTree;
 import dev.michey.expo.logic.entity.misc.ClientDynamic3DTile;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
+import dev.michey.expo.util.ExpoShared;
 import dev.michey.expo.util.GameSettings;
 import dev.michey.expo.util.ParticleBuilder;
 import dev.michey.expo.util.ParticleColorMap;
 
 import java.util.HashMap;
 
+import static dev.michey.expo.util.ExpoShared.ROW_TILES;
 import static dev.michey.expo.util.ExpoShared.TILE_SIZE;
 
 public class ParticleSheet {
@@ -56,6 +59,51 @@ public class ParticleSheet {
     }
 
     public static class Common {
+
+        public static void spawnWaterMergeParticles(int chunkX, int chunkY, int tileArray) {
+            if(!GameSettings.get().enableParticles) return;
+
+            int x = tileArray % ROW_TILES;
+            int y = tileArray / ROW_TILES;
+
+            float startX = ExpoShared.chunkToPos(chunkX) + x * ROW_TILES;
+            float startY = ExpoShared.chunkToPos(chunkY) + y * ROW_TILES;
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(12, 16)
+                    .scale(1.1f, 2f)
+                    .lifetime(0.75f, 1f)
+                    .color(ParticleColorMap.of(17))
+                    .position(startX, startY)
+                    .offset(16, 16)
+                    .velocity(-24, 24, 32, 56)
+                    .fadein(0.10f)
+                    .fadeout(0.33f)
+                    .gravity(-120.0f)
+                    .textureRange(5, 5)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .spawn();
+        }
+
+        public static void spawnDustTreeParticles(ClientFallingTree cft, float totalWidth, int sign) {
+            if(!GameSettings.get().enableParticles) return;
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(40, 56)
+                    .scale(0.7f, 1.1f)
+                    .lifetime(0.5f, 1.2f)
+                    .color(ParticleColorMap.of(15))
+                    .position(cft.clientPosX + 4 * sign, cft.clientPosY - 6)
+                    .velocity(-32, 32, 4, 40)
+                    .velocityCurve(Interpolation.pow3OutInverse)
+                    .fadeoutLifetime(0.8f)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .textureRange(15, 15)
+                    .offset(totalWidth * sign, 2)
+                    .depth(cft.clientPosY - 3)
+                    .spawn();
+        }
 
         // This is manual due to texture passing
         public static void spawnGoreParticles(TextureRegion base, float x, float y, float particleMultiplier) {
@@ -189,6 +237,7 @@ public class ParticleSheet {
                     .scaleDown()
                     .textureRange(15, 15)
                     .depth(entity.depth)
+                    .gravity(-120.0f)
                     .spawn();
         }
 

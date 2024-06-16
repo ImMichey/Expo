@@ -173,41 +173,42 @@ public class ClientWorld {
         ClientPlayer cp = ClientPlayer.getLocalPlayer();
 
         if(cp != null) {
-            if(updateRiverAmbienceTimer <= 0) {
+            if(updateRiverAmbienceTimer <= 0 || PlayerUI.get().loadingScreen) {
                 updateRiverAmbienceTimer = 0.1f;
 
-                float radius = 256;
-                float startWorldX = cp.clientPosX - radius;
-                float startWorldY = cp.clientPosY - radius;
-
-                int tilesPerRow = (int) (radius * 2 / TILE_SIZE);
-
                 float closestDst = Float.MAX_VALUE;
-                int skipFactor = 3;
+                float radius = 256;
 
-                for(int i = 0; i < tilesPerRow; i += skipFactor) {
-                    for(int j = 0; j < tilesPerRow; j += skipFactor) {
-                        float tileWorldX = startWorldX + i * TILE_SIZE;
-                        float tileWorldY = startWorldY + j * TILE_SIZE;
+                // Check player tile first before iterating neighbouring tiles for river tiles
+                float originTileDst = getDistanceToRiverTile(cp.clientPosX, cp.clientPosY, cp.clientPosX, cp.clientPosY);
 
-                        int chunkX = ExpoShared.posToChunk(tileWorldX);
-                        int chunkY = ExpoShared.posToChunk(tileWorldY);
+                if(originTileDst > -1) {
+                    closestDst = originTileDst;
+                } else {
+                    int searchTiles = 1;
+                    boolean found = false;
 
-                        ClientChunk cc = clientChunkGrid.getChunk(chunkX, chunkY);
+                    while(searchTiles < 33) {
+                        searchTiles += 2;
+                        int oneSide = (searchTiles - 1) / 2; // 1, 3, 5, etc.
 
-                        if(cc != null) {
-                            if(cc.chunkContainsWater) {
-                                int tileArray = getTileArray(tileWorldX, tileWorldY, chunkX, chunkY);
-                                BiomeType bt = cc.biomes[tileArray];
+                        float startTileX = cp.clientPosX - oneSide * TILE_SIZE;
+                        float startTileY = cp.clientPosY - oneSide * TILE_SIZE;
 
-                                if(bt == BiomeType.RIVER || bt == BiomeType.RIVER_DEEP) {
-                                    float dst = Vector2.dst(cp.clientPosX, cp.clientPosY, tileWorldX, tileWorldY);
+                        for(int i = 0; i < searchTiles; i++) {
+                            for(int j = 0; j < searchTiles; j++) {
+                                float currentDst = getDistanceToRiverTile(cp.clientPosX, cp.clientPosY,
+                                        startTileX + i * TILE_SIZE, startTileY + j * TILE_SIZE);
 
-                                    if(dst <= closestDst) {
-                                        closestDst = dst;
-                                    }
+                                if(currentDst >= 0 && currentDst < closestDst) {
+                                    closestDst = currentDst;
+                                    found = true;
                                 }
                             }
+                        }
+
+                        if(found) {
+                            break;
                         }
                     }
                 }
@@ -227,6 +228,24 @@ public class ClientWorld {
             ServerUtils.recordPerformanceMetric("CW", new String[] {"chunk", "ent", "cam", "time", "weather"}, new long[] {a, b, c, d, e, f},
                     Gdx.graphics.getFramesPerSecond());
         }
+    }
+
+    private float getDistanceToRiverTile(float originX, float originY, float tileWorldX, float tileWorldY) {
+        int chunkX = ExpoShared.posToChunk(tileWorldX);
+        int chunkY = ExpoShared.posToChunk(tileWorldY);
+
+        ClientChunk cc = clientChunkGrid.getChunk(chunkX, chunkY);
+        if(cc == null) return -1;
+        if(!cc.chunkContainsWater) return -1;
+
+        int tileArray = getTileArray(tileWorldX, tileWorldY, chunkX, chunkY);
+        BiomeType bt = cc.biomes[tileArray];
+
+        if(TileLayerType.isWater(cc.dynamicTiles[tileArray][2].emulatingType) && bt != BiomeType.PUDDLE) {
+            return Vector2.dst(originX, originY, tileWorldX, tileWorldY);
+        }
+
+        return -1;
     }
 
     private int getTileArray(float worldX, float worldY, int chunkX, int chunkY) {

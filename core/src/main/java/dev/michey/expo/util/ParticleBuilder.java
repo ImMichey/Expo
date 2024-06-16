@@ -27,6 +27,7 @@ public class ParticleBuilder {
     private float velocityDirectionalMin, velocityDirectionalMax;
     private boolean velocityRange;
     private Interpolation velocityCurve;
+    private float gravityFactor;
     private float fadeout;
     private float fadein;
     private float fadeoutPercentage;
@@ -128,6 +129,11 @@ public class ParticleBuilder {
 
     public ParticleBuilder fadeout(float fadeout) {
         this.fadeout = fadeout;
+        return this;
+    }
+
+    public ParticleBuilder gravity(float gravityFactor) {
+        this.gravityFactor = gravityFactor;
         return this;
     }
 
@@ -272,6 +278,9 @@ public class ParticleBuilder {
             }
             if(buildup > 0) {
                 p.setParticleBuildup(buildup);
+            }
+            if(gravityFactor != 0) {
+                p.setGravity(gravityFactor);
             }
 
             ClientEntityManager.get().addClientSideEntity(p);

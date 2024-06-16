@@ -91,7 +91,7 @@ public class ClientRock extends ClientEntity implements SelectableEntity, Reflec
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY, texture.getRegionWidth(), texture.getRegionHeight() * -1);
+        rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY + 2, texture.getRegionWidth(), texture.getRegionHeight() * -1);
     }
 
     @Override

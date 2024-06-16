@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -71,6 +72,9 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
 
         float reach = ClientOakTree.MATRIX[trunkVariant - 1][1];
         int dir = fallingRightDirection ? 1 : -1;
+
+        float offsetDust = (ClientOakTree.MATRIX[trunkVariant - 1][5] + leavesDisplacement - ClientOakTree.CUT_MATRIX[trunkVariant - 1][3]);
+        ParticleSheet.Common.spawnDustTreeParticles(this, offsetDust - 8, dir);
 
         if(!emptyCrown && GameSettings.get().enableParticles) {
             new ParticleBuilder(ClientEntityType.PARTICLE_OAK_LEAF)

@@ -21,6 +21,7 @@ import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
 import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.ExpoServerContainer;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.chunk.ServerChunk;
@@ -328,6 +329,15 @@ public class ImGuiExpo {
                         ServerChunk ch = ServerWorld.get().getDimension("overworld").getChunkHandler().getChunkSafe(chunk.chunkX, chunk.chunkY);
 
                         coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (SERVER) " + (ch.hasTileBasedEntities() ? ch.getTileBasedEntityIdGrid()[r.mouseTileArray] : "EMPTY"));
+
+                        if(ch.hasTileBasedEntities()) {
+                            int entId = ch.getTileBasedEntityIdGrid()[r.mouseTileArray];
+
+                            if(entId != -1) {
+                                ServerEntity entity = ch.getDimension().getEntityManager().getEntityById(entId);
+                                coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId HP " + entity.health);
+                            }
+                        }
                     }
                 }
 

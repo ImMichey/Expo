@@ -62,8 +62,12 @@ public class ServerDynamic3DTile extends ServerEntity implements PhysicsEntity {
         int tx = ExpoShared.posToTile(posX);
         int ty = ExpoShared.posToTile(posY);
         ServerTile tile = getChunkGrid().getTile(tx, ty);
-        tile.dynamicTileParts[2].update(TileLayerType.EMPTY);
-        ServerPackets.p32ChunkDataSingle(tile, 2);
+
+        // This check should fix the orange single tile visual glitches
+        if(tile.dynamicTileParts[2].emulatingType != TileLayerType.WATER_OVERLAY) {
+            tile.dynamicTileParts[2].update(TileLayerType.EMPTY);
+            ServerPackets.p32ChunkDataSingle(tile, 2);
+        }
 
         // Update neighbours
         ServerTile[] neighbours = tile.getNeighbouringTiles();

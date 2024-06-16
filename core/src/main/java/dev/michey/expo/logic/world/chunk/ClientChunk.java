@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.world.chunk;
 
+import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
@@ -386,6 +387,8 @@ public class ClientChunk {
     }
 
     public void updateSingle(P50_TileFullUpdate p) {
+        boolean wasWaterBefore = TileLayerType.isWater(dynamicTiles[p.tileArray][2].emulatingType);
+
         for(int i = 0; i < 3; i++) {
             this.dynamicTiles[p.tileArray][i].updateFrom(p.dynamicTileParts[i]);
         }
@@ -395,6 +398,9 @@ public class ClientChunk {
         if(TileLayerType.isWater(p.dynamicTileParts[2].emulatingType)) {
             // Queue calculate reflection
             ClientEntityManager.get().recalculateReflections = true;
+            if(!wasWaterBefore) {
+                ParticleSheet.Common.spawnWaterMergeParticles(p.chunkX, p.chunkY, p.tileArray);
+            }
         }
     }
 

@@ -273,6 +273,7 @@ public class ExpoClientPacketReader {
                 PlayerUI.get().playerMinimap.incomplete = true;
             }
             case P33_TileDig p -> {
+                if(!GameSettings.get().enableParticles) return;
                 float x = ExpoShared.tileToPos(p.tileX);
                 float y = ExpoShared.tileToPos(p.tileY);
 
