@@ -470,6 +470,13 @@
                     "borderRequirement": "WATER"
                 },
                 {
+                    "biome": ["RIVER", "LAKE"],
+                    "type": "ROCK",
+                    "static": true,
+                    "chance": 0.05,
+                    "spawnOffsets": [-2, 2, -2, 2]
+                },
+                {
                     "biome": "RIVER_DEEP",
                     "type": "LILYPAD",
                     "static": true,
