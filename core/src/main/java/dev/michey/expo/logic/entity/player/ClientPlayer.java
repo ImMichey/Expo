@@ -1161,8 +1161,14 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
         }
 
         String group = getFootstepSound();
-        if(!TileLayerType.isWater(getCurrentTileLayer()) && isSprinting()) {
+
+        boolean sprinting = isSprinting();
+        boolean inWater = TileLayerType.isWater(getCurrentTileLayer());
+
+        if(sprinting && !inWater) {
             ParticleSheet.Common.spawnPlayerFootstepParticles(this);
+        } else if(inWater) {
+            ParticleSheet.Common.spawnPlayerFootstepWaterParticles(this, sprinting);
         }
 
         if(player) {

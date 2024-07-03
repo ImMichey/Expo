@@ -552,6 +552,7 @@ public class ClientWorld {
                 r.waterDistortionShader.setUniformf("u_cameraPos", r.expoCamera.camera.position.x, r.expoCamera.camera.position.y);
                 r.waterDistortionShader.setUniformf("u_waterSkewX", r.waterSkewX);
                 r.waterDistortionShader.setUniformf("u_waterSkewY", r.waterSkewY);
+                r.waterDistortionShader.setUniformf("u_zoom", r.expoCamera.camera.zoom);
 
                 drawFboTexture(r.waterTilesFbo, r.waterDistortionShader);
             r.waterReflectionFbo.end();

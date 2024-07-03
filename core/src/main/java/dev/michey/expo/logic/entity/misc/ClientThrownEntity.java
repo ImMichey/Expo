@@ -42,7 +42,6 @@ public class ClientThrownEntity extends ClientEntity implements ReflectableEntit
     @Override
     public void onDeletion() {
         ItemMapping mapping = ItemMapper.get().getMapping(thrownItemId);
-        ParticleSheet.Common.spawnThrownDustParticles(this, heightOffset);
 
         if(mapping.logic.isThrowable()) {
             if(mapping.logic.throwData.hasExplosion() && !mapping.logic.throwData.isImpactExplosion()) {
@@ -51,6 +50,7 @@ public class ClientThrownEntity extends ClientEntity implements ReflectableEntit
 
                 ParticleSheet.Common.spawnExplosionParticles(this);
                 ParticleSheet.Common.spawnGoreParticles(ir[0].useTextureRegion, clientPosX, clientPosY);
+                ParticleSheet.Common.spawnThrownDustParticles(this, heightOffset);
             }
 
             if(mapping.logic.throwData.hasImpact()) {
@@ -58,9 +58,11 @@ public class ClientThrownEntity extends ClientEntity implements ReflectableEntit
                 if(TileLayerType.isWater(getCurrentTileLayer())) {
                     playEntitySound("step_water");
                     spawnPuddle(false);
+                    ParticleSheet.Common.spawnWaterImpactParticles(clientPosX - ir[0].useTextureRegion.getRegionWidth() * 0.5f, clientPosY - 2, ir[0].useTextureRegion.getRegionWidth());
                 } else {
                     playEntitySound("bonk");
                     ParticleSheet.Common.spawnGoreParticles(ir[0].useTextureRegion, clientPosX, clientPosY);
+                    ParticleSheet.Common.spawnThrownDustParticles(this, heightOffset);
                 }
             }
         }

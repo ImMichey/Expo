@@ -202,6 +202,50 @@ public class ParticleSheet {
                     .spawn();
         }
 
+        public static void spawnPlayerFootstepWaterParticles(ClientPlayer entity, boolean sprint) {
+            if(!GameSettings.get().enableParticles) return;
+
+            int a_min = sprint ? 8 : 6;
+            int a_max = sprint ? 12 : 8;
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(a_min, a_max)
+                    .scale(1.1f, 1.65f)
+                    .lifetime(0.7f, 0.9f)
+                    .color(ParticleColorMap.of(17))
+                    .position(entity.finalTextureCenterX + 1 - (entity.direction() == 1 ? 0 : 7), entity.clientPosY)
+                    .offset(3, 0)
+                    .velocity(-40, 40, 26, 60)
+                    .fadein(0.10f)
+                    .fadeout(0.33f)
+                    .gravity(-100.0f)
+                    .textureRange(5, 5)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .depth(entity.depth + 0.001f)
+                    .spawn();
+        }
+
+        public static void spawnWaterImpactParticles(float x, float y, float offset) {
+            if(!GameSettings.get().enableParticles) return;
+
+            new ParticleBuilder(ClientEntityType.PARTICLE_HIT)
+                    .amount(16, 20)
+                    .scale(1.1f, 2f)
+                    .lifetime(0.8f, 1.1f)
+                    .color(ParticleColorMap.of(17))
+                    .position(x, y)
+                    .offset(offset, 2)
+                    .velocity(-36, 36, 40, 64)
+                    .fadein(0.10f)
+                    .fadeout(0.33f)
+                    .gravity(-120.0f)
+                    .textureRange(5, 5)
+                    .randomRotation()
+                    .rotateWithVelocity()
+                    .spawn();
+        }
+
         public static void spawnPlayerFootstepParticles(ClientPlayer entity) {
             if(!GameSettings.get().enableParticles) return;
             new ParticleBuilder(ClientEntityType.PARTICLE_HIT)

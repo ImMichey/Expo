@@ -1,36 +1,34 @@
 package dev.michey.expo.logic.entity.flora;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.animator.ContactAnimator;
+import dev.michey.expo.render.animator.FoliageAnimator;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.AmbientOcclusionEntity;
-import dev.michey.expo.render.shadow.ShadowUtils;
 import dev.michey.expo.util.EntityRemovalReason;
 
 public class ClientAloeVera extends ClientEntity implements SelectableEntity, ReflectableEntity, AmbientOcclusionEntity {
 
+    private final FoliageAnimator foliageAnimator = new FoliageAnimator(this,
+            3.0f, 4.0f, 0.005f, 0.0075f, 0.009f, 0.010f, 2.0f, 5.0f, 0.5f, 1.5f);
     private final ContactAnimator contactAnimator = new ContactAnimator(this);
 
-    private Texture grass;
-    private TextureRegion grassShadow;
+    private TextureRegion plantTexture, plantTexture_sel;
     private float[] interactionPointArray;
 
     @Override
     public void onCreation() {
         contactAnimator.MIN_SQUISH = 0.6667f;
-        grass = ExpoAssets.get().texture("foliage/entity_aloevera/entity_aloevera.png");
-        grassShadow = new TextureRegion(t("foliage/entity_aloevera/entity_aloevera_sm.png"));
+        plantTexture = new TextureRegion(tr("entity_aloevera"));
+        plantTexture_sel = generateSelectionTexture(plantTexture);
 
-        updateTextureBounds(19, 14, 1, 1);
+        updateTextureBounds(plantTexture);
         interactionPointArray = generateInteractionArray(2);
     }
 
@@ -55,7 +53,11 @@ public class ClientAloeVera extends ClientEntity implements SelectableEntity, Re
     @Override
     public void tick(float delta) {
         syncPositionWithServer();
-        contactAnimator.tick(delta);
+
+        if(visibleToRenderEngine) {
+            foliageAnimator.resetWind();
+            contactAnimator.tick(delta);
+        }
     }
 
     @Override
@@ -65,42 +67,38 @@ public class ClientAloeVera extends ClientEntity implements SelectableEntity, Re
 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
+        foliageAnimator.calculateWindOnDemand();
         setSelectionValues(Color.WHITE);
 
-        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, contactAnimator.value, contactAnimator.value);
-        rc.arraySpriteBatch.end();
+        rc.arraySpriteBatch.drawShiftedVertices(plantTexture_sel, finalSelectionDrawPosX, finalSelectionDrawPosY + contactAnimator.squishAdjustment,
+                plantTexture_sel.getRegionWidth(), plantTexture_sel.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
     }
 
     @Override
     public void render(RenderContext rc, float delta) {
-        visibleToRenderEngine = rc.inDrawBounds(this);
+        visibleToRenderEngine = rc.inDrawBounds(this, 4);
 
         if(visibleToRenderEngine) {
+            foliageAnimator.calculateWindOnDemand();
             updateDepth(textureOffsetY);
 
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, grass.getWidth(), grass.getHeight() * contactAnimator.squish, contactAnimator.value, contactAnimator.value);
+            rc.arraySpriteBatch.drawShiftedVertices(plantTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                    plantTexture.getRegionWidth(), plantTexture.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
         }
     }
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.drawCustomVertices(grass, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment + 2, grass.getWidth(), grass.getHeight() * contactAnimator.squish * -1, contactAnimator.value, contactAnimator.value);
+        rc.arraySpriteBatch.drawShiftedVertices(plantTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment,
+                plantTexture.getRegionWidth(), plantTexture.getRegionHeight() * contactAnimator.squish * -1, foliageAnimator.value + contactAnimator.value, 0);
     }
 
     @Override
     public void renderShadow(RenderContext rc, float delta) {
-        Affine2 shadow = ShadowUtils.createSimpleShadowAffine(finalTextureStartX, finalTextureStartY);
-        float[] grassVertices = rc.arraySpriteBatch.obtainShadowVertices(grassShadow, shadow);
-        boolean drawGrass = rc.verticesInBounds(grassVertices);
-
-        if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
-            rc.arraySpriteBatch.drawGradientCustomVertices(grassShadow, grassShadow.getRegionWidth(), grassShadow.getRegionHeight() * contactAnimator.squish, shadow, contactAnimator.value, contactAnimator.value);
-        }
+        drawWindShadowIfVisible(plantTexture, foliageAnimator, contactAnimator);
     }
 
     @Override

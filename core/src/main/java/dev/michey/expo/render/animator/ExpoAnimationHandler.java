@@ -135,7 +135,7 @@ public class ExpoAnimationHandler {
         var list = animationMap.get(name);
 
         if(list.size() == 1) {
-            activeAnimation = list.get(0);
+            activeAnimation = list.getFirst();
         } else {
             ExpoAnimation use = null;
             float totalWeight = 0;

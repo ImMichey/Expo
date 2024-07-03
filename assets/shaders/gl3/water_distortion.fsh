@@ -17,6 +17,7 @@ uniform vec2 u_screenSize;
 uniform float u_time;
 uniform float u_waterSkewX;
 uniform float u_waterSkewY;
+uniform float u_zoom;
 
 out vec4 fragColor;
 
