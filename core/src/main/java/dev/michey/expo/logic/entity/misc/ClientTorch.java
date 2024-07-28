@@ -151,8 +151,6 @@ public class ClientTorch extends ClientEntity implements SelectableEntity, Refle
         boolean drawShadow = rc.verticesInBounds(torchVertices);
 
         if(drawShadow) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradient(torch, torch.getRegionWidth(), torch.getRegionHeight(), shadow);
         }
     }

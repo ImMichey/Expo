@@ -236,8 +236,6 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             boolean draw = rc.verticesInBounds(vertices);
 
             if(draw) {
-                rc.useArrayBatch();
-                rc.useRegularArrayShader();
                 rc.arraySpriteBatch.drawGradient(created, textureWidth + squishAnimator2D.squishX2, textureHeight + squishAnimator2D.squishY2, shadow);
             }
         }

@@ -109,8 +109,6 @@ public class ClientFirefly extends ClientEntity {
         boolean drawMushroom = rc.verticesInBounds(mushroomVertices);
 
         if(drawMushroom) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradient(animationHandler.getActiveFrame(), textureWidth, textureHeight, shadow);
         }
     }

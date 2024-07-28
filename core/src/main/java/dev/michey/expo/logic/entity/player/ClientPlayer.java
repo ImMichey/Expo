@@ -1188,9 +1188,6 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     @Override
     public void renderShadow(RenderContext rc, float delta) {
         if(use_body != null) {
-            rc.useRegularArrayShader();
-            rc.useArrayBatch();
-
             { // Base body shadow
                 Affine2 shadowBase = ShadowUtils.createSimpleShadowAffine(finalDrawPosX, finalDrawPosY);
                 rc.arraySpriteBatch.drawGradient(use_body, use_body.getRegionWidth(), use_body.getRegionHeight(), shadowBase);          // check

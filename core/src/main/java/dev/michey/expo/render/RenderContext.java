@@ -102,6 +102,7 @@ public class RenderContext {
     public ShaderProgram whiteShaderArray;
     public ShaderProgram whiteShaderDefault;
     public ShaderProgram buildPreviewShader;
+    public ShaderProgram shadowPass1Shader;
 
     /** Light engine */
     public ExpoLightEngine lightEngine;
@@ -375,6 +376,7 @@ public class RenderContext {
         whiteShaderDefault = compileShader("gl3/white");
         whiteShaderArray = compileShader("gl3/white_array");
         buildPreviewShader = compileShader("gl3/build_preview");
+        shadowPass1Shader = compileShader("gl3/shadow_p1");
 
         batch.setShader(DEFAULT_GLES3_SHADER);
         lightEngine = new ExpoLightEngine();

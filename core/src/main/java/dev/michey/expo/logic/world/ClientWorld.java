@@ -1,6 +1,7 @@
 package dev.michey.expo.logic.world;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
@@ -508,6 +509,7 @@ public class ClientWorld {
             r.shadowFbo.begin();
                 transparentScreen();
                 clientEntityManager.renderEntityShadows(r.delta);
+                ClientUtils.takeScreenshot("_S0", Input.Keys.G);
             r.shadowFbo.end();
         }
 

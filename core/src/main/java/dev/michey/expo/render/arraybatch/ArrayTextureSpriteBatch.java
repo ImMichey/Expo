@@ -31,6 +31,7 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.GameSettings;
 
 import java.nio.ByteBuffer;
@@ -1669,6 +1670,16 @@ public class ArrayTextureSpriteBatch implements Batch {
         vertices[idx++] = ti;
     }
 
+    private static final Color conversion = new Color();
+
+    private float convertPositionToDepth(float yPos, float alpha) {
+        float sy = RenderContext.get().drawStartY;
+        float ey = RenderContext.get().drawEndY;
+
+        conversion.set((yPos - sy) / (ey - sy), 0.0f, 0.0f, alpha);
+        return conversion.toFloatBits();
+    }
+
     public void drawGradientCustomVertices(TextureRegion region, float width, float height, Affine2 transform, float c1, float c2) {
         if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before drawGradient.");
 
@@ -1691,30 +1702,33 @@ public class ArrayTextureSpriteBatch implements Batch {
         float u2 = region.getU2() * subImageScaleWidth;
         float v2 = region.getV() * subImageScaleHeight;
 
+        float bottom = convertPositionToDepth(y1, 1.0f);
+        float top = convertPositionToDepth(y1 + height, GameSettings.get().enableSoftShadows ? 0.0f : 1.0f);
+
         vertices[idx++] = x1;
         vertices[idx++] = y1;
-        vertices[idx++] = BLACK_BITS;
+        vertices[idx++] = bottom;
         vertices[idx++] = u;
         vertices[idx++] = v;
         vertices[idx++] = ti;
 
         vertices[idx++] = x2 + c1;
         vertices[idx++] = y2;
-        vertices[idx++] = GameSettings.get().enableSoftShadows ? TRANSPARENT_BITS : BLACK_BITS;
+        vertices[idx++] = top;
         vertices[idx++] = u;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x3 + c2;
         vertices[idx++] = y3;
-        vertices[idx++] = GameSettings.get().enableSoftShadows ? TRANSPARENT_BITS : BLACK_BITS;
+        vertices[idx++] = top;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
         vertices[idx++] = ti;
 
         vertices[idx++] = x4;
         vertices[idx++] = y4;
-        vertices[idx++] = BLACK_BITS;
+        vertices[idx++] = bottom;
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = ti;

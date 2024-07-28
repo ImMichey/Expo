@@ -78,8 +78,6 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradient(texture, textureWidth, textureHeight, shadow);
         }
     }

@@ -453,7 +453,7 @@ public class ClientEntityManager {
     public void renderEntityShadows(float delta) {
         RenderContext rc = RenderContext.get();
 
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+        rc.arraySpriteBatch.setShader(rc.shadowPass1Shader);
         rc.arraySpriteBatch.begin();
 
         rc.arraySpriteBatch.setBlendFunction(GL30.GL_ONE, GL30.GL_ONE);

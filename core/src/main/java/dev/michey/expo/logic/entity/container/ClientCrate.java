@@ -68,8 +68,6 @@ public class ClientCrate extends ClientEntity implements SelectableEntity, Refle
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
     }

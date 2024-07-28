@@ -117,8 +117,6 @@ public class ClientCropWheat extends ClientEntity implements SelectableEntity, R
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 
         if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(wheatShadow, wheatShadow.getRegionWidth(), wheatShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }

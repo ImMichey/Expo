@@ -437,9 +437,11 @@ public class Expo implements ApplicationListener {
 
 				try {
 					for(String line : Files.readAllLines(autoExecFile.toPath())) {
+						if(line.isEmpty() || line.startsWith("#")) {
+							log("[autoExec] " + line + " ...IGNORED");
+							continue;
+						}
 						log("[autoExec] " + line);
-						if(line.isEmpty()) continue;
-						if(line.startsWith("#")) continue;
 						GameConsole.get().addConsoleMessage(new ConsoleMessage(line, true));
 					}
 				} catch (IOException e) {

@@ -113,8 +113,6 @@ public class ClientOakTreeSapling extends ClientEntity implements SelectableEnti
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 
         if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(saplingShadow, saplingShadow.getRegionWidth(), saplingShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }

@@ -90,8 +90,6 @@ public class ClientSign extends ClientEntity implements SelectableEntity, Reflec
         boolean draw = rc.verticesInBounds(vertices);
 
         if(draw) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradient(shadowMask, textureWidth, textureHeight, shadow);
         }
     }

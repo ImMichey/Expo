@@ -240,9 +240,6 @@ public class ClientFallingTree extends ClientEntity implements ReflectableEntity
         Affine2 leavesShadow = ShadowUtils.createSimpleShadowAffineInternalOffsetRotation(clientPosX, clientPosY - 10, 0 + leavesX, 10 + leavesY,
                 0, 0, rotation);
 
-        rc.useArrayBatch();
-        rc.useRegularArrayShader();
-
         float totalHeight = ClientOakTree.MATRIX[trunkVariant - 1][5];
         float fraction = 1f / totalHeight;
         float trunkDistanceFromGround = 10f;

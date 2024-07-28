@@ -113,8 +113,6 @@ public class ClientWheat extends ClientEntity implements SelectableEntity, Refle
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 
         if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(wheatShadow, wheatShadow.getRegionWidth(), wheatShadow.getRegionHeight() * contactAnimator.squish, shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }

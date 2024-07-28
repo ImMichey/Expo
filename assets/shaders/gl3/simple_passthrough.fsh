@@ -19,7 +19,9 @@ void main() {
     vec4 lookup = texture(u_lookup, v_texCoords);
 
     if(lookup.a > 0.0) {
-        fragColor = texture(u_texture, v_texCoords) * v_color;
+        vec4 use = texture(u_texture, v_texCoords);
+        use.r = 0.0;
+        fragColor = use * v_color;
     } else {
         fragColor = vec4(0.0);
     }

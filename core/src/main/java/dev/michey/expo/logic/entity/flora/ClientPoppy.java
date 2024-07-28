@@ -116,8 +116,6 @@ public class ClientPoppy extends ClientEntity implements SelectableEntity {
         boolean drawGrass = rc.verticesInBounds(grassVertices);
 
         if(drawGrass) {
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
             rc.arraySpriteBatch.drawGradientCustomVertices(this.shadow, this.shadow.getRegionWidth(), this.shadow.getRegionHeight(), shadow, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
         }
     }
