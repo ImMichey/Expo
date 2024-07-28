@@ -2,6 +2,7 @@
     "uiScale": 2,
     "preferredWidth": 1280,
     "windowMode": 0,
+    "language": "en",
     "debug": {
         "enableDebugMode": false,
         "enableDebugGL": false,

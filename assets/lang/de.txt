@@ -1,0 +1,5 @@
+ui.inventory.opencrafting=Open Crafting
+ui.inventory.closecrafting=Close Crafting
+
+ui.inventory.title=Inventar
+ui.crafting.title=Herstellung

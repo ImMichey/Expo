@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.Expo;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableItemSlot;
@@ -153,7 +154,8 @@ public class UIContainerInventory extends UIContainer {
         int borderGap = 4;
 
         // Draw inventory text [244]
-        ui.glyphLayout.setText(r.m5x7_shadow_use, "Inventory");
+        String title = Lang.str("ui.inventory.title");
+        ui.glyphLayout.setText(r.m5x7_shadow_use, title);
         float invTextOffsetX = ((244 * ui.uiScale) - ui.glyphLayout.width) * 0.5f;
         float invTextOffsetY = ui.glyphLayout.height + (craftingOpen ? 15 * ui.uiScale : 0) + 156 * ui.uiScale;
 
@@ -165,12 +167,13 @@ public class UIContainerInventory extends UIContainer {
             r.drawSquareRoundedDouble(cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
 
             r.hudBatch.setColor(Color.WHITE);
-            r.m5x7_shadow_use.draw(r.hudBatch, "Inventory", cpx, cpy);
+            r.m5x7_shadow_use.draw(r.hudBatch, title, cpx, cpy);
         }
 
         // Draw Crafting text
         if(craftingOpen) {
-            ui.glyphLayout.setText(r.m5x7_shadow_use, "Crafting");
+            String _title = Lang.str("ui.crafting.title");
+            ui.glyphLayout.setText(r.m5x7_shadow_use, _title);
             float cTextOffsetX = (150 * ui.uiScale - ui.glyphLayout.width) * 0.5f;
             int cpx = (int) (invX + 278 * ui.uiScale + cTextOffsetX);
             int cpy = (int) (invY + 199 * ui.uiScale + ui.glyphLayout.height);
@@ -179,7 +182,7 @@ public class UIContainerInventory extends UIContainer {
             r.drawSquareRoundedDouble(cpx - borderGap * ui.uiScale, cpy - ui.glyphLayout.height - borderGap * ui.uiScale, ui.glyphLayout.width + borderGap * 2 * ui.uiScale, ui.glyphLayout.height + borderGap * 2 * ui.uiScale);
 
             r.hudBatch.setColor(Color.WHITE);
-            r.m5x7_shadow_use.draw(r.hudBatch, "Crafting", cpx, cpy);
+            r.m5x7_shadow_use.draw(r.hudBatch, _title, cpx, cpy);
         }
     }
 

@@ -17,6 +17,7 @@ public class GameSettings {
     private static GameSettings INSTANCE;
     private static final String SETTINGS_FILE_NAME = "settings.json";
     public int maxTickRate = 60;
+    public String language = "en";
 
     // Window variables
     public int preferredWidth = 1600;
@@ -125,6 +126,7 @@ public class GameSettings {
                 .put("fpsCap", fpsCap)
                 .put("windowMode", windowMode)
                 .put("vsync", vsync)
+                .put("language", language)
                 .put("debug", debugJson)
                 .put("audio", audioJson)
                 .put("uiScale", uiScale)
@@ -139,6 +141,7 @@ public class GameSettings {
         fpsCap = jsonSettings.getInt("fpsCap");
         windowMode = jsonSettings.getInt("windowMode");
         vsync = jsonSettings.getBoolean("vsync");
+        language = jsonSettings.getString("language");
 
         JSONObject debugJson = jsonSettings.getJSONObject("debug");
         enableDebugGL = debugJson.getBoolean("enableDebugGL");

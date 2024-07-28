@@ -19,6 +19,7 @@ import dev.michey.expo.console.ConsoleMessage;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.debug.DebugGL;
 import dev.michey.expo.input.GameInput;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
@@ -78,6 +79,9 @@ public class Expo implements ApplicationListener {
 	/** GameSettings */
 	private final GameSettings gameSettings;
 
+	/** Translations */
+	private final Lang lang;
+
 	public Expo(GameSettings gameSettings) {
 		if(gameSettings.enableDebugMode) DEV_MODE = true;
 		if(gameSettings.enablePerformanceProfiler) ExpoShared.TRACK_PERFORMANCE = true;
@@ -103,6 +107,8 @@ public class Expo implements ApplicationListener {
 		inactiveScreens = new HashMap<>();
 		this.gameSettings = gameSettings;
 
+		this.lang = new Lang();
+
 		{
 			// Find the max refresh rate for local server tick rate
 			int proposedRefreshRate = 60;
@@ -122,6 +128,9 @@ public class Expo implements ApplicationListener {
 	@Override
 	public void create() {
 		ExpoHardware.dump();
+
+		lang.load(gameSettings.language);
+		lang.setActiveLangCode(gameSettings.language);
 
 		if(DEV_MODE || gameSettings.enableDebugImGui) {
 			imGuiGlfw = new ImGuiImplGlfw();

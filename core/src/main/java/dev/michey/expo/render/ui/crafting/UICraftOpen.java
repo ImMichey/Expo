@@ -1,6 +1,7 @@
 package dev.michey.expo.render.ui.crafting;
 
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
@@ -29,7 +30,7 @@ public class UICraftOpen extends InteractableUIElement {
 
     @Override
     public void onTooltip() {
-        PlayerUI.get().drawTooltipColored((parentContainer.craftingOpen ? "Close" : "Open") + " Crafting", ClientStatic.COLOR_CRAFT_TEXT);
+        PlayerUI.get().drawTooltipColored(Lang.str(parentContainer.craftingOpen ? "ui.inventory.closecrafting" : "ui.inventory.opencrafting"), ClientStatic.COLOR_CRAFT_TEXT);
     }
 
 }
