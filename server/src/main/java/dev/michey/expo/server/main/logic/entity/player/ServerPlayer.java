@@ -174,7 +174,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
         nextMovementPacket = null;
 
         // chat message
-        ExpoServerBase.get().broadcastMessage("Player " + username + " died.");
+        ExpoServerBase.get().broadcastMessageTranslatable("chat.player.death", new Object[] {username});
     }
 
     public void teleportPlayer(float x, float y, TeleportReason teleportReason) {

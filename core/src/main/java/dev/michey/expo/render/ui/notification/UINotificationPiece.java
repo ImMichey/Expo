@@ -17,4 +17,14 @@ public class UINotificationPiece {
         this.color = new Color(color);
     }
 
+    public static String toSingleString(UINotificationPiece[] pieces) {
+        StringBuilder builder = new StringBuilder();
+
+        for(UINotificationPiece piece : pieces) {
+            builder.append(piece.text);
+        }
+
+        return builder.toString();
+    }
+
 }

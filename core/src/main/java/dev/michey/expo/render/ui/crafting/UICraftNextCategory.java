@@ -1,7 +1,7 @@
 package dev.michey.expo.render.ui.crafting;
 
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.logic.inventory.ClientInventoryItem;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
@@ -21,7 +21,7 @@ public class UICraftNextCategory extends InteractableUIElement {
 
     @Override
     public void onTooltip() {
-        PlayerUI.get().drawTooltipColored("Next categories", ClientStatic.COLOR_CRAFT_TEXT);
+        PlayerUI.get().drawTooltipColored(Lang.str("ui.crafting.next"), ClientStatic.COLOR_CRAFT_TEXT);
     }
 
 }

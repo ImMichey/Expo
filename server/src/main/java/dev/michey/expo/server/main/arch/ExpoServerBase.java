@@ -96,6 +96,10 @@ public abstract class ExpoServerBase {
         ServerPackets.p25ChatMessage("SERVER", s, PacketReceiver.all());
     }
 
+    public void broadcastMessageTranslatable(String langKey, Object[] payload) {
+        ServerPackets.p52TranslatableChatMessage("SERVER", langKey, payload, PacketReceiver.all());
+    }
+
     private void applyFileProperties() {
         ServerWorld world = ServerWorld.get();
 

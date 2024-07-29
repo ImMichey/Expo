@@ -568,6 +568,17 @@ public class ServerPackets {
         });
     }
 
+    /** Sends the P52_TranslatableChatMessage packet via TCP protocol. */
+    public static void p52TranslatableChatMessage(String sender, String langKey, Object[] payload, PacketReceiver receiver) {
+        mt(() -> {
+            P52_TranslatableChatMessage p = new P52_TranslatableChatMessage();
+            p.sender = sender;
+            p.langKey = langKey;
+            p.payload = payload;
+            tcp(p, receiver);
+        });
+    }
+
     /** Helper methods below. */
     private static void udp(Packet p, PacketReceiver receiver) {
         if(receiver == null) return;

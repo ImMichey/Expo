@@ -342,10 +342,8 @@ public class Expo implements ApplicationListener {
 			ClientUtils.takeScreenshot(fn);
 
 			if(PlayerUI.get() != null) {
-				PlayerUI.get().addNotification(PlayerUI.get().playerTabHead, 5.0f, "crab_snip", new UINotificationPiece[] {
-						new UINotificationPiece("Took screenshot as ", Color.WHITE),
-						new UINotificationPiece(fn + ".png", Color.CYAN)
-				});
+				UINotificationPiece[] pieces = Lang.ntp("ui.notification.screenshot", fn + ".png");
+				PlayerUI.get().addNotification(PlayerUI.get().playerTabHead, 5.0f, "crab_snip", pieces);
 			}
 		}
 	}

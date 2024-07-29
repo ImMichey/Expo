@@ -117,7 +117,8 @@ public class ExpoServerRegistry {
                 P48_ClientPlayerPosition.class,
                 P49_PlayerEntityThrow.class,
                 P50_TileFullUpdate.class,
-                P51_PositionalSoundAdvanced.class
+                P51_PositionalSoundAdvanced.class,
+                P52_TranslatableChatMessage.class
         );
     }
 

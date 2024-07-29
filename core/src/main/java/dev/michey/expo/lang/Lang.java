@@ -2,9 +2,12 @@ package dev.michey.expo.lang;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import dev.michey.expo.log.ExpoLogger;
+import dev.michey.expo.render.ui.notification.UINotificationPiece;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Lang {
 
@@ -59,6 +62,43 @@ public class Lang {
     public void setActiveLangCode(String langCode) {
         ExpoLogger.log("Setting active lang code to '" + langCode + "'");
         this.activeLangCode = langCode;
+    }
+
+    public static UINotificationPiece[] ntp(String key, Object... tokens) {
+        String base = str(key, tokens);
+        LinkedList<int[]> bounds = new LinkedList<>();
+
+        int lastIndex = 0;
+
+        while(true) {
+            int index = base.indexOf("[piece,", lastIndex);
+
+            if(index == -1) {
+                break;
+            }
+
+            lastIndex = index + 1;
+            bounds.add(new int[] {index, index + 14}); // [piece,HEXCLR]
+        }
+
+        LinkedList<UINotificationPiece> pieces = new LinkedList<>();
+
+        for(int i = 0 ; i < bounds.size(); i++) {
+            int[] pieceBoundaries = bounds.get(i);
+
+            String str;
+            String hexColor = base.substring(pieceBoundaries[0] + 7, pieceBoundaries[0] + 13);
+
+            if(i == bounds.size() - 1) {
+                str = base.substring(pieceBoundaries[1]);
+            } else {
+                str = base.substring(pieceBoundaries[1], bounds.get(i + 1)[0]);
+            }
+
+            pieces.add(new UINotificationPiece(str, Color.valueOf(hexColor)));
+        }
+
+        return pieces.toArray(new UINotificationPiece[0]);
     }
 
     public static String str(String key) {

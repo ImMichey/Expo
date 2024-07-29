@@ -1,5 +1,6 @@
 package dev.michey.expo.console.command;
 
+import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.lang.Lang;
@@ -27,6 +28,7 @@ public class CommandLang extends AbstractConsoleCommand {
 
         Lang.get().load(langCode);
         Lang.get().setActiveLangCode(langCode);
+        Expo.get().loadItemDisplayNames();
 
         GameConsole.get().addSystemSuccessMessage("Switched game language to '" + langCode + "'.");
     }

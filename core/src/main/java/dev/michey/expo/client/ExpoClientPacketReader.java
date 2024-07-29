@@ -437,6 +437,8 @@ public class ExpoClientPacketReader {
             }
             case P51_PositionalSoundAdvanced p ->
                     AudioEngine.get().playSoundGroupManaged(p.soundName, new Vector2(p.worldX, p.worldY), p.maxSoundRange, false, p.volumeMultiplier);
+            case P52_TranslatableChatMessage p ->
+                    ExpoClientContainer.get().getPlayerUI().chat.addChatMessage(new ChatMessage(Lang.str(p.langKey, p.payload), p.sender, false));
             case null, default -> {}
         }
     }

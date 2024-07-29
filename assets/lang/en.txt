@@ -15,11 +15,16 @@ ui.crafting.tools=Category: Tools & Armor
 ui.crafting.food=Category: Food
 ui.crafting.unknown=Category: Unknown
 ui.crafting.ingredients=Ingredients:
+ui.crafting.next=Next categories
+ui.crafting.previous=Previous categories
 
 # World
 ui.world.loading=Loading World '%s'...
 ui.world.sunrise=The sun is rising.
 ui.world.sunset=The sun is setting.
+
+# Notifications
+ui.notification.screenshot=[piece,ffffff]Took screenshot as [piece,00ffff]%s
 
 # Multiplayer
 ui.multiplayer.initializing=Initializing...
@@ -29,10 +34,11 @@ ui.multiplayer.connected.success=Connected to server, attempting authentication.
 ui.multiplayer.connected.fail=Connected to server, error: %s
 
 # Ingame chat messages
-chat.player.join=%s joined the server.
-chat.player.quit=%s left the server.
+chat.player.join=[piece,ffff00]%s [piece,ffffff]joined the server.
+chat.player.quit=[piece,ffff00]%s [piece,ffffff]left the server.
 chat.join.multiplayer=You joined a multiplayer server.
 chat.join.singleplayer=You joined a singleplayer world in Dev Mode.
+chat.player.death=Player %s died.
 
 # Entity display names
 entity.crab=Crab
@@ -97,7 +103,7 @@ item.bandage=Bandage
 item.aloe_vera_seeds=Aloe Vera Seeds
 item.lilypad=Lilypad
 item.bomb=Bomb
-item.nuke=Nuke terrible fortune
+item.nuke=Nuke
 item.iron_raw=Iron Chunk
 item.iron_shovel=Iron Shovel
 item.sunflower_seeds=Sunflower Seeds

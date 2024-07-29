@@ -19,7 +19,7 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
     public float removalDelta;
     public float removalDelay;
 
-    private Color color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+    private final Color color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
     @Override
     public void onCreation() {

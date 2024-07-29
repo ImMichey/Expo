@@ -1063,16 +1063,9 @@ public class PlayerUI {
         boolean notPlayer = !ClientPlayer.getLocalPlayer().username.equals(username);
 
         if((Expo.get().isMultiplayer() || DEV_MODE) && notPlayer) {
-            String msg = Lang.str("chat.player.join", username);
-            chat.addServerMessage(msg);
-            addNotification(playerTabHead, 5.0f, "notification", msg);
-
-            /*
-            addNotification(playerTabHead, 5.0f, "notification", new UINotificationPiece[] {
-                    new UINotificationPiece(username, Color.YELLOW),
-                    new UINotificationPiece(" joined the server.")
-            });
-            */
+            UINotificationPiece[] pieces = Lang.ntp("chat.player.join", username);
+            chat.addServerMessage(UINotificationPiece.toSingleString(pieces));
+            addNotification(playerTabHead, 5.0f, "notification", pieces);
         }
     }
 
@@ -1081,16 +1074,9 @@ public class PlayerUI {
         boolean notPlayer = !ClientPlayer.getLocalPlayer().username.equals(username);
 
         if((Expo.get().isMultiplayer() || DEV_MODE) && notPlayer) {
-            String msg = Lang.str("chat.player.quit", username);
-            chat.addServerMessage(msg);
-            addNotification(playerTabHead, 5.0f, "notification", msg);
-
-            /*
-            addNotification(playerTabHead, 5.0f, "notification", new UINotificationPiece[] {
-                    new UINotificationPiece(username, Color.YELLOW),
-                    new UINotificationPiece(" left the server.")
-            });
-            */
+            UINotificationPiece[] pieces = Lang.ntp("chat.player.quit", username);
+            chat.addServerMessage(UINotificationPiece.toSingleString(pieces));
+            addNotification(playerTabHead, 5.0f, "notification", pieces);
         }
     }
 
