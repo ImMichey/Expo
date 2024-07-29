@@ -6,10 +6,11 @@ A multiplayer procedural sandbox game created with [libGDX](https://libgdx.com) 
 
 The menu GUI is not working yet, so you will have to make use of the ingame console (F1) to connect to a server or to open a singleplayer instance.
 
-To get an overview of possible commands, type `/help` in the console.
+To get an overview of possible commands, type `/help` in the console. Here are the most important commands:
 
-Launch a singleplayer world with `/world <name> [seed]`.
-Connect to a multiplayer server with `/connect <ip>`.
+- Launch a singleplayer world with `/world <name> [seed]`.
+- Connect to a multiplayer server with `/connect <ip[:port]>`.
+- Change your username with `/username <name>`.
 
 ## Used frameworks/libraries
 
@@ -23,13 +24,13 @@ Connect to a multiplayer server with `/connect <ip>`.
 
 ## Modules
 
-- `assets` and `assets_shared`: Shaders, audio and database files.
+- `assets` and `assets_shared`: Shaders, audio, translation and database files.
 - `core`: Platform independent client code.
 - `lwjgl3`: Desktop specific launch code.
 - `server`: Dedicated server code.
 - `shared`: Contains useful cross-module utility classes.
+- `json-extractor`: Internal development utility.
 
 ## Screenshots
 
 ![Screenshot 1](/assets/s1.png "Screenshot 1")
-![Screenshot 2](/assets/s2.png "Screenshot 2")
