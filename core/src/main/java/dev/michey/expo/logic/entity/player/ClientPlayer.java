@@ -17,6 +17,7 @@ import dev.michey.expo.audio.TrackedSoundData;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.input.IngameInput;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -272,10 +273,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             }
 
             if(Expo.get().isMultiplayer()) {
-                PlayerUI.get().chat.addServerMessage("You joined a multiplayer server.");
+                PlayerUI.get().chat.addServerMessage(Lang.str("chat.join.multiplayer"));
             } else {
                 if(DEV_MODE) {
-                    PlayerUI.get().chat.addServerMessage("You joined a singleplayer world in Dev Mode.");
+                    PlayerUI.get().chat.addServerMessage(Lang.str("chat.join.singleplayer"));
                 }
             }
         }

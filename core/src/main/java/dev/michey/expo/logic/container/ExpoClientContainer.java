@@ -9,6 +9,7 @@ import dev.michey.expo.client.ExpoClient;
 import dev.michey.expo.client.ExpoClientPacketEvaluator;
 import dev.michey.expo.client.ExpoClientPacketReader;
 import dev.michey.expo.input.IngameInput;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.localserver.ExpoServerLocal;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
@@ -38,7 +39,7 @@ public class ExpoClientContainer {
 
     /** Dedicated server communication */
     private ExpoClient client;
-    private String loadingMessage = "Initializing...";
+    private String loadingMessage = Lang.str("ui.multiplayer.initializing");
 
     /** The game world */
     private ClientWorld clientWorld;
@@ -151,7 +152,7 @@ public class ExpoClientContainer {
                 String string;
 
                 if(ExpoServerLocal.get() != null) {
-                    string = "Loading World '" + ExpoServerLocal.get().getWorldSaveHandler().getWorldName() + "'...";
+                    string = Lang.str("ui.world.loading", ExpoServerLocal.get().getWorldSaveHandler().getWorldName());
                 } else {
                     string = loadingMessage;
                 }

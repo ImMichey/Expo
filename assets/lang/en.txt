@@ -1,9 +1,41 @@
+# Inventory
+ui.inventory.title=Inventory
+ui.inventory.head=Head Armor Slot
+ui.inventory.chest=Chest Armor Slot
+ui.inventory.gloves=Gloves Armor Slot
+ui.inventory.legs=Legs Armor Slot
+ui.inventory.boots=Boots Armor Slot
 ui.inventory.opencrafting=Open Crafting
 ui.inventory.closecrafting=Close Crafting
 
-ui.inventory.title=Inventory
+# Crafting
 ui.crafting.title=Crafting
+ui.crafting.misc=Category: Misc
+ui.crafting.tools=Category: Tools & Armor
+ui.crafting.food=Category: Food
+ui.crafting.unknown=Category: Unknown
+ui.crafting.ingredients=Ingredients:
 
+# World
+ui.world.loading=Loading World '%s'...
+ui.world.sunrise=The sun is rising.
+ui.world.sunset=The sun is setting.
+
+# Multiplayer
+ui.multiplayer.initializing=Initializing...
+ui.multiplayer.auth.success=Retrieving world data...
+ui.multiplayer.auth.fail=Failed authentication: %s
+ui.multiplayer.connected.success=Connected to server, attempting authentication...
+ui.multiplayer.connected.fail=Connected to server, error: %s
+
+# Ingame chat messages
+chat.player.join=%s joined the server.
+chat.player.quit=%s left the server.
+chat.join.multiplayer=You joined a multiplayer server.
+chat.join.singleplayer=You joined a singleplayer world in Dev Mode.
+
+# Item display names
+item.none=Hand
 item.stick=Stick
 item.blueberry=Blueberry
 item.flint_pickaxe=Flint Pickaxe

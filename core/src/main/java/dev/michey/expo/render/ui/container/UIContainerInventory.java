@@ -55,10 +55,10 @@ public class UIContainerInventory extends UIContainer {
         craftNextCategoryButton = new UICraftNextCategory(this);
 
         craftGroupCategoryButtons = new UICraftGroupCategory[4];
-        craftGroupCategoryButtons[0] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_MISC, "misc", "Misc");
-        craftGroupCategoryButtons[1] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_TOOLS, "tools", "Tools & Armor");
-        craftGroupCategoryButtons[2] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_FOOD, "food", "Food");
-        craftGroupCategoryButtons[3] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_3, null, "Unknown");
+        craftGroupCategoryButtons[0] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_MISC, "misc", "ui.crafting.misc");
+        craftGroupCategoryButtons[1] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_TOOLS, "tools", "ui.crafting.tools");
+        craftGroupCategoryButtons[2] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_FOOD, "food", "ui.crafting.food");
+        craftGroupCategoryButtons[3] = new UICraftGroupCategory(this, ExpoShared.CRAFTING_CATEGORY_3, null, "ui.crafting.unknown");
 
         craftRecipeSlots = new UICraftRecipeSlot[25];
         for(int i = 0; i < craftRecipeSlots.length; i++) craftRecipeSlots[i] = new UICraftRecipeSlot(this);
@@ -70,11 +70,11 @@ public class UIContainerInventory extends UIContainer {
         }
 
         inventoryArmorSlots = new UIPlayerArmorSlot[5];
-        inventoryArmorSlots[0] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_HEAD, "head", "Head");
-        inventoryArmorSlots[1] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_CHEST, "chest", "Chest");
-        inventoryArmorSlots[2] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES, "glove", "Gloves");
-        inventoryArmorSlots[3] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_LEGS, "leg", "Legs");
-        inventoryArmorSlots[4] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_FEET, "boot", "Boots");
+        inventoryArmorSlots[0] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_HEAD, "head", "ui.inventory.head");
+        inventoryArmorSlots[1] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_CHEST, "chest", "ui.inventory.chest");
+        inventoryArmorSlots[2] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_GLOVES, "glove", "ui.inventory.gloves");
+        inventoryArmorSlots[3] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_LEGS, "leg", "ui.inventory.legs");
+        inventoryArmorSlots[4] = new UIPlayerArmorSlot(this, ExpoShared.PLAYER_INVENTORY_SLOT_FEET, "boot", "ui.inventory.boots");
 
         PLAYER_INVENTORY_CONTAINER = this;
     }

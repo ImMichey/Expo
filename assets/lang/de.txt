@@ -1,5 +1,100 @@
+# Inventory
+ui.inventory.title=Inventory
+ui.inventory.head=Head Armor Slot
+ui.inventory.chest=Chest Armor Slot
+ui.inventory.gloves=Gloves Armor Slot
+ui.inventory.legs=Legs Armor Slot
+ui.inventory.boots=Boots Armor Slot
 ui.inventory.opencrafting=Open Crafting
 ui.inventory.closecrafting=Close Crafting
 
-ui.inventory.title=Inventar
-ui.crafting.title=Herstellung
+# Crafting
+ui.crafting.title=Crafting
+ui.crafting.misc=Category: Misc
+ui.crafting.tools=Category: Tools & Armor
+ui.crafting.food=Category: Food
+ui.crafting.unknown=Category: Unknown
+ui.crafting.ingredients=Ingredients:
+
+# World
+ui.world.loading=Loading World '%s'...
+ui.world.sunrise=The sun is rising.
+ui.world.sunset=The sun is setting.
+
+# Multiplayer
+ui.multiplayer.initializing=Initializing...
+ui.multiplayer.auth.success=Retrieving world data...
+ui.multiplayer.auth.fail=Failed authentication: %s
+ui.multiplayer.connected.success=Connected to server, attempting authentication...
+ui.multiplayer.connected.fail=Connected to server, error: %s
+
+# Ingame chat messages
+chat.player.join=%s joined the server.
+chat.player.quit=%s left the server.
+chat.join.multiplayer=You joined a multiplayer server.
+chat.join.singleplayer=You joined a singleplayer world in Dev Mode.
+
+# Item display names
+item.none=Hand
+item.stick=Stick
+item.blueberry=Blueberry
+item.flint_pickaxe=Flint Pickaxe
+item.flint_axe=Flint Axe
+item.iron_pickaxe=Iron Pickaxe
+item.iron_axe=Iron Axe
+item.grassfiber=Grass Fiber
+item.flint_shovel=Flint Shovel
+item.floor_grass=Grass Floor
+item.floor_sand=Sand Floor
+item.floor_dirt=Dirt Floor
+item.op_shovel=Admin Shovel
+item.flint=Flint
+item.worm=Worm
+item.cord=Weak Cord
+item.rock=Rock
+item.oak_log=Oak Log
+item.acorn=Acorn
+item.mushroom_red=Red Mushroom
+item.mushroom_brown=Brown Mushroom
+item.oak_plank=Oak Wood Plank
+item.mushroom_glowing=Glowing Mushroom
+item.flint_scythe=Flint Scythe
+item.wheat=Wheat
+item.wheat_seeds=Wheat Seeds
+item.maggot=Maggot
+item.fence_stick=Stick Fence
+item.oak_plank_floor=Oak Plank Floor
+item.birch_log=Birch Log
+item.oak_plank_wall=Oak Plank Wall
+item.crate=Crate
+item.carrot=Carrot
+item.coal=Coal
+item.dirt=Dirt
+item.sand=Sand
+item.torch=Torch
+item.rock_wall=Stone Wall
+item.dirt_wall=Dirt Wall
+item.insect_net=Insect Net
+item.firefly=Firefly
+item.crab_meat_raw=Raw Crab Meat
+item.sign=Sign
+item.wood_club=Wooden Club
+item.flint_dagger=Flint Knife
+item.campfire=Campfire
+item.hedge_wall=Hedge Wall
+item.aloe_vera=Aloe Vera Leaf
+item.bandage=Bandage
+item.aloe_vera_seeds=Aloe Vera Seeds
+item.lilypad=Lilypad
+item.bomb=Bomb
+item.nuke=Nuke terrible fortune
+item.iron_raw=Iron Chunk
+item.iron_shovel=Iron Shovel
+item.sunflower_seeds=Sunflower Seeds
+item.sunflower=Sunflower
+item.throwable_rock=Throwable Rock
+item.chest=Chest
+item.magnet_helmet=Magnet Helmet
+item.tulip_red=Red Tulip
+item.tulip_orange=Orange Tulip
+item.starfish=Starfish

@@ -1,6 +1,7 @@
 package dev.michey.expo.render.ui.crafting;
 
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.render.ui.InteractableUIElement;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
@@ -30,7 +31,7 @@ public class UICraftGroupCategory extends InteractableUIElement {
 
     @Override
     public void onTooltip() {
-        PlayerUI.get().drawTooltipColored("Category: " + displayName, ClientStatic.COLOR_CRAFT_TEXT);
+        PlayerUI.get().drawTooltipColored(Lang.str(displayName), ClientStatic.COLOR_CRAFT_TEXT);
     }
 
     public int getCategoryId() {

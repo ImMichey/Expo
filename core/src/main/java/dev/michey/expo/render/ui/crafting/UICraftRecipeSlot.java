@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.InteractableUIElement;
@@ -84,7 +85,8 @@ public class UICraftRecipeSlot extends InteractableUIElement {
 
         float innerWidth = 8 * ui.uiScale + titleWidth;
 
-        ui.glyphLayout.setText(rc.m5x7_use, "Ingredients:");
+        String ingredients = Lang.str("ui.crafting.ingredients");
+        ui.glyphLayout.setText(rc.m5x7_use, ingredients);
         float ingredientsWidth = ui.glyphLayout.width + 8 * ui.uiScale;
         float generalM5X7Height = ui.glyphLayout.height;
 
@@ -147,7 +149,7 @@ public class UICraftRecipeSlot extends InteractableUIElement {
 
         // Ingredients: text
         rc.m5x7_use.setColor(ClientStatic.COLOR_CRAFT_INGREDIENTS);
-        rc.m5x7_use.draw(rc.hudBatch, "Ingredients:", (int) _cx, (int) (_iy + generalM5X7Height));
+        rc.m5x7_use.draw(rc.hudBatch, ingredients, (int) _cx, (int) (_iy + generalM5X7Height));
         rc.m5x7_use.setColor(Color.WHITE);
 
         // Header line

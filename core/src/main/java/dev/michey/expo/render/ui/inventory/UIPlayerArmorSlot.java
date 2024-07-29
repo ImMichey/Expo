@@ -1,8 +1,8 @@
 package dev.michey.expo.render.ui.inventory;
 
 import dev.michey.expo.assets.ExpoAssets;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
-import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.render.ui.InteractableItemSlot;
 import dev.michey.expo.render.ui.PlayerUI;
 import dev.michey.expo.render.ui.container.UIContainerInventory;
@@ -28,7 +28,7 @@ public class UIPlayerArmorSlot extends InteractableItemSlot {
     public void onTooltip() {
         if(ClientPlayer.getLocalPlayer().playerInventory.getSlotAt(armorId).item == null) {
             PlayerUI ui = PlayerUI.get();
-            ui.drawTooltipColored(displayName + " Armor Slot", ClientStatic.COLOR_ARMOR_TEXT);
+            ui.drawTooltipColored(Lang.str(displayName), ClientStatic.COLOR_ARMOR_TEXT);
         } else {
             super.onTooltip();
         }

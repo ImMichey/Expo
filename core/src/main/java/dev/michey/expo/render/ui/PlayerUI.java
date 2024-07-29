@@ -11,6 +11,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ExpoClientChat;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -889,7 +890,7 @@ public class PlayerUI {
         Color c;
 
         if(mapping == null) {
-            text = "Hand";
+            text = Lang.str("item.none");
             c = Color.LIGHT_GRAY;
         } else {
             text = mapping.displayName;
@@ -1062,11 +1063,16 @@ public class PlayerUI {
         boolean notPlayer = !ClientPlayer.getLocalPlayer().username.equals(username);
 
         if((Expo.get().isMultiplayer() || DEV_MODE) && notPlayer) {
-            chat.addServerMessage(username + " joined the server.");
+            String msg = Lang.str("chat.player.join", username);
+            chat.addServerMessage(msg);
+            addNotification(playerTabHead, 5.0f, "notification", msg);
+
+            /*
             addNotification(playerTabHead, 5.0f, "notification", new UINotificationPiece[] {
                     new UINotificationPiece(username, Color.YELLOW),
                     new UINotificationPiece(" joined the server.")
             });
+            */
         }
     }
 
@@ -1075,11 +1081,16 @@ public class PlayerUI {
         boolean notPlayer = !ClientPlayer.getLocalPlayer().username.equals(username);
 
         if((Expo.get().isMultiplayer() || DEV_MODE) && notPlayer) {
-            chat.addServerMessage(username + " left the server.");
+            String msg = Lang.str("chat.player.quit", username);
+            chat.addServerMessage(msg);
+            addNotification(playerTabHead, 5.0f, "notification", msg);
+
+            /*
             addNotification(playerTabHead, 5.0f, "notification", new UINotificationPiece[] {
                     new UINotificationPiece(username, Color.YELLOW),
                     new UINotificationPiece(" left the server.")
             });
+            */
         }
     }
 

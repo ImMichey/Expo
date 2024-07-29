@@ -10,6 +10,7 @@ import dev.michey.expo.assets.ParticleSheet;
 import dev.michey.expo.audio.AudioEngine;
 import dev.michey.expo.client.chat.ChatMessage;
 import dev.michey.expo.console.GameConsole;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -39,7 +40,7 @@ public class ExpoClientPacketReader {
         switch (o) {
             case P44_Connect_Rsp p -> {
                 if (p.credentialsSuccessful) {
-                    ExpoClientContainer.get().setLoadingMessage("Connected to server, attempting authentication...");
+                    ExpoClientContainer.get().setLoadingMessage(Lang.str("ui.multiplayer.connected.success"));
                     GameConsole.get().addSystemSuccessMessage("Passed initial server connection check: " + p.message);
 
                     if (p.requiresSteamTicket && STEAM_INITIALIZED) {
@@ -48,7 +49,7 @@ public class ExpoClientPacketReader {
                         ClientPackets.p45AuthReq(ClientStatic.PLAYER_USERNAME, null);
                     }
                 } else {
-                    ExpoClientContainer.get().setLoadingMessage("Connected to server, error: " + p.message);
+                    ExpoClientContainer.get().setLoadingMessage(Lang.str("ui.multiplayer.connected.fail", p.message));
                     GameConsole.get().addSystemErrorMessage("Failed initial server connection check: " + p.message);
                     Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                     Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);
@@ -56,7 +57,7 @@ public class ExpoClientPacketReader {
             }
             case P1_Auth_Rsp p -> {
                 if (p.authSuccessful) {
-                    ExpoClientContainer.get().setLoadingMessage("Retrieving world data...");
+                    ExpoClientContainer.get().setLoadingMessage(Lang.str("ui.multiplayer.auth.success"));
                     GameConsole.get().addSystemSuccessMessage("Successfully joined server: " + p.authMessage + " (" + p.serverTps + " TPS)");
                     if (!local) {
                         ExpoClientContainer.get().getClientWorld().setNoiseSeed(p.worldSeed);
@@ -69,7 +70,7 @@ public class ExpoClientPacketReader {
                     }
                     ExpoClientContainer.get().setServerTickRate(p.serverTps);
                 } else {
-                    ExpoClientContainer.get().setLoadingMessage("Failed authentication: " + p.authMessage);
+                    ExpoClientContainer.get().setLoadingMessage(Lang.str("ui.multiplayer.auth.fail", p.authMessage));
                     GameConsole.get().addSystemErrorMessage("Failed to auth with server: " + p.authMessage);
                     Expo.get().switchToExistingScreen(ClientStatic.SCREEN_MENU);
                     Expo.get().disposeAndRemoveInactiveScreen(ClientStatic.SCREEN_GAME);

@@ -21,6 +21,7 @@ import com.dongbat.jbump.World;
 import dev.michey.expo.Expo;
 import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.audio.AudioEngine;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityManager;
@@ -323,14 +324,14 @@ public class ClientWorld {
         if(worldTime >= ExpoTime.SUNRISE && oldWorldTime < ExpoTime.SUNRISE && !playedSunriseSound) {
             playedSunriseSound = true;
             AudioEngine.get().playSoundGroup("rooster", 0.5f);
-            PlayerUI.get().addNotification(ExpoAssets.get().textureRegion("icon_sun"), 5.0f, null, "The sun is rising.");
+            PlayerUI.get().addNotification(ExpoAssets.get().textureRegion("icon_sun"), 5.0f, null, Lang.str("ui.world.sunrise"));
         }
         if(worldTime >= ExpoTime.SUNSET || worldTime < ExpoTime.SUNRISE) {
             playedSunriseSound = false;
         }
         if(worldTime >= ExpoTime.SUNSET && oldWorldTime < ExpoTime.SUNSET && !playedSunsetSound) {
             playedSunsetSound = true;
-            PlayerUI.get().addNotification(ExpoAssets.get().textureRegion("icon_moon"), 5.0f, "notification", "The sun is setting.");
+            PlayerUI.get().addNotification(ExpoAssets.get().textureRegion("icon_moon"), 5.0f, "notification", Lang.str("ui.world.sunset"));
         }
         if(worldTime < ExpoTime.SUNSET) {
             playedSunsetSound = false;

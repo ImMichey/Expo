@@ -35,6 +35,7 @@ public class Lang {
 
         for(String line : fullString) {
             if(line.isEmpty()) continue;
+            if(line.startsWith("#")) continue;
             totalLines++;
 
             int substringChar = line.indexOf("=");
