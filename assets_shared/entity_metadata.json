@@ -1,6 +1,5 @@
 {
     "CRAB": {
-        "name": "Crab",
         "maxHp": 50,
         "ai.idleMin": 4.0,
         "ai.idleMax": 8.0,
@@ -23,7 +22,6 @@
         "ai.seekTargets": ["PLAYER", "CHICKEN"]
     },
     "ZOMBIE": {
-        "name": "Zombie",
         "maxHp": 100,
         "ai.idleMin": 4.0,
         "ai.idleMax": 8.0,
@@ -42,7 +40,6 @@
         "ai.attackRange": 16.0
     },
     "WOODFOLK": {
-        "name": "Woodfolk",
         "maxHp": 60,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -61,7 +58,6 @@
         "ai.attackRange": 8.0
     },
     "SLIME": {
-        "name": "Slime",
         "maxHp": 60,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -92,7 +88,6 @@
         "healthBar.offsetY": 8.0
     },
     "CHICKEN": {
-        "name": "Chicken",
         "maxHp": 40,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -104,7 +99,6 @@
         "ai.fleeSpeed": 32.0
     },
     "WORM": {
-        "name": "Worm",
         "maxHp": 20,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -116,7 +110,6 @@
         "ai.fleeSpeed": 8.0
     },
     "MAGGOT": {
-        "name": "Maggot",
         "maxHp": 30,
         "ai.idleMin": 1.0,
         "ai.idleMax": 3.0,
@@ -128,7 +121,6 @@
         "ai.fleeSpeed": 8.0
     },
     "FIREFLY": {
-        "name": "Firefly",
         "maxHp": 20,
         "ai.idleMin": 0.000,
         "ai.idleMax": 0.001,

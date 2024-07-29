@@ -1,5 +1,5 @@
 # Inventory
-ui.inventory.title=Inventory
+ui.inventory.title=Inventar
 ui.inventory.head=Head Armor Slot
 ui.inventory.chest=Chest Armor Slot
 ui.inventory.gloves=Gloves Armor Slot
@@ -9,7 +9,7 @@ ui.inventory.opencrafting=Open Crafting
 ui.inventory.closecrafting=Close Crafting
 
 # Crafting
-ui.crafting.title=Crafting
+ui.crafting.title=Herstellung
 ui.crafting.misc=Category: Misc
 ui.crafting.tools=Category: Tools & Armor
 ui.crafting.food=Category: Food
@@ -33,6 +33,16 @@ chat.player.join=%s joined the server.
 chat.player.quit=%s left the server.
 chat.join.multiplayer=You joined a multiplayer server.
 chat.join.singleplayer=You joined a singleplayer world in Dev Mode.
+
+# Entity display names
+entity.crab=Crab
+entity.zombie=Zombie
+entity.woodfolk=Woodfolk
+entity.slime=Slime
+entity.chicken=Huhn
+entity.worm=Worm
+entity.maggot=Maggot
+entity.firefly=Firefly
 
 # Item display names
 item.none=Hand

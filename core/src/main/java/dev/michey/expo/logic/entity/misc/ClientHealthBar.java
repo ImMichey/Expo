@@ -3,6 +3,7 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Interpolation;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.render.RenderContext;
@@ -82,7 +83,7 @@ public class ClientHealthBar extends ClientEntity implements TopVisibilityEntity
         // ############################# ALPHA CHECK
 
         float healthPercentage = parentEntity.serverHealth / meta.getMaxHealth();
-        String suppliedName = parentEntity.getEntityType() == ClientEntityType.PLAYER ? null : meta.getName();
+        String suppliedName = parentEntity.getEntityType() == ClientEntityType.PLAYER ? null : Lang.str("entity." + parentEntity.getEntityType().name().toLowerCase());
         float offsetY = meta.getHealthBarOffsetY();
         float length = Math.max(barWidth, 28) - 2;
 

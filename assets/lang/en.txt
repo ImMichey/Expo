@@ -34,6 +34,16 @@ chat.player.quit=%s left the server.
 chat.join.multiplayer=You joined a multiplayer server.
 chat.join.singleplayer=You joined a singleplayer world in Dev Mode.
 
+# Entity display names
+entity.crab=Crab
+entity.zombie=Zombie
+entity.woodfolk=Woodfolk
+entity.slime=Slime
+entity.chicken=Chicken
+entity.worm=Worm
+entity.maggot=Maggot
+entity.firefly=Firefly
+
 # Item display names
 item.none=Hand
 item.stick=Stick
