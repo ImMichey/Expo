@@ -477,6 +477,14 @@ public class Expo implements ApplicationListener {
 		}
 	}
 
+	public void loadItemDisplayNames() {
+		for(ItemMapping map : ItemMapper.get().getItemMappings()) {
+			String iden = map.identifier;
+			if(iden.startsWith("item_")) iden = iden.substring(5);
+			map.displayName = Lang.str("item." + iden);
+		}
+	}
+
 	public void updateArmor(ArmorRender ar) {
 		ar.idleFrames = new TextureRegion[FRAMES_PLAYER_ANIMATION_IDLE];
 		ar.walkFrames = new TextureRegion[FRAMES_PLAYER_ANIMATION_WALK];

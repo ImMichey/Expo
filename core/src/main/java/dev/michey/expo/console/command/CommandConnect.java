@@ -74,6 +74,7 @@ public class CommandConnect extends AbstractConsoleCommand {
                         if(ItemMapper.get() == null) {
                             new ItemMapper(true, false);
                             Expo.get().loadItemMapperTextures();
+                            Expo.get().loadItemDisplayNames();
                             new CraftingRecipeMapping(true);
                         }
 

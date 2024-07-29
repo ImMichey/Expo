@@ -657,6 +657,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
             if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE && !ExpoClientChat.get().isFocused() && !GameConsole.get().isVisible()) {
                 new ItemMapper(true, true);
                 Expo.get().loadItemMapperTextures();
+                Expo.get().loadItemDisplayNames();
 
                 if(ClientPlayer.getLocalPlayer() != null && ClientPlayer.getLocalPlayer().holdingItemId != -1) {
                     ClientPlayer.getLocalPlayer().updateHoldingItemSprite(holdingItemId);

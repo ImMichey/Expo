@@ -23,6 +23,7 @@ public class ExpoServerLocal extends ExpoServerBase {
         if(ItemMapper.get() == null) {
             new ItemMapper(true, false);
             Expo.get().loadItemMapperTextures();
+            Expo.get().loadItemDisplayNames();
             new CraftingRecipeMapping(true);
         }
 

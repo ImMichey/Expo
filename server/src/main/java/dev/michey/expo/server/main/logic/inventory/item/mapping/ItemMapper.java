@@ -41,7 +41,6 @@ public class ItemMapper {
 
             // keys.
             String identifier = entry.getString("identifier");
-            String displayName = entry.getString("displayName");
             String displayNameColor = entry.getString("displayNameColor");
             String[] aliases = entry.has("aliases") ? JsonConverter.pullStrings(entry.getJSONArray("aliases")) : null;
             ItemCategory category = ItemCategory.valueOf(entry.getString("category"));
@@ -86,7 +85,7 @@ public class ItemMapper {
                 }
             }
 
-            ItemMapping mapping = new ItemMapping(identifier, id, category, aliases, displayName, displayNameColor, uiRender, heldRender, armorRender, thrownRender, logic);
+            ItemMapping mapping = new ItemMapping(identifier, id, category, aliases, displayNameColor, uiRender, heldRender, armorRender, thrownRender, logic);
             itemMappings.put(identifier, mapping);
             itemMappingsId.put(id, mapping);
 

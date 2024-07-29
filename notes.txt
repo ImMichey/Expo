@@ -13,3 +13,5 @@
   	at dev.michey.expo.localserver.ExpoServerLocal$1.run(ExpoServerLocal.java:54)
 * Potential bomb bug (bug exploding entities outside of chunk area might cause caching/saving issues)
 * Tree shadow fade is off sometimes (not sure why)
+
+* Player knockbacks are still bugged

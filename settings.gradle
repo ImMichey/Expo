@@ -1,1 +1,1 @@
-include 'server', 'shared', 'core', 'lwjgl3'
+include 'server', 'shared', 'core', 'lwjgl3', 'json-extractor'

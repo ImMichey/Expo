@@ -26,6 +26,7 @@ public class CommandReload extends AbstractConsoleCommand {
     public void executeCommand(String[] args) throws CommandSyntaxException {
         new ItemMapper(true, true);
         Expo.get().loadItemMapperTextures();
+        Expo.get().loadItemDisplayNames();
         success("Reloaded internal item mappings");
 
         if(ClientPlayer.getLocalPlayer() != null) ClientPlayer.getLocalPlayer().updateHoldingItemSprite(ClientPlayer.getLocalPlayer().holdingItemId);

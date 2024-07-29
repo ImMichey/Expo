@@ -1,1788 +1,1741 @@
-{
-    "database": [
-        {
-            "identifier": "item_stick",
-            "id": 0,
-            "category": "MATERIAL",
-            "displayName": "Stick",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_stick"
-                },
-                "held": {
-                    "texture": "item_stick",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2,
-                    "offsetY": 6,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_blueberry",
-            "id": 1,
-            "category": "FOOD",
-            "displayName": "Blueberry",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_blueberry"
-                },
-                "held": {
-                    "texture": "item_blueberry",
-                    "scaleX": 0.5,
-                    "scaleY": 0.5,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [67.5, -22.5]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "hungerRestore": 5.0,
-                    "hungerCooldownRestore": 30.0
-                }
-            }
-        },
-        {
-            "identifier": "item_flint_pickaxe",
-            "id": 2,
-            "category": "TOOL",
-            "displayName": "Flint Pickaxe",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_flint_pickaxe"
-                },
-                "held": {
-                    "texture": "item_flint_pickaxe",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.5,
-                    "offsetY": 8.5,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 88,
-                "toolType": "PICKAXE",
-                "attackSpeed": 0.4,
-                "attackDamage": 14.0,
-                "harvestDamage": 15.0
-            }
-        },
-        {
-            "identifier": "item_flint_axe",
-            "id": 3,
-            "category": "TOOL",
-            "displayName": "Flint Axe",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_flint_axe"
-                },
-                "held": {
-                    "texture": "item_flint_axe",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -1,
-                    "offsetY": 7.5,
-                    "rotations": [45.0, -45.0]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 88,
-                "toolType": "AXE",
-                "attackSpeed": 0.4,
-                "attackDamage": 16.0,
-                "harvestDamage": 15.0
-            }
-        },
-        {
-            "identifier": "item_iron_pickaxe",
-            "id": 4,
-            "category": "TOOL",
-            "displayName": "Iron Pickaxe",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_iron_pickaxe"
-                },
-                "held": {
-                    "texture": "item_iron_pickaxe",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2,
-                    "offsetY": 9,
-                    "rotations": [45.0, -45.0]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 100,
-                "toolType": "PICKAXE"
-            }
-        },
-        {
-            "identifier": "item_iron_axe",
-            "id": 5,
-            "category": "TOOL",
-            "displayName": "Iron Axe",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_iron_axe"
-                },
-                "held": {
-                    "texture": "item_iron_axe",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45.0, -45.0]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 100,
-                "toolType": "AXE"
-            }
-        },
-        {
-            "identifier": "item_grassfiber",
-            "id": 7,
-            "category": "MATERIAL",
-            "displayName": "Grass Fiber",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_grassfiber"
-                },
-                "held": {
-                    "texture": "item_grassfiber",
-                    "scaleX": 0.85,
-                    "scaleY": 0.85,
-                    "offsetX": -1.0,
-                    "offsetY": 5.0,
-                    "rotations": [45.0, -45.0]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_flint_shovel",
-            "id": 8,
-            "category": "TOOL",
-            "displayName": "Flint Shovel",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_flint_shovel"
-                },
-                "held": {
-                    "texture": "item_flint_shovel",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2,
-                    "offsetY": 8,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 88,
-                "toolType": "SHOVEL",
-                "attackSpeed": 0.4,
-                "attackDamage": 12.0,
-                "harvestDamage": 15.0
-            }
-        },
-        {
-            "identifier": "item_floor_grass",
-            "id": 9,
-            "category": "BUILDING",
-            "displayName": "Grass Floor",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_floor_grass"
-                },
-                "held": {
-                    "texture": "item_floor_grass",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 1,
-                    "offsetY": 1,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_1",
-                    "floorType": "GRASS",
-                    "previewTexture": "t2"
-                }
-            }
-        },
-        {
-            "identifier": "item_floor_sand",
-            "id": 10,
-            "category": "BUILDING",
-            "displayName": "Sand Floor",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_sand_floor"
-                },
-                "held": {
-                    "texture": "item_sand_floor",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 1,
-                    "offsetY": 1,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_1",
-                    "floorType": "SAND",
-                    "previewTexture": "t24"
-                }
-            }
-        },
-        {
-            "identifier": "item_floor_dirt",
-            "id": 11,
-            "category": "BUILDING",
-            "displayName": "Dirt Floor",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_dirt_floor"
-                },
-                "held": {
-                    "texture": "item_dirt_floor",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 1,
-                    "offsetY": 1,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_0",
-                    "floorType": "DIRT",
-                    "previewTexture": "dirt_floor_item"
-                }
-            }
-        },
-        {
-            "identifier": "item_op_shovel",
-            "id": 12,
-            "category": "TOOL",
-            "displayName": "Admin Shovel",
-            "displayNameColor": "#ff7f00",
-            "render": {
-                "ui": {
-                    "texture": "item_op_shovel"
-                },
-                "held": {
-                    "texture": "item_op_shovel",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2,
-                    "offsetY": 8,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 5000,
-                "toolType": "SHOVEL",
-                "attackSpeed": 0.05,
-                "attackDamage": 100
-            }
-        },
-        {
-            "identifier": "item_flint",
-            "id": 13,
-            "category": "MATERIAL",
-            "displayName": "Flint",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_flint"
-                },
-                "held": {
-                    "texture": "item_flint",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1,
-                    "offsetY": 3,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_worm",
-            "id": 14,
-            "category": "FOOD",
-            "displayName": "Worm",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_worm"
-                },
-                "held": {
-                    "texture": "item_worm",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": 1,
-                    "offsetY": 0.5,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "hungerRestore": 15.0,
-                    "hungerCooldownRestore": 60.0
-                }
-            }
-        },
-        {
-            "identifier": "item_cord",
-            "id": 15,
-            "category": "MATERIAL",
-            "displayName": "Weak Cord",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_cord"
-                },
-                "held": {
-                    "texture": "item_cord",
-                    "scaleX": 0.8,
-                    "scaleY": 0.8,
-                    "offsetX": 2.5,
-                    "offsetY": 2,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_rock",
-            "id": 16,
-            "category": "MATERIAL",
-            "displayName": "Rock",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_rock"
-                },
-                "held": {
-                    "texture": "item_rock",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": 1,
-                    "offsetY": 1,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_oak_log",
-            "id": 17,
-            "category": "MATERIAL",
-            "displayName": "Oak Log",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_oak_log"
-                },
-                "held": {
-                    "texture": "item_oak_log",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 2,
-                    "offsetY": 4,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_acorn",
-            "id": 18,
-            "category": "MISC",
-            "displayName": "Acorn",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_acorn"
-                },
-                "held": {
-                    "texture": "item_acorn",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1.75,
-                    "offsetY": 6.25,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "OAK_TREE_SAPLING",
-                    "previewTexture": "oak_tree_sapling",
-                    "floorRequirement": "FOREST",
-                    "placeAlignmentOffsetX": 8,
-                    "previewOffsetX": 2,
-                    "sound": "plant",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_mushroom_red",
-            "id": 19,
-            "category": "FOOD",
-            "displayName": "Red Mushroom",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_mushroom_red"
-                },
-                "held": {
-                    "texture": "item_mushroom_red",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1,
-                    "offsetY": 3,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "hungerRestore": 6.0,
-                    "hungerCooldownRestore": 35.0
-                }
-            }
-        },
-        {
-            "identifier": "item_mushroom_brown",
-            "id": 20,
-            "category": "FOOD",
-            "displayName": "Brown Mushroom",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_mushroom_brown"
-                },
-                "held": {
-                    "texture": "item_mushroom_brown",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1,
-                    "offsetY": 3,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "hungerRestore": 8.0,
-                    "hungerCooldownRestore": 40.0
-                }
-            }
-        },
-        {
-            "identifier": "item_oak_plank",
-            "id": 21,
-            "category": "MATERIAL",
-            "displayName": "Oak Wood Plank",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_oak_plank"
-                },
-                "held": {
-                    "texture": "item_oak_plank",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 3,
-                    "offsetY": 4.5,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_mushroom_glowing",
-            "id": 22,
-            "category": "MISC",
-            "displayName": "Glowing Mushroom",
-            "displayNameColor": "#00ffff",
-            "render": {
-                "ui": {
-                    "texture": "item_mushroom_glowing"
-                },
-                "held": {
-                    "texture": "item_mushroom_glowing",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1,
-                    "offsetY": 3,
-                    "rotations": [0, -90],
-                    "light": {
-                        "color": [0.0, 1.0, 1.0, 1.0],
-                        "distanceMin": 112,
-                        "distanceMax": 128,
-                        "emissionQuadratic": 0.3,
-                        "emissionConstant": 1.0,
-                        "pulsating": true,
-                        "rayCount": 40
-                    }
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "UNRESTRICTED",
-                    "type": "ENTITY",
-                    "entityType": "MUSHROOM_GLOWING",
-                    "previewTexture": "entity_mushroom_glowing",
-                    "sound": "plant",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_flint_scythe",
-            "id": 23,
-            "category": "TOOL",
-            "displayName": "Flint Scythe",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_flint_scythe"
-                },
-                "held": {
-                    "texture": "item_flint_scythe",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2,
-                    "offsetY": 8,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 88,
-                "toolType": "SCYTHE",
-                "attackSpeed": 0.4,
-                "attackDamage": 14.0,
-                "harvestDamage": 15.0
-            }
-        },
-        {
-            "identifier": "item_wheat",
-            "id": 24,
-            "category": "MATERIAL",
-            "displayName": "Wheat",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_wheat"
-                },
-                "held": {
-                    "texture": "item_wheat",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1,
-                    "offsetY": 6,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_wheat_seeds",
-            "id": 25,
-            "category": "MISC",
-            "displayName": "Wheat Seeds",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_wheat_seeds"
-                },
-                "held": {
-                    "texture": "item_wheat_seeds",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "CROP_WHEAT",
-                    "placeAlignmentOffsetX": 8,
-                    "placeAlignmentOffsetY": 3,
-                    "floorRequirement": "SOIL_FARMLAND",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_maggot",
-            "id": 26,
-            "category": "FOOD",
-            "displayName": "Maggot",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_maggot"
-                },
-                "held": {
-                    "texture": "item_maggot",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1,
-                    "offsetY": 1,
-                    "rotations": [135, 45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "hungerRestore": 15.0,
-                    "hungerCooldownRestore": 60.0
-                }
-            }
-        },
-        {
-            "identifier": "item_fence_stick",
-            "id": 28,
-            "category": "BUILDING",
-            "displayName": "Stick Fence",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_fence_stick"
-                },
-                "held": {
-                    "texture": "item_fence_stick"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "FENCE_STICK",
-                    "previewTexture": "entity_fence_stick_1",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_oak_plank_floor",
-            "id": 29,
-            "category": "BUILDING",
-            "displayName": "Oak Plank Floor",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_oak_plank_floor"
-                },
-                "held": {
-                    "texture": "item_oak_plank_floor",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 1,
-                    "offsetY": 1,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_1",
-                    "floorType": "OAK_PLANK",
-                    "previewTexture": "t201"
-                }
-            }
-        },
-        {
-            "identifier": "item_birch_log",
-            "id": 30,
-            "category": "MATERIAL",
-            "displayName": "Birch Log",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_birch_log"
-                },
-                "held": {
-                    "texture": "item_birch_log",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 2,
-                    "offsetY": 4,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_oak_plank_wall",
-            "id": 31,
-            "category": "BUILDING",
-            "displayName": "Oak Plank Wall",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_oak_plank_wall"
-                },
-                "held": {
-                    "texture": "item_oak_plank_wall"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_2",
-                    "floorType": "OAK_PLANK_WALL",
-                    "previewTexture": "t267,tile_oakplankwall_elevation_2",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_crate",
-            "id": 32,
-            "category": "BUILDING",
-            "displayName": "Crate",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_crate"
-                },
-                "held": {
-                    "texture": "item_crate",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": 0,
-                    "offsetY": 4,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "CRATE",
-                    "previewTexture": "entity_crate",
-                    "placeAlignmentOffsetX": 0,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_carrot",
-            "id": 33,
-            "category": "FOOD",
-            "displayName": "Carrot",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_carrot"
-                },
-                "held": {
-                    "texture": "item_carrot",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -2,
-                    "offsetY": 5.5,
-                    "rotations": [45.0, -45.0]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "hungerRestore": 15.0,
-                    "hungerCooldownRestore": 60.0
-                }
-            }
-        },
-        {
-            "identifier": "item_coal",
-            "id": 34,
-            "category": "MATERIAL",
-            "displayName": "Coal",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_coal"
-                },
-                "held": {
-                    "texture": "item_coal",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -2.0,
-                    "offsetY": 5.0,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_dirt",
-            "id": 35,
-            "category": "MATERIAL",
-            "displayName": "Dirt",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_dirt"
-                },
-                "held": {
-                    "texture": "item_dirt",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -2.0,
-                    "offsetY": 5.0,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_sand",
-            "id": 36,
-            "category": "MATERIAL",
-            "displayName": "Sand",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_sand"
-                },
-                "held": {
-                    "texture": "item_sand",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -2.0,
-                    "offsetY": 5.0,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_torch",
-            "id": 37,
-            "category": "BUILDING",
-            "displayName": "Torch",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": [
-                    {
-                        "texture": "item_torch"
-                    },
-                    {
-                        "texture": "flame",
-                        "frames": 11,
-                        "animationSpeed": 0.08,
-                        "offsetX": 4,
-                        "offsetY": 7
-                    }
-                ],
-                "held": [
-                    {
-                        "texture": "item_torch",
-                        "offsetX": -3.5,
-                        "offsetY": 7,
-                        "rotations": [45, -45]
-                    },
-                    {
-                        "texture": "flame",
-                        "frames": 11,
-                        "animationSpeed": 0.08,
-                        "offsetX": -2.5,
-                        "offsetY": 8.5,
-                        "rotationLock": true,
-                        "hideShadow": true,
-                        "light": {
-                            "color": [0.992, 0.541, 0.184, 1.0],
-                            "distance": 140,
-                            "emissionQuadratic": 0.675,
-                            "emissionConstant": 0.375,
-                            "flicker": true,
-                            "flickerStrength": 6.0,
-                            "flickerCooldown": 0.15,
-                            "rayCount": 64
-                        },
-                        "particleEmitter": {
-                            "emitterName": "torch",
-                            "emitterDelay": 0.1
-                        },
-                        "soundEmitter": {
-                            "soundGroup": "campfire",
-                            "persistent": true,
-                            "volumeRange": 166,
-                            "volumeMultiplier": 0.4
-                        }
-                    }
+{"database": [
+    {
+        "identifier": "item_stick",
+        "displayNameColor": "#ffffff",
+        "id": 0,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_stick"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2,
+                "scaleY": 1,
+                "offsetY": 6,
+                "texture": "item_stick",
+                "rotations": [
+                    45,
+                    -45
                 ]
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "TORCH",
-                    "previewTexture": "entity_torch",
-                    "placeAlignmentOffsetX": 8.0,
-                    "placeAlignmentOffsetY": 4.0,
-                    "previewOffsetY": 4.0,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_rock_wall",
-            "id": 38,
-            "category": "BUILDING",
-            "displayName": "Stone Wall",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_rock_wall"
-                },
-                "held": {
-                    "texture": "item_rock_wall"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_2",
-                    "floorType": "ROCK_WALL",
-                    "previewTexture": "t157,tile_rock_elevation_2",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_dirt_wall",
-            "id": 39,
-            "category": "BUILDING",
-            "displayName": "Dirt Wall",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_dirt_wall"
-                },
-                "held": {
-                    "texture": "item_dirt_wall"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_2",
-                    "floorType": "DIRT_WALL",
-                    "previewTexture": "t223,tile_dirt_elevation_2",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_insect_net",
-            "id": 40,
-            "category": "TOOL",
-            "displayName": "Insect Net",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_insect_net"
-                },
-                "held": {
-                    "texture": "item_insect_net",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.75,
-                    "offsetY": 8.5,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "toolType": "NET",
-                "durability": 124
-            }
-        },
-        {
-            "identifier": "item_firefly",
-            "id": 41,
-            "category": "MISC",
-            "displayName": "Firefly",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": [
-                    {
-                        "texture": "entity_firefly_fly",
-                        "frames": 4,
-                        "animationSpeed": 0.125,
-                        "offsetX": 0,
-                        "offsetY": 1
-                    }
-                ],
-                "held": [
-                    {
-                        "texture": "entity_firefly_fly",
-                        "frames": 4,
-                        "animationSpeed": 0.125,
-                        "offsetX": 1.5,
-                        "offsetY": -0.5,
-                        "scaleX": 0.75,
-                        "scaleY": 0.75,
-                        "rotations": [-90, 180],
-                        "light": {
-                            "color": [1.0, 0.882, 0.0, 1.0],
-                            "distance": 80,
-                            "emissionQuadratic": 0.3,
-                            "emissionConstant": 1.0,
-                            "rayCount": 40
-                        }
-                    }
-                ]
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_crab_meat_raw",
-            "id": 42,
-            "category": "FOOD",
-            "displayName": "Raw Crab Meat",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_crab_meat_raw"
-                },
-                "held": {
-                    "texture": "item_crab_meat_raw",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -2.5,
-                    "offsetY": 4.5,
-                    "rotations": [45.0, -45.0]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "hungerRestore": 5.0,
-                    "hungerCooldownRestore": 30.0
-                }
-            }
-        },
-        {
-            "identifier": "item_sign",
-            "id": 44,
-            "category": "BUILDING",
-            "displayName": "Sign",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_sign"
-                },
-                "held": {
-                    "texture": "item_sign",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "SIGN",
-                    "previewTexture": "entity_sign",
-                    "placeAlignmentOffsetX": 8,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_wood_club",
-            "id": 45,
-            "category": "TOOL",
-            "displayName": "Wooden Club",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_wood_club"
-                },
-                "held": {
-                    "texture": "item_wood_club",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.5,
-                    "offsetY": 8.5,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 88,
-                "toolType": "WEAPON",
-                "range": 26.0,
-                "attackSpeed": 0.5,
-                "attackDamage": 18.0,
-                "attackAngleSpan": 225.0,
-                "attackKnockbackStrength": 22.0,
-                "attackKnockbackDuration": 0.35
-            }
-        },
-        {
-            "identifier": "item_flint_dagger",
-            "id": 46,
-            "category": "TOOL",
-            "displayName": "Flint Knife",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_flint_dagger"
-                },
-                "held": {
-                    "texture": "item_flint_dagger",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.25,
-                    "offsetY": 5.5,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 142,
-                "toolType": "WEAPON",
-                "attackSpeed": 0.25,
-                "attackDamage": 1.0,
-                "attackKnockbackStrength": 10.0
-            }
-        },
-        {
-            "identifier": "item_campfire",
-            "id": 47,
-            "category": "BUILDING",
-            "displayName": "Campfire",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": [
-                    {
-                        "texture": "item_campfire"
-                    },
-                    {
-                        "texture": "flame",
-                        "frames": 11,
-                        "animationSpeed": 0.08,
-                        "offsetX": 3,
-                        "offsetY": 8
-                    }
-                ],
-                "held": {
-                    "texture": "item_campfire",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 0,
-                    "offsetY": 3,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "CAMPFIRE",
-                    "previewTexture": "entity_campfire",
-                    "placeAlignmentOffsetX": 8.0,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_hedge_wall",
-            "id": 48,
-            "category": "BUILDING",
-            "displayName": "Hedge Wall",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_hedge_wall"
-                },
-                "held": {
-                    "texture": "item_hedge_wall"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "FLOOR_2",
-                    "floorType": "HEDGE"
-                }
-            }
-        },
-        {
-            "identifier": "item_aloe_vera",
-            "id": 49,
-            "category": "MATERIAL",
-            "displayName": "Aloe Vera Leaf",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_aloe_vera"
-                },
-                "held": {
-                    "texture": "item_aloe_vera",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 0,
-                    "offsetY": 2,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_bandage",
-            "id": 50,
-            "category": "CONSUMABLE",
-            "displayName": "Bandage",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_bandage"
-                },
-                "held": {
-                    "texture": "item_bandage",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 0,
-                    "offsetY": 2,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "foodData": {
-                    "healthRestore": 15.0
-                }
-            }
-        },
-        {
-            "identifier": "item_aloe_vera_seeds",
-            "id": 51,
-            "category": "MISC",
-            "displayName": "Aloe Vera Seeds",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_aloe_vera_seeds"
-                },
-                "held": {
-                    "texture": "item_aloe_vera_seeds",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "CROP_WHEAT",
-                    "placeAlignmentOffsetX": 8,
-                    "placeAlignmentOffsetY": 3,
-                    "floorRequirement": "SOIL_FARMLAND",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_lilypad",
-            "id": 52,
-            "category": "MISC",
-            "displayName": "Lilypad",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_lilypad"
-                },
-                "held": {
-                    "texture": "item_lilypad",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "LILYPAD",
-                    "placeAlignmentOffsetX": 8.0,
-                    "placeAlignmentOffsetY": 4.0,
-                    "previewOffsetY": 4.0,
-                    "floorRequirement": "WATER_OVERLAY",
-                    "previewTexture": "entity_lilypad_1",
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_bomb",
-            "id": 53,
-            "category": "CONSUMABLE",
-            "displayName": "Bomb",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_bomb"
-                },
-                "held": {
-                    "texture": "item_bomb",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 1,
-                    "offsetY": 3,
-                    "rotations": [0, -90]
-                },
-                "thrown": {
-                    "texture": "item_bomb"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "throwData": {
-                    "projectileBox": [3, 3],
-                    "maxThrowDistance": 320,
-                    "minThrowDuration": 0.5,
-                    "maxThrowDuration": 0.6,
-                    "explosionRadius": 180,
-                    "explosionDamage": 175,
-                    "knockbackStrength": 32.0,
-                    "knockbackDuration": 0.25
-                }
-            }
-        },
-        {
-            "identifier": "item_nuke",
-            "id": 54,
-            "category": "CONSUMABLE",
-            "displayName": "Nuke terrible fortune",
-            "displayNameColor": "#ff0000",
-            "render": {
-                "ui": {
-                    "texture": "item_bomb"
-                },
-                "held": {
-                    "texture": "item_bomb",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45, -45]
-                },
-                "thrown": {
-                    "texture": "item_bomb"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "throwData": {
-                    "projectileBox": [3, 3],
-                    "maxThrowDistance": 512,
-                    "minThrowDuration": 0.5,
-                    "maxThrowDuration": 0.6,
-                    "explosionRadius": 512,
-                    "explosionDamage": 300,
-                    "knockbackStrength": 64.0,
-                    "knockbackDuration": 0.25
-                }
-            }
-        },
-        {
-            "identifier": "item_iron_raw",
-            "id": 55,
-            "category": "MATERIAL",
-            "displayName": "Iron Chunk",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_iron_raw"
-                },
-                "held": {
-                    "texture": "item_iron_raw",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 9,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_iron_shovel",
-            "id": 56,
-            "category": "TOOL",
-            "displayName": "Iron Shovel",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_iron_shovel"
-                },
-                "held": {
-                    "texture": "item_iron_shovel",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2,
-                    "offsetY": 8,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 88,
-                "toolType": "SHOVEL",
-                "attackSpeed": 0.4,
-                "attackDamage": 12.0,
-                "harvestDamage": 15.0
-            }
-        },
-        {
-            "identifier": "item_sunflower_seeds",
-            "id": 57,
-            "category": "MISC",
-            "displayName": "Sunflower Seeds",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_sunflower_seeds"
-                },
-                "held": {
-                    "texture": "item_sunflower_seeds_held",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": -1,
-                    "offsetY": 1,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
-            }
-        },
-        {
-            "identifier": "item_sunflower",
-            "id": 58,
-            "category": "MISC",
-            "displayName": "Sunflower",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_sunflower"
-                },
-                "held": {
-                    "texture": "item_sunflower",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.5,
-                    "offsetY": 7.5,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "SUNFLOWER",
-                    "previewTexture": "entity_sunflower_1",
-                    "placeAlignmentOffsetX": 8.0,
-                    "placeAlignmentOffsetY": 8.0,
-                    "previewOffsetY": 8.0,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_throwable_rock",
-            "id": 59,
-            "category": "CONSUMABLE",
-            "displayName": "Throwable Rock",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_throwable_rock"
-                },
-                "held": {
-                    "texture": "item_throwable_rock",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": 1,
-                    "offsetY": 3,
-                    "rotations": [0, -90]
-                },
-                "thrown": {
-                    "texture": "item_throwable_rock"
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "throwData": {
-                    "projectileBox": [3, 3],
-                    "maxThrowDistance": 256,
-                    "minThrowDuration": 0.4,
-                    "maxThrowDuration": 0.6,
-                    "impactDamage": 10.0,
-                    "knockbackStrength": 8.0,
-                    "knockbackDuration": 0.2,
-                    "explosionRadius": 11,
-                    "explosionDamage": 10.0
-                }
-            }
-        },
-        {
-            "identifier": "item_chest",
-            "id": 60,
-            "category": "BUILDING",
-            "displayName": "Chest",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_chest"
-                },
-                "held": {
-                    "texture": "item_chest",
-                    "scaleX": 0.75,
-                    "scaleY": 0.75,
-                    "offsetX": 0,
-                    "offsetY": 4,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "CHEST",
-                    "previewTexture": "entity_chest",
-                    "placeAlignmentOffsetX": 0,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_magnet_helmet",
-            "id": 61,
-            "category": "ARMOR",
-            "displayName": "Magnet Helmet",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_magnet_helmet"
-                },
-                "held": {
-                    "texture": "item_magnet_helmet",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 0,
-                    "offsetY": 0,
-                    "rotations": [-90.0, 0.0]
-                },
-                "armor": {
-                    "texture_idle": "armor_magnet_helmet_idle",
-                    "texture_walk": "armor_magnet_helmet_walk",
-                    "scaleX": 1.0,
-                    "scaleY": 1.0,
-                    "offsetX": 1,
-                    "offsetY": 21,
-                    "hideLayerBelow": true
-                }
-            },
-            "logic": {
-                "stackSize": 1,
-                "durability": 100,
-                "toolType": "HELMET"
-            }
-        },
-        {
-            "identifier": "item_tulip_red",
-            "id": 62,
-            "category": "MISC",
-            "displayName": "Red Tulip",
-            "displayNameColor": "#ffffff",
-            "aliases": ["item_red_tulip"],
-            "render": {
-                "ui": {
-                    "texture": "item_tulip_red"
-                },
-                "held": {
-                    "texture": "item_tulip_red",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.5,
-                    "offsetY": 6,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "TULIP",
-                    "previewTexture": "entity_tulip_3",
-                    "placeAlignmentOffsetX": 8.0,
-                    "placeAlignmentOffsetY": 8.0,
-                    "previewOffsetY": 8.0,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_tulip_orange",
-            "id": 63,
-            "category": "MISC",
-            "displayName": "Orange Tulip",
-            "displayNameColor": "#ffffff",
-            "aliases": ["item_orange_tulip"],
-            "render": {
-                "ui": {
-                    "texture": "item_tulip_orange"
-                },
-                "held": {
-                    "texture": "item_tulip_orange",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -2.5,
-                    "offsetY": 6,
-                    "rotations": [45, -45]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM",
-                "placeData": {
-                    "alignment": "TILE",
-                    "type": "ENTITY",
-                    "entityType": "TULIP",
-                    "previewTexture": "entity_tulip_5",
-                    "placeAlignmentOffsetX": 8.0,
-                    "placeAlignmentOffsetY": 8.0,
-                    "previewOffsetY": 8.0,
-                    "static": true
-                }
-            }
-        },
-        {
-            "identifier": "item_starfish",
-            "id": 64,
-            "category": "MATERIAL",
-            "displayName": "Starfish",
-            "displayNameColor": "#ffffff",
-            "render": {
-                "ui": {
-                    "texture": "item_starfish"
-                },
-                "held": {
-                    "texture": "item_starfish",
-                    "scaleX": 1,
-                    "scaleY": 1,
-                    "offsetX": -0.5,
-                    "offsetY": 4,
-                    "rotations": [0, -90]
-                }
-            },
-            "logic": {
-                "toolType": "ITEM"
             }
         }
-    ]
-}
+    },
+    {
+        "identifier": "item_blueberry",
+        "displayNameColor": "#ffffff",
+        "id": 1,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {
+                "hungerCooldownRestore": 30,
+                "hungerRestore": 5
+            }
+        },
+        "category": "FOOD",
+        "render": {
+            "ui": {"texture": "item_blueberry"},
+            "held": {
+                "scaleX": 0.5,
+                "offsetX": 0,
+                "scaleY": 0.5,
+                "offsetY": 0,
+                "texture": "item_blueberry",
+                "rotations": [
+                    67.5,
+                    -22.5
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_flint_pickaxe",
+        "displayNameColor": "#ffffff",
+        "id": 2,
+        "logic": {
+            "harvestDamage": 15,
+            "stackSize": 1,
+            "durability": 88,
+            "attackSpeed": 0.4,
+            "toolType": "PICKAXE",
+            "attackDamage": 14
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_flint_pickaxe"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2.5,
+                "scaleY": 1,
+                "offsetY": 8.5,
+                "texture": "item_flint_pickaxe",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_flint_axe",
+        "displayNameColor": "#ffffff",
+        "id": 3,
+        "logic": {
+            "harvestDamage": 15,
+            "stackSize": 1,
+            "durability": 88,
+            "attackSpeed": 0.4,
+            "toolType": "AXE",
+            "attackDamage": 16
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_flint_axe"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -1,
+                "scaleY": 1,
+                "offsetY": 7.5,
+                "texture": "item_flint_axe",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_iron_pickaxe",
+        "displayNameColor": "#ffffff",
+        "id": 4,
+        "logic": {
+            "stackSize": 1,
+            "durability": 100,
+            "toolType": "PICKAXE"
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_iron_pickaxe"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2,
+                "scaleY": 1,
+                "offsetY": 9,
+                "texture": "item_iron_pickaxe",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_iron_axe",
+        "displayNameColor": "#ffffff",
+        "id": 5,
+        "logic": {
+            "stackSize": 1,
+            "durability": 100,
+            "toolType": "AXE"
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_iron_axe"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -0.5,
+                "scaleY": 1,
+                "offsetY": 9,
+                "texture": "item_iron_axe",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_grassfiber",
+        "displayNameColor": "#ffffff",
+        "id": 7,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_grassfiber"},
+            "held": {
+                "scaleX": 0.85,
+                "offsetX": -1,
+                "scaleY": 0.85,
+                "offsetY": 5,
+                "texture": "item_grassfiber",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_flint_shovel",
+        "displayNameColor": "#ffffff",
+        "id": 8,
+        "logic": {
+            "harvestDamage": 15,
+            "stackSize": 1,
+            "durability": 88,
+            "attackSpeed": 0.4,
+            "toolType": "SHOVEL",
+            "attackDamage": 12
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_flint_shovel"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2,
+                "scaleY": 1,
+                "offsetY": 8,
+                "texture": "item_flint_shovel",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_floor_grass",
+        "displayNameColor": "#ffffff",
+        "id": 9,
+        "logic": {
+            "placeData": {
+                "previewTexture": "t2",
+                "floorType": "GRASS",
+                "alignment": "TILE",
+                "type": "FLOOR_1"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_floor_grass"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 1,
+                "scaleY": 1,
+                "offsetY": 1,
+                "texture": "item_floor_grass",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_floor_sand",
+        "displayNameColor": "#ffffff",
+        "id": 10,
+        "logic": {
+            "placeData": {
+                "previewTexture": "t24",
+                "floorType": "SAND",
+                "alignment": "TILE",
+                "type": "FLOOR_1"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_sand_floor"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 1,
+                "scaleY": 1,
+                "offsetY": 1,
+                "texture": "item_sand_floor",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_floor_dirt",
+        "displayNameColor": "#ffffff",
+        "id": 11,
+        "logic": {
+            "placeData": {
+                "previewTexture": "dirt_floor_item",
+                "floorType": "DIRT",
+                "alignment": "TILE",
+                "type": "FLOOR_0"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_dirt_floor"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 1,
+                "scaleY": 1,
+                "offsetY": 1,
+                "texture": "item_dirt_floor",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_op_shovel",
+        "displayNameColor": "#ff7f00",
+        "id": 12,
+        "logic": {
+            "stackSize": 1,
+            "durability": 5000,
+            "attackSpeed": 0.05,
+            "toolType": "SHOVEL",
+            "attackDamage": 100
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_op_shovel"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2,
+                "scaleY": 1,
+                "offsetY": 8,
+                "texture": "item_op_shovel",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_flint",
+        "displayNameColor": "#ffffff",
+        "id": 13,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_flint"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1,
+                "scaleY": 0.75,
+                "offsetY": 3,
+                "texture": "item_flint",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_worm",
+        "displayNameColor": "#ffffff",
+        "id": 14,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {
+                "hungerCooldownRestore": 60,
+                "hungerRestore": 15
+            }
+        },
+        "category": "FOOD",
+        "render": {
+            "ui": {"texture": "item_worm"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": 1,
+                "scaleY": 0.75,
+                "offsetY": 0.5,
+                "texture": "item_worm",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_cord",
+        "displayNameColor": "#ffffff",
+        "id": 15,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_cord"},
+            "held": {
+                "scaleX": 0.8,
+                "offsetX": 2.5,
+                "scaleY": 0.8,
+                "offsetY": 2,
+                "texture": "item_cord",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_rock",
+        "displayNameColor": "#ffffff",
+        "id": 16,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_rock"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": 1,
+                "scaleY": 0.75,
+                "offsetY": 1,
+                "texture": "item_rock",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_oak_log",
+        "displayNameColor": "#ffffff",
+        "id": 17,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_oak_log"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 2,
+                "scaleY": 1,
+                "offsetY": 4,
+                "texture": "item_oak_log",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_acorn",
+        "displayNameColor": "#ffffff",
+        "id": 18,
+        "logic": {
+            "placeData": {
+                "previewTexture": "oak_tree_sapling",
+                "floorRequirement": "FOREST",
+                "static": true,
+                "entityType": "OAK_TREE_SAPLING",
+                "previewOffsetX": 2,
+                "sound": "plant",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_acorn"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1.75,
+                "scaleY": 0.75,
+                "offsetY": 6.25,
+                "texture": "item_acorn",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_mushroom_red",
+        "displayNameColor": "#ffffff",
+        "id": 19,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {
+                "hungerCooldownRestore": 35,
+                "hungerRestore": 6
+            }
+        },
+        "category": "FOOD",
+        "render": {
+            "ui": {"texture": "item_mushroom_red"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1,
+                "scaleY": 0.75,
+                "offsetY": 3,
+                "texture": "item_mushroom_red",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_mushroom_brown",
+        "displayNameColor": "#ffffff",
+        "id": 20,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {
+                "hungerCooldownRestore": 40,
+                "hungerRestore": 8
+            }
+        },
+        "category": "FOOD",
+        "render": {
+            "ui": {"texture": "item_mushroom_brown"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1,
+                "scaleY": 0.75,
+                "offsetY": 3,
+                "texture": "item_mushroom_brown",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_oak_plank",
+        "displayNameColor": "#ffffff",
+        "id": 21,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_oak_plank"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 3,
+                "scaleY": 1,
+                "offsetY": 4.5,
+                "texture": "item_oak_plank",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_mushroom_glowing",
+        "displayNameColor": "#00ffff",
+        "id": 22,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_mushroom_glowing",
+                "static": true,
+                "entityType": "MUSHROOM_GLOWING",
+                "sound": "plant",
+                "alignment": "UNRESTRICTED",
+                "type": "ENTITY"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_mushroom_glowing"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1,
+                "scaleY": 0.75,
+                "offsetY": 3,
+                "light": {
+                    "distanceMax": 128,
+                    "distanceMin": 112,
+                    "emissionConstant": 1,
+                    "color": [
+                        0,
+                        1,
+                        1,
+                        1
+                    ],
+                    "rayCount": 40,
+                    "emissionQuadratic": 0.3,
+                    "pulsating": true
+                },
+                "texture": "item_mushroom_glowing",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_flint_scythe",
+        "displayNameColor": "#ffffff",
+        "id": 23,
+        "logic": {
+            "harvestDamage": 15,
+            "stackSize": 1,
+            "durability": 88,
+            "attackSpeed": 0.4,
+            "toolType": "SCYTHE",
+            "attackDamage": 14
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_flint_scythe"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2,
+                "scaleY": 1,
+                "offsetY": 8,
+                "texture": "item_flint_scythe",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_wheat",
+        "displayNameColor": "#ffffff",
+        "id": 24,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_wheat"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1,
+                "scaleY": 0.75,
+                "offsetY": 6,
+                "texture": "item_wheat",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_wheat_seeds",
+        "displayNameColor": "#ffffff",
+        "id": 25,
+        "logic": {
+            "placeData": {
+                "floorRequirement": "SOIL_FARMLAND",
+                "static": true,
+                "entityType": "CROP_WHEAT",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8,
+                "placeAlignmentOffsetY": 3
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_wheat_seeds"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -0.5,
+                "scaleY": 1,
+                "offsetY": 9,
+                "texture": "item_wheat_seeds",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_maggot",
+        "displayNameColor": "#ffffff",
+        "id": 26,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {
+                "hungerCooldownRestore": 60,
+                "hungerRestore": 15
+            }
+        },
+        "category": "FOOD",
+        "render": {
+            "ui": {"texture": "item_maggot"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1,
+                "scaleY": 0.75,
+                "offsetY": 1,
+                "texture": "item_maggot",
+                "rotations": [
+                    135,
+                    45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_fence_stick",
+        "displayNameColor": "#ffffff",
+        "id": 28,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_fence_stick_1",
+                "static": true,
+                "entityType": "FENCE_STICK",
+                "alignment": "TILE",
+                "type": "ENTITY"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_fence_stick"},
+            "held": {"texture": "item_fence_stick"}
+        }
+    },
+    {
+        "identifier": "item_oak_plank_floor",
+        "displayNameColor": "#ffffff",
+        "id": 29,
+        "logic": {
+            "placeData": {
+                "previewTexture": "t201",
+                "floorType": "OAK_PLANK",
+                "alignment": "TILE",
+                "type": "FLOOR_1"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_oak_plank_floor"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 1,
+                "scaleY": 1,
+                "offsetY": 1,
+                "texture": "item_oak_plank_floor",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_birch_log",
+        "displayNameColor": "#ffffff",
+        "id": 30,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_birch_log"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 2,
+                "scaleY": 1,
+                "offsetY": 4,
+                "texture": "item_birch_log",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_oak_plank_wall",
+        "displayNameColor": "#ffffff",
+        "id": 31,
+        "logic": {
+            "placeData": {
+                "previewTexture": "t267,tile_oakplankwall_elevation_2",
+                "static": true,
+                "floorType": "OAK_PLANK_WALL",
+                "alignment": "TILE",
+                "type": "FLOOR_2"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_oak_plank_wall"},
+            "held": {"texture": "item_oak_plank_wall"}
+        }
+    },
+    {
+        "identifier": "item_crate",
+        "displayNameColor": "#ffffff",
+        "id": 32,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_crate",
+                "static": true,
+                "entityType": "CRATE",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 0
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_crate"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": 0,
+                "scaleY": 0.75,
+                "offsetY": 4,
+                "texture": "item_crate",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_carrot",
+        "displayNameColor": "#ffffff",
+        "id": 33,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {
+                "hungerCooldownRestore": 60,
+                "hungerRestore": 15
+            }
+        },
+        "category": "FOOD",
+        "render": {
+            "ui": {"texture": "item_carrot"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -2,
+                "scaleY": 0.75,
+                "offsetY": 5.5,
+                "texture": "item_carrot",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_coal",
+        "displayNameColor": "#ffffff",
+        "id": 34,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_coal"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -2,
+                "scaleY": 0.75,
+                "offsetY": 5,
+                "texture": "item_coal",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_dirt",
+        "displayNameColor": "#ffffff",
+        "id": 35,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_dirt"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -2,
+                "scaleY": 0.75,
+                "offsetY": 5,
+                "texture": "item_dirt",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_sand",
+        "displayNameColor": "#ffffff",
+        "id": 36,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_sand"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -2,
+                "scaleY": 0.75,
+                "offsetY": 5,
+                "texture": "item_sand",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_torch",
+        "displayNameColor": "#ffffff",
+        "id": 37,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_torch",
+                "static": true,
+                "previewOffsetY": 4,
+                "entityType": "TORCH",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8,
+                "placeAlignmentOffsetY": 4
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": [
+                {"texture": "item_torch"},
+                {
+                    "animationSpeed": 0.08,
+                    "offsetX": 4,
+                    "offsetY": 7,
+                    "frames": 11,
+                    "texture": "flame"
+                }
+            ],
+            "held": [
+                {
+                    "offsetX": -3.5,
+                    "offsetY": 7,
+                    "texture": "item_torch",
+                    "rotations": [
+                        45,
+                        -45
+                    ]
+                },
+                {
+                    "animationSpeed": 0.08,
+                    "offsetX": -2.5,
+                    "offsetY": 8.5,
+                    "frames": 11,
+                    "rotationLock": true,
+                    "light": {
+                        "emissionConstant": 0.375,
+                        "color": [
+                            0.992,
+                            0.541,
+                            0.184,
+                            1
+                        ],
+                        "distance": 140,
+                        "rayCount": 64,
+                        "flicker": true,
+                        "emissionQuadratic": 0.675,
+                        "flickerCooldown": 0.15,
+                        "flickerStrength": 6
+                    },
+                    "texture": "flame",
+                    "hideShadow": true,
+                    "particleEmitter": {
+                        "emitterName": "torch",
+                        "emitterDelay": 0.1
+                    },
+                    "soundEmitter": {
+                        "volumeMultiplier": 0.4,
+                        "soundGroup": "campfire",
+                        "persistent": true,
+                        "volumeRange": 166
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "identifier": "item_rock_wall",
+        "displayNameColor": "#ffffff",
+        "id": 38,
+        "logic": {
+            "placeData": {
+                "previewTexture": "t157,tile_rock_elevation_2",
+                "static": true,
+                "floorType": "ROCK_WALL",
+                "alignment": "TILE",
+                "type": "FLOOR_2"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_rock_wall"},
+            "held": {"texture": "item_rock_wall"}
+        }
+    },
+    {
+        "identifier": "item_dirt_wall",
+        "displayNameColor": "#ffffff",
+        "id": 39,
+        "logic": {
+            "placeData": {
+                "previewTexture": "t223,tile_dirt_elevation_2",
+                "static": true,
+                "floorType": "DIRT_WALL",
+                "alignment": "TILE",
+                "type": "FLOOR_2"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_dirt_wall"},
+            "held": {"texture": "item_dirt_wall"}
+        }
+    },
+    {
+        "identifier": "item_insect_net",
+        "displayNameColor": "#ffffff",
+        "id": 40,
+        "logic": {
+            "stackSize": 1,
+            "durability": 124,
+            "toolType": "NET"
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_insect_net"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2.75,
+                "scaleY": 1,
+                "offsetY": 8.5,
+                "texture": "item_insect_net",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_firefly",
+        "displayNameColor": "#ffffff",
+        "id": 41,
+        "logic": {"toolType": "ITEM"},
+        "category": "MISC",
+        "render": {
+            "ui": [{
+                "animationSpeed": 0.125,
+                "offsetX": 0,
+                "offsetY": 1,
+                "frames": 4,
+                "texture": "entity_firefly_fly"
+            }],
+            "held": [{
+                "animationSpeed": 0.125,
+                "offsetX": 1.5,
+                "scaleX": 0.75,
+                "scaleY": 0.75,
+                "offsetY": -0.5,
+                "frames": 4,
+                "light": {
+                    "emissionConstant": 1,
+                    "color": [
+                        1,
+                        0.882,
+                        0,
+                        1
+                    ],
+                    "distance": 80,
+                    "rayCount": 40,
+                    "emissionQuadratic": 0.3
+                },
+                "texture": "entity_firefly_fly",
+                "rotations": [
+                    -90,
+                    180
+                ]
+            }]
+        }
+    },
+    {
+        "identifier": "item_crab_meat_raw",
+        "displayNameColor": "#ffffff",
+        "id": 42,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {
+                "hungerCooldownRestore": 30,
+                "hungerRestore": 5
+            }
+        },
+        "category": "FOOD",
+        "render": {
+            "ui": {"texture": "item_crab_meat_raw"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -2.5,
+                "scaleY": 0.75,
+                "offsetY": 4.5,
+                "texture": "item_crab_meat_raw",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_sign",
+        "displayNameColor": "#ffffff",
+        "id": 44,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_sign",
+                "static": true,
+                "entityType": "SIGN",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_sign"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 0,
+                "scaleY": 1,
+                "offsetY": 0,
+                "texture": "item_sign",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_wood_club",
+        "displayNameColor": "#ffffff",
+        "id": 45,
+        "logic": {
+            "stackSize": 1,
+            "durability": 88,
+            "attackSpeed": 0.5,
+            "range": 26,
+            "toolType": "WEAPON",
+            "attackKnockbackStrength": 22,
+            "attackDamage": 18,
+            "attackAngleSpan": 225,
+            "attackKnockbackDuration": 0.35
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_wood_club"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2.5,
+                "scaleY": 1,
+                "offsetY": 8.5,
+                "texture": "item_wood_club",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_flint_dagger",
+        "displayNameColor": "#ffffff",
+        "id": 46,
+        "logic": {
+            "stackSize": 1,
+            "durability": 142,
+            "attackSpeed": 0.25,
+            "toolType": "WEAPON",
+            "attackKnockbackStrength": 10,
+            "attackDamage": 1
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_flint_dagger"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2.25,
+                "scaleY": 1,
+                "offsetY": 5.5,
+                "texture": "item_flint_dagger",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_campfire",
+        "displayNameColor": "#ffffff",
+        "id": 47,
+        "logic": {
+            "stackSize": 1,
+            "placeData": {
+                "previewTexture": "entity_campfire",
+                "static": true,
+                "entityType": "CAMPFIRE",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": [
+                {"texture": "item_campfire"},
+                {
+                    "animationSpeed": 0.08,
+                    "offsetX": 3,
+                    "offsetY": 8,
+                    "frames": 11,
+                    "texture": "flame"
+                }
+            ],
+            "held": {
+                "scaleX": 1,
+                "offsetX": 0,
+                "scaleY": 1,
+                "offsetY": 3,
+                "texture": "item_campfire",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_hedge_wall",
+        "displayNameColor": "#ffffff",
+        "id": 48,
+        "logic": {
+            "placeData": {
+                "floorType": "HEDGE",
+                "alignment": "TILE",
+                "type": "FLOOR_2"
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_hedge_wall"},
+            "held": {"texture": "item_hedge_wall"}
+        }
+    },
+    {
+        "identifier": "item_aloe_vera",
+        "displayNameColor": "#ffffff",
+        "id": 49,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_aloe_vera"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 0,
+                "scaleY": 1,
+                "offsetY": 2,
+                "texture": "item_aloe_vera",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_bandage",
+        "displayNameColor": "#ffffff",
+        "id": 50,
+        "logic": {
+            "toolType": "ITEM",
+            "foodData": {"healthRestore": 15}
+        },
+        "category": "CONSUMABLE",
+        "render": {
+            "ui": {"texture": "item_bandage"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 0,
+                "scaleY": 1,
+                "offsetY": 2,
+                "texture": "item_bandage",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_aloe_vera_seeds",
+        "displayNameColor": "#ffffff",
+        "id": 51,
+        "logic": {
+            "placeData": {
+                "floorRequirement": "SOIL_FARMLAND",
+                "static": true,
+                "entityType": "CROP_WHEAT",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8,
+                "placeAlignmentOffsetY": 3
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_aloe_vera_seeds"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -0.5,
+                "scaleY": 1,
+                "offsetY": 9,
+                "texture": "item_aloe_vera_seeds",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_lilypad",
+        "displayNameColor": "#ffffff",
+        "id": 52,
+        "logic": {
+            "placeData": {
+                "floorRequirement": "WATER_OVERLAY",
+                "previewTexture": "entity_lilypad_1",
+                "static": true,
+                "previewOffsetY": 4,
+                "entityType": "LILYPAD",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8,
+                "placeAlignmentOffsetY": 4
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_lilypad"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -0.5,
+                "scaleY": 1,
+                "offsetY": 9,
+                "texture": "item_lilypad",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_bomb",
+        "displayNameColor": "#ffffff",
+        "id": 53,
+        "logic": {
+            "throwData": {
+                "minThrowDuration": 0.5,
+                "projectileBox": [
+                    3,
+                    3
+                ],
+                "maxThrowDuration": 0.6,
+                "explosionDamage": 175,
+                "maxThrowDistance": 320,
+                "knockbackStrength": 32,
+                "knockbackDuration": 0.25,
+                "explosionRadius": 180
+            },
+            "toolType": "ITEM"
+        },
+        "category": "CONSUMABLE",
+        "render": {
+            "ui": {"texture": "item_bomb"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 1,
+                "scaleY": 1,
+                "offsetY": 3,
+                "texture": "item_bomb",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            },
+            "thrown": {"texture": "item_bomb"}
+        }
+    },
+    {
+        "identifier": "item_nuke",
+        "displayNameColor": "#ff0000",
+        "id": 54,
+        "logic": {
+            "throwData": {
+                "minThrowDuration": 0.5,
+                "projectileBox": [
+                    3,
+                    3
+                ],
+                "maxThrowDuration": 0.6,
+                "explosionDamage": 300,
+                "maxThrowDistance": 512,
+                "knockbackStrength": 64,
+                "knockbackDuration": 0.25,
+                "explosionRadius": 512
+            },
+            "toolType": "ITEM"
+        },
+        "category": "CONSUMABLE",
+        "render": {
+            "ui": {"texture": "item_bomb"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -0.5,
+                "scaleY": 1,
+                "offsetY": 9,
+                "texture": "item_bomb",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            },
+            "thrown": {"texture": "item_bomb"}
+        }
+    },
+    {
+        "identifier": "item_iron_raw",
+        "displayNameColor": "#ffffff",
+        "id": 55,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_iron_raw"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -0.5,
+                "scaleY": 1,
+                "offsetY": 9,
+                "texture": "item_iron_raw",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_iron_shovel",
+        "displayNameColor": "#ffffff",
+        "id": 56,
+        "logic": {
+            "harvestDamage": 15,
+            "stackSize": 1,
+            "durability": 88,
+            "attackSpeed": 0.4,
+            "toolType": "SHOVEL",
+            "attackDamage": 12
+        },
+        "category": "TOOL",
+        "render": {
+            "ui": {"texture": "item_iron_shovel"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2,
+                "scaleY": 1,
+                "offsetY": 8,
+                "texture": "item_iron_shovel",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_sunflower_seeds",
+        "displayNameColor": "#ffffff",
+        "id": 57,
+        "logic": {"toolType": "ITEM"},
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_sunflower_seeds"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": -1,
+                "scaleY": 0.75,
+                "offsetY": 1,
+                "texture": "item_sunflower_seeds_held",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_sunflower",
+        "displayNameColor": "#ffffff",
+        "id": 58,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_sunflower_1",
+                "static": true,
+                "previewOffsetY": 8,
+                "entityType": "SUNFLOWER",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8,
+                "placeAlignmentOffsetY": 8
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_sunflower"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2.5,
+                "scaleY": 1,
+                "offsetY": 7.5,
+                "texture": "item_sunflower",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_throwable_rock",
+        "displayNameColor": "#ffffff",
+        "id": 59,
+        "logic": {
+            "throwData": {
+                "impactDamage": 10,
+                "minThrowDuration": 0.4,
+                "projectileBox": [
+                    3,
+                    3
+                ],
+                "maxThrowDuration": 0.6,
+                "explosionDamage": 10,
+                "maxThrowDistance": 256,
+                "knockbackStrength": 8,
+                "knockbackDuration": 0.2,
+                "explosionRadius": 11
+            },
+            "toolType": "ITEM"
+        },
+        "category": "CONSUMABLE",
+        "render": {
+            "ui": {"texture": "item_throwable_rock"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 1,
+                "scaleY": 1,
+                "offsetY": 3,
+                "texture": "item_throwable_rock",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            },
+            "thrown": {"texture": "item_throwable_rock"}
+        }
+    },
+    {
+        "identifier": "item_chest",
+        "displayNameColor": "#ffffff",
+        "id": 60,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_chest",
+                "static": true,
+                "entityType": "CHEST",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 0
+            },
+            "toolType": "ITEM"
+        },
+        "category": "BUILDING",
+        "render": {
+            "ui": {"texture": "item_chest"},
+            "held": {
+                "scaleX": 0.75,
+                "offsetX": 0,
+                "scaleY": 0.75,
+                "offsetY": 4,
+                "texture": "item_chest",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_magnet_helmet",
+        "displayNameColor": "#ffffff",
+        "id": 61,
+        "logic": {
+            "stackSize": 1,
+            "durability": 100,
+            "toolType": "HELMET"
+        },
+        "category": "ARMOR",
+        "render": {
+            "armor": {
+                "scaleX": 1,
+                "offsetX": 1,
+                "scaleY": 1,
+                "hideLayerBelow": true,
+                "offsetY": 21,
+                "texture_idle": "armor_magnet_helmet_idle",
+                "texture_walk": "armor_magnet_helmet_walk"
+            },
+            "ui": {"texture": "item_magnet_helmet"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": 0,
+                "scaleY": 1,
+                "offsetY": 0,
+                "texture": "item_magnet_helmet",
+                "rotations": [
+                    -90,
+                    0
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_tulip_red",
+        "aliases": ["item_red_tulip"],
+        "displayNameColor": "#ffffff",
+        "id": 62,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_tulip_3",
+                "static": true,
+                "previewOffsetY": 8,
+                "entityType": "TULIP",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8,
+                "placeAlignmentOffsetY": 8
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_tulip_red"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2.5,
+                "scaleY": 1,
+                "offsetY": 6,
+                "texture": "item_tulip_red",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_tulip_orange",
+        "aliases": ["item_orange_tulip"],
+        "displayNameColor": "#ffffff",
+        "id": 63,
+        "logic": {
+            "placeData": {
+                "previewTexture": "entity_tulip_5",
+                "static": true,
+                "previewOffsetY": 8,
+                "entityType": "TULIP",
+                "alignment": "TILE",
+                "type": "ENTITY",
+                "placeAlignmentOffsetX": 8,
+                "placeAlignmentOffsetY": 8
+            },
+            "toolType": "ITEM"
+        },
+        "category": "MISC",
+        "render": {
+            "ui": {"texture": "item_tulip_orange"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -2.5,
+                "scaleY": 1,
+                "offsetY": 6,
+                "texture": "item_tulip_orange",
+                "rotations": [
+                    45,
+                    -45
+                ]
+            }
+        }
+    },
+    {
+        "identifier": "item_starfish",
+        "displayNameColor": "#ffffff",
+        "id": 64,
+        "logic": {"toolType": "ITEM"},
+        "category": "MATERIAL",
+        "render": {
+            "ui": {"texture": "item_starfish"},
+            "held": {
+                "scaleX": 1,
+                "offsetX": -0.5,
+                "scaleY": 1,
+                "offsetY": 4,
+                "texture": "item_starfish",
+                "rotations": [
+                    0,
+                    -90
+                ]
+            }
+        }
+    }
+]}

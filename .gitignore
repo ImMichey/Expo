@@ -12,6 +12,7 @@ gradle-app.setting
 /headless/build/
 /server/build/
 /shared/build/
+/json-extractor/build/
 
 ## Expo:
 /saves/*

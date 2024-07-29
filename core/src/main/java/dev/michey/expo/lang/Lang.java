@@ -68,6 +68,12 @@ public class Lang {
         }
 
         String value = l.translationDictionary.get(l.activeLangCode).get(key);
+
+        if(value == null && !l.activeLangCode.equals("en")) {
+            // Grab from default language "en"
+            value = l.translationDictionary.get("en").get(key);
+        }
+
         return value == null ? "<MISSING STRING>" : value;
     }
 
