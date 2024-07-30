@@ -209,7 +209,7 @@ public class RenderContext {
         globalGlyph = new GlyphLayout();
 
         {
-            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Habbo.ttf"));
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/expo.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
             parameter.shadowOffsetX = 1;
@@ -249,7 +249,7 @@ public class RenderContext {
         }
 
         {
-            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Habbo.ttf"));
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/expo.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             m5x7_all = new BitmapFont[5];
             m5x7_border_all = new BitmapFont[5];

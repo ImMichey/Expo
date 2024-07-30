@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.logic.inventory.ClientInventoryItem;
 import dev.michey.expo.logic.inventory.ClientInventorySlot;
@@ -151,7 +152,7 @@ public class InteractableItemSlot extends InteractableUIElement {
                 String hex = new Color(rgb[0], rgb[1], rgb[2], 1.0f).toString();
 
                 String[] lines = new String[] {
-                        PlayerUI.COLOR_DESCRIPTOR_HEX + "Durability: [#" + hex + "]" + item.itemMetadata.durability + "/" + mapping.logic.durability
+                        PlayerUI.COLOR_DESCRIPTOR_HEX + Lang.str("ui.tooltip.durability", hex, item.itemMetadata.durability, mapping.logic.durability)
                 };
 
                 parent.drawTooltipColored(mapping.displayName, mapping.color, lines);
@@ -176,7 +177,7 @@ public class InteractableItemSlot extends InteractableUIElement {
                         jump = "";
                     }
 
-                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + "Heals [#" + parent.COLOR_GREEN_HEX + "]" + healthRestore + "% health" + jump + PlayerUI.COLOR_DESCRIPTOR_HEX);
+                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + Lang.str("ui.tooltip.heal", healthRestore, jump) + PlayerUI.COLOR_DESCRIPTOR_HEX);
                     icons.add(parent.iconHealthRestore);
                 }
 
@@ -192,12 +193,12 @@ public class InteractableItemSlot extends InteractableUIElement {
                         jump = "";
                     }
 
-                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + "Fills [#" + parent.COLOR_GREEN_HEX + "]" + hungerRestore + "% hunger" + jump + PlayerUI.COLOR_DESCRIPTOR_HEX);
+                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + Lang.str("ui.tooltip.food", hungerRestore, jump) + PlayerUI.COLOR_DESCRIPTOR_HEX);
                     icons.add(parent.iconHungerRestore);
                 }
 
                 if(hungerCooldownRestore > 0) {
-                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + "Sates [#" + parent.COLOR_GREEN_HEX + "]" + hungerCooldownRestore + " second" + (hungerCooldownRestore == 1 ? "" : "s"));
+                    tooltip.add(PlayerUI.COLOR_DESCRIPTOR_HEX + Lang.str("ui.tooltip.foodsatiation", hungerCooldownRestore) + PlayerUI.COLOR_DESCRIPTOR_HEX);
                     icons.add(parent.iconHungerCooldownRestore);
                 }
 

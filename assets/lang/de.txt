@@ -26,6 +26,16 @@ ui.world.sunset=Die Sonne geht unter.
 # Notifications
 ui.notification.screenshot=[piece,ffffff]Schnappschuss gespeichert als [piece,00ffff]%s
 
+# Tooltips
+ui.tooltip.durability=Haltbarkeit: [#%s]%s/%s
+ui.tooltip.heal=Heilt [#7fed33]%s%% Lebenspunkte%s
+ui.tooltip.food=Stillt [#7fed33]%s%% Hunger%s
+ui.tooltip.foodsatiation=Sättigt [#7fed33]%s Sekunden
+
+# Actions
+ui.action.heal=+%s Lebenspunkte
+ui.action.food=+%s Hunger
+
 # Multiplayer
 ui.multiplayer.initializing=Initialisiere...
 ui.multiplayer.auth.success=Sammle Weltdaten...

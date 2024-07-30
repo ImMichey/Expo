@@ -416,9 +416,9 @@ public class ExpoClientPacketReader {
                         cpl.reset();
 
                         if(mapping.logic.foodData.hungerRestore > 0) {
-                            cpl.setCustomDisplayText("+" + ExpoShared.toDisplayNumber(mapping.logic.foodData.hungerRestore) + " Hunger");
+                            cpl.setCustomDisplayText(Lang.str("ui.action.food", ExpoShared.toDisplayNumber(mapping.logic.foodData.hungerRestore)));
                         } else {
-                            cpl.setCustomDisplayText("+" + ExpoShared.toDisplayNumber(mapping.logic.foodData.healthRestore) + " Health");
+                            cpl.setCustomDisplayText(Lang.str("ui.action.heal", ExpoShared.toDisplayNumber(mapping.logic.foodData.healthRestore)));
                         }
 
                         cpl.setCustomDisplayColor(PlayerUI.get().COLOR_GREEN);

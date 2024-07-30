@@ -30,7 +30,7 @@ public class Lang {
             return;
         }
 
-        String[] fullString = fh.readString().split("\r\n");
+        String[] fullString = fh.readString("UTF-8").split("\r\n");
 
         int totalLines = 0;
         int validLines = 0;
