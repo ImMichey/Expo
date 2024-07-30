@@ -167,6 +167,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     private float punchResetEndAngle;
 
     private boolean lastLeftClickSend;
+    private float lastPlaceCooldownTimestamp;
 
     /** Player item */
     public int holdingItemId = -1;
@@ -721,7 +722,10 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
                         if(mapping.logic.placeData != null) {
                             if(click || tm) {
                                 if(selector.canDoAction() || click) {
-                                    handleRightClickNonItem();
+                                    if(RenderContext.get().deltaTotal - lastPlaceCooldownTimestamp >= 0.15f) {
+                                        lastPlaceCooldownTimestamp = RenderContext.get().deltaTotal;
+                                        handleRightClickNonItem();
+                                    }
                                 }
                             }
                         } else {
