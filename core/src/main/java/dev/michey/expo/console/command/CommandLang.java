@@ -4,6 +4,7 @@ import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.lang.Lang;
+import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 
 public class CommandLang extends AbstractConsoleCommand {
 
@@ -28,7 +29,7 @@ public class CommandLang extends AbstractConsoleCommand {
 
         Lang.get().load(langCode);
         Lang.get().setActiveLangCode(langCode);
-        Expo.get().loadItemDisplayNames();
+        if(ItemMapper.get() != null) Expo.get().loadItemDisplayNames();
 
         GameConsole.get().addSystemSuccessMessage("Switched game language to '" + langCode + "'.");
     }

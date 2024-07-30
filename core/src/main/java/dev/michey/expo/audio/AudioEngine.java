@@ -174,7 +174,7 @@ public class AudioEngine {
 
                     if(currentTypeMultiplier != data.typeVolume || data.ambient || data.music) {
                         // Update volume of sound.
-                        data.sound.setVolume(data.id, currentTypeMultiplier * data.baseVolume * data.specificVolumeMultiplier);
+                        data.sound.setVolume(data.id, currentTypeMultiplier * data.baseVolume * data.specificVolumeMultiplier * getMasterVolume());
                     }
                 }
             }
@@ -301,7 +301,7 @@ public class AudioEngine {
             if(volume <= 0.0f) return;
             // Add.
             String sound = soundGroupMap.get(groupName).getRandomQualifiedName();
-            TrackedSoundData data = playSoundSpecific(sound, volume, true);
+            TrackedSoundData data = playSoundSpecific(sound, volume, true); // AMBIENT_ENTRY
             data.ambient = true;
             data.ambientGroup = groupName;
             ambienceTrackMap.put(groupName, data);
