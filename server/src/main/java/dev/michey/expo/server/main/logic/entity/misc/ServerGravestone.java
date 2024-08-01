@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class ServerGravestone extends ServerEntity {
 
-    public String owner;
+    public String owner = "unknown";
 
     public ServerGravestone() {
         setDamageableWith(ToolType.FIST, ToolType.PICKAXE);
