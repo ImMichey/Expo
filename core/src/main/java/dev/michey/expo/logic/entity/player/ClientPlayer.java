@@ -50,6 +50,7 @@ import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemRender;
 import dev.michey.expo.server.main.logic.world.bbox.PhysicsBoxFilters;
 import dev.michey.expo.server.packet.P17_PlayerPunchData;
 import dev.michey.expo.server.packet.P19_ContainerUpdate;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.GenerationUtils;
 import dev.michey.expo.server.util.TeleportReason;
 import dev.michey.expo.util.*;
@@ -658,6 +659,8 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
 
             if(Gdx.input.isKeyJustPressed(Input.Keys.R) && DEV_MODE && !ExpoClientChat.get().isFocused() && !GameConsole.get().isVisible()) {
                 new ItemMapper(true, true);
+                EntityMetadataMapper.get().refresh();
+
                 Expo.get().loadItemMapperTextures();
                 Expo.get().loadItemDisplayNames();
 

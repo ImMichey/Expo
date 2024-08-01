@@ -11,6 +11,7 @@ public class EntityMetadata {
 
     private final JSONObject object;
     private final EntityBoundsEntry populationBbox;
+    private final EntityBoundsEntry placeBbox;
 
     public EntityMetadata(JSONObject object) {
         this.object = object;
@@ -20,6 +21,16 @@ public class EntityMetadata {
         } else {
             populationBbox = null;
         }
+
+        if(object.has("bbox.place")) {
+            placeBbox = new EntityBoundsEntry(object.getJSONArray("bbox.place"));
+        } else {
+            placeBbox = null;
+        }
+    }
+
+    public EntityBoundsEntry getPlaceBbox() {
+        return placeBbox;
     }
 
     public EntityBoundsEntry getPopulationBbox() {

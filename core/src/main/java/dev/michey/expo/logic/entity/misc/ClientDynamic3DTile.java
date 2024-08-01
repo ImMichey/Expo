@@ -36,7 +36,6 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
     private boolean updateTexture = false;
     public TextureRegion created;
     public TextureRegion createdReflection;
-    private TextureRegion ao;
 
     private ClientEntity[] cachedNeighbours;
 
@@ -53,7 +52,6 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
                 clientPosX + 13, clientPosY + 13,
         };
 
-        ao = tr("entity_wall_ao");
         createTexture();
 
         checkForBoundingBox();
@@ -209,15 +207,50 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
             rc.useArrayBatch();
             rc.useRegularArrayShader();
 
-            rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated);
-            rc.arraySpriteBatch.draw(created,
-                    finalDrawPosX - squishAnimator2D.squishX1,
-                    finalDrawPosY + squishAnimator2D.squishY1 - linePxFix,
-                    created.getRegionWidth() + squishAnimator2D.squishX2,
-                    created.getRegionHeight() + squishAnimator2D.squishY2 + linePxFix);
+            boolean naturalWall = emulatingType == TileLayerType.ROCK || emulatingType == TileLayerType.DIRT;
+            boolean drawBody = layerIds.length > 1 || (layerIds[0] - emulatingType.TILE_ID_DATA[0] != 0);
+
+            if(drawBody || !naturalWall) {
+                rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1f - playerBehindDeltaInterpolated);
+
+                rc.arraySpriteBatch.draw(created,
+                        finalDrawPosX - squishAnimator2D.squishX1,
+                        finalDrawPosY + squishAnimator2D.squishY1 - linePxFix,
+                        created.getRegionWidth() + squishAnimator2D.squishX2,
+                        created.getRegionHeight() + squishAnimator2D.squishY2 + linePxFix);
+
+                if(naturalWall) {
+                    if(layerIds.length > 1) {
+                        int l0 = layerIds[0] - emulatingType.TILE_ID_DATA[0];
+                        int l1 = layerIds[1] - emulatingType.TILE_ID_DATA[0];
+                        int l2 = layerIds[2] - emulatingType.TILE_ID_DATA[0];
+                        int l3 = layerIds[3] - emulatingType.TILE_ID_DATA[0];
+
+                        float c1 = l0 == 8 ? BLACK : TRANS;
+                        float c2 = l2 == 14 ? BLACK : TRANS;
+                        float c3 = l3 == 11 ? BLACK : TRANS;
+                        float c4 = l1 == 5 ? BLACK : TRANS;
+
+                        rc.arraySpriteBatch.drawCustomCorners(rc.square,
+                                finalDrawPosX - squishAnimator2D.squishX1,
+                                finalDrawPosY + squishAnimator2D.squishY1 - linePxFix + 32,
+                                rc.square.getRegionWidth() + squishAnimator2D.squishX2,
+                                rc.square.getRegionHeight() + squishAnimator2D.squishY2 + linePxFix, c1, c2, c3, c4);
+                    }
+                }
+            } else {
+                if(naturalWall) {
+                    rc.arraySpriteBatch.setColor(Color.BLACK);
+                    rc.arraySpriteBatch.draw(rc.square, finalDrawPosX, finalDrawPosY + 32);
+                }
+            }
+
             rc.arraySpriteBatch.setColor(Color.WHITE);
         }
     }
+
+    private final static float TRANS = new Color(0, 0, 0, 0).toFloatBits();     //   0
+    private final static float BLACK = new Color(0, 0, 0, 1f).toFloatBits();    // < 0
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
@@ -284,6 +317,26 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
                 finalDrawPosY + squishAnimator2D.squishY1,
                 created.getRegionWidth() + squishAnimator2D.squishX2,
                 created.getRegionHeight() + squishAnimator2D.squishY2);
+
+        if(emulatingType == TileLayerType.ROCK || emulatingType == TileLayerType.DIRT) {
+            if(layerIds.length > 1) {
+                int l0 = layerIds[0] - emulatingType.TILE_ID_DATA[0];
+                int l1 = layerIds[1] - emulatingType.TILE_ID_DATA[0];
+                int l2 = layerIds[2] - emulatingType.TILE_ID_DATA[0];
+                int l3 = layerIds[3] - emulatingType.TILE_ID_DATA[0];
+
+                float c1 = l0 == 8 ? BLACK : TRANS;
+                float c2 = l2 == 14 ? BLACK : TRANS;
+                float c3 = l3 == 11 ? BLACK : TRANS;
+                float c4 = l1 == 5 ? BLACK : TRANS;
+
+                rc.arraySpriteBatch.drawCustomCorners(rc.square,
+                        finalDrawPosX - squishAnimator2D.squishX1,
+                        finalDrawPosY + squishAnimator2D.squishY1 + 32,
+                        rc.square.getRegionWidth() + squishAnimator2D.squishX2,
+                        rc.square.getRegionHeight() + squishAnimator2D.squishY2, c1, c2, c3, c4);
+            }
+        }
 
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);

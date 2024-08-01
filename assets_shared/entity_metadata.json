@@ -1,4 +1,19 @@
 {
+    "TORCH": {
+        "bbox.place": [-3.0, 0.0, 6.0, 7.0]
+    },
+    "FENCE_STICK": {
+        "bbox.place": [0.0, 0.0, 16.0, 10.0]
+    },
+    "CRATE": {
+        "bbox.place": [0.0, 0.0, 16.0, 12.0]
+    },
+    "CHEST": {
+        "bbox.place": [0.0, 0.0, 16.0, 12.0]
+    },
+    "OAK_TREE_SAPLING": {
+        "bbox.place": [-15.0, -4, 31, 20]
+    },
     "CRAB": {
         "maxHp": 50,
         "ai.idleMin": 4.0,
@@ -19,7 +34,8 @@
         "ai.attackDamage": 10.0,
         "ai.attackAt": 0.40,
         "ai.attackRange": 20.0,
-        "ai.seekTargets": ["PLAYER", "CHICKEN"]
+        "ai.seekTargets": ["PLAYER", "CHICKEN"],
+        "bbox.place": [0.0, 0.0, 4.0, 8.0]
     },
     "ZOMBIE": {
         "maxHp": 100,
@@ -37,7 +53,8 @@
         "ai.attackDuration": 0.5,
         "ai.attackDamage": 20.0,
         "ai.attackAt": 0.25,
-        "ai.attackRange": 16.0
+        "ai.attackRange": 16.0,
+        "bbox.place": [-6.0, 0.0, 12.0, 10.0]
     },
     "WOODFOLK": {
         "maxHp": 60,
@@ -55,7 +72,8 @@
         "ai.attackDuration": 0.2,
         "ai.attackDamage": 12.0,
         "ai.attackAt": 0.125,
-        "ai.attackRange": 8.0
+        "ai.attackRange": 8.0,
+        "bbox.place": [-8.0, 0.0, 16.0, 8.0]
     },
     "SLIME": {
         "maxHp": 60,
@@ -81,11 +99,13 @@
         "ai.hopSeekDistance": 132.0,
         "ai.chaseHopDuration": 0.6,
         "ai.chaseHopDelay": 0.25,
-        "ai.chaseSpeed": 24.0
+        "ai.chaseSpeed": 24.0,
+        "bbox.place": [-8.0, 0.0, 16.0, 8.0]
     },
     "PLAYER": {
         "maxHp": 100,
-        "healthBar.offsetY": 8.0
+        "healthBar.offsetY": 8.0,
+        "bbox.place": [-6.0, 0.0, 12.0, 10.0]
     },
     "CHICKEN": {
         "maxHp": 40,
@@ -96,7 +116,8 @@
         "ai.strollSpeed": 12.0,
         "ai.fleeMin": 6.0,
         "ai.fleeMax": 8.0,
-        "ai.fleeSpeed": 32.0
+        "ai.fleeSpeed": 32.0,
+        "bbox.place": [-6.5, 0.0, 13.0, 9.0]
     },
     "WORM": {
         "maxHp": 20,
@@ -107,7 +128,8 @@
         "ai.strollSpeed": 5.0,
         "ai.fleeMin": 6.0,
         "ai.fleeMax": 8.0,
-        "ai.fleeSpeed": 8.0
+        "ai.fleeSpeed": 8.0,
+        "bbox.place": [-7.5, 0.0, 15.0, 6.0]
     },
     "MAGGOT": {
         "maxHp": 30,
@@ -118,7 +140,8 @@
         "ai.strollSpeed": 5.0,
         "ai.fleeMin": 6.0,
         "ai.fleeMax": 8.0,
-        "ai.fleeSpeed": 8.0
+        "ai.fleeSpeed": 8.0,
+        "bbox.place": [-7.5, 0.0, 15.0, 6.0]
     },
     "FIREFLY": {
         "maxHp": 20,
@@ -130,34 +153,50 @@
         "ai.fleeMin": 6.0,
         "ai.fleeMax": 8.0,
         "ai.fleeSpeed": 48.0,
-        "healthBar.offsetY": 16.0
+        "healthBar.offsetY": 16.0,
+        "bbox.place": [-2.0, 0.0, 4.0, 2.0]
     },
     "GRASS": {
-        "bbox.population": [-4.0, 0, 8, 7]
+        "bbox.population": [-4.0, 0, 8, 7],
+        "bbox.place": [-6.0, 0, 12, 7]
+    },
+    "GRAVESTONE": {
+        "bbox.place": [-7.0, 0, 14, 8]
     },
     "MUSHROOM_RED": {
-        "bbox.population": [-4.0, 0, 8, 7]
+        "bbox.population": [-4.0, 0, 8, 7],
+        "bbox.place": [-5.0, 0.0, 10, 7.0]
     },
     "MUSHROOM_BROWN": {
-        "bbox.population": [-4.0, 0, 8, 7]
+        "bbox.population": [-4.0, 0, 8, 7],
+        "bbox.place": [-5.0, 0.0, 10, 7.0]
     },
     "MUSHROOM_GLOWING": {
-        "bbox.population": [-4.0, 0, 8, 7]
+        "bbox.population": [-4.0, 0, 8, 7],
+        "bbox.place": [-5.5, 0.0, 11, 7.0]
     },
     "BLUEBERRY_BUSH": {
-        "bbox.population": [-8.0, 0, 16, 13]
+        "bbox.population": [-8.0, 0, 16, 13],
+        "bbox.place": [-8.0, 0, 16, 13]
     },
     "ROCK": {
-        "bbox.population": [-5.0, 0, 10, 10]
+        "bbox.population": [-5.0, 0, 10, 10],
+        "bbox.place": [-5.5, 0, 11, 6]
+    },
+    "ITEM": {
+        "bbox.place": [-5.0, -1.0, 10, 8]
     },
     "SUNFLOWER": {
-        "bbox.population": [-5.0, 0, 10, 9]
+        "bbox.population": [-5.0, 0, 10, 9],
+        "bbox.place": [-7.0, 0, 14, 9]
     },
     "LILYPAD": {
-        "bbox.population": [-5.0, 0, 10, 8]
+        "bbox.population": [-5.0, 0, 10, 8],
+        "bbox.place": [-6.0, 0, 12, 9]
     },
     "OAK_TREE": {
         "bbox.population": [-15.0, -2, 31, 16],
+        "bbox.place": [-12.0, -1, 25, 12],
         "maxHp.var1": 120.0,
         "maxHp.var2": 120.0,
         "maxHp.var3": 150.0,
@@ -174,21 +213,29 @@
         "name.trunk": "Oak Tree Trunk"
     },
     "CATTAIL": {
-        "bbox.population": [-8.0, -1.0, 17.0, 11.0]
+        "bbox.population": [-8.0, -1.0, 17.0, 11.0],
+        "bbox.place": [-15.0, 0.0, 30.0, 12.0]
     },
     "CAMPFIRE": {
-        "bbox.population": [-5.0, 0, 10.0, 12.0]
+        "bbox.population": [-5.0, 0, 10.0, 12.0],
+        "bbox.place": [-12.0, 0.0, 24.0, 16.0]
     },
     "ALOE_VERA": {
-        "bbox.population": [-11.0, 0, 22.0, 14.0]
+        "bbox.population": [-11.0, 0, 22.0, 14.0],
+        "bbox.place": [-12.0, 0, 24.0, 11.0]
+    },
+    "SIGN": {
+        "bbox.place": [-8.0, 0.0, 16.0, 8.0]
     },
     "BUSH": {
         "bbox.population": [-10.0, 0, 20, 12],
+        "bbox.place": [-10.0, 0, 20, 12],
         "maxHp": 40.0,
         "name": "Bush"
     },
     "BOULDER": {
         "bbox.population": [-8.0, 0, 16, 10],
+        "bbox.place": [-8.0, 0, 16, 10],
         "maxHp.var1": 75.0,
         "maxHp.var2": 90.0,
         "name.var1": "Boulder",
@@ -196,6 +243,7 @@
     },
     "DYNAMIC_3D_TILE": {
         "bbox.population": [0, 0, 16.0, 16.0],
+        "bbox.place": [0, 0, 16.0, 16.0],
         "maxHp.DIRT": 75.0,
         "maxHp.ROCK": 75.0,
         "maxHp.OAKPLANKWALL": 75.0,
@@ -204,9 +252,11 @@
         "name.OAKPLANKWALL": "Oak Plank Wall"
     },
     "TULIP": {
-        "bbox.population": [-5.0, 0, 10.0, 9.0]
+        "bbox.population": [-5.0, 0, 10.0, 9.0],
+        "bbox.place": [-5.0, 0, 10.0, 8.0]
     },
     "STARFISH": {
-        "bbox.population": [-8.0, 0, 16.0, 16.0]
+        "bbox.population": [-8.0, 0, 16.0, 16.0],
+        "bbox.place": [-7.5, 0, 15.0, 15.0]
     }
 }

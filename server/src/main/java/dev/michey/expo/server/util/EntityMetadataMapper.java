@@ -1,6 +1,7 @@
 package dev.michey.expo.server.util;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import dev.michey.expo.server.ServerLauncher;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import org.json.JSONObject;
@@ -15,7 +16,7 @@ public class EntityMetadataMapper {
 
     private final HashMap<ServerEntityType, EntityMetadata> map;
 
-    public EntityMetadataMapper() {
+    public EntityMetadataMapper(boolean reload) {
         map = new HashMap<>();
 
         String data = null;
@@ -27,7 +28,13 @@ public class EntityMetadataMapper {
                 e.printStackTrace();
             }
         } else {
-            data = Gdx.files.internal("entity_metadata.json").readString();
+            FileHandle fh = reload ? Gdx.files.absolute("C:\\IDEAProjects\\Expo\\assets_shared\\entity_metadata.json") : Gdx.files.internal("entity_metadata.json");
+
+            if(!fh.exists() && reload) {
+                fh = Gdx.files.internal("entity_metadata.json");
+            }
+
+            data = fh.readString();
         }
 
         JSONObject dimensions = new JSONObject(data);
@@ -43,8 +50,12 @@ public class EntityMetadataMapper {
         return map.get(type);
     }
 
+    public void refresh() {
+        INSTANCE = new EntityMetadataMapper(true);
+    }
+
     public static EntityMetadataMapper get() {
-        if(INSTANCE == null) INSTANCE = new EntityMetadataMapper();
+        if(INSTANCE == null) INSTANCE = new EntityMetadataMapper(false);
         return INSTANCE;
     }
 

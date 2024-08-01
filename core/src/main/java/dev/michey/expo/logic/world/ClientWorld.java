@@ -44,9 +44,11 @@ import dev.michey.expo.server.main.logic.ai.entity.EntityBrain;
 import dev.michey.expo.server.main.logic.entity.animal.ServerCrab;
 import dev.michey.expo.server.main.logic.entity.arch.DamageableEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.hostile.ServerSlime;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.bbox.EntityHitbox;
+import dev.michey.expo.server.util.EntityMetadata;
 import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.util.*;
@@ -748,6 +750,22 @@ public class ClientWorld {
                         }
                     }
                 } catch (ConcurrentModificationException ignored) { }
+
+                if(Expo.get().getImGuiExpo().renderPlaceBlockPoints.get()) {
+                    r.chunkRenderer.end();
+                    r.chunkRenderer.begin(ShapeRenderer.ShapeType.Line);
+                    r.chunkRenderer.setColor(Color.CORAL);
+
+                    for(ClientEntity ce : ExpoClientContainer.get().getClientWorld().clientEntityManager.allEntities()) {
+                        ServerEntityType convertedType = ce.getEntityType().ENTITY_SERVER_TYPE;
+                        EntityMetadata meta = EntityMetadataMapper.get().getFor(convertedType);
+
+                        if(meta != null && meta.getPlaceBbox() != null) {
+                            var box = meta.getPlaceBbox();
+                            r.chunkRenderer.rect(ce.clientPosX + box.xOffset, ce.clientPosY + box.yOffset, box.width, box.height);
+                        }
+                    }
+                }
 
                 if(Expo.get().getImGuiExpo().renderDebugPoints.get()) {
                     for(DebugPoint dp : Expo.get().getImGuiExpo().drawPoints) {

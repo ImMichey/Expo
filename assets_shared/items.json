@@ -437,7 +437,7 @@
                 "floorRequirement": "FOREST",
                 "static": true,
                 "entityType": "OAK_TREE_SAPLING",
-                "previewOffsetX": 2,
+                "previewOffsetX": 0,
                 "sound": "plant",
                 "alignment": "TILE",
                 "type": "ENTITY",

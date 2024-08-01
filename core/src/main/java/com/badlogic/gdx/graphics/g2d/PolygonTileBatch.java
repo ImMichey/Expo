@@ -838,7 +838,13 @@ public class PolygonTileBatch implements PolygonBatch {
         int triangleIndex = this.triangleIndex;
         final int startVertex = vertexIndex / VERTEX_SIZE;
 
-        if(ambientOcclusion[0] > 0 || ambientOcclusion[2] > 0) {
+        float s1 = ambientOcclusion[0];
+        float s2 = ambientOcclusion[1];
+        float s3 = ambientOcclusion[2];
+        float s4 = ambientOcclusion[3];
+        boolean swap = (s3 > 0 || s1 > 0) && !(s3 > 0 && s1 > 0 && s4 > 0) && !(s1 > 0 && s2 > 0 && s3 > 0);
+
+        if(swap) {
             triangles[triangleIndex++] = (short)(startVertex + 0);
             triangles[triangleIndex++] = (short)(startVertex + 1);
             triangles[triangleIndex++] = (short)(startVertex + 3);

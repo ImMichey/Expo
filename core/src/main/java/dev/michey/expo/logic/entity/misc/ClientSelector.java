@@ -8,18 +8,23 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
+import dev.michey.expo.logic.entity.arch.ClientEntityManager;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.player.ClientPlayer;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.ui.SelectorType;
 import dev.michey.expo.render.visbility.TopVisibilityEntity;
+import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.inventory.item.FloorType;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceAlignment;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceData;
 import dev.michey.expo.server.main.logic.inventory.item.PlaceType;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapper;
 import dev.michey.expo.server.main.logic.inventory.item.mapping.ItemMapping;
+import dev.michey.expo.server.main.logic.world.gen.EntityBoundsEntry;
+import dev.michey.expo.server.util.EntityMetadata;
+import dev.michey.expo.server.util.EntityMetadataMapper;
 import dev.michey.expo.server.util.ServerUtils;
 import dev.michey.expo.util.ExpoShared;
 
@@ -149,55 +154,87 @@ public class ClientSelector extends ClientEntity implements TopVisibilityEntity 
                 }
             }
         } else if(currentSelectorType == SelectorType.PLACE_ENTITY) {
-            if(mapping != null) {
-                PlaceData placeData = mapping.logic.placeData;
+            PlaceData placeData = mapping.logic.placeData;
 
-                if(placeData != null) {
-                    if(placeData.alignment == PlaceAlignment.TILE) {
-                        if(!layer1Wall && !layer2Wall && !tileEntity) {
-                            if(placeData.floorRequirement != null) {
-                                if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement || t2 == placeData.floorRequirement) {
+            if(placeData != null) {
+                EntityMetadata meta = EntityMetadataMapper.get().getFor(placeData.entityType);
+                EntityBoundsEntry bounds = meta == null ? null : meta.getPlaceBbox();
+
+                if(placeData.alignment == PlaceAlignment.TILE) {
+                    if(!layer1Wall && !layer2Wall && !tileEntity) {
+                        if(placeData.floorRequirement != null) {
+                            if(t0 == placeData.floorRequirement || t1 == placeData.floorRequirement || t2 == placeData.floorRequirement) {
+                                if(isNotBlocked(worldX + mapping.logic.placeData.placeAlignmentOffsetX, worldY + mapping.logic.placeData.placeAlignmentOffsetY, bounds)) {
                                     eligible = true;
                                     text = "[RMB] Place object";
                                 }
-                            } else {
+                            }
+                        } else {
+                            if(isNotBlocked(worldX + mapping.logic.placeData.placeAlignmentOffsetX, worldY + mapping.logic.placeData.placeAlignmentOffsetY, bounds)) {
                                 eligible = true;
                                 text = "[RMB] Place object";
                             }
                         }
-                    } else if(placeData.alignment == PlaceAlignment.UNRESTRICTED) {
+                    }
+                } else if(placeData.alignment == PlaceAlignment.UNRESTRICTED) {
+                    if(isNotBlocked(worldX + mapping.logic.placeData.placeAlignmentOffsetX, worldY + mapping.logic.placeData.placeAlignmentOffsetY, bounds)) {
                         eligible = true;
                         text = "[RMB] Place object";
                     }
                 }
             }
         } else if(currentSelectorType == SelectorType.PLACE_TILE) {
-            if(mapping != null) {
-                PlaceData placeData = mapping.logic.placeData;
+            PlaceData placeData = mapping.logic.placeData;
 
-                if(placeData != null && !tileEntity) {
-                    if(placeData.type == PlaceType.FLOOR_0) {
-                        if(placeData.floorType == FloorType.DIRT && layer2Water) {
+            if(placeData != null && !tileEntity) {
+                if(placeData.type == PlaceType.FLOOR_0) {
+                    if(placeData.floorType == FloorType.DIRT && layer2Water) {
+                        eligible = true;
+                        text = "[RMB] Fill up with soil";
+                    } else if(layer0Farmland || layer0Hole) {
+                        eligible = true;
+                        text = "[RMB] Fill up";
+                    }
+                } else if(placeData.type == PlaceType.FLOOR_1) {
+                    if(layer0Soil && layer1Empty && layer2Empty) {
+                        eligible = true;
+                        text = "[RMB] Place floor";
+                    }
+                } else if(placeData.type == PlaceType.FLOOR_2) {
+                    if(layer2Empty && !layer1Wall) {
+                        EntityBoundsEntry bounds = EntityMetadataMapper.get().getFor(ServerEntityType.DYNAMIC_3D_TILE).getPlaceBbox();
+
+                        if(isNotBlocked(worldX, worldY, bounds)) {
                             eligible = true;
-                            text = "[RMB] Fill up with soil";
-                        } else if(layer0Farmland || layer0Hole) {
-                            eligible = true;
-                            text = "[RMB] Fill up";
-                        }
-                    } else if(placeData.type == PlaceType.FLOOR_1) {
-                        if(layer0Soil && layer1Empty && layer2Empty) {
-                            eligible = true;
-                            text = "[RMB] Place floor";
-                        }
-                    } else if(placeData.type == PlaceType.FLOOR_2) {
-                        if(layer2Empty && !layer1Wall) {
-                            eligible = true;
-                            text = "[RMB] Place floor";
+                            text = "[RMB] Place wall";
                         }
                     }
                 }
             }
         }
+    }
+
+    private boolean isNotBlocked(float x, float y, EntityBoundsEntry bounds) {
+        if(bounds == null) return true;
+        float[] vertices = new float[] {x + bounds.xOffset, y + bounds.yOffset, x + bounds.xOffset + bounds.width, y + bounds.yOffset + bounds.height};
+
+        for(ClientEntity ce : ClientEntityManager.get().allEntities()) {
+            EntityMetadata meta = EntityMetadataMapper.get().getFor(ce.getEntityType().ENTITY_SERVER_TYPE);
+            if(meta == null) continue;
+            EntityBoundsEntry checkAgainst = meta.getPlaceBbox();
+            if(checkAgainst == null) continue;
+
+            if(ExpoShared.overlap(vertices, new float[] {
+                    ce.clientPosX + checkAgainst.xOffset,
+                    ce.clientPosY + checkAgainst.yOffset,
+                    ce.clientPosX + checkAgainst.xOffset + checkAgainst.width,
+                    ce.clientPosY + checkAgainst.yOffset + checkAgainst.height
+            })) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override

@@ -947,6 +947,53 @@ public class ArrayTextureSpriteBatch implements Batch {
         vertices[idx++] = ti;
     }
 
+    public void drawCustomCorners (TextureRegion region, float x, float y, float width, float height, float c1, float c2, float c3, float c4) {
+        if (!drawing) throw new IllegalStateException("ArrayTextureSpriteBatch.begin must be called before draw.");
+
+        float[] vertices = this.vertices;
+
+        flushIfFull();
+
+        final float ti = activateTexture(region.getTexture());
+
+        final float fx2 = x + width;
+        final float fy2 = y + height;
+        final float u = region.getU() * subImageScaleWidth;
+        final float v = region.getV2() * subImageScaleHeight;
+        final float u2 = region.getU2() * subImageScaleWidth;
+        final float v2 = region.getV() * subImageScaleHeight;
+
+        boolean swap = (c3 < 0 || c1 < 0) && !(c3 < 0 && c1 < 0 && c4 < 0) && !(c1 < 0 && c2 < 0 && c3 < 0);
+
+        vertices[idx++] = x;
+        vertices[idx++] = swap ? fy2 : y;
+        vertices[idx++] = swap ? c2 : c1;
+        vertices[idx++] = u;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = x;
+        vertices[idx++] = swap ? y : fy2;
+        vertices[idx++] = swap ? c1 : c2;
+        vertices[idx++] = u;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2;
+        vertices[idx++] = swap ? y : fy2;
+        vertices[idx++] = swap ? c4 : c3;
+        vertices[idx++] = u2;
+        vertices[idx++] = v2;
+        vertices[idx++] = ti;
+
+        vertices[idx++] = fx2;
+        vertices[idx++] = swap ? fy2 : y;
+        vertices[idx++] = swap ? c3 : c4;
+        vertices[idx++] = u2;
+        vertices[idx++] = v;
+        vertices[idx++] = ti;
+    }
+
     public void drawCustomVertices(TextureRegion region, float x, float y, float originX, float originY, float width, float height,
                       float scaleX, float scaleY, float rotation, float vertices1, float vertices2) {
 
@@ -2202,4 +2249,5 @@ public class ArrayTextureSpriteBatch implements Batch {
             return shader;
         }
     }
+
 }
