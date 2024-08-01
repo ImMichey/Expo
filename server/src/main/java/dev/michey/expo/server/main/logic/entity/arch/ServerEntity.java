@@ -242,13 +242,17 @@ public abstract class ServerEntity {
     }
 
     public boolean isInWater() {
-        var dtp = getCurrentTile().dynamicTileParts;
-        return TileLayerType.isWater(dtp[2].emulatingType);
+        ServerTile tile = getCurrentTile();
+        if(tile == null) return false; // Edge-case, should not happen...
+
+        return TileLayerType.isWater(tile.dynamicTileParts[2].emulatingType);
     }
 
     public boolean isInDeepWater() {
-        var dtp = getCurrentTile().dynamicTileParts;
-        return TileLayerType.isDeepWater(dtp[2].emulatingType);
+        ServerTile tile = getCurrentTile();
+        if(tile == null) return false; // Edge-case, should not happen...
+
+        return TileLayerType.isDeepWater(tile.dynamicTileParts[2].emulatingType);
     }
 
     /*
