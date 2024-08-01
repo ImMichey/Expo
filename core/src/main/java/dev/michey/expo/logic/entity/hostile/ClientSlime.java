@@ -1,5 +1,6 @@
 package dev.michey.expo.logic.entity.hostile;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Interpolation;
@@ -112,7 +113,9 @@ public class ClientSlime extends ClientEntity implements ReflectableEntity, Ambi
             float PLAYER_BLINK_DURATION = 0.25f;
             if(blinkDelta >= PLAYER_BLINK_COOLDOWN) blinkDelta = -PLAYER_BLINK_DURATION;
 
+            rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 0.675f);
             rc.arraySpriteBatch.draw(cf, finalDrawPosX, finalDrawPosY + simulatedHeight);
+            rc.arraySpriteBatch.setColor(Color.WHITE);
 
             rc.useRegularArrayShader();
         }
