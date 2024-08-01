@@ -1,10 +1,10 @@
 package dev.michey.expo.console.command;
 
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.Expo;
 import dev.michey.expo.command.util.CommandSyntaxException;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.render.RenderContext;
+import dev.michey.expo.screen.MenuScreen;
 import dev.michey.expo.util.GameSettings;
 
 public class CommandUiscale extends AbstractConsoleCommand {
@@ -26,15 +26,11 @@ public class CommandUiscale extends AbstractConsoleCommand {
 
     @Override
     public void executeCommand(String[] args) throws CommandSyntaxException {
-        if(!Expo.get().isPlaying()) {
-            error("You are not ingame.");
-            return;
-        }
-
         int amount = MathUtils.clamp(parseI(args, 1), 1, 5);
         GameSettings.get().uiScale = amount;
         RenderContext.get().updatePreferredFonts(amount);
-        ExpoClientContainer.get().getPlayerUI().changeUiScale();
+        if(ExpoClientContainer.get() != null) ExpoClientContainer.get().getPlayerUI().changeUiScale();
+        MenuScreen.get().getActiveGroup().update(RenderContext.get());
         success("UI scale is now [CYAN]" + amount);
     }
 

@@ -3,6 +3,7 @@ package dev.michey.expo.render.ui.menu;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import dev.michey.expo.lang.Lang;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.GameSettings;
 
@@ -82,11 +83,13 @@ public class MenuButton extends MenuComponent {
         r.hudBatch.draw(baseButton[1], x + tlw, y + blh + h, w, tlh);
         r.hudBatch.draw(baseButton[2], x + tlw + w, y + blh + h, tlw, tlh);
 
-        BitmapFont useFont = r.m5x7_border_all[1];
+        BitmapFont useFont = r.m5x7_border_use;
+
         if(drawText) {
-            r.globalGlyph.setText(useFont, text);
-            useFont.draw(r.hudBatch, text, x + blw + padding + (group.getPropertyAsInt("buttonWidth") - r.globalGlyph.width) * 0.5f,
-                    y + padding + r.globalGlyph.height + blh + (group.getPropertyAsInt("buttonHeight") - r.globalGlyph.height) * 0.5f);
+            String s = Lang.str(text);
+            r.globalGlyph.setText(useFont, s);
+            useFont.draw(r.hudBatch, s, (int) (x + blw + padding + (group.getPropertyAsInt("buttonWidth") - r.globalGlyph.width) * 0.5f),
+                    (int) (y + padding + r.globalGlyph.height + blh + (group.getPropertyAsInt("buttonHeight") - r.globalGlyph.height) * 0.5f));
         }
     }
 

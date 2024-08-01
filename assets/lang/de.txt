@@ -1,3 +1,9 @@
+# Menu
+ui.menu.singleplayer=Einzelspieler
+ui.menu.multiplayer=Mehrspieler
+ui.menu.settings=Einstellungen
+ui.menu.exit=Spiel verlassen
+
 # Inventory
 ui.inventory.title=Inventar
 ui.inventory.head=Kopfbedeckung

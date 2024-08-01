@@ -59,6 +59,10 @@ public class MenuScreen extends AbstractScreen {
         }
     }
 
+    public MenuGroup getActiveGroup() {
+        return activeGroup;
+    }
+
     @Override
     public String getScreenName() {
         return ClientStatic.SCREEN_MENU;

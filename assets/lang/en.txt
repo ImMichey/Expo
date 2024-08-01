@@ -1,3 +1,9 @@
+# Menu
+ui.menu.singleplayer=Singleplayer
+ui.menu.multiplayer=Multiplayer
+ui.menu.settings=Settings
+ui.menu.exit=Exit
+
 # Inventory
 ui.inventory.title=Inventory
 ui.inventory.head=Head Armor Slot

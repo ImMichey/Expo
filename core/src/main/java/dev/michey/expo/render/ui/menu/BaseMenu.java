@@ -3,7 +3,6 @@ package dev.michey.expo.render.ui.menu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import dev.michey.expo.assets.ExpoAssets;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.util.ClientStatic;
 import dev.michey.expo.util.GameSettings;
@@ -22,15 +21,15 @@ public class BaseMenu extends MenuGroup {
 
         setProperty("buttonWidth", 250);
         setProperty("buttonHeight", 30);
-        setProperty("padding", 2);
+        setProperty("padding", 4);
         setProperty("buttonSpacingY", 25);
 
         RenderContext r = RenderContext.get();
         int scaling = GameSettings.get().uiScale;
 
-        int totalWidth = getPropertyAsInt("buttonWidth") + getPropertyAsInt("padding") * scaling * 2 +
+        int totalWidth = getPropertyAsInt("buttonWidth") + getPropertyAsInt("padding") * 2 +
                 r.buttonParts[0].getRegionWidth() * scaling * 2;
-        int _totalHeight = getPropertyAsInt("buttonHeight") + getPropertyAsInt("padding") * scaling * 2 +
+        int _totalHeight = getPropertyAsInt("buttonHeight") + getPropertyAsInt("padding") * 2 +
                 r.buttonParts[0].getRegionHeight() * scaling + r.buttonParts[3].getRegionHeight() * scaling;
         int centerStartX = (Gdx.graphics.getWidth() - totalWidth) / 2;
         int centerStartY = (Gdx.graphics.getHeight() - _totalHeight * 4 - (3 * getPropertyAsInt("buttonSpacingY"))) / 2;
@@ -41,28 +40,28 @@ public class BaseMenu extends MenuGroup {
         setProperty("centerStartX", centerStartX);
         setProperty("centerStartY", centerStartY);
 
-        buttonSingleplayer = new MenuButton(this, "Singleplayer") {
+        buttonSingleplayer = new MenuButton(this, "ui.menu.singleplayer") {
             @Override
             public void update(RenderContext r) {
                 x = getPropertyAsInt("centerStartX");
                 y = getPropertyAsInt("centerStartY") + 3 * (getPropertyAsInt("buttonSpacingY") + _totalHeight);
             }
         };
-        buttonMultiplayer = new MenuButton(this, "Multiplayer") {
+        buttonMultiplayer = new MenuButton(this, "ui.menu.multiplayer") {
             @Override
             public void update(RenderContext r) {
                 x = getPropertyAsInt("centerStartX");
                 y = getPropertyAsInt("centerStartY") + 2 * (getPropertyAsInt("buttonSpacingY") + _totalHeight);
             }
         };
-        buttonOptions = new MenuButton(this, "Options") {
+        buttonOptions = new MenuButton(this, "ui.menu.settings") {
             @Override
             public void update(RenderContext r) {
                 x = getPropertyAsInt("centerStartX");
                 y = getPropertyAsInt("centerStartY") + (getPropertyAsInt("buttonSpacingY") + _totalHeight);
             }
         };
-        buttonExit = new MenuButton(this, "Exit") {
+        buttonExit = new MenuButton(this, "ui.menu.exit") {
             @Override
             public void update(RenderContext r) {
                 x = getPropertyAsInt("centerStartX");
@@ -89,9 +88,14 @@ public class BaseMenu extends MenuGroup {
     @Override
     public void update(RenderContext r) {
         int scaling = GameSettings.get().uiScale;
-        int totalWidth = getPropertyAsInt("buttonWidth") + getPropertyAsInt("padding") * scaling * 2
+        setProperty("buttonWidth", 125 * scaling);
+        setProperty("buttonHeight", 15 * scaling);
+        setProperty("buttonSpacingY", (int) (12.5f * scaling));
+        setProperty("padding", scaling * 2);
+
+        int totalWidth = getPropertyAsInt("buttonWidth") + getPropertyAsInt("padding") * 2
                 + r.buttonParts[0].getRegionWidth() * scaling * 2;
-        int _totalHeight = getPropertyAsInt("buttonHeight") + getPropertyAsInt("padding") * scaling * 2
+        int _totalHeight = getPropertyAsInt("buttonHeight") + getPropertyAsInt("padding") * 2
                 + r.buttonParts[0].getRegionHeight() * scaling + r.buttonParts[3].getRegionHeight() * scaling;
         int centerStartX = (Gdx.graphics.getWidth() - totalWidth) / 2;
         int centerStartY = (Gdx.graphics.getHeight() - _totalHeight * 4 - (3 * getPropertyAsInt("buttonSpacingY"))) / 2;
