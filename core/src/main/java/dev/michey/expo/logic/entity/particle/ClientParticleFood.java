@@ -3,7 +3,6 @@ package dev.michey.expo.logic.entity.particle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import dev.michey.expo.assets.ExpoAssets;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.ClientParticle;
 import dev.michey.expo.render.RenderContext;
@@ -38,14 +37,14 @@ public class ClientParticleFood extends ClientParticle {
 
     @Override
     public void render(RenderContext rc, float delta) {
-        rc.useRegularBatch();
-        rc.batch.setColor(r, g, b, useAlpha);
+        rc.useArrayBatch();
+        rc.arraySpriteBatch.setColor(r, g, b, useAlpha);
 
         float w = subTexture.getRegionWidth() * scaleX;
         float h = subTexture.getRegionHeight() * scaleY;
 
-        rc.batch.draw(subTexture, clientPosX, clientPosY, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
-        rc.batch.setColor(Color.WHITE);
+        rc.arraySpriteBatch.draw(subTexture, clientPosX, clientPosY, w * 0.5f, h * 0.5f, w, h, 1.0f, 1.0f, rotation);
+        rc.arraySpriteBatch.setColor(Color.WHITE);
     }
 
     @Override

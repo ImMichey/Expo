@@ -341,8 +341,7 @@ public class ClientDynamic3DTile extends ClientEntity implements SelectableEntit
         rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
+        rc.defaultArrayBatch();
     }
 
     @Override

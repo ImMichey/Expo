@@ -427,7 +427,8 @@ public class ClientEntityManager {
 
         rc.batch.setShader(rc.DEFAULT_GLES3_SHADER);
         rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.batch.begin();
+
+        rc.arraySpriteBatch.begin();
 
         rc.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
         rc.arraySpriteBatch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -436,9 +437,7 @@ public class ClientEntityManager {
             if(entity.selected) {
                 updateSelectionShader(entity, rc);
                 ((SelectableEntity) entity).renderSelected(rc, delta);
-
-                rc.useArrayBatch();
-                rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
+                rc.defaultArrayBatch();
             } else {
                 entity.render(rc, delta);
             }

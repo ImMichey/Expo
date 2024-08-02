@@ -88,7 +88,6 @@ public class ClientPoppy extends ClientEntity implements SelectableEntity {
 
         rc.arraySpriteBatch.setColor(1.0f - colorOffset, 1.0f, 1.0f - colorOffset, 1.0f);
         rc.arraySpriteBatch.drawCustomVertices(poppy, clientPosX, clientPosY, poppy.getWidth(), poppy.getHeight(), foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-        rc.arraySpriteBatch.end();
         rc.arraySpriteBatch.setColor(Color.WHITE);
     }
 

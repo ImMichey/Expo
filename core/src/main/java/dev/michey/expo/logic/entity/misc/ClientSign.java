@@ -72,8 +72,7 @@ public class ClientSign extends ClientEntity implements SelectableEntity, Reflec
 
         if(visibleToRenderEngine) {
             updateDepth(textureOffsetY);
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
+            rc.defaultArrayBatch();
             rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
         }
     }

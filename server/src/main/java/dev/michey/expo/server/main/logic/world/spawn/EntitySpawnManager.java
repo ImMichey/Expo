@@ -3,6 +3,7 @@ package dev.michey.expo.server.main.logic.world.spawn;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.player.ServerPlayer;
@@ -127,7 +128,7 @@ public class EntitySpawnManager {
                                 float worldX = ExpoShared.tileToPos(tile.tileX) + 8f;
                                 float worldY = ExpoShared.tileToPos(tile.tileY) + 8f;
 
-                                if(isFarEnoughFromPlayers(worldX, worldY, es.playerDistanceMin)) {
+                                if(isFarEnoughFromPlayers(worldX, worldY, es.playerDistanceMin) && !TileLayerType.isWater(tile.dynamicTileParts[2].emulatingType)) {
                                     toSpawn--;
 
                                     ServerEntity spawned = ServerEntityType.typeToEntity(es.spawnType);

@@ -60,8 +60,7 @@ public class ClientGravestone extends ClientEntity implements SelectableEntity, 
 
         if(visibleToRenderEngine) {
             updateDepth(textureOffsetY);
-            rc.useArrayBatch();
-            rc.useRegularArrayShader();
+            rc.defaultArrayBatch();
             rc.arraySpriteBatch.draw(texture, finalDrawPosX, finalDrawPosY);
         }
     }

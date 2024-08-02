@@ -5,8 +5,6 @@ ao_tex_60_20.png
 
 foliage/entity_dandelion/entity_dandelion.png
 foliage/entity_poppy/entity_poppy.png
-foliage/entity_aloevera/entity_aloevera.png
-foliage/entity_aloevera/entity_aloevera_sm.png
 foliage/oak_tree_sapling.png
 foliage/entity_ancient_tree/entity_ancient_tree_leaves.png
 foliage/entity_birch_tree/birchtreeleaves.png

@@ -84,7 +84,6 @@ public class ClientDandelion extends ClientEntity implements SelectableEntity {
         setSelectionValues(Color.BLACK);
 
         rc.arraySpriteBatch.drawShiftedVertices(dandelion, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, dandelion.getRegionWidth(), dandelion.getRegionHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, 0);
-        rc.arraySpriteBatch.end();
     }
 
     @Override

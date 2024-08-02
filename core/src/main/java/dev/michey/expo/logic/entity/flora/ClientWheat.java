@@ -81,9 +81,7 @@ public class ClientWheat extends ClientEntity implements SelectableEntity, Refle
     public void renderSelected(RenderContext rc, float delta) {
         foliageAnimator.calculateWindOnDemand();
         setSelectionValues(Color.BLACK);
-
         rc.arraySpriteBatch.drawCustomVertices(wheat, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, wheat.getWidth(), wheat.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-        rc.arraySpriteBatch.end();
     }
 
     @Override

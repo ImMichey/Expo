@@ -381,8 +381,7 @@ public class ClientOakTree extends ClientEntity implements SelectableEntity, Ref
                 trunk_sel.getRegionWidth() + squishAnimator2D.squishX, trunk_sel.getRegionHeight() + squishAnimator2D.squishY);
         rc.arraySpriteBatch.end();
 
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
+        rc.defaultArrayBatch();
 
         drawBeehive(rc);
 

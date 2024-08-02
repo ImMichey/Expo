@@ -132,7 +132,6 @@ public class ClientCropWheat extends ClientEntity implements SelectableEntity, R
         setSelectionValues(Color.BLACK);
 
         rc.arraySpriteBatch.drawCustomVertices(cropTexture, finalDrawPosX, finalDrawPosY + contactAnimator.squishAdjustment, cropTexture.getWidth(), cropTexture.getHeight() * contactAnimator.squish, foliageAnimator.value + contactAnimator.value, foliageAnimator.value + contactAnimator.value);
-        rc.arraySpriteBatch.end();
     }
 
     @Override

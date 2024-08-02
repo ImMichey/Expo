@@ -80,12 +80,7 @@ public class ClientChest extends ClientEntity implements SelectableEntity, Refle
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         setSelectionValues();
-
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
-        rc.arraySpriteBatch.end();
-
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
     }
 
     @Override

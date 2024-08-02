@@ -3,15 +3,12 @@ package dev.michey.expo.logic.entity.misc;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import dev.michey.expo.assets.ParticleSheet;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.entity.arch.ClientEntity;
 import dev.michey.expo.logic.entity.arch.ClientEntityType;
 import dev.michey.expo.logic.entity.arch.SelectableEntity;
 import dev.michey.expo.render.RenderContext;
 import dev.michey.expo.render.reflections.ReflectableEntity;
 import dev.michey.expo.render.shadow.ShadowUtils;
-import dev.michey.expo.util.ParticleBuilder;
-import dev.michey.expo.util.ParticleColorMap;
 
 import java.util.Arrays;
 
@@ -157,12 +154,7 @@ public class ClientFenceStick extends ClientEntity implements SelectableEntity, 
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         setSelectionValues();
-
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
-        rc.arraySpriteBatch.end();
-
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
     }
 
     @Override

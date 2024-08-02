@@ -151,12 +151,8 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
     @Override
     public void renderSelected(RenderContext rc, float delta) {
         setSelectionValues();
-
         rc.arraySpriteBatch.draw(selectionTexture, finalSelectionDrawPosX, finalSelectionDrawPosY);
-        rc.arraySpriteBatch.end();
-
-        rc.arraySpriteBatch.setShader(rc.DEFAULT_GLES3_ARRAY_SHADER);
-        rc.arraySpriteBatch.begin();
+        rc.defaultArrayBatch();
 
         if(burning) {
             rc.arraySpriteBatch.draw(fireAnimation.getFrame(), finalDrawPosX + 7, finalDrawPosY + 11);
@@ -186,11 +182,11 @@ public class ClientCampfire extends ClientEntity implements SelectableEntity, Re
 
     @Override
     public void renderReflection(RenderContext rc, float delta) {
-        rc.arraySpriteBatch.draw(textureBase, finalDrawPosX, finalDrawPosY, textureBase.getRegionWidth(), textureBase.getRegionHeight() * -1);
+        rc.arraySpriteBatch.draw(textureBase, finalDrawPosX, finalDrawPosY + 4, textureBase.getRegionWidth(), textureBase.getRegionHeight() * -1);
 
         if(burning) {
             TextureRegion f = fireAnimation.getFrame();
-            rc.arraySpriteBatch.draw(f, finalDrawPosX + 7, finalDrawPosY - 11, f.getRegionWidth(), f.getRegionHeight() * -1);
+            rc.arraySpriteBatch.draw(f, finalDrawPosX + 7, finalDrawPosY - 11 + 4, f.getRegionWidth(), f.getRegionHeight() * -1);
         }
     }
 

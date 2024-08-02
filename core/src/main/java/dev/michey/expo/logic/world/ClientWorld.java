@@ -610,7 +610,9 @@ public class ClientWorld {
             // Draw entities to entity FBO.
             r.entityFbo.begin();
                 transparentScreen();
+                ClientUtils.takeScreenshot("_S4", Input.Keys.G);
                 clientEntityManager.renderEntities(r.delta);
+                ClientUtils.takeScreenshot("_S5", Input.Keys.G);
             r.entityFbo.end();
         }
 
