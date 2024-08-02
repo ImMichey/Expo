@@ -96,7 +96,8 @@ public class RenderContext {
     public ShaderProgram outlineShader;
     public ShaderProgram grassShader;
     public ShaderProgram waterDistortionShader;
-    public ShaderProgram simplePassthroughShader;
+    public ShaderProgram simplePassthroughShadowShader;
+    public ShaderProgram simplePassthroughFboShader;
     public ShaderProgram aoShader;
     public ShaderProgram blinkShader;
     public ShaderProgram whiteShaderArray;
@@ -370,7 +371,8 @@ public class RenderContext {
         outlineShader = compileShader("gl3/outline");
         grassShader = compileShader("gl3/grass");
         waterDistortionShader = compileShader("gl3/water_distortion");
-        simplePassthroughShader = compileShader("gl3/simple_passthrough");
+        simplePassthroughShadowShader = compileShader("gl3/simple_passthrough_shadow");
+        simplePassthroughFboShader = compileShader("gl3/simple_passthrough_fbo");
         aoShader = compileShader("gl3/ao");
         blinkShader = compileShader("gl3/blink");
         whiteShaderDefault = compileShader("gl3/white");

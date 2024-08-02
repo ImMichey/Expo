@@ -481,6 +481,22 @@ public class ClientWorld {
         }
     }
 
+    private void drawPassthroughFbo(RenderContext r, ShaderProgram shader, Texture lookupTexture, FrameBuffer toDrawFbo) {
+        r.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        if(shader != null) {
+            shader.bind();
+
+            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE1);
+            lookupTexture.bind(1);
+            shader.setUniformi("u_lookup", 1);
+
+            Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+        }
+
+        drawFboTexture(toDrawFbo, shader);
+    }
+
     private void drawShadowFbo(RenderContext r, ShaderProgram shader, Texture lookupTexture) {
         r.batch.setBlendFunctionSeparate(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -521,7 +537,7 @@ public class ClientWorld {
             r.tilesFbo.begin();
                 transparentScreen();
                 renderChunkTiles(false);
-                drawShadowFbo(r, r.simplePassthroughShader, r.tilesFbo.getColorBufferTexture());
+                drawShadowFbo(r, r.simplePassthroughShadowShader, r.tilesFbo.getColorBufferTexture());
             r.tilesFbo.end();
         }
 
@@ -537,12 +553,16 @@ public class ClientWorld {
             r.waterTilesFbo.begin();
                 transparentScreen();
                 renderWaterTiles();
+                ClientUtils.takeScreenshot("_S1", Input.Keys.G);
                 if(GameSettings.get().waterReflections) {
                     r.batch.setColor(0.666f, 0.875f, 1.0f, 0.5f);
-                    drawFboTexture(r.waterEntityFbo, null);
+                    drawPassthroughFbo(r, r.simplePassthroughFboShader, r.waterTilesFbo.getColorBufferTexture(), r.waterEntityFbo);
+                    //drawFboTexture(r.waterEntityFbo, null);
                     r.batch.setColor(Color.WHITE);
                 }
-                drawShadowFbo(r, r.simplePassthroughShader, r.waterTilesFbo.getColorBufferTexture());
+                ClientUtils.takeScreenshot("_S2", Input.Keys.G);
+                drawShadowFbo(r, r.simplePassthroughShadowShader, r.waterTilesFbo.getColorBufferTexture());
+                ClientUtils.takeScreenshot("_S3", Input.Keys.G);
             r.waterTilesFbo.end();
         }
 
@@ -578,7 +598,7 @@ public class ClientWorld {
                 transparentScreen();
                 renderChunkTiles(true);
 
-                drawShadowFbo(r, r.simplePassthroughShader, r.tilesFbo.getColorBufferTexture());
+                drawShadowFbo(r, r.simplePassthroughShadowShader, r.tilesFbo.getColorBufferTexture());
             r.tilesFbo.end();
 
             r.mainFbo.begin();
