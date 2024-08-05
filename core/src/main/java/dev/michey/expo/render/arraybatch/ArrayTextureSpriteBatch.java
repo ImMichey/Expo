@@ -245,6 +245,9 @@ public class ArrayTextureSpriteBatch implements Batch {
         }
 
         mesh.setIndices(indices);
+        //Pre bind the mesh to force the upload of indices data.
+        mesh.bind(shader);
+        mesh.unbind(shader);
 
         contextRestoreListener = new LifecycleListener() {
 

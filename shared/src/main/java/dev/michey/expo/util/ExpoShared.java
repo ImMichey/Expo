@@ -306,4 +306,23 @@ public class ExpoShared {
         return ((float) asInt) / (roundPlaces * 10);
     }
 
+    public static float[] fconv(float r, float g, float b) {
+        float highest = r;
+
+        if(g > highest) {
+            highest = g;
+        }
+
+        if(b > highest) {
+            highest = b;
+        }
+
+        float factor = highest / 255f; // 200/255
+        return new float[] {r / factor / 255f, g / factor / 255f, b / factor / 255f};
+    }
+
+    public static float[] fconvS(float r, float g, float b) {
+        return new float[] {r / 255f, g / 255f, b / 255f};
+    }
+
 }

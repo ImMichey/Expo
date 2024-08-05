@@ -1382,7 +1382,7 @@ public class ClientWorld {
                             ClientDynamicTilePart l2 = chunk.dynamicTiles[i][2];
 
                             if(TileLayerType.isWater(l2.emulatingType) && !l2.isFullTile()) {
-                                l2.draw(rc, chunk.ambientOcclusion[i]);
+                                l2.draw(rc, chunk, true, i);
                             }
                         }
                     } else {
@@ -1400,14 +1400,14 @@ public class ClientWorld {
                             ClientDynamicTilePart l1 = tiles[1];
 
                             if(!l1.isFullTile() && !l2.isFullTile()) {
-                                l0.draw(rc, chunk.ambientOcclusion[i]);
+                                l0.draw(rc, chunk, true, i);
                             }
 
                             if(!l2.isFullTile()) {
-                                l1.draw(rc, chunk.ambientOcclusion[i]);
+                                l1.draw(rc, chunk, false, i);
                             }
 
-                            l2.draw(rc, chunk.ambientOcclusion[i]);
+                            l2.draw(rc, chunk, false, i);
                         }
                     }
                 }

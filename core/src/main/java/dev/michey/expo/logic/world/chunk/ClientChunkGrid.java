@@ -1,10 +1,14 @@
 package dev.michey.expo.logic.world.chunk;
 
 import com.badlogic.gdx.math.Interpolation;
-import dev.michey.expo.localserver.ExpoServerLocal;
+import dev.michey.expo.Expo;
+import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
+import dev.michey.expo.noise.BiomeType;
+import dev.michey.expo.server.main.logic.world.ServerWorld;
 import dev.michey.expo.server.main.logic.world.gen.BiomeDefinition;
 import dev.michey.expo.server.main.logic.world.gen.NoisePostProcessor;
+import dev.michey.expo.server.main.logic.world.gen.PostProcessorBiome;
 import dev.michey.expo.server.main.logic.world.gen.WorldGenNoiseSettings;
 import dev.michey.expo.server.packet.P11_ChunkData;
 import dev.michey.expo.util.Pair;
@@ -12,12 +16,9 @@ import make.some.noise.Noise;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class ClientChunkGrid {
 
@@ -34,8 +35,8 @@ public class ClientChunkGrid {
     public WorldGenNoiseSettings noiseSettings;
     public List<BiomeDefinition> biomeDefinitionList;
 
-    //private HashMap<String, Pair<BiomeType, Float>> noiseCacheMap;
-    public LinkedList<Pair<NoisePostProcessor, Noise>> noisePostProcessorMap;
+    private ConcurrentSkipListMap<String, Pair<BiomeType, float[]>> noiseCacheMap;
+    private HashMap<String, Noise> noisePostProcessorMap;
 
     /** Water wave logic */
     private float waveDelta;
@@ -47,12 +48,13 @@ public class ClientChunkGrid {
         clientChunkMap = new ConcurrentHashMap<>();
         queuedChunkDataList = new ConcurrentLinkedQueue<>();
 
-        if(ExpoServerLocal.get() == null) {
+        if(Expo.get().isMultiplayer()) {
+            // Create a client-sided noise generator as we cannot access the server-sided noise/chunk data
             terrainNoiseHeight = new Noise();
             terrainNoiseTemperature = new Noise();
             terrainNoiseMoisture = new Noise();
-            //noiseCacheMap = new HashMap<>();
-            noisePostProcessorMap = new LinkedList<>();
+            noiseCacheMap = new ConcurrentSkipListMap<>();
+            noisePostProcessorMap = new HashMap<>();
         }
 
         INSTANCE = this;
@@ -63,6 +65,7 @@ public class ClientChunkGrid {
     }
 
     public void applyGenSettings(WorldGenNoiseSettings noiseSettings, List<BiomeDefinition> biomeDefinitionList, int worldSeed) {
+        ExpoLogger.log("===DEBUG==");
         this.noiseSettings = noiseSettings;
         this.biomeDefinitionList = biomeDefinitionList;
         //log("Applying world gen mapping " + noiseSettings);
@@ -74,10 +77,10 @@ public class ClientChunkGrid {
         }
 
         if(noiseSettings.isPostProcessorGenerator()) {
-            for(NoisePostProcessor npp : noiseSettings.postProcessList) {
+            for(NoisePostProcessor wrapper : noiseSettings.postProcessList) {
                 Noise noise = new Noise(worldSeed);
-                npp.noiseWrapper.applyTo(noise);
-                noisePostProcessorMap.add(new Pair<>(npp, noise));
+                wrapper.noiseWrapper.applyTo(noise);
+                noisePostProcessorMap.put(wrapper.noiseWrapper.name, noise);
             }
 
             noiseSettings.postProcessList.sort(Comparator.comparingInt(o -> -o.priority));
@@ -131,41 +134,46 @@ public class ClientChunkGrid {
         }
     }
 
+    public ClientChunk getChunk(int x, int y) {
+        return clientChunkMap.get(x + "," + y);
+    }
+
     /** Returns the BiomeType at tile position X & Y. */
-    /*
-    public BiomeType getBiome(int x, int y) {
-        return getBiomeData(x, y).key;
+    public BiomeType getBiome(String dimension, int x, int y) {
+        return getBiomeData(dimension, x, y).key;
     }
 
-    public float getElevation(int x, int y) {
-        return getBiomeData(x, y).value;
+    public float[] getElevationTemperatureMoisture(String dimension, int x, int y) {
+        return getBiomeData(dimension, x, y).value;
     }
 
-    public Pair<BiomeType, Float> getBiomeData(int x, int y) {
-        String key = x + "," + y;
-        Pair<BiomeType, Float> pair = noiseCacheMap.get(key);
+    public Pair<BiomeType, float[]> getBiomeData(String dimension, int x, int y) {
+        if(Expo.get().isMultiplayer()) {
+            // Generate client-sided
+            String key = x + "," + y;
+            Pair<BiomeType, float[]> pair = noiseCacheMap.get(key);
 
-        if(pair == null) {
-            pair = convertNoise(x, y);
-            noiseCacheMap.put(key, pair);
+            if(pair == null) {
+                pair = convertNoise(dimension, x, y);
+                noiseCacheMap.put(key, pair);
+            }
+
+            return pair;
+        } else {
+            return ServerWorld.get().getDimension(dimension).getChunkHandler().getBiomeData(x, y);
         }
-
-        return pair;
     }
-    */
 
-    /*
     private float normalized(Noise noise, int x, int y) {
         return (noise.getConfiguredNoise(x, y) + 1) * 0.5f;
     }
 
-    private Pair<BiomeType, Float> convertNoise(int x, int y) {
-        if(terrainNoiseHeight == null) return new Pair<>(BiomeType.VOID, 0f);
+    private Pair<BiomeType, float[]> convertNoise(String dimension, int x, int y) {
+        if(noiseSettings.isTerrainGenerator()) return new Pair<>(BiomeType.VOID, new float[] {0, 0, 0});
 
         for(BiomeDefinition biomeDefinition : biomeDefinitionList) {
             float[] values = biomeDefinition.noiseBoundaries;
             BiomeType toCheck = biomeDefinition.biomeType;
-
             float elevationMin = values[0];
             float elevationMax = values[1];
 
@@ -180,27 +188,22 @@ public class ClientChunkGrid {
             float moisture = normalized(terrainNoiseMoisture, x, y);
 
             if(height >= elevationMin && height <= elevationMax && temperature >= temperatureMin && temperature <= temperatureMax && moisture >= moistureMin && moisture <= moistureMax) {
-                for(var pair : noisePostProcessorMap) {
-                    if(pair.key.postProcessorLogic instanceof PostProcessorBiome ppb) {
-                        float _norm = normalized(pair.value, x, y);
+                for(NoisePostProcessor npp : noiseSettings.postProcessList) {
+                    if(npp.postProcessorLogic instanceof PostProcessorBiome ppb) {
+                        float _norm = normalized(noisePostProcessorMap.get(ppb.noiseName), x, y);
                         BiomeType biome = ppb.getBiome(toCheck, _norm);
 
                         if(biome != null) {
-                            return new Pair<>(biome, _norm);
+                            return new Pair<>(biome, new float[] {_norm, temperature, moisture});
                         }
                     }
                 }
 
-                return new Pair<>(toCheck, height);
+                return new Pair<>(toCheck, new float[] {height, temperature, moisture});
             }
         }
 
-        return new Pair<>(BiomeType.VOID, 0f);
-    }
-    */
-
-    public ClientChunk getChunk(int x, int y) {
-        return clientChunkMap.get(x + "," + y);
+        return new Pair<>(BiomeType.VOID, new float[] {0, 0, 0});
     }
 
     public static ClientChunkGrid get() {

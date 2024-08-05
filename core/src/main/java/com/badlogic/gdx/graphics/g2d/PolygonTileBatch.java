@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import dev.michey.expo.logic.world.chunk.ClientChunk;
 
 import static com.badlogic.gdx.graphics.g2d.Sprite.SPRITE_SIZE;
 import static com.badlogic.gdx.graphics.g2d.Sprite.VERTEX_SIZE;
@@ -130,9 +131,11 @@ public class PolygonTileBatch implements PolygonBatch {
         mesh = new Mesh(vertexDataType, false, maxVertices, maxTriangles * 3,
                 new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
                 new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-                new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+                new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"),
+                new VertexAttribute(Usage.ColorPacked, 4, "a_grass")
+        );
 
-        vertices = new float[maxVertices * VERTEX_SIZE];
+        vertices = new float[maxVertices * 6];
         triangles = new short[maxTriangles * 3];
 
         if (defaultShader == null) {
@@ -784,47 +787,18 @@ public class PolygonTileBatch implements PolygonBatch {
         draw(region, x, y, region.getRegionWidth(), region.getRegionHeight());
     }
 
-    private final Color COLOR = new Color();
-
-    private static final float MIN_TEMP = 0.2847f;
-    private static final float MAX_TEMP = 0.7058f;
-    private static final float DIFF_TEMP = MAX_TEMP - MIN_TEMP;
-    private static final float START_OFFSET = 0.55f;
-    private static final float STRENGTH = 0.164f;
-
-    private static final float USE_DEFAULT_RENDERER = 1.0f;
-    private static final float USE_CUSTOM_RENDERER = 0.5f;
-
-    private float getAsPacked(float ambientOcclusion) {
-        // No grass color.
-        if(ambientOcclusion == 0) {
-            // No ambient occlusion.
-            COLOR.set(0.0f, 0.0f, USE_DEFAULT_RENDERER, 0.0f);
-            return COLOR.toFloatBits();
-        } else {
-            // Ambient occlusion.
-            COLOR.set(0.0f, ambientOcclusion, USE_CUSTOM_RENDERER, 1.0f);
-            return COLOR.toFloatBits();
+    private float toPackedGrassColor(float[] ambientOcclusionData, Color[] biomeBlendData, boolean ignoreColor, int index) {
+        if(ignoreColor) {
+            return new Color(1.0f, 1.0f, 1.0f, ambientOcclusionData[index]).toFloatBits();
         }
 
-        /*
-        if(grassColor == null) {
-
-        } else {
-            // Grass color.
-            float start = grassColor[grassColorIndex] - MIN_TEMP - DIFF_TEMP * START_OFFSET;
-            if(start < 0) start = 0;
-
-            float adjustedAlpha = start * STRENGTH / DIFF_TEMP;
-
-            COLOR.set(adjustedAlpha, ambientOcclusion, USE_CUSTOM_RENDERER, ambientOcclusion > 0 ? 1f : 0f);
-            return COLOR.toFloatBits();
-        }
-        */
+        Color c = new Color(biomeBlendData[index]);
+        c.a = ambientOcclusionData[index];
+        return c.toFloatBits();
     }
 
-    public void drawGrass (TextureRegion region, float x, float y, float width, float height, float[] ambientOcclusion) {
-        if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
+    public void drawGrass (TextureRegion region, float x, float y, float width, float height, ClientChunk chunk, boolean ignoreColor, int chunkIndex) {
+        if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before drawGrass.");
 
         final short[] triangles = this.triangles;
         final float[] vertices = this.vertices;
@@ -836,16 +810,30 @@ public class PolygonTileBatch implements PolygonBatch {
             flush();
 
         int triangleIndex = this.triangleIndex;
-        final int startVertex = vertexIndex / VERTEX_SIZE;
+        final int startVertex = vertexIndex / 6;
 
-        float s1 = ambientOcclusion[0];
-        float s2 = ambientOcclusion[1];
-        float s3 = ambientOcclusion[2];
-        float s4 = ambientOcclusion[3];
+        float s1 = chunk.ambientOcclusionData[chunkIndex][0];
+        float s2 = chunk.ambientOcclusionData[chunkIndex][1];
+        float s3 = chunk.ambientOcclusionData[chunkIndex][2];
+        float s4 = chunk.ambientOcclusionData[chunkIndex][3];
         boolean swap = (s3 > 0 || s1 > 0) && !(s3 > 0 && s1 > 0 && s4 > 0) && !(s1 > 0 && s2 > 0 && s3 > 0);
 
+        /*
+        if(!swap) {
+            float[] c1f = chunk.biomes[chunkIndex].FOLIAGE_COLOR;
+            float c = new Color(c1f[0], c1f[1], c1f[2], 1.0f).toFloatBits();
+
+            boolean c1Ex = chunk.biomeBlendData[chunkIndex][0].toFloatBits() != c;
+            boolean c2Ex = chunk.biomeBlendData[chunkIndex][1].toFloatBits() != c;
+            boolean c3Ex = chunk.biomeBlendData[chunkIndex][2].toFloatBits() != c;
+            boolean c4Ex = chunk.biomeBlendData[chunkIndex][3].toFloatBits() != c;
+
+            swap = (c3Ex || c1Ex) && !(c3Ex && c1Ex && c4Ex) && !(c1Ex && c2Ex && c3Ex);
+        }
+        */
+
         if(swap) {
-            triangles[triangleIndex++] = (short)(startVertex + 0);
+            triangles[triangleIndex++] = (short)(startVertex);
             triangles[triangleIndex++] = (short)(startVertex + 1);
             triangles[triangleIndex++] = (short)(startVertex + 3);
             triangles[triangleIndex++] = (short)(startVertex + 1);
@@ -869,35 +857,35 @@ public class PolygonTileBatch implements PolygonBatch {
         final float u2 = region.u2;
         final float v2 = region.v;
 
-        float c1 = getAsPacked(ambientOcclusion[0]);
-        float c2 = getAsPacked(ambientOcclusion[1]);
-        float c3 = getAsPacked(ambientOcclusion[2]);
-        float c4 = getAsPacked(ambientOcclusion[3]);
-
         int idx = this.vertexIndex;
         vertices[idx++] = x;
         vertices[idx++] = y;
-        vertices[idx++] = c1;
+        vertices[idx++] = colorPacked;
         vertices[idx++] = u;
         vertices[idx++] = v;
+        vertices[idx++] = new Color(1.0f, 1.0f, 1.0f, chunk.ambientOcclusionData[chunkIndex][0]).toFloatBits();//toPackedGrassColor(chunk.ambientOcclusionData[chunkIndex], chunk.biomeBlendData[chunkIndex], ignoreColor, 0);
 
         vertices[idx++] = x;
         vertices[idx++] = fy2;
-        vertices[idx++] = c2;
+        vertices[idx++] = colorPacked;
         vertices[idx++] = u;
         vertices[idx++] = v2;
+        vertices[idx++] = new Color(1.0f, 1.0f, 1.0f, chunk.ambientOcclusionData[chunkIndex][1]).toFloatBits();//toPackedGrassColor(chunk.ambientOcclusionData[chunkIndex], chunk.biomeBlendData[chunkIndex], ignoreColor, 1);
 
         vertices[idx++] = fx2;
         vertices[idx++] = fy2;
-        vertices[idx++] = c3;
+        vertices[idx++] = colorPacked;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
+        vertices[idx++] = new Color(1.0f, 1.0f, 1.0f, chunk.ambientOcclusionData[chunkIndex][2]).toFloatBits();//toPackedGrassColor(chunk.ambientOcclusionData[chunkIndex], chunk.biomeBlendData[chunkIndex], ignoreColor, 2);
 
         vertices[idx++] = fx2;
         vertices[idx++] = y;
-        vertices[idx++] = c4;
+        vertices[idx++] = colorPacked;
         vertices[idx++] = u2;
         vertices[idx++] = v;
+        vertices[idx++] = new Color(1.0f, 1.0f, 1.0f, chunk.ambientOcclusionData[chunkIndex][3]).toFloatBits();//toPackedGrassColor(chunk.ambientOcclusionData[chunkIndex], chunk.biomeBlendData[chunkIndex], ignoreColor, 3);
+
         this.vertexIndex = idx;
     }
 

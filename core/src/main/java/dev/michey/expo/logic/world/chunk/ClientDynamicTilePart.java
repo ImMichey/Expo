@@ -59,8 +59,6 @@ public class ClientDynamicTilePart {
         };
     }
 
-    private static final float[] n = new float[] {0, 0, 0, 0};
-
     public void drawSimple() {
         RenderContext r = RenderContext.get();
 
@@ -75,15 +73,15 @@ public class ClientDynamicTilePart {
         }
     }
 
-    public void draw(RenderContext r, float[] ambientOcclusion) {
+    public void draw(RenderContext r, ClientChunk chunk, boolean ignore, int chunkIndex) {
         if(texture.length == 1) {
             if(texture[0] == null) return;
-            r.polygonTileBatch.drawGrass(texture[0], x, y, 16, 16, ambientOcclusion);
+            r.polygonTileBatch.drawGrass(texture[0], x, y, 16, 16, chunk, ignore, chunkIndex);
         } else {
-            r.polygonTileBatch.drawGrass(texture[0], x, y, 8, 8, n);
-            r.polygonTileBatch.drawGrass(texture[1], x + 8, y, 8, 8, n);
-            r.polygonTileBatch.drawGrass(texture[2], x , y + 8, 8, 8, n);
-            r.polygonTileBatch.drawGrass(texture[3], x + 8, y + 8, 8, 8, n);
+            r.polygonTileBatch.drawGrass(texture[0], x, y, 8, 8, chunk, ignore, chunkIndex);
+            r.polygonTileBatch.drawGrass(texture[1], x + 8, y, 8, 8, chunk, ignore, chunkIndex);
+            r.polygonTileBatch.drawGrass(texture[2], x , y + 8, 8, 8, chunk, ignore, chunkIndex);
+            r.polygonTileBatch.drawGrass(texture[3], x + 8, y + 8, 8, 8, chunk, ignore, chunkIndex);
         }
     }
 

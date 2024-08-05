@@ -93,8 +93,16 @@ public class ImGuiExpo {
     private final float[] colorLight = new float[3];
     private final float[] gradientStartOffset = new float[1];
     private final float[] gradientMultiplier = new float[1];
+    private final float[][] biomeColors = new float[BiomeType.values().length][];
 
     public final List<DebugPoint> drawPoints = new LinkedList<>();
+
+    public ImGuiExpo() {
+        for(int i = 0; i < biomeColors.length; i++) {
+            float[] copy = BiomeType.values()[i].FOLIAGE_COLOR;
+            biomeColors[i] = copy;
+        }
+    }
 
     public void draw() {
         drawExpoWindow();
@@ -227,6 +235,27 @@ public class ImGuiExpo {
                     ImGui.treePop();
                 }
 
+                if(ImGui.treeNode("Foliage colors")) {
+                    BiomeType[] all = BiomeType.values();
+
+                    for(int i = 0; i < all.length; i++) {
+                        if(!all[i].FOLIAGE_INDEX) continue;
+                        if(ImGui.colorPicker3(all[i].name(), biomeColors[i])) {
+                            all[i].FOLIAGE_COLOR[0] = biomeColors[i][0];
+                            all[i].FOLIAGE_COLOR[1] = biomeColors[i][1];
+                            all[i].FOLIAGE_COLOR[2] = biomeColors[i][2];
+
+                            for(ClientChunk chunk : ClientChunkGrid.get().getAllChunks()) {
+                                //chunk.generateBiomeBlendData();
+                            }
+
+                            PlayerUI.get().playerMinimap.incomplete = true;
+                        }
+                    }
+
+                    ImGui.treePop();
+                }
+
                 ImGui.treePop();
             }
 
@@ -323,7 +352,8 @@ public class ImGuiExpo {
                     coloredBulletText(205f/255f,215f/255f,0f/255f, "TLT1: " + chunk.dynamicTiles[r.mouseTileArray][1].emulatingType);
                     coloredBulletText(205f/255f,215f/255f,0f/255f, "TLT2: " + chunk.dynamicTiles[r.mouseTileArray][2].emulatingType);
 
-                    coloredBulletText(1.0f, 1.0f, 1.0f, "ambientOcclusion " + Arrays.toString(chunk.ambientOcclusion[r.mouseTileArray]));
+                    coloredBulletText(1.0f, 1.0f, 1.0f, "ambientOcclusion " + Arrays.toString(chunk.ambientOcclusionData[r.mouseTileArray]));
+                    coloredBulletText(1.0f, 1.0f, 1.0f, "biomeBlend " + Arrays.toString(chunk.biomeBlendData[r.mouseTileArray]));
                     coloredBulletText(1.0f, 1.0f, 1.0f, "tileEntityId (CLIENT) " + (chunk.tileEntityGrid == null ? "EMPTY" : chunk.tileEntityGrid[r.mouseTileArray] + ""));
 
                     if(ServerWorld.get() != null) {

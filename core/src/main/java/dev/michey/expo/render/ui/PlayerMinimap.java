@@ -15,7 +15,6 @@ import dev.michey.expo.logic.world.chunk.ClientChunkGrid;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.noise.TileLayerType;
 import dev.michey.expo.render.RenderContext;
-import dev.michey.expo.server.main.arch.ExpoServerBase;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntity;
 import dev.michey.expo.server.main.logic.entity.arch.ServerEntityType;
 import dev.michey.expo.server.main.logic.entity.misc.ServerDynamic3DTile;
@@ -113,7 +112,7 @@ public class PlayerMinimap {
                     " :: sct=" + startChunkTileX + "," + startChunkTileY + " :: ect=" + endChunkTileX + "," + endChunkTileY, Input.Keys.X);
             */
 
-            if(ExpoServerBase.get() != null) {
+            if(!Expo.get().isMultiplayer()) {
                 ServerPlayer localPlayer = ServerPlayer.getLocalPlayer();
 
                 for(int i = 0; i < MAP_SIZE; i++) {
@@ -133,6 +132,7 @@ public class PlayerMinimap {
                         }
 
                         TileLayerType use;
+                        BiomeType useBiome = null;
                         TileLayerType t1 = tile.dynamicTileParts[1].emulatingType;
 
                         if(t1 == TileLayerType.WATER_DEEP || t1 == TileLayerType.SOIL_DEEP_WATERLOGGED) {
@@ -145,23 +145,27 @@ public class PlayerMinimap {
                             } else {
                                 use = tile.dynamicTileParts[2].emulatingType;
 
-                                if(use.TILE_COLOR == 255) {
-                                    use = tile.dynamicTileParts[1].emulatingType;
-
+                                if(tile.biome.FOLIAGE_INDEX) {
+                                    useBiome = tile.biome;
+                                } else {
                                     if(use.TILE_COLOR == 255) {
-                                        use = tile.dynamicTileParts[0].emulatingType;
+                                        use = tile.dynamicTileParts[1].emulatingType;
+
+                                        if(use.TILE_COLOR == 255) {
+                                            use = tile.dynamicTileParts[0].emulatingType;
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        BiomeType useBiome = null;
-
+                        /*
                         if(use == TileLayerType.FOREST) {
                             if(tile.biome == BiomeType.FOREST || tile.biome == BiomeType.DENSE_FOREST || tile.biome == BiomeType.PLAINS) {
                                 useBiome = tile.biome;
                             }
                         }
+                        */
 
                         if(useBiome != null) {
                             minimapBiomeContainerMap.get(useBiome).add(new int[] {i, j});
@@ -170,7 +174,6 @@ public class PlayerMinimap {
                         }
                     }
                 }
-
             } else {
                 for(int i = 0; i < MAP_SIZE; i++) {
                     for(int j = 0; j < MAP_SIZE; j++) {
@@ -197,6 +200,7 @@ public class PlayerMinimap {
                         int tileArray = relativeTileY * ROW_TILES + relativeTileX;
 
                         TileLayerType use;
+                        BiomeType useBiome = null;
                         TileLayerType t1 = chunk.dynamicTiles[tileArray][1].emulatingType;
 
                         if(t1 == TileLayerType.WATER_DEEP || t1 == TileLayerType.SOIL_DEEP_WATERLOGGED) {
@@ -213,6 +217,10 @@ public class PlayerMinimap {
                             } else {
                                 use = chunk.dynamicTiles[tileArray][2].emulatingType;
 
+                                if(chunk.biomes[tileArray].FOLIAGE_INDEX) {
+                                    useBiome = chunk.biomes[tileArray];
+                                }
+
                                 if(use.TILE_COLOR == 255) {
                                     use = chunk.dynamicTiles[tileArray][1].emulatingType;
 
@@ -223,13 +231,13 @@ public class PlayerMinimap {
                             }
                         }
 
-                        BiomeType useBiome = null;
-
+                        /*
                         if(use == TileLayerType.FOREST) {
                             if(chunk.biomes[tileArray] == BiomeType.FOREST || chunk.biomes[tileArray] == BiomeType.DENSE_FOREST || chunk.biomes[tileArray] == BiomeType.PLAINS) {
                                 useBiome = chunk.biomes[tileArray];
                             }
                         }
+                        */
 
                         if(useBiome != null) {
                             minimapBiomeContainerMap.get(useBiome).add(new int[] {i, j});
@@ -258,7 +266,7 @@ public class PlayerMinimap {
             }
 
             for(BiomeType bt : minimapBiomeContainerMap.keySet()) {
-                pixmap.setColor(bt.BIOME_COLOR[0], bt.BIOME_COLOR[1], bt.BIOME_COLOR[2], bt.BIOME_COLOR[3]);
+                pixmap.setColor(bt.BIOME_COLOR[0], bt.BIOME_COLOR[1], bt.BIOME_COLOR[2], 1.0f);
                 var coords = minimapBiomeContainerMap.get(bt);
 
                 for(int[] d : coords) {
