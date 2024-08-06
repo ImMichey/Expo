@@ -2,8 +2,10 @@ package dev.michey.expo.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import dev.michey.expo.Expo;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
+import imgui.ImGui;
 
 public class IngameInput {
 
@@ -22,24 +24,28 @@ public class IngameInput {
     public boolean leftPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
+        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
         return Gdx.input.isButtonPressed(Input.Buttons.LEFT);
     }
 
     public boolean leftJustPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
+        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
         return Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
     public boolean rightPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
+        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
         return Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
     }
 
     public boolean rightJustPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
+        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
         return Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT);
     }
 
