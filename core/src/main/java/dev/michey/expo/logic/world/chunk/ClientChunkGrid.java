@@ -2,7 +2,6 @@ package dev.michey.expo.logic.world.chunk;
 
 import com.badlogic.gdx.math.Interpolation;
 import dev.michey.expo.Expo;
-import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.logic.container.ExpoClientContainer;
 import dev.michey.expo.noise.BiomeType;
 import dev.michey.expo.server.main.logic.world.ServerWorld;
@@ -65,7 +64,6 @@ public class ClientChunkGrid {
     }
 
     public void applyGenSettings(WorldGenNoiseSettings noiseSettings, List<BiomeDefinition> biomeDefinitionList, int worldSeed) {
-        ExpoLogger.log("===DEBUG==");
         this.noiseSettings = noiseSettings;
         this.biomeDefinitionList = biomeDefinitionList;
         //log("Applying world gen mapping " + noiseSettings);
