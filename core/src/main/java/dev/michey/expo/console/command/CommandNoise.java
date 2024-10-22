@@ -43,7 +43,7 @@ public class CommandNoise extends AbstractConsoleCommand {
 
     @Override
     public void executeCommand(String[] args) {
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 1);
 
         final int pxmapsize = 2048;
         int runs = pxmapsize / 16;
