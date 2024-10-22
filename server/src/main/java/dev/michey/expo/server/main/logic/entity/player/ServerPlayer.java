@@ -45,7 +45,7 @@ public class ServerPlayer extends ServerEntity implements DamageableEntity, Phys
     public PlayerSaveFile playerSaveFile;
     public String username;
 
-    public float playerSpeed = 64f;
+    public float playerSpeed = 72f;
     public int xDir = 0;
     public int yDir = 0;
     public boolean sprinting;

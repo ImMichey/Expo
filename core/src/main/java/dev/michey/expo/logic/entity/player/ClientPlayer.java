@@ -75,7 +75,7 @@ public class ClientPlayer extends ClientEntity implements ReflectableEntity, Amb
     /** Player velocity */
     private boolean cachedSprinting;
     private boolean localSprinting;
-    public float playerSpeed = 64f;
+    public float playerSpeed = 72f;
     public final float sprintMultiplier = 1.6f;
     public boolean noclip = false;
     public int clientDirX, clientDirY;              // Set by client
