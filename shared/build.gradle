@@ -1,4 +1,5 @@
 eclipse.project.name = appName + '-shared'
 
 dependencies {
+    implementation 'commons-io:commons-io:2.16.1'
 }

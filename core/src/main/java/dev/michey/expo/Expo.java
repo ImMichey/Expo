@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -145,8 +146,16 @@ public class Expo implements ApplicationListener {
 			ImGuiIO io = ImGui.getIO();
 			// io.setWantSaveIniSettings(false); 						For production build.
 
-			String customFont = Gdx.files.local("Roboto-Regular.ttf").file().getAbsolutePath();
-			// String customFont = Gdx.files.internal("assets/fonts/Roboto-Regular.ttf").file().getAbsolutePath();
+			FileHandle localFont = Gdx.files.local("Roboto-Regular.ttf");
+			String customFont = localFont.file().getAbsolutePath();
+			File checkForFont = new File(customFont);
+
+			if(!checkForFont.exists()) {
+				// Try to copy to local path.
+				ExpoLogger.log("ImGui font file doesn't exist locally, trying to copy to local file system.");
+				FileHandle fh = Gdx.files.internal("fonts/Roboto-Regular.ttf");
+				fh.copyTo(localFont);
+			}
 
 			ImFontAtlas atlas = io.getFonts();
 			atlas.addFontFromFileTTF(customFont, 16);
