@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import dev.michey.expo.Expo;
 import dev.michey.expo.client.chat.ExpoClientChat;
 import dev.michey.expo.console.GameConsole;
-import imgui.ImGui;
+import dev.michey.expo.render.RenderContext;
 
 public class IngameInput {
 
@@ -13,6 +13,10 @@ public class IngameInput {
 
     public IngameInput() {
         INSTANCE = this;
+    }
+
+    private boolean isImGuiInFocus() {
+        return RenderContext.get().drawImGui && Expo.get().getImGuiExpo() != null;
     }
 
     public boolean keyPressed(int key) {
@@ -24,28 +28,28 @@ public class IngameInput {
     public boolean leftPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
-        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
+        if(isImGuiInFocus()) return false;
         return Gdx.input.isButtonPressed(Input.Buttons.LEFT);
     }
 
     public boolean leftJustPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
-        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
+        if(isImGuiInFocus()) return false;
         return Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
     public boolean rightPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
-        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
+        if(isImGuiInFocus()) return false;
         return Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
     }
 
     public boolean rightJustPressed() {
         if(GameConsole.get().isVisible()) return false;
         if(ExpoClientChat.get().isFocused()) return false;
-        if(Expo.get().getImGuiExpo() != null && (ImGui.isWindowHovered() || ImGui.isAnyItemHovered())) return false;
+        if(isImGuiInFocus()) return false;
         return Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT);
     }
 
