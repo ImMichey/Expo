@@ -389,8 +389,8 @@ public class ArrayTextureSpriteBatch implements Batch {
             vertexShader = "#version 300 es\n" + vertexShader;
             fragmentShader = "#version 300 es\n" + fragmentShader;
         } else {
-            vertexShader = "#version 150\n" + vertexShader;
-            fragmentShader = "#version 150\n" + fragmentShader;
+            vertexShader = "#version 330\n" + vertexShader;
+            fragmentShader = "#version 330\n" + fragmentShader;
         }
 
         ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
