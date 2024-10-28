@@ -1,10 +1,10 @@
 #version 330
 
 #ifdef GL_ES
-#define LOWP lowp
-precision mediump float;
-#else
-#define LOWP
+    #define LOWP lowp
+    precision mediump float;
+    #else
+    #define LOWP
 #endif
 
 in LOWP vec4 v_color;

@@ -38,7 +38,8 @@ void main() {
         if(u_outline) {
             if(c1.a > 0.0 || c2.a > 0.0 || c3.a > 0.0 || c4.a > 0.0) {
                 fragColor = u_outlineColor;
-                return;
+            } else {
+                fragColor = vec4(0.0);
             }
         }
     } else {
