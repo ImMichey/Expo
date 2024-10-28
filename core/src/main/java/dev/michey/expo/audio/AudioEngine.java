@@ -122,7 +122,7 @@ public class AudioEngine {
     public void killSound(long id) {
         TrackedSoundData tsd = soundData.get(id);
 
-        // Fixes rare(?) ambient sound bug, not sure what the cause is
+        // This would previously fire when there was no audio device connected to the machine, now there is a safety check in place.
         if(tsd == null) {
             ExpoLogger.log("[AudioEngine] Trying to kill sound with id " + id + ", but it's non existent? Skipping.");
             return;
@@ -192,6 +192,10 @@ public class AudioEngine {
         clearList.clear();
     }
 
+    public boolean isAudioDeviceAvailable() {
+        return Gdx.audio.getAvailableOutputDevices().length > 0;
+    }
+
     private void dynamicCalculate(TrackedSoundData data) {
         float volume = volumeOf(data.type) * data.baseVolume * data.specificVolumeMultiplier * masterVolume;
         volume *= getDynamicSoundVolume(data.worldPosition, data.audibleRange);
@@ -223,6 +227,11 @@ public class AudioEngine {
 
         if(sgd == null) {
             ExpoLogger.logerr("AudioEngine: Requested to play sound of group '" + groupName + "', but it doesn't exist.");
+            return null;
+        }
+
+        if(!isAudioDeviceAvailable()) {
+            // Silently abort audio execution.
             return null;
         }
 
@@ -260,6 +269,11 @@ public class AudioEngine {
 
     /** Plays a manged sound of a specific name without panning and default volume. **/
     public TrackedSoundData playSoundSpecific(String soundName, float volume, boolean loop) {
+        if(!isAudioDeviceAvailable()) {
+            // Silently abort audio execution.
+            return null;
+        }
+
         if(!soundName.endsWith(".wav")) soundName += ".wav";
         String group = qualifiedNameMap.get(soundName);
         TrackedSoundData data = soundGroupMap.get(group).playSoundSpecific(soundName, volume, loop);
@@ -273,6 +287,11 @@ public class AudioEngine {
 
     /** Plays a managed sound of a certain group that dynamically changes its panning and volume depending on the player's distance to the origin. **/
     public TrackedSoundData playSoundGroupManaged(String groupName, Vector2 soundOrigin, float maxAudibleRange, boolean loop, float multiplier) {
+        if(!isAudioDeviceAvailable()) {
+            // Silently abort audio execution.
+            return null;
+        }
+
         // Check volume first before playing (and thus overloading OpenAL).
         float volumeStart = getDynamicSoundVolume(soundOrigin, maxAudibleRange);
 
@@ -302,9 +321,13 @@ public class AudioEngine {
             // Add.
             String sound = soundGroupMap.get(groupName).getRandomQualifiedName();
             TrackedSoundData data = playSoundSpecific(sound, volume, true); // AMBIENT_ENTRY
-            data.ambient = true;
-            data.ambientGroup = groupName;
-            ambienceTrackMap.put(groupName, data);
+
+            if(data != null) {
+                data.ambient = true;
+                data.ambientGroup = groupName;
+                ambienceTrackMap.put(groupName, data);
+            }
+
             return;
         }
 
