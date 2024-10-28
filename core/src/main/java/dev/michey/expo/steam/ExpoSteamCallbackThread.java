@@ -9,6 +9,10 @@ public class ExpoSteamCallbackThread extends Thread {
 
     private boolean killCallbackThread = false;
 
+    public ExpoSteamCallbackThread() {
+        super("ExpoSteamCallbackThread");
+    }
+
     @Override
     public void run() {
         while(true) {

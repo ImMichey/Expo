@@ -20,6 +20,7 @@ import dev.michey.expo.console.ConsoleMessage;
 import dev.michey.expo.console.GameConsole;
 import dev.michey.expo.debug.DebugGL;
 import dev.michey.expo.input.GameInput;
+import dev.michey.expo.io.ExpoResourceFile;
 import dev.michey.expo.lang.Lang;
 import dev.michey.expo.log.ExpoLogger;
 import dev.michey.expo.noise.TileLayerType;
@@ -179,35 +180,43 @@ public class Expo implements ApplicationListener {
 		GameConsole.get().addSystemMessage("[CYAN]F1 = Console [WHITE]:: [CYAN]F6 = Hide HUD [WHITE]:: [CYAN]F10 = Screenshot [WHITE]:: [CYAN]F11 = Toggle Fullscreen");
 		INSTANCE = this;
 
-		GameConsole.get().addSystemMessage("Initializing Steam...");
+		new Thread(() -> {
+			GameConsole.get().addSystemMessage("Initializing Steam...");
 
-		try {
-			SteamAPI.loadLibraries(new SteamLibraryLoaderGdx());
+			// The 'steam_appid.txt' file is required for the steam API to identify the game
+			ExpoResourceFile file = new ExpoResourceFile("steam_appid.txt", "steam_appid.txt");
+			file.loadConfigFromResources();
+			file.ensureFileExistence();
 
-			if(!SteamAPI.init()) {
-				// Steamworks initialization error, e.g. Steam client not running
-				GameConsole.get().addSystemErrorMessage("Failed to initialize Steamworks.");
-			} else {
-				STEAM_INITIALIZED = true;
-				GameConsole.get().addSystemSuccessMessage("Loaded Steam API successfully.");
+			try {
+				SteamAPI.loadLibraries(new SteamLibraryLoaderGdx());
+				SteamAPI.InitResult result = SteamAPI.initEx();
 
-				STEAM_CALLBACK_THREAD = new ExpoSteamCallbackThread();
-				STEAM_CALLBACK_THREAD.start();
+				if(result != SteamAPI.InitResult.OK) {
+					// Steamworks initialization error, e.g. Steam client not running
+					GameConsole.get().addSystemErrorMessage("Failed to initialize Steamworks: " + result.name());
+				} else {
+					STEAM_INITIALIZED = true;
+					GameConsole.get().addSystemSuccessMessage("Loaded Steam API successfully.");
 
-				STEAM_USER = new SteamUser(ExpoSteam.callback);
-				STEAM_FRIENDS = new SteamFriends(ExpoSteam.friendsCallback);
-				STEAM_ACCOUNT_ID = STEAM_USER.getSteamID().getAccountID();
-				STEAM_STEAM_ID = SteamID.getNativeHandle(STEAM_USER.getSteamID());
-				PLAYER_USERNAME = STEAM_FRIENDS.getFriendPersonaName(STEAM_USER.getSteamID());
+					STEAM_CALLBACK_THREAD = new ExpoSteamCallbackThread();
+					STEAM_CALLBACK_THREAD.start();
 
-				GameConsole.get().addSystemSuccessMessage("Steam IDs: " + STEAM_ACCOUNT_ID + "/" + STEAM_STEAM_ID);
-				GameConsole.get().addSystemSuccessMessage("Using name: " + PLAYER_USERNAME);
+					STEAM_USER = new SteamUser(ExpoSteam.callback);
+					STEAM_FRIENDS = new SteamFriends(ExpoSteam.friendsCallback);
+					STEAM_ACCOUNT_ID = STEAM_USER.getSteamID().getAccountID();
+					STEAM_STEAM_ID = SteamID.getNativeHandle(STEAM_USER.getSteamID());
+					PLAYER_USERNAME = STEAM_FRIENDS.getFriendPersonaName(STEAM_USER.getSteamID());
+
+					GameConsole.get().addSystemSuccessMessage("Steam IDs: " + STEAM_ACCOUNT_ID + "/" + STEAM_STEAM_ID);
+					GameConsole.get().addSystemSuccessMessage("Using name: " + PLAYER_USERNAME);
+				}
+			} catch (SteamException e) {
+				// Error extracting or loading native libraries
+				GameConsole.get().addSystemErrorMessage("Failed to load Steam native libraries.");
+				e.printStackTrace();
 			}
-		} catch (SteamException e) {
-			// Error extracting or loading native libraries
-			GameConsole.get().addSystemErrorMessage("Failed to load Steam native libraries.");
-			e.printStackTrace();
-		}
+		}, "Expo-SteamInit-Thread").start();
 
 		autoExec();
 	}
